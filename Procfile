@@ -1,1 +1,1 @@
-enqueue: ruby lib/travis/enqueue.rb
+enqueue: bundle exec ruby lib/travis/enqueue.rb
