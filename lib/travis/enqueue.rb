@@ -11,10 +11,24 @@ Travis::Exceptions::Reporter.start
 Travis::Database.connect
 Travis::Notification.setup
 
-thread = run_periodically(Travis.config.queue.interval) do
-  print "about to enqueue jobs ... "
-  jobs = Job::Queueing::All.new.run
-  puts "done (enqueued #{Array(jobs).compact.size} jobs)"
+def active?
+  Travis::Features.feature_active?(:travis_enqueue)
 end
+
+def run
+  print "about to enqueue jobs ... "
+  reports = Travis::Services::Jobs::Enqueue.run
+  puts 'done.'
+  puts format(reports)
+end
+
+def format(reports)
+  Array(reports).map do |owner, report|
+    "  #{owner}: #{report.map { |key, value| "#{key}: #{value}" }.join(', ')}"
+  end
+end
+
+interval = Travis.config.queue.interval
+thread = run_periodically(interval) { run if active? }
 thread.join
 
