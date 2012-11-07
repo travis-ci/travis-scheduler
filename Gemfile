@@ -3,7 +3,7 @@ source :rubygems
 ruby '1.9.3', engine: 'jruby', engine_version: '1.7.0'
 # ruby '1.9.3'
 
-gem 'travis-core',    github: 'travis-ci/travis-core'
+gem 'travis-core',    github: 'travis-ci/travis-core', branch: 'sf-restore-master'
 gem 'travis-support', github: 'travis-ci/travis-support'
 
 gem 'hubble',         github: 'roidrage/hubble'
