@@ -1,0 +1,47 @@
+sentry: &sentry
+  dsn: https://tok:en@app.getsentry.com/app_id
+    
+production:
+  domain: travis-ci.local
+  notifications:
+    - pusher
+    - email
+    - irc
+    - webhook
+    - campfire
+    - hipchat
+    - flowdock
+    - github_commit_status
+  database:
+    username: some.username
+    password: t0p.s3kr3t
+    database: some.database
+    host: db.megacorp.local
+  amqp:
+    host: messaging.megacorp.local
+    port: 5672
+    username: cute.bunny
+    password: t0p.s3kr3t
+    vhost: travisci.production
+  ssl:
+    ca_file: /usr/lib/ssl/certs/ca-certificates.crt
+  sentry:
+    <<: *sentry
+
+development:
+  database:
+    host: localhost
+    database: travis_development
+    username: travisci
+    password:
+  amqp:
+    host: localhost
+    port: 5672
+    username: travisci_hub
+    password: travisci_hub_password
+    vhost: travisci.development
+  notifications:
+    - pusher
+
+test:
+  domain: test.travis-ci.local

@@ -1,0 +1,11 @@
+.Gemfile*
+config/travis.yml
+play/*
+log/*
+.gems/*
+*.class
+.rbenv-version
+.rbenv-gemsets
+.bundle
+tmp
+/coverage
