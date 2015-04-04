@@ -1,4 +1,4 @@
-describe Travis::Enqueue::Scheduler do
+describe Travis::Scheduler::Schedule do
   describe 'setup' do
     before do
       # XXX: I tend to want to test this without knowing the

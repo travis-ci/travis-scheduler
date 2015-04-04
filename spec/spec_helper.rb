@@ -2,7 +2,7 @@ ENV['RAILS_ENV'] ||= 'test'
 
 require 'simplecov' if ENV['RAILS_ENV'] == 'test' && ENV['COVERAGE']
 
-require 'travis/enqueue'
+require 'travis/scheduler'
 require 'travis/testing'
 require 'travis/support'
 require 'support/active_record'
