@@ -14,8 +14,6 @@ ActiveRecord::Base.default_timezone = :utc
 ActiveRecord::Base.logger = Logger.new('log/test.db.log')
 ActiveRecord::Base.configurations = { 'test' => config }
 
-puts ActiveRecord::Base.configurations.inspect
-
 ActiveRecord::Base.establish_connection('test')
 
 DatabaseCleaner.clean_with :truncation
