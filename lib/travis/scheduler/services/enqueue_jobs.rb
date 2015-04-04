@@ -51,7 +51,7 @@ module Travis
                   queueable = nil
                   Metriks.timer('enqueue.limit_per_owner').time do
                     Travis.logger.info "About to evaluate jobs for: #{owner.login}."
-                    limit = Limit.new(owner, jobs)
+                    limit = Helpers::Limit.new(owner, jobs)
                     queueable = limit.queueable
                   end
 
