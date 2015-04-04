@@ -8,7 +8,7 @@ require 'bundler/setup'
 require 'travis/scheduler'
 
 
-app = Travis::Schduler::Schdule.new
+app = Travis::Scheduler::Schedule.new
 
 Travis.logger.info('[scheduler] setting up schduler app')
 app.setup
