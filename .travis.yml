@@ -24,6 +24,7 @@ before_install: gem install bundler
 before_script:
   - bundle exec rake db:create --trace
   - bundle exec rake db:structure:load --trace
+  - env
 
 script: ./build.sh $RAKE_TASK
 
