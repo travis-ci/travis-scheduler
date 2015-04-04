@@ -1,1 +1,1 @@
-enqueue: ./bin/schedule
+schedule: ./bin/schedule
