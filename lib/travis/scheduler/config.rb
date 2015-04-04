@@ -5,6 +5,7 @@ module Travis
     class Config < Travis::Config
       define  amqp:           { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
               database:       { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
+              encryption:     { },
               github:         { },
               interval:       3,
               limit:          { strategy: 'default', default: 5, by_owner: {} },
