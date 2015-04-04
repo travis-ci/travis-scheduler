@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'travis/scheduler/services/helpers/worker_payload'
 
 describe Travis::Scheduler::Services::Helpers::WorkerPayload do
   include Travis::Testing::Stubs, Support::Formats
@@ -31,7 +32,10 @@ describe Travis::Scheduler::Services::Helpers::WorkerPayload do
     it 'contains the expected data' do
       data.except('job', 'build', 'repository').should == {
         'type' => 'test',
-        'config' => { 'rvm' => '1.8.7', 'gemfile' => 'test/Gemfile.rails-2.3.x' },
+        'config' => { 
+          'rvm' => '1.8.7', 
+          'gemfile' => 'test/Gemfile.rails-2.3.x'
+        },
         'queue' => 'builds.linux',
         'uuid' => Travis.uuid,
         'ssh_key' => nil,
@@ -127,7 +131,10 @@ describe Travis::Scheduler::Services::Helpers::WorkerPayload do
     it 'contains the expected data' do
       data.except('job', 'build', 'repository').should == {
         'type' => 'test',
-        'config' => { 'rvm' => '1.8.7', 'gemfile' => 'test/Gemfile.rails-2.3.x' },
+        'config' => {
+          'rvm' => '1.8.7',
+          'gemfile' => 'test/Gemfile.rails-2.3.x'
+        },
         'queue' => 'builds.linux',
         'uuid' => Travis.uuid,
         'ssh_key' => nil,
