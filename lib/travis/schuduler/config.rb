@@ -1,7 +1,7 @@
 require 'travis/config'
 
 module Travis
-  module Enqueue
+  module Scheduler
     class Config < Travis::Config
       define  database: { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
               pusher:   { app_id: 'app-id', key: 'key', secret: 'secret', secure: false },
