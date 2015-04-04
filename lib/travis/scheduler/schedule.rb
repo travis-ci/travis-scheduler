@@ -4,7 +4,6 @@ require 'travis'
 require 'travis/model'
 require 'travis/states_cache'
 require 'travis/support/amqp'
-require 'travis/scheduler/error'
 require 'core_ext/kernel/run_periodically'
 require 'travis/support/logging'
 
