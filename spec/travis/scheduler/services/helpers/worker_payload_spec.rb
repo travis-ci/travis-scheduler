@@ -201,5 +201,9 @@ describe Travis::Scheduler::Services::Helpers::WorkerPayload do
       }
     end
   end
+
+  def json_format_time(time)
+    time.strftime('%Y-%m-%dT%H:%M:%SZ')
+  end
 end
 
