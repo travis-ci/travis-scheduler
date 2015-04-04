@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'travis/scheduler/services/helpers/worker_payload'
 
 describe Travis::Scheduler::Services::Helpers::WorkerPayload do
-  include Travis::Testing::Stubs, Support::Formats
+  include Travis::Testing::Stubs
 
   let(:data) { Travis::Api::V0::Worker::Job::Test.new(test).data }
   let(:foo)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('bar') }
