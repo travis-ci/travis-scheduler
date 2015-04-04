@@ -46,6 +46,7 @@ module Travis
       def run
         Travis.logger.info('[schedule] starting the onslaught')
         enqueue_jobs_periodically
+        sleep
       end
 
       private
