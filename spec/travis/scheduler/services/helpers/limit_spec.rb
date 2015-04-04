@@ -25,13 +25,13 @@ describe Travis::Scheduler::Services::Helpers::Limit do
   end
 
   it 'allows the first 8 jobs if the org is allowed 8 jobs' do
-    Travis.config.queue.limit.stubs(by_owner: { org.login => 8 })
+    Travis.config.limit.stubs(by_owner: { org.login => 8 })
     limit.stubs(running: 0)
     limit.queueable.should == jobs[0, 8]
   end
 
   it 'allows all jobs if the limit is set to -1' do
-    Travis.config.queue.limit.stubs(by_owner: { org.login => -1 })
+    Travis.config.limit.stubs(by_owner: { org.login => -1 })
     limit.stubs(running: 10)
     limit.queueable.should == jobs
   end
