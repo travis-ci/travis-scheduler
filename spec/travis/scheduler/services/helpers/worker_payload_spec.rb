@@ -5,8 +5,8 @@ describe Travis::Scheduler::Services::Helpers::WorkerPayload do
   include Travis::Testing::Stubs
 
   let(:data) { Travis::Scheduler::Services::Helpers::WorkerPayload.new(test).data }
-  let(:foo)  { Travis::Model::EncryptedColumn.new(key: 'secret' * 10, use_prefix: false).dump('bar') }
-  let(:bar)  { Travis::Model::EncryptedColumn.new(key: 'secret' * 10, use_prefix: false).dump('baz') }
+  let(:foo)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('bar') }
+  let(:bar)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('baz') }
 
   let(:settings) do
     Repository::Settings.load({
@@ -20,6 +20,7 @@ describe Travis::Scheduler::Services::Helpers::WorkerPayload do
   end
 
   before :each do
+    Travis.config.encryption.key = 'secret' * 10
     test.repository.stubs(:settings).returns(settings)
   end
 
