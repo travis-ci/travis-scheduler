@@ -3,16 +3,16 @@ require 'travis/config'
 module Travis
   module Scheduler
     class Config < Travis::Config
-      define  amqp:     { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
-              database: { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
-              pusher:   { app_id: 'app-id', key: 'key', secret: 'secret', secure: false },
-              sidekiq:  { namespace: 'sidekiq', pool_size: 3 },
-              redis:    { url: 'redis://localhost:6379' },
-              metrics:  { reporter: 'librato' },
-              logger:   { time_format: false, process_id: true, thread_id: true },
-              ssl:      { },
-              sentry:   { },
-              sync:     { } 
+      define  amqp:           { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
+              database:       { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
+              logger:         { time_format: false, process_id: true, thread_id: true },
+              metrics:        { reporter: 'librato' },
+              notifications:  [],
+              pusher:         { app_id: 'app-id', key: 'key', secret: 'secret', secure: false },
+              redis:          { url: 'redis://localhost:6379' },
+              sentry:         { },
+              sidekiq:        { namespace: 'sidekiq', pool_size: 3 },
+              ssl:            { },
 
       default _access: [:key]
 
