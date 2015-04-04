@@ -45,12 +45,16 @@ module Travis
 
       def run
         Travis.logger.info('[schedule] starting the onslaught')
-        run_periodically(Travis.config.queue.interval) do
-          Metriks.timer("schedule.enqueue_jobs").time { enqueue_jobs }
-        end
+        enqueue_jobs_periodically
       end
 
       private
+
+        def enqueue_jobs_periodically
+          run_periodically(Travis.config.queue.interval) do
+            Metriks.timer("schedule.enqueue_jobs").time { enqueue_jobs }
+          end
+        end
 
         def enqueue_jobs
           Travis.run_service(:enqueue_jobs)

@@ -22,7 +22,7 @@ describe Travis::Scheduler::Schedule do
 
   describe 'run' do
     it 'enqueues jobs' do
-      subject.expects(:enqueue_jobs)
+      subject.expects(:enqueue_jobs_periodically)
       subject.run
     end
   end
