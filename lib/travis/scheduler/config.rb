@@ -3,7 +3,8 @@ require 'travis/config'
 module Travis
   module Scheduler
     class Config < Travis::Config
-      define  database: { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
+      define  amqp:     { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
+              database: { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
               pusher:   { app_id: 'app-id', key: 'key', secret: 'secret', secure: false },
               sidekiq:  { namespace: 'sidekiq', pool_size: 3 },
               redis:    { url: 'redis://localhost:6379' },
