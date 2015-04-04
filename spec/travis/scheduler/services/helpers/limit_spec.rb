@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'travis/scheduler/services/helpers/limit'
 
 describe Travis::Scheduler::Services::Helpers::Limit do
   include Travis::Testing::Stubs
