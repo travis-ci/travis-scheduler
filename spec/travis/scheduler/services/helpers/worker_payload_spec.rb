@@ -4,9 +4,9 @@ require 'travis/scheduler/services/helpers/worker_payload'
 describe Travis::Scheduler::Services::Helpers::WorkerPayload do
   include Travis::Testing::Stubs
 
-  let(:data) { Travis::Api::V0::Worker::Job::Test.new(test).data }
-  let(:foo)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('bar') }
-  let(:bar)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('baz') }
+  let(:data) { Travis::Scheduler::Services::Helpers::WorkerPayload.new(test).data }
+  let(:foo)  { Travis::Model::EncryptedColumn.new(key: 'secret' * 10, use_prefix: false).dump('bar') }
+  let(:bar)  { Travis::Model::EncryptedColumn.new(key: 'secret' * 10, use_prefix: false).dump('baz') }
 
   let(:settings) do
     Repository::Settings.load({
