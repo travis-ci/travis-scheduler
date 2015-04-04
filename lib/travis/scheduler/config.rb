@@ -9,6 +9,7 @@ module Travis
               metrics:        { reporter: 'librato' },
               notifications:  [],
               pusher:         { app_id: 'app-id', key: 'key', secret: 'secret', secure: false },
+              queue:          { limit: { default: 5, by_owner: {} }, interval: 3 },
               redis:          { url: 'redis://localhost:6379' },
               sentry:         { },
               sidekiq:        { namespace: 'sidekiq', pool_size: 3 },
