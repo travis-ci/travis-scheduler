@@ -1,4 +1,4 @@
-require 'travis/amqp/bunny/publisher'
+require 'travis/support/amqp/bunny/publisher'
 
 module Travis
   module Amqp
