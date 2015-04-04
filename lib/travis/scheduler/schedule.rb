@@ -6,6 +6,7 @@ require 'travis/states_cache'
 require 'travis/support/amqp'
 require 'travis/patches/amqp/publisher'
 require 'core_ext/kernel/run_periodically'
+require 'travis/scheduler/services/enqueue_jobs'
 require 'travis/support/logging'
 
 module Travis
@@ -59,7 +60,7 @@ module Travis
         end
 
         def enqueue_jobs
-          Travis.run_service(:enqueue_jobs)
+          Services::EnqueueJobs.run
         rescue => e
           log_exception(e)
         end
