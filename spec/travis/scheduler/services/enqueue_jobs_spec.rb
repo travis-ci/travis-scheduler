@@ -54,7 +54,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
     it 'publishes a event' do
       event.should publish_instrumentation_event(
         event: 'travis.enqueue.services.enqueue_jobs.run:completed',
-        message: "Travis::Enqueue::Services::EnqueueJobs#run:completed enqueued:\n  svenfuchs: total: 1, running: 0, max: 5, queueable: 1",
+        message: "Travis::Scheduler::Services::EnqueueJobs#run:completed enqueued:\n  svenfuchs: total: 1, running: 0, max: 5, queueable: 1",
         data: {
           reports: reports
         }
