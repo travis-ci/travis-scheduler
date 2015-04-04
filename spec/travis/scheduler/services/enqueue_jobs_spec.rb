@@ -28,7 +28,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
     end
 
     it 'publishes queueable jobs' do
-      payload = Travis::Api.data(test, for: 'worker', type: 'Job::Test', version: 'v0')
+      payload = Travis::Scheduler::Services::Helpers::WorkerPayload.new(test).data
       publisher.expects(:publish).with(payload, properties: { type: 'test', persistent: true })
       service.run
     end
