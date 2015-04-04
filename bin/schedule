@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+$stdout.sync = true
+
+$LOAD_PATH << 'lib'
+
+require 'bundler/setup'
+require 'travis/scheduler'
+
+
+app = Travis::Schduler::Schdule.new
+
+Travis.logger.info('[scheduler] setting up schduler app')
+app.setup
+
+Travis.logger.info('[scheduler] start queuing dem jobs')
+app.run

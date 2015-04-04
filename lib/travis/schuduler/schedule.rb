@@ -4,14 +4,12 @@ require 'travis'
 require 'travis/model'
 require 'travis/states_cache'
 require 'travis/support/amqp'
-require 'travis/enqueue/error'
-require 'travis/enqueue/solo'
-require 'travis/enqueue/enqueue'
+require 'travis/scheduler/error'
 require 'core_ext/kernel/run_periodically'
 require 'travis/support/logging'
 
 module Travis
-  module Enqueue
+  module Scheduler
     class Schedule
       include Travis::Logging
 
