@@ -1,5 +1,7 @@
 require 'travis/support/amqp/bunny/publisher'
 
+# This is required for travis-support AMQP bunny adapter to work
+# with the latest version of bunny
 module Travis
   module Amqp
     class Publisher
