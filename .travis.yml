@@ -26,7 +26,7 @@ before_script:
   - bundle exec rake db:structure:load --trace
   - env
 
-script: ./build.sh $RAKE_TASK
+script: bundle exec rspec spec
 
 matrix:
   allow_failures:
