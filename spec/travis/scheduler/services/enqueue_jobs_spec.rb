@@ -6,6 +6,17 @@ describe Travis::Scheduler::Services::EnqueueJobs do
 
   let(:service) { described_class.new }
 
+  describe 'new' do
+    after :each do
+      Travis.config.limit.strategy = 'default'
+    end
+
+    it 'raises an error if the limit strategy is not recognized' do
+      Travis.config.limit.strategy = 'josh'
+      expect { service }.to raise_error
+    end
+  end
+
   describe 'run' do
     let(:publisher) { stub(publish: true) }
     let(:test)      { stub_test(state: :created, enqueue: nil) }
@@ -22,14 +33,6 @@ describe Travis::Scheduler::Services::EnqueueJobs do
       service.stubs(:publisher).returns(publisher)
     end
 
-    after :each do
-      Travis.config.limit.strategy = 'default'
-    end
-
-    it 'raises an error if the limit strategy is not recognized' do
-      Travis.config.limit.strategy = 'josh'
-      expect { service }.to raise_error
-    end
     it 'enqueues queueable jobs' do
       test.expects(:enqueue)
       service.run
