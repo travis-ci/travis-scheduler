@@ -21,10 +21,6 @@ describe Travis::Scheduler::Schedule do
   end
 
   describe 'run' do
-    before do
-      subject.stubs(:enqueue_jobs)
-    end
-
     it 'enqueues jobs' do
       subject.expects(:enqueue_jobs)
       subject.run
