@@ -10,7 +10,7 @@ module Travis
           def initialize(owner, jobs)
             @owner = owner
             @jobs  = jobs
-            @config = Travis.config.queue.limit
+            @config = Travis.config.limit
           end
 
           def queueable

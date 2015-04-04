@@ -19,6 +19,12 @@ module Travis
           new.run
         end
 
+        attr_accessor :limit_type
+
+        def initialize
+          setup_limit_type
+        end
+
         def reports
           @reports ||= {}
         end
@@ -31,6 +37,15 @@ module Travis
 
         private
 
+          def setup_limit_type
+            @limit_type = case Travis.config.limit.strategy
+              when 'default'
+                Helpers::Limit
+              else
+                raise "limit type '#{Travis.config.limit.type}' not recognized"
+              end
+          end
+
           def enqueue_all
             grouped_jobs = jobs.group_by(&:owner)
 
@@ -42,7 +57,7 @@ module Travis
                   queueable = nil
                   Metriks.timer('enqueue.limit_per_owner').time do
                     Travis.logger.info "About to evaluate jobs for: #{owner.login}."
-                    limit = Helpers::Limit.new(owner, jobs)
+                    limit = limit_type.new(owner, jobs)
                     queueable = limit.queueable
                   end
 

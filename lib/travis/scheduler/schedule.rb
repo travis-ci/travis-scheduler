@@ -53,7 +53,7 @@ module Travis
       private
 
         def enqueue_jobs_periodically
-          run_periodically(Travis.config.queue.interval) do
+          run_periodically(Travis.config.interval) do
             Metriks.timer("schedule.enqueue_jobs").time { enqueue_jobs }
           end
           sleep
