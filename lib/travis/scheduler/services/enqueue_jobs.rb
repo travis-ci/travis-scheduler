@@ -24,19 +24,10 @@ module Travis
         end
 
         def run
-          enqueue_all && reports unless disabled?
+          enqueue_all && reports
         end
         instrument :run
         rescues :run, from: Exception, backtrace: false
-
-        def disabled?
-          Timeout.timeout(TIMEOUT) do
-            Travis::Features.feature_deactivated?(:job_queueing)
-          end
-        rescue Timeout::Error, Redis::TimeoutError => e
-          Travis.logger.error("[enqueue_jobs] Timeout trying to check enqueuing feature flag.")
-          return false
-        end
 
         private
 
