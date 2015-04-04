@@ -46,13 +46,13 @@ module Travis
       def run
         Travis.logger.info('[schedule] starting the onslaught')
         run_periodically(Travis.config.queue.interval) do
-          Metriks.timer("schedule.enqueue_jobs").time { enqueue_jobs! }
+          Metriks.timer("schedule.enqueue_jobs").time { enqueue_jobs }
         end
       end
 
       private
 
-        def enqueue_jobs!
+        def enqueue_jobs
           Travis.run_service(:enqueue_jobs)
         rescue => e
           log_exception(e)
