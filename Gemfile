@@ -18,7 +18,7 @@ gem 'rails_12factor'
 gem 'rollout',            github: 'jamesgolick/rollout', ref: 'v1.1.0'
 gem 'sidekiq'
 
-gem 'bunny'
+gem 'bunny',              '~> 0.8.0'
 
 gem 'pg'
 
