@@ -3,7 +3,7 @@ $stdout.sync = true
 require 'travis/support/logging'
 require 'travis/support/logger'
 require 'travis/scheduler/config'
-require 'travis/scheduler/scheduler'
+require 'travis/scheduler/schedule'
 
 module Travis
   module Scheduler
