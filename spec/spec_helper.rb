@@ -28,5 +28,3 @@ RSpec.configure do |c|
     Travis::Event.instance_variable_set(:@subscriptions, nil)
   end
 end
-
-puts ENV.inspect
