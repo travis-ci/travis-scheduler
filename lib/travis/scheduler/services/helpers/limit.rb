@@ -28,7 +28,13 @@ module Travis
           end
 
           def running_by_repository_id
-            @running_by_repository ||= Hash[running_jobs.group_by(&:repository_id).map {|repository_id, jobs| [repository_id, jobs.size]}]
+            @running_by_repository ||= Hash[repository_id_grouping]
+          end
+
+          def repository_id_grouping
+            running_jobs.group_by(&:repository_id).map do |repository_id, jobs| 
+              [repository_id, jobs.size]
+            end
           end
 
           def queueable?(job, queueable, running)
