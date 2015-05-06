@@ -1,6 +1,7 @@
 require 'travis/support/instrumentation'
 require 'travis/support/exceptions/handling'
 require 'travis/scheduler/services/helpers/limit'
+require 'travis/scheduler/services/helpers/configurable_limit'
 require 'travis/scheduler/services/helpers/worker_payload'
 
 module Travis
@@ -42,6 +43,8 @@ module Travis
             @limit_type = case Travis.config.limit.strategy
               when 'default'
                 Helpers::Limit
+              when 'configurable'
+                Helpers::ConfigurableLimit
               else
                 raise "limit type '#{Travis.config.limit.type}' not recognized"
               end

@@ -5,6 +5,7 @@ module Travis
     class Config < Travis::Config
       define  amqp:           { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
               database:       { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
+              delegate:       { },
               encryption:     { },
               github:         { },
               interval:       3,
@@ -12,6 +13,7 @@ module Travis
               logger:         { time_format: false, process_id: true, thread_id: true },
               metrics:        { reporter: 'librato' },
               notifications:  [],
+              plans:          { },
               pusher:         { app_id: 'app-id', key: 'key', secret: 'secret', secure: false },
               redis:          { url: 'redis://localhost:6379' },
               sentry:         { },
