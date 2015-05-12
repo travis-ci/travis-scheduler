@@ -2,6 +2,7 @@ require 'travis/support/instrumentation'
 require 'travis/support/exceptions/handling'
 require 'travis/scheduler/services/helpers/limit'
 require 'travis/scheduler/services/helpers/configurable_limit'
+require 'travis/scheduler/services/helpers/delegation_grouping'
 require 'travis/scheduler/services/helpers/worker_payload'
 
 module Travis
@@ -21,12 +22,6 @@ module Travis
           new.run
         end
 
-        attr_accessor :limit_type
-
-        def initialize
-          setup_limit_type
-        end
-
         def reports
           @reports ||= {}
         end
@@ -39,15 +34,15 @@ module Travis
 
         private
 
-          def setup_limit_type
-            @limit_type = case Travis.config.limit.strategy
-              when 'default'
-                Helpers::Limit
-              when 'configurable'
-                Helpers::ConfigurableLimit
-              else
-                raise "limit type '#{Travis.config.limit.type}' not recognized"
-              end
+          def strategy
+            case Travis.config.limit.strategy
+            when 'default'
+              Helpers::Limit
+            when 'configurable'
+              Helpers::ConfigurableLimit
+            else
+              raise "limit type '#{Travis.config.limit.type}' not recognized"
+            end
           end
 
           def enqueue_all
@@ -61,7 +56,7 @@ module Travis
                   queueable = nil
                   Metriks.timer('enqueue.limit_per_owner').time do
                     Travis.logger.info "About to evaluate jobs for: #{owner.login}."
-                    limit = limit_type.new(owner, jobs)
+                    limit = strategy.new(owner, jobs)
                     queueable = limit.queueable
                   end
 
@@ -93,7 +88,7 @@ module Travis
           def publish(job)
             Metriks.timer('enqueue.publish_job').time do
               payload = Helpers::WorkerPayload.new(job).data
-              # check the properties are being set correctly, 
+              # check the properties are being set correctly,
               # and type is being used
               publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
             end

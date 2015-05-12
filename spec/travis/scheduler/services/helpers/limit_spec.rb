@@ -3,7 +3,6 @@ require 'travis/scheduler/services/helpers/limit'
 
 describe Travis::Scheduler::Services::Helpers::Limit do
   include Travis::Testing::Stubs
-  include Support::ActiveRecord
 
   let(:jobs)  { 10.times.map { stub_test } }
   let(:limit) { described_class.new(org, jobs) }
@@ -13,6 +12,11 @@ describe Travis::Scheduler::Services::Helpers::Limit do
     jobs.each do |job|
       job.repository.stubs(:settings).returns OpenStruct.new({:restricts_number_of_builds? => false})
     end
+    @config = Travis.config.limit
+  end
+
+  after do
+    Travis.config.limit = @config
   end
 
   it 'allows the first 5 jobs if none are running by default' do
@@ -26,13 +30,13 @@ describe Travis::Scheduler::Services::Helpers::Limit do
   end
 
   it 'allows the first 8 jobs if the org is allowed 8 jobs' do
-    Travis.config.limit.stubs(by_owner: { org.login => 8 })
+    Travis.config.limit = { by_owner: { org.login => 8 } }
     limit.stubs(running: 0)
     limit.queueable.should == jobs[0, 8]
   end
 
   it 'allows all jobs if the limit is set to -1' do
-    Travis.config.limit.stubs(by_owner: { org.login => -1 })
+    Travis.config.limit = { by_owner: { org.login => -1 } }
     limit.stubs(running: 10)
     limit.queueable.should == jobs
   end

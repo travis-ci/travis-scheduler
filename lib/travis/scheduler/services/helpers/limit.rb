@@ -10,7 +10,7 @@ module Travis
           def initialize(owner, jobs)
             @owner = owner
             @jobs  = jobs
-            @config = Travis.config.limit
+            @config = Travis.config.limit || {}
           end
 
           def queueable
@@ -32,7 +32,7 @@ module Travis
           end
 
           def repository_id_grouping
-            running_jobs.group_by(&:repository_id).map do |repository_id, jobs| 
+            running_jobs.group_by(&:repository_id).map do |repository_id, jobs|
               [repository_id, jobs.size]
             end
           end
@@ -66,7 +66,7 @@ module Travis
             end
 
             def max_queueable
-              return config.default if owner.login.nil?
+              return config[:default] if owner.login.nil?
 
               if unlimited?
                 999
@@ -77,11 +77,11 @@ module Travis
             end
 
             def max_jobs
-              config.by_owner[owner.login] || config.default
+              config[:by_owner][owner.login] || config[:default]
             end
 
             def unlimited?
-              config.by_owner[owner.login] == -1
+              config[:by_owner][owner.login] == -1
             end
         end
       end

@@ -42,13 +42,13 @@ module Travis
               raise 'subscription model and table are required'
             end
 
+            super(owner, jobs)
+
             unless Travis.config.plans.present?
               Travis.logger.warn "No plans present in the config, all builds will default to #{config[:default]} concurrent jobs"
             end
 
-            super(owner, jobs)
-
-            if login = config[:delegate][owner.login.to_sym]
+            if login = config[:delegate] && config[:delegate][owner.login.to_sym]
               @delegate = find_account(login)
               @delegatees = config[:delegate].select { |delegatee, delegate| delegate == login }.map { |delegatee, delegate| find_account(delegatee) }.compact
               Travis.logger.info("Delegating #{owner.login} to #{login}")
@@ -70,21 +70,31 @@ module Travis
           end
 
           def max_jobs
-            config.by_owner[owner.login] ||
+            config[:by_owner][owner.login] ||
               max_jobs_from_container_account ||
               max_jobs_based_on_plan(owner) ||
               config[:default]
           end
 
           def max_jobs_based_on_plan(owner)
-            if owner.subscription.selected_plan
+            if subscribed?(owner) && owner.subscription.selected_plan
               Travis.config.plans[owner.subscription.selected_plan]
             end
           end
 
+          def max_jobs_based_on_plan(owner)
+            return unless subscribed?(owner)
+            plan = owner.subscription.selected_plan
+            plan && Travis.config.plans.present? && Travis.config.plans[plan]
+          end
+
+          def subscribed?(owner)
+            owner.subscribed? || (owner.subscription.try(:valid_to).to_i + 24.hours.to_i) > Time.now.to_i
+          end
+
           def max_jobs_from_container_account
             if delegate
-              config.by_owner[delegate.login] || max_jobs_based_on_plan(delegate)
+              config[:by_owner][delegate.login] || max_jobs_based_on_plan(delegate)
             end
           end
 

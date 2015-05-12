@@ -23,17 +23,21 @@ describe Travis::Scheduler::Services::Helpers::ConfigurableLimit do
   end
 
   before do
-    Travis.config[:queue] = {
-      limit: {
-        default: 1,
-        by_owner: {}
-      }
+    @config = Travis.config.limit
+
+    Travis.config[:limit] = {
+      default: 1,
+      by_owner: {}
     }
 
     Travis.config[:plans] = {
       'travis-ci-two-builds' => 2,
       'travis-ci-five-builds' => 5
     }
+  end
+
+  after do
+    Travis.config.limit = @config
   end
 
   describe "with a subscription" do
@@ -76,11 +80,11 @@ describe Travis::Scheduler::Services::Helpers::ConfigurableLimit do
 
   describe "with configuration" do
     before do
-      Travis.config.queue.limit.by_owner['travis-ci'] = 4
+      Travis.config.limit.by_owner['travis-ci'] = 4
     end
 
     after do
-      Travis.config.queue.limit.by_owner['travis-ci'] = nil
+      Travis.config.limit.by_owner['travis-ci'] = nil
     end
 
     it "overrides plans with the configuration" do
@@ -117,13 +121,13 @@ describe Travis::Scheduler::Services::Helpers::ConfigurableLimit do
     before do
       travispro
       organization.save!
-      Travis.config.queue.limit[:delegate] = {
+      Travis.config.limit[:delegate] = {
         'travis-pro' => 'travis-ci'
       }
     end
 
     after do
-      Travis.config.queue.limit[:delegate] = nil
+      Travis.config.limit[:delegate] = nil
     end
 
     it "sets the delegate" do
@@ -141,7 +145,7 @@ describe Travis::Scheduler::Services::Helpers::ConfigurableLimit do
       }
       before do
         roidrage
-        Travis.config.queue.limit[:delegate] = {
+        Travis.config.limit[:delegate] = {
           'travis-pro' => 'travis-ci',
           'roidrage' => 'travis-ci'
         }
@@ -149,7 +153,7 @@ describe Travis::Scheduler::Services::Helpers::ConfigurableLimit do
       end
 
       after do
-        Travis.config.queue.limit[:delegate] = nil
+        Travis.config.limit[:delegate] = nil
       end
 
       it "determines all delegatees" do
@@ -189,11 +193,11 @@ describe Travis::Scheduler::Services::Helpers::ConfigurableLimit do
 
       describe "with a custom limit" do
         before do
-          Travis.config.queue.limit[:by_owner]['travis-ci'] = 2
+          Travis.config.limit[:by_owner]['travis-ci'] = 2
         end
 
         after do
-          Travis.config.queue.limit.by_owner['travis-ci'] = nil
+          Travis.config.limit.by_owner['travis-ci'] = nil
         end
 
         it "allows overriding the delegate limit in the configuration" do

@@ -5,11 +5,10 @@ module Travis
     class Config < Travis::Config
       define  amqp:           { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
               database:       { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
-              delegate:       { },
               encryption:     { },
               github:         { },
               interval:       3,
-              limit:          { strategy: 'default', default: 5, by_owner: {} },
+              limit:          { strategy: 'default', default: 5, by_owner: {}, delegate: {} },
               logger:         { time_format: false, process_id: true, thread_id: true },
               metrics:        { reporter: 'librato' },
               notifications:  [],

@@ -13,20 +13,20 @@ cache: bundler
 sudo: false
 
 env:
-  global:
-    - COVERAGE=1
+  # global:
+  #   - COVERAGE=1
   matrix:
     - RAKE_TASK=spec
-    - RAKE_TASK=rubocop
+    # - RAKE_TASK=rubocop
 
 before_install: gem install bundler
 
 before_script:
   - bundle exec rake db:create --trace
-  - bundle exec rake db:structure:load --trace
+  - bundle exec rake db:migrate --trace
 
 script: bundle exec rspec spec
 
-matrix:
-  allow_failures:
-    - env: RAKE_TASK=rubocop
+# matrix:
+#   allow_failures:
+#     - env: RAKE_TASK=rubocop
