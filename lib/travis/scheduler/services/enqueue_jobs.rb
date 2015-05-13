@@ -39,10 +39,10 @@ module Travis
           def strategy
             case Travis.config.limit.strategy
             when 'default'
-              Travis.logger.info('[schedule] Using the default limit strategy.')
+              Travis.logger.info('Using the default limit strategy.')
               Helpers::Limit
             when 'configurable'
-              Travis.logger.info('[schedule] Using the configurable limit strategy.')
+              Travis.logger.info('Using the configurable limit strategy.')
               Helpers::ConfigurableLimit
             else
               raise "limit type '#{Travis.config.limit.type}' not recognized"
@@ -59,8 +59,8 @@ module Travis
                   limit = nil
                   queueable = nil
                   Metriks.timer('enqueue.limit_per_owner').time do
-                    Travis.logger.info "About to evaluate jobs for: #{owner.login}."
                     limit = strategy.new(owner, jobs)
+                    Travis.logger.info "About to evaluate jobs for: #{owner.login}."
                     queueable = limit.queueable
                   end
 
