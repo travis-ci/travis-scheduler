@@ -36,8 +36,10 @@ module Travis
           def strategy
             case Travis.config.limit.strategy
             when 'default'
+              Travis.logger.info('[schedule] Using the default limit strategy.')
               Helpers::Limit
             when 'configurable'
+              Travis.logger.info('[schedule] Using the configurable limit strategy.')
               Helpers::ConfigurableLimit
             else
               raise "limit type '#{Travis.config.limit.type}' not recognized"
