@@ -5,7 +5,6 @@ require 'simplecov' if ENV['RAILS_ENV'] == 'test' && ENV['COVERAGE']
 require 'travis/scheduler'
 require 'travis/support'
 require 'support/active_record'
-require 'support/models'
 require 'support/stubs'
 require 'stringio'
 require 'mocha'

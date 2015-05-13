@@ -1,5 +1,8 @@
 require 'travis/support/instrumentation'
 require 'travis/support/exceptions/handling'
+
+require 'travis/scheduler/models/organization'
+require 'travis/scheduler/models/user'
 require 'travis/scheduler/services/helpers/limit'
 require 'travis/scheduler/services/helpers/configurable_limit'
 require 'travis/scheduler/services/helpers/worker_payload'
