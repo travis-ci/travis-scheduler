@@ -46,7 +46,7 @@ module Travis
       end
 
       def run
-        Travis.logger.info('[schedule] starting the onslaught')
+        Travis.logger.info('[schedule] starting.')
         enqueue_jobs_periodically
       end
 
