@@ -26,12 +26,6 @@ ActiveRecord::Base.connection.create_table "subscriptions", :force => true do |t
   t.integer  "contact_id"
 end
 
-class Subscription < ActiveRecord::Base
-  def active?
-    cc_token? and valid_to.present? and valid_to >= Time.now.utc
-  end
-end
-
 Organization.class_eval do
   has_one :subscription, as: :owner
 

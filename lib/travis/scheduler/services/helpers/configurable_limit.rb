@@ -1,4 +1,5 @@
 require 'travis/scheduler/services/helpers/limit'
+require 'travis/scheduler/models/subscription'
 
 module Travis
   module Scheduler
@@ -38,10 +39,6 @@ module Travis
           attr_reader :delegate, :delegatees
 
           def initialize(owner, jobs)
-            unless defined?(Subscription)
-              raise 'subscription model and table are required'
-            end
-
             super(owner, jobs)
 
             unless Travis.config.plans.present?
