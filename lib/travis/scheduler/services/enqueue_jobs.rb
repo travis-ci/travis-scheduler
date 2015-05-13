@@ -2,7 +2,6 @@ require 'travis/support/instrumentation'
 require 'travis/support/exceptions/handling'
 require 'travis/scheduler/services/helpers/limit'
 require 'travis/scheduler/services/helpers/configurable_limit'
-require 'travis/scheduler/services/helpers/delegation_grouping'
 require 'travis/scheduler/services/helpers/worker_payload'
 
 module Travis
