@@ -1,6 +1,5 @@
 require 'bundler/setup'
 require 'rake'
-require 'travis'
 
 begin
   require 'micro_migrations'
@@ -9,8 +8,6 @@ begin
 rescue LoadError => e
   warn e
 end
-
-ENV['DB_STRUCTURE'] = "#{Gem.loaded_specs['travis-core'].full_gem_path}/db/structure.sql"
 
 RuboCop::RakeTask.new if defined?(RuboCop)
 
@@ -22,8 +19,8 @@ end if defined?(RSpec)
 task default: :spec
 
 ActiveRecord::Base.schema_format = :sql
-Rails.application.config.paths.add("db/structure.sql", with: "#{Gem.loaded_specs['travis-core'].full_gem_path}/db/structure.sql")
-Rails.application.config.paths.add("db/migrate", with: "#{Gem.loaded_specs['travis-core'].full_gem_path}/db/migrate")
+Rails.application.config.paths.add("db/structure.sql", with: "/tmp/db/structure.sql")
+Rails.application.config.paths.add("db/migrate", with: "/tmp/db/migrate")
 Rails.logger = Logger.new("/dev/null")
 ActiveRecord::Base.logger = Logger.new("/dev/null")
 
