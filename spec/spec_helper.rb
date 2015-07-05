@@ -8,10 +8,10 @@ require 'support/active_record'
 require 'support/stubs'
 require 'stringio'
 require 'mocha'
-require 'travis/testing/matchers'
+# require 'travis/testing/matchers'
 
 Travis.logger = Logger.new(StringIO.new)
-Travis.services = Travis::Services
+# Travis.services = Travis::Services
 
 include Mocha::API
 

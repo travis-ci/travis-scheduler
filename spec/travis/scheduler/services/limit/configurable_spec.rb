@@ -1,6 +1,7 @@
 require 'spec_helper'
+require 'travis/scheduler/models/repository'
 
-describe Travis::Scheduler::Services::Helpers::ConfigurableLimit do
+describe Travis::Scheduler::Services::Limit::Configurable do
   include Travis::Testing::Stubs
 
   let(:jobs)  { 10.times.map { stub_test } }

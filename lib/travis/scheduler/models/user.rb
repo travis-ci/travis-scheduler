@@ -1,15 +1,9 @@
-User.class_eval do
-  has_one :subscription, as: :owner
+require 'active_record'
 
-  after_create do
-    Travis.logger.info("New user signed up: #{login}") unless Travis.env == 'test'
-  end
+class User < ActiveRecord::Base
+  has_one :subscription, as: :owner
 
   def subscribed?
     subscription.present? and subscription.active?
-  end
-
-  def email_addresses
-    [email]
   end
 end

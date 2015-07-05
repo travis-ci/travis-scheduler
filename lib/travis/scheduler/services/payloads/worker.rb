@@ -1,8 +1,8 @@
 module Travis
   module Scheduler
     module Services
-      module Helpers
-        class WorkerPayload
+      module Payloads
+        class Worker
           attr_reader :job
 
           def initialize(job, options = {})
@@ -24,8 +24,8 @@ module Travis
           def build
             job.source
           end
-          
-          
+
+
           def data
             {
               'type' => 'test',

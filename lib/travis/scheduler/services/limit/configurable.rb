@@ -1,10 +1,10 @@
-require 'travis/scheduler/services/helpers/limit'
+require 'travis/scheduler/services/limit/default'
 require 'travis/scheduler/models/subscription'
 
 module Travis
   module Scheduler
     module Services
-      module Helpers
+      module Limit
         # An extension of the default limit strategy that allows for a few
         # extra things to consider when scheduling builds:
         #
@@ -35,7 +35,7 @@ module Travis
         #   3. the account's subscription
         #   4. the default
         #
-        class ConfigurableLimit < Limit
+        class Configurable < Default
           attr_reader :delegate, :delegatees
 
           def initialize(owner, jobs)

@@ -1,3 +1,5 @@
+require 'travis/support/database'
+
 describe Travis::Scheduler::Schedule do
   describe 'setup' do
     before do
@@ -7,11 +9,11 @@ describe Travis::Scheduler::Schedule do
       Travis::Database.stubs(:connect)
       Travis::Metrics.stubs(:setup)
       Travis::Exceptions::Reporter.stubs(:start)
-      Travis::Notification.stubs(:setup)
-      Travis::Addons.stubs(:register)
+      # Travis::Notification.stubs(:setup)
+      # Travis::Addons.stubs(:register)
       Travis.config.logs_database = true
-      Log.stubs(:establish_connection)
-      Log::Part.stubs(:establish_connection)
+      # Log.stubs(:establish_connection)
+      # Log::Part.stubs(:establish_connection)
       subject.stubs(:declare_exchanges_and_queues)
     end
 

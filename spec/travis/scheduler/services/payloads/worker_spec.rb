@@ -1,10 +1,12 @@
 require 'spec_helper'
-require 'travis/scheduler/services/helpers/worker_payload'
+require 'travis/scheduler/models/encrypted_column'
+require 'travis/scheduler/models/repository/settings'
+require 'travis/scheduler/services/payloads/worker'
 
-describe Travis::Scheduler::Services::Helpers::WorkerPayload do
+describe Travis::Scheduler::Services::Payloads::Worker do
   include Travis::Testing::Stubs
 
-  let(:data) { Travis::Scheduler::Services::Helpers::WorkerPayload.new(test).data }
+  let(:data) { described_class.new(test).data }
   let(:foo)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('bar') }
   let(:bar)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('baz') }
 
@@ -33,8 +35,8 @@ describe Travis::Scheduler::Services::Helpers::WorkerPayload do
     it 'contains the expected data' do
       data.except('job', 'build', 'repository').should == {
         'type' => 'test',
-        'config' => { 
-          'rvm' => '1.8.7', 
+        'config' => {
+          'rvm' => '1.8.7',
           'gemfile' => 'test/Gemfile.rails-2.3.x'
         },
         'queue' => 'builds.linux',

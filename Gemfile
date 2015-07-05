@@ -2,16 +2,18 @@ source 'https://rubygems.org'
 
 ruby '2.1.5'
 
-gem 'travis-core',        github: 'travis-ci/travis-core'
+# gem 'travis-core',        github: 'travis-ci/travis-core'
 gem 'travis-support',     github: 'travis-ci/travis-support'
 gem 'travis-config',      '~> 0.1.0'
 gem 'travis-sidekiqs',    github: 'travis-ci/travis-sidekiqs', require: nil
 
+gem 'activerecord'
 gem 'dalli'
 
 gem 'sentry-raven',       github: 'getsentry/raven-ruby'
 gem 'metriks-librato_metrics'
 gem 'rails_12factor'
+gem 'virtus'
 
 # can't be removed yet, even though we're on jruby 1.6.7 everywhere
 # this is due to Invalid gemspec errors

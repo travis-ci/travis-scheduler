@@ -3,9 +3,9 @@ require 'travis/support/exceptions/handling'
 
 require 'travis/scheduler/models/organization'
 require 'travis/scheduler/models/user'
-require 'travis/scheduler/services/helpers/limit'
-require 'travis/scheduler/services/helpers/configurable_limit'
-require 'travis/scheduler/services/helpers/worker_payload'
+require 'travis/scheduler/services/limit/default'
+require 'travis/scheduler/services/limit/configurable'
+require 'travis/scheduler/services/payloads/worker'
 
 module Travis
   module Scheduler
@@ -31,22 +31,15 @@ module Travis
         def run
           enqueue_all && reports
         end
-        instrument :run
+        # instrument :run
         rescues :run, from: Exception, backtrace: false
 
         private
 
           def strategy
-            case Travis.config.limit.strategy
-            when 'default'
-              Travis.logger.info('Using the default limit strategy.')
-              Helpers::Limit
-            when 'configurable'
-              Travis.logger.info('Using the configurable limit strategy.')
-              Helpers::ConfigurableLimit
-            else
-              raise "limit type '#{Travis.config.limit.type}' not recognized"
-            end
+            strategy = Travis.config.limit.strategy
+            Travis.logger.info("Using the #{strategy} limit strategy.")
+            Limit.const_get(strategy.camelize)
           end
 
           def enqueue_all
@@ -84,14 +77,16 @@ module Travis
               end
 
               Metriks.timer('enqueue.enqueue_job').time do
-                job.enqueue
+                job.update_attributes!(state: :queued, queued_at: Time.now.utc)
+                # TODO needs to notify Pusher, right
+                # notify(:queue)
               end
             end
           end
 
           def publish(job)
             Metriks.timer('enqueue.publish_job').time do
-              payload = Helpers::WorkerPayload.new(job).data
+              payload = Payloads::Worker.new(job).data
               # check the properties are being set correctly,
               # and type is being used
               publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
@@ -110,24 +105,24 @@ module Travis
             Travis::Amqp::Publisher.builds(queue)
           end
 
-          class Instrument < Notification::Instrument
-            def run_completed
-              publish(msg: format(target.reports), reports: target.reports)
-            end
+          # class Instrument < Notification::Instrument
+          #   def run_completed
+          #     publish(msg: format(target.reports), reports: target.reports)
+          #   end
 
-            def format(reports)
-              reports = Array(reports)
-              if reports.any?
-                reports = reports.map do |repo, report|
-                  "  #{repo}: #{report.map { |key, value| "#{key}: #{value}" }.join(', ')}"
-                end
-                "enqueued:\n#{reports.join("\n")}"
-              else
-                'nothing to enqueue.'
-              end
-            end
-          end
-          Instrument.attach_to(self)
+          #   def format(reports)
+          #     reports = Array(reports)
+          #     if reports.any?
+          #       reports = reports.map do |repo, report|
+          #         "  #{repo}: #{report.map { |key, value| "#{key}: #{value}" }.join(', ')}"
+          #       end
+          #       "enqueued:\n#{reports.join("\n")}"
+          #     else
+          #       'nothing to enqueue.'
+          #     end
+          #   end
+          # end
+          # Instrument.attach_to(self)
       end
     end
   end

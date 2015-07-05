@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'travis/scheduler/services/helpers/limit'
+require 'travis/scheduler/services/limit/default'
 
-describe Travis::Scheduler::Services::Helpers::Limit do
+describe Travis::Scheduler::Services::Limit::Default do
   include Travis::Testing::Stubs
 
   let(:jobs)  { 10.times.map { stub_test } }

@@ -1,10 +1,10 @@
-require 'travis/model/job'
+require 'travis/scheduler/models/job'
 
 module Travis
   module Scheduler
     module Services
-      module Helpers
-        class Limit
+      module Limit
+        class Default
           attr_reader :owner, :jobs, :config
 
           def initialize(owner, jobs)
