@@ -4,9 +4,6 @@ require 'active_support/core_ext/hash/deep_dup'
 class Job < ActiveRecord::Base
   class Test < Job; end
 
-  # require 'travis/model/job/queue'
-  # require 'travis/model/job/test'
-
   WHITELISTED_ADDONS = %w(
     apt
     apt_packages
@@ -37,12 +34,11 @@ class Job < ActiveRecord::Base
     end
   end
 
-  # include Travis::Model::EnvHelpers
-
   belongs_to :repository
   belongs_to :owner, polymorphic: true
 
   serialize :config
+  delegate :secure_env_enabled?, :addons_enabled?, to: :source
 
   def ssh_key
     config[:source_key]
@@ -66,14 +62,6 @@ class Job < ActiveRecord::Base
   end
 
   private
-
-    def delete_addons(config)
-      if config[:addons].is_a?(Hash)
-        config[:addons].keep_if { |key, _| WHITELISTED_ADDONS.include? key.to_s }
-      else
-        config.delete(:addons)
-      end
-    end
 
     def normalize_config(config)
       config = config ? config.deep_symbolize_keys : {}
@@ -110,6 +98,14 @@ class Job < ActiveRecord::Base
         else
           line
         end
+      end
+    end
+
+    def delete_addons(config)
+      if config[:addons].is_a?(Hash)
+        config[:addons].keep_if { |key, _| WHITELISTED_ADDONS.include? key.to_s }
+      else
+        config.delete(:addons)
       end
     end
 

@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'travis/scheduler/models/encrypted_column'
+require 'travis/settings/encrypted_column'
 require 'travis/scheduler/models/repository/settings'
 require 'travis/scheduler/services/payloads/worker'
 
@@ -7,8 +7,8 @@ describe Travis::Scheduler::Services::Payloads::Worker do
   include Travis::Testing::Stubs
 
   let(:data) { described_class.new(test).data }
-  let(:foo)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('bar') }
-  let(:bar)  { Travis::Model::EncryptedColumn.new(use_prefix: false).dump('baz') }
+  let(:foo)  { Travis::Settings::EncryptedColumn.new(use_prefix: false).dump('bar') }
+  let(:bar)  { Travis::Settings::EncryptedColumn.new(use_prefix: false).dump('baz') }
 
   let(:settings) do
     Repository::Settings.load({
@@ -40,7 +40,6 @@ describe Travis::Scheduler::Services::Payloads::Worker do
           'gemfile' => 'test/Gemfile.rails-2.3.x'
         },
         'queue' => 'builds.linux',
-        'uuid' => Travis.uuid,
         'ssh_key' => nil,
         'source' => {
           'id' => 1,
@@ -139,7 +138,6 @@ describe Travis::Scheduler::Services::Payloads::Worker do
           'gemfile' => 'test/Gemfile.rails-2.3.x'
         },
         'queue' => 'builds.linux',
-        'uuid' => Travis.uuid,
         'ssh_key' => nil,
         'source' => {
           'id' => 1,

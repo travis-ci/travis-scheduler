@@ -19,11 +19,12 @@ GIT
     coder (0.4.0)
 
 GIT
-  remote: git://github.com/travis-ci/travis-sidekiqs.git
-  revision: 21a2fee158e25252dd78f5fa31e81b4f6583be23
+  remote: git://github.com/travis-ci/travis-settings.git
+  revision: e2581ef481d4b4d4eb903cda2dea8efdb9fb47d4
   specs:
-    travis-sidekiqs (0.0.1)
-      sidekiq
+    travis-settings (0.0.1)
+      activemodel
+      virtus
 
 GIT
   remote: git://github.com/travis-ci/travis-support.git
@@ -239,7 +240,7 @@ DEPENDENCIES
   sidekiq
   simplecov
   travis-config (~> 0.1.0)
-  travis-sidekiqs!
+  travis-settings!
   travis-support!
   virtus
   webmock (~> 1.8.0)

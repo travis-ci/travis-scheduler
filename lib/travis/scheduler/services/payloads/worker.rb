@@ -36,7 +36,6 @@ module Travis
               'repository' => repository_data,
               'config' => job.decrypted_config,
               'queue' => job.queue,
-              'uuid' => Travis.uuid,
               'ssh_key' => ssh_key,
               'env_vars' => env_vars,
               'timeouts' => timeouts
