@@ -58,7 +58,7 @@ module Travis
             'branch' => commit.branch,
             'ref' => commit.pull_request? ? commit.ref : nil,
             'state' => job.state.to_s,
-            'secure_env_enabled' => job.secure_env_enabled?
+            'secure_env_enabled' => job.secure_env?
           }
           data['tag'] = request.tag_name if include_tag_name?
           data['pull_request'] = commit.pull_request? ? commit.pull_request_number : false

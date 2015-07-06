@@ -50,6 +50,7 @@ module Travis
           active: true,
           private: false,
           private?: false,
+          public?: true,
           last_build_id: 1,
           last_build_number: 2,
           last_build_started_at: Time.now.utc - 60,
@@ -156,7 +157,7 @@ module Travis
           queue: 'builds.linux',
           pull_request_title: nil,
           pull_request_number: nil,
-          secure_env_enabled?: true,
+          secure_env?: true,
           event_type: 'push'
         )
       end

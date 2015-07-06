@@ -10,10 +10,10 @@ class Build < ActiveRecord::Base
 
   delegate :same_repo_pull_request?, :to => :request
 
-  def secure_env_enabled?
+  def secure_env?
     !pull_request? || same_repo_pull_request?
   end
-  alias addons_enabled? secure_env_enabled?
+  alias full_addons? secure_env?
 
   def pull_request?
     event_type == 'pull_request'

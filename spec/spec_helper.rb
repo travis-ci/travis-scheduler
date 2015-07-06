@@ -25,7 +25,7 @@ DatabaseCleaner.strategy = :transaction
 
 RSpec.configure do |c|
   c.mock_with :mocha
-  c.backtrace_clean_patterns = []
+  # c.backtrace_clean_patterns = []
 
   c.before(:each) do
     DatabaseCleaner.start

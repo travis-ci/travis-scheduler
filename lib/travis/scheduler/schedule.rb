@@ -2,7 +2,6 @@ require 'multi_json'
 
 require 'travis/support/amqp'
 require 'travis/support/database'
-require 'travis/patches/amqp/publisher'
 require 'core_ext/kernel/run_periodically'
 require 'travis/scheduler/services/enqueue_jobs'
 require 'travis/support/logging'
@@ -10,8 +9,6 @@ require 'travis/support/logging'
 module Travis
   module Scheduler
     class Schedule
-      include Travis::Logging
-
       def setup
         Travis::Amqp.config = Travis.config.amqp
 

@@ -20,10 +20,10 @@ class Repository < ActiveRecord::Base
   end
 
   def source_url
-    (private? || private_mode?) ? "git@#{source_host}:#{slug}.git": "git://#{source_host}/#{slug}.git"
+    private? || force_private? ? "git@#{source_host}:#{slug}.git": "git://#{source_host}/#{slug}.git"
   end
 
-  def private_mode?
+  def force_private?
     source_host != 'github.com'
   end
 
@@ -32,12 +32,7 @@ class Repository < ActiveRecord::Base
   end
 
   def settings
-    @settings ||= Repository::Settings.load(super, repository_id: id).tap do |settings|
-      settings.on_save do
-        self.settings = settings.to_json
-        self.save!
-      end
-    end
+    @settings ||= Repository::Settings.load(super, repository_id: id)
   end
 end
 
