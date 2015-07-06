@@ -4,10 +4,15 @@ require 'simplecov' if ENV['RAILS_ENV'] == 'test' && ENV['COVERAGE']
 
 require 'travis/scheduler'
 require 'travis/support'
-require 'support/active_record'
-require 'support/stubs'
+
 require 'stringio'
 require 'mocha'
+require 'factory_girl'
+
+require 'support/active_record'
+require 'support/factories'
+require 'support/stubs'
+
 # require 'travis/testing/matchers'
 
 Travis.logger = Logger.new(StringIO.new)

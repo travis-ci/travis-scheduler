@@ -1,4 +1,5 @@
 require 'active_record'
+require 'travis/scheduler/models/subscription'
 
 class User < ActiveRecord::Base
   has_one :subscription, as: :owner

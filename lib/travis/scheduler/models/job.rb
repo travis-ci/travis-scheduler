@@ -1,5 +1,10 @@
 require 'active_record'
 require 'active_support/core_ext/hash/deep_dup'
+require 'travis/scheduler/models/build'
+require 'travis/scheduler/models/commit'
+require 'travis/scheduler/models/organization'
+require 'travis/scheduler/models/repository'
+require 'travis/scheduler/models/user'
 
 class Job < ActiveRecord::Base
   class Test < Job; end
@@ -35,6 +40,8 @@ class Job < ActiveRecord::Base
   end
 
   belongs_to :repository
+  belongs_to :commit
+  belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
 
   serialize :config

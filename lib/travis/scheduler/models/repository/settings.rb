@@ -5,6 +5,8 @@ require 'travis/settings'
 require 'travis/settings/encrypted_value'
 require 'travis/scheduler/models/repository'
 
+# TODO can this stuff be moved to travis-settings?
+
 class Repository::Settings < Travis::Settings
   class EnvVar < Travis::Settings::Model
     attribute :id, String

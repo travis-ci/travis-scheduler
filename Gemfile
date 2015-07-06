@@ -35,6 +35,7 @@ group :test do
   gem 'ruby-progressbar', '1.7.1' # this should not be needed, but rubygems is giving me an old version for some reason, well, a newer version which was yanked
   gem 'simplecov',        require: false
   gem 'webmock',          '~> 1.8.0'
+  gem 'factory_girl'
 end
 
 group :development, :test do
