@@ -23,7 +23,6 @@ before_install: gem install bundler
 
 before_script:
   - bundle exec rake db:create --trace
-  - bundle exec rake db:migrate --trace
 
 script: bundle exec rspec spec
 

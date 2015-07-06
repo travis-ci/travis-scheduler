@@ -18,14 +18,15 @@ end if defined?(RSpec)
 
 task default: :spec
 
-ActiveRecord::Base.schema_format = :sql
-Rails.application.config.paths.add("db/structure.sql", with: "/tmp/db/structure.sql")
-Rails.application.config.paths.add("db/migrate", with: "/tmp/db/migrate")
+namespace :db do
+  desc 'Create the test database'
+  task :create do
+    sh 'psql -q < spec/db/create.sql'
+  end
+end
+
 Rails.logger = Logger.new("/dev/null")
 ActiveRecord::Base.logger = Logger.new("/dev/null")
-
-# db:structure:dump would dump the DB structure to the checked out travis-core gem
-Rake::Task["db:structure:dump"].clear
 
 module ActiveRecord
   class Migration

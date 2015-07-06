@@ -37,7 +37,3 @@ group :test do
   gem 'webmock',          '~> 1.8.0'
   gem 'factory_girl'
 end
-
-group :development, :test do
-  gem 'micro_migrations'
-end
