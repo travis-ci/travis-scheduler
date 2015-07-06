@@ -36,3 +36,5 @@ class Repository < ActiveRecord::Base
     end
   end
 end
+
+require 'travis/scheduler/models/repository/settings'
