@@ -1,8 +1,5 @@
 require 'multi_json'
 
-# require 'travis'
-# require 'travis/model'
-# require 'travis/states_cache'
 require 'travis/support/amqp'
 require 'travis/support/database'
 require 'travis/patches/amqp/publisher'
@@ -16,7 +13,6 @@ module Travis
       include Travis::Logging
 
       def setup
-        # Travis::Async.enabled = true
         Travis::Amqp.config = Travis.config.amqp
 
         Travis.logger.info('[schedule] connecting to database')
@@ -27,21 +23,6 @@ module Travis
 
         Travis.logger.info('[schedule] setting up metrics')
         Travis::Metrics.setup
-
-        # if Travis.config.logs_database
-        #   Travis.logger.info('[schedule] connecting to logs database')
-        #   Log.establish_connection 'logs_database'
-        #   Log::Part.establish_connection 'logs_database'
-        # end
-
-        # Travis.logger.info('[schedule] setting up sidekiq')
-        # Travis::Async::Sidekiq.setup(Travis.config.redis.url, Travis.config.sidekiq)
-
-        # Travis.logger.info('[schedule] setting up notifications')
-        # Travis::Notification.setup
-
-        # Travis.logger.info('[schedule] setting up addons')
-        # Travis::Addons.register
 
         declare_exchanges_and_queues
       end

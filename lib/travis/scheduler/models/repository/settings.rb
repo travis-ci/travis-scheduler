@@ -6,6 +6,7 @@ require 'travis/settings/encrypted_value'
 require 'travis/scheduler/models/repository'
 
 # TODO can this stuff be moved to travis-settings?
+# it's currently duplicated in core and here, which is kinda troubling
 
 class Repository::Settings < Travis::Settings
   class EnvVar < Travis::Settings::Model
