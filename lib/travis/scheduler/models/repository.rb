@@ -11,6 +11,10 @@ class Repository < ActiveRecord::Base
     @slug ||= [owner_name, name].join('/')
   end
 
+  def public?
+    !self.private?
+  end
+
   def api_url
     "#{Travis.config.github.api_url}/repos/#{slug}"
   end
