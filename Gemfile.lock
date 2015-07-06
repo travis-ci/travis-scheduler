@@ -19,18 +19,18 @@ GIT
     coder (0.4.0)
 
 GIT
-  remote: git://github.com/travis-ci/travis-settings.git
-  revision: e2581ef481d4b4d4eb903cda2dea8efdb9fb47d4
+  remote: git://github.com/travis-ci/travis-support.git
+  revision: ee00e2bb47cf917814f54fcc77e00c45943e8e2d
+  ref: sf-fix-log-newline
+  specs:
+    travis-support (0.0.1)
+
+PATH
+  remote: ../travis-settings
   specs:
     travis-settings (0.0.1)
       activemodel
       virtus
-
-GIT
-  remote: git://github.com/travis-ci/travis-support.git
-  revision: e7f81093f83bd029cca6508739c5720e57e3d571
-  specs:
-    travis-support (0.0.1)
 
 GEM
   remote: https://rubygems.org/
