@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'travis/scheduler/payloads/worker'
 
 describe Travis::Scheduler::Services::EnqueueJobs do
   include Travis::Testing::Stubs
@@ -27,7 +28,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
     end
 
     it 'publishes queueable jobs' do
-      payload = Travis::Scheduler::Services::Payloads::Worker.new(test).data
+      payload = Travis::Scheduler::Payloads::Worker.new(test).data
       publisher.expects(:publish).with(payload, properties: { type: 'test', persistent: true })
       service.run
     end

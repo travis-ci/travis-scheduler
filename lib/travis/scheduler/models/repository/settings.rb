@@ -1,8 +1,9 @@
 # encoding: utf-8
 require 'coercible'
+require 'openssl'
 require 'travis/settings'
 require 'travis/settings/encrypted_value'
-require 'openssl'
+require 'travis/scheduler/models/repository'
 
 class Repository::Settings < Travis::Settings
   class EnvVar < Travis::Settings::Model

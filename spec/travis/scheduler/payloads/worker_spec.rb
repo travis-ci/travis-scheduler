@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'travis/settings/encrypted_column'
 require 'travis/scheduler/models/repository/settings'
-require 'travis/scheduler/services/payloads/worker'
+require 'travis/scheduler/payloads/worker'
 
-describe Travis::Scheduler::Services::Payloads::Worker do
+describe Travis::Scheduler::Payloads::Worker do
   include Travis::Testing::Stubs
 
   let(:data) { described_class.new(test).data }

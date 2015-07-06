@@ -3,9 +3,9 @@ require 'travis/support/exceptions/handling'
 
 require 'travis/scheduler/models/organization'
 require 'travis/scheduler/models/user'
+require 'travis/scheduler/payloads/worker'
 require 'travis/scheduler/services/limit/default'
 require 'travis/scheduler/services/limit/configurable'
-require 'travis/scheduler/services/payloads/worker'
 
 module Travis
   module Scheduler
