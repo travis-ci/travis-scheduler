@@ -6,6 +6,7 @@ gem 'travis-support',     github: 'travis-ci/travis-support'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-config',      '~> 0.1.0'
 
+gem 'rake'
 gem 'activerecord'
 gem 'dalli'
 
