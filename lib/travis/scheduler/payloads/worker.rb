@@ -97,7 +97,7 @@ module Travis
 
         def env_vars
           vars = settings.env_vars
-          vars = vars.public unless job.secure_env_enabled?
+          vars = vars.public unless job.secure_env?
 
           vars.map do |var|
             {

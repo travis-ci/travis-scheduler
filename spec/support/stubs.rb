@@ -194,7 +194,7 @@ module Travis
           tags: 'tag-a,tag-b',
           log_content: log.content,
           ssh_key: nil,
-          secure_env_enabled?: true
+          secure_env?: true
         )
 
         source = stub_build(:matrix => [test])

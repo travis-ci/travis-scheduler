@@ -44,38 +44,38 @@ describe Travis::Scheduler::Services::Limit::Configurable do
   describe "with a subscription" do
     it "runs two jobs based on the subscription" do
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 2
+      expect(limit.queueable.size).to eq(2)
     end
 
     it "runs five jobs with the next biggest plan" do
       organization.subscription.selected_plan = "travis-ci-five-builds"
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 5
+      expect(limit.queueable.size).to eq(5)
     end
 
     it "handles semi-expired subscriptions" do
       organization.subscription.valid_to = 20.hours.from_now
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 2
+      expect(limit.queueable.size).to eq(2)
     end
 
     it "runs one build if there's no subscription" do
       organization.subscription = nil
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 1
+      expect(limit.queueable.size).to eq(1)
     end
 
     it "uses the default with an unknown plan" do
       organization.subscription.selected_plan = "blah"
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 1
+      expect(limit.queueable.size).to eq(1)
     end
 
     it "uses the default when the subscription isn't valid" do
       organization.subscription.cc_token = nil
       organization.subscription.valid_to = nil
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 1
+      expect(limit.queueable.size).to eq(1)
     end
   end
 
@@ -90,7 +90,7 @@ describe Travis::Scheduler::Services::Limit::Configurable do
 
     it "overrides plans with the configuration" do
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 4
+      expect(limit.queueable.size).to eq(4)
     end
   end
 
@@ -106,7 +106,7 @@ describe Travis::Scheduler::Services::Limit::Configurable do
 
     it "falls back to the default" do
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 1
+      expect(limit.queueable.size).to eq(1)
     end
   end
 
@@ -132,12 +132,12 @@ describe Travis::Scheduler::Services::Limit::Configurable do
     end
 
     it "sets the delegate" do
-      limit.delegate.should == organization
+      expect(limit.delegate).to eq(organization)
     end
 
     it "calculates the jobs based on the limit by the owner" do
       limit.stubs(:running).returns(0)
-      limit.queueable.size.should == 2
+      expect(limit.queueable.size).to eq(2)
     end
 
     describe "with multiple delegatees" do
@@ -158,8 +158,8 @@ describe Travis::Scheduler::Services::Limit::Configurable do
       end
 
       it "determines all delegatees" do
-        limit.delegatees.should include(roidrage)
-        limit.delegatees.should include(travispro)
+        expect(limit.delegatees).to include(roidrage)
+        expect(limit.delegatees).to include(travispro)
       end
 
       it "checks all running jobs for the delegatees" do
@@ -167,7 +167,7 @@ describe Travis::Scheduler::Services::Limit::Configurable do
         job.save validate: false
         job = Job::Test.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
         job.save validate: false
-        limit.running.should == 2
+        expect(limit.running).to eq(2)
       end
 
       it "returns a number of jobs that are runnable based on the overall delegatees" do
@@ -175,7 +175,7 @@ describe Travis::Scheduler::Services::Limit::Configurable do
         job.save validate: false
         job = Job::Test.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
         job.save validate: false
-        limit.queueable.size.should == 3
+        expect(limit.queueable.size).to eq(3)
       end
 
       it "checks the number of builds for the container organization" do
@@ -189,7 +189,7 @@ describe Travis::Scheduler::Services::Limit::Configurable do
         job.save validate: false
         job = Job::Test.new(owner: organization, state: 'started', repository: Repository.new(owner: organization))
         job.save validate: false
-        limit.queueable.size.should == 0
+        expect(limit.queueable.size).to eq(0)
       end
 
       describe "with a custom limit" do
@@ -208,7 +208,7 @@ describe Travis::Scheduler::Services::Limit::Configurable do
           job.save validate: false
           job = Job::Test.new(owner: organization, state: 'queued', repository: Repository.new(owner: organization))
           job.save validate: false
-          limit.max_jobs_from_container_account.should == 2
+          expect(limit.max_jobs_from_container_account).to eq(2)
         end
       end
     end

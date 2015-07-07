@@ -10,14 +10,14 @@ describe Request do
       request.event_type = 'pull_request'
       request.payload = { 'pull_request' => { 'title' => 'A pull request' } }
 
-      request.pull_request_title.should == 'A pull request'
+      expect(request.pull_request_title).to eq('A pull request')
     end
 
     it 'returns nil for non pull request' do
       request.event_type = 'build'
       request.payload = { 'pull_request' => { 'title' => 'A pull request' } }
 
-      request.pull_request_title.should be_nil
+      expect(request.pull_request_title).to eq(nil)
     end
   end
 
@@ -25,13 +25,13 @@ describe Request do
     it 'returns a tag name if available' do
       request.payload = { 'ref' => 'refs/tags/foo' }
 
-      request.tag_name.should == 'foo'
+      expect(request.tag_name).to eq('foo')
     end
 
     it 'returns nil if a tag name is not available' do
       request.payload = { 'ref' => 'refs/heads/foo' }
 
-      request.tag_name.should be_nil
+      expect(request.tag_name).to eq(nil)
     end
   end
 
@@ -39,13 +39,13 @@ describe Request do
     it 'returns a branch name if available' do
       request.payload = { 'ref' => 'refs/heads/foo' }
 
-      request.branch_name.should == 'foo'
+      expect(request.branch_name).to eq('foo')
     end
 
     it 'returns nil if a branch name is not available' do
       request.payload = { 'ref' => 'refs/tags/foo' }
 
-      request.branch_name.should be_nil
+      expect(request.branch_name).to eq(nil)
     end
   end
 
@@ -58,7 +58,7 @@ describe Request do
         }
       }
 
-      request.same_repo_pull_request?.should be_true
+      expect(request.same_repo_pull_request?).to eq(true)
     end
 
     it 'returns false if the base and head repos do not match' do
@@ -69,13 +69,13 @@ describe Request do
         }
       }
 
-      request.same_repo_pull_request?.should be_false
+      expect(request.same_repo_pull_request?).to eq(false)
     end
 
     it 'returns false if repo data is not available' do
       request.payload = {}
 
-      request.same_repo_pull_request?.should be_false
+      expect(request.same_repo_pull_request?).to eq(false)
     end
   end
 end

@@ -11,7 +11,7 @@ describe Repository do
     end
 
     it 'returns the api url for the repository' do
-      repo.api_url.should == 'https://api.github.com/repos/travis-ci/travis-ci'
+      expect(repo.api_url).to eq('https://api.github.com/repos/travis-ci/travis-ci')
     end
   end
 
@@ -25,12 +25,12 @@ describe Repository do
 
       it 'returns the public git source url for a public repository' do
         repo.private = false
-        repo.source_url.should == 'git://github.com/travis-ci/travis-ci.git'
+        expect(repo.source_url).to eq('git://github.com/travis-ci/travis-ci.git')
       end
 
       it 'returns the private git source url for a private repository' do
         repo.private = true
-        repo.source_url.should == 'git@github.com:travis-ci/travis-ci.git'
+        expect(repo.source_url).to eq('git@github.com:travis-ci/travis-ci.git')
       end
     end
 
@@ -43,12 +43,12 @@ describe Repository do
 
       it 'returns the private git source url for a public repository' do
         repo.private = false
-        repo.source_url.should == 'git@localhost:travis-ci/travis-ci.git'
+        expect(repo.source_url).to eq('git@localhost:travis-ci/travis-ci.git')
       end
 
       it 'returns the private git source url for a private repository' do
         repo.private = true
-        repo.source_url.should == 'git@localhost:travis-ci/travis-ci.git'
+        expect(repo.source_url).to eq('git@localhost:travis-ci/travis-ci.git')
       end
     end
   end
@@ -59,7 +59,7 @@ describe Repository do
     end
 
     it 'returns the source_host name from Travis.config' do
-      Repository.new.source_host.should == 'localhost'
+      expect(Repository.new.source_host).to eq('localhost')
     end
   end
 
@@ -68,25 +68,25 @@ describe Repository do
 
     it 'adds repository_id to collection records' do
       env_var = repo.settings.env_vars.create(name: 'FOO')
-      env_var.repository_id.should == repo.id
+      expect(env_var.repository_id).to eq(repo.id)
       repo.settings.save
 
-      repo.reload.settings.env_vars.first.repository_id.should == repo.id
+      expect(repo.reload.settings.env_vars.first.repository_id).to eq(repo.id)
     end
 
     it "allows to set nil for settings" do
       repo.settings = nil
-      repo.settings.to_hash.should == Repository::Settings.new.to_hash
+      expect(repo.settings.to_hash).to eq(Repository::Settings.new.to_hash)
     end
 
     it "allows to set settings as JSON string" do
       repo.settings = '{"maximum_number_of_builds": 44}'
-      repo.settings.to_hash.should == Repository::Settings.new(maximum_number_of_builds: 44).to_hash
+      expect(repo.settings.to_hash).to eq(Repository::Settings.new(maximum_number_of_builds: 44).to_hash)
     end
 
     it "allows to set settings as a Hash" do
       repo.settings = { maximum_number_of_builds: 44}
-      repo.settings.to_hash.should == Repository::Settings.new(maximum_number_of_builds: 44).to_hash
+      expect(repo.settings.to_hash).to eq(Repository::Settings.new(maximum_number_of_builds: 44).to_hash)
     end
   end
 end

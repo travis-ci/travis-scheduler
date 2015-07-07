@@ -34,7 +34,7 @@ class Request < ActiveRecord::Base
     payload = Hashr.new(self.payload)
     head_repo = payload.try(:pull_request).try(:head).try(:repo).try(:full_name)
     base_repo = payload.try(:pull_request).try(:base).try(:repo).try(:full_name)
-    head_repo && base_repo && head_repo == base_repo
+    !!(head_repo && base_repo && head_repo == base_repo)
   rescue => e
     Travis.config.error "[request:#{id}] Couldn't determine whether pull request is from the same repository: #{e.message}"
     false

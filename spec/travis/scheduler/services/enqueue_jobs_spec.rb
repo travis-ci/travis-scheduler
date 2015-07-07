@@ -35,7 +35,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
 
     it 'keeps a report of enqueued jobs' do
       service.run
-      service.reports.should == { 'svenfuchs' => { total: 1, running: 0, max: 5, queueable: 1 } }
+      expect(service.reports).to eq({ 'svenfuchs' => { total: 1, running: 0, max: 5, queueable: 1 } })
     end
   end
 

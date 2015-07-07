@@ -7,7 +7,7 @@ class Commit < ActiveRecord::Base
   belongs_to :repository
 
   def pull_request?
-    ref =~ %r(^refs/pull/\d+/merge$)
+    !!(ref =~ %r(^refs/pull/\d+/merge$))
   end
 
   def pull_request_number
