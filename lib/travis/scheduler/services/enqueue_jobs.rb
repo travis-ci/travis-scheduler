@@ -1,6 +1,7 @@
 require 'travis/support/instrumentation'
 require 'travis/support/exceptions/handling'
 
+require 'travis/scheduler/helpers/benchmark'
 require 'travis/scheduler/models/organization'
 require 'travis/scheduler/models/user'
 require 'travis/scheduler/payloads/worker'
@@ -18,7 +19,8 @@ module Travis
       class EnqueueJobs
         TIMEOUT = 2
 
-        extend Travis::Instrumentation, Travis::Exceptions::Handling
+        extend Travis::Exceptions::Handling
+        include Helpers::Benchmark
 
         def self.run
           new.run
@@ -29,8 +31,10 @@ module Travis
         end
 
         def run
-          enqueue_all
-          Travis.logger.info(format_reports(reports))
+          benchmark 'enqueue jobs' do
+            enqueue_all
+            Travis.logger.info(format_reports(reports))
+          end
         end
         rescues :run, from: Exception, backtrace: false
 
