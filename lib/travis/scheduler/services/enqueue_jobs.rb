@@ -1,6 +1,4 @@
-require 'travis/support/instrumentation'
 require 'travis/support/exceptions/handling'
-
 require 'travis/scheduler/helpers/benchmark'
 require 'travis/scheduler/models/organization'
 require 'travis/scheduler/models/user'
