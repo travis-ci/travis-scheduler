@@ -28,7 +28,7 @@ GIT
 
 GIT
   remote: git://github.com/travis-ci/travis-support.git
-  revision: ee00e2bb47cf917814f54fcc77e00c45943e8e2d
+  revision: 57a8155f9cc2ab7c2ab4890babfc4ce781ac5386
   ref: sf-fix-log-newline
   specs:
     travis-support (0.0.1)
