@@ -29,7 +29,8 @@ module Travis
         end
 
         def run
-          enqueue_all && reports
+          enqueue_all
+          Travis.logger.info(format_reports(reports))
         end
         # instrument :run
         rescues :run, from: Exception, backtrace: false
@@ -103,6 +104,18 @@ module Travis
 
           def publisher(queue)
             Travis::Amqp::Publisher.builds(queue)
+          end
+
+          def format_reports(reports)
+            reports = Array(reports)
+            if reports.any?
+              reports = reports.map do |repo, report|
+                "  #{repo}: #{report.map { |key, value| "#{key}: #{value}" }.join(', ')}"
+              end
+              "enqueued:\n#{reports.join("\n")}"
+            else
+              'nothing to enqueue.'
+            end
           end
 
           # class Instrument < Notification::Instrument
