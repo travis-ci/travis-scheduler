@@ -32,15 +32,12 @@ module Travis
           enqueue_all
           Travis.logger.info(format_reports(reports))
         end
-        # instrument :run
         rescues :run, from: Exception, backtrace: false
 
         private
 
           def strategy
-            strategy = Travis.config.limit.strategy
-            Travis.logger.info("Using the #{strategy} limit strategy.")
-            Limit.const_get(strategy.camelize)
+            Limit.const_get(Travis.config.limit.strategy.camelize)
           end
 
           def enqueue_all
@@ -117,25 +114,6 @@ module Travis
               'nothing to enqueue.'
             end
           end
-
-          # class Instrument < Notification::Instrument
-          #   def run_completed
-          #     publish(msg: format(target.reports), reports: target.reports)
-          #   end
-
-          #   def format(reports)
-          #     reports = Array(reports)
-          #     if reports.any?
-          #       reports = reports.map do |repo, report|
-          #         "  #{repo}: #{report.map { |key, value| "#{key}: #{value}" }.join(', ')}"
-          #       end
-          #       "enqueued:\n#{reports.join("\n")}"
-          #     else
-          #       'nothing to enqueue.'
-          #     end
-          #   end
-          # end
-          # Instrument.attach_to(self)
       end
     end
   end
