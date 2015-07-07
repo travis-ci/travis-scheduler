@@ -19,18 +19,19 @@ GIT
     coder (0.4.0)
 
 GIT
+  remote: git://github.com/travis-ci/travis-settings.git
+  revision: bb64aa1320cd94c998d8209a305024292883e7cc
+  specs:
+    travis-settings (0.0.1)
+      activemodel
+      virtus
+
+GIT
   remote: git://github.com/travis-ci/travis-support.git
   revision: ee00e2bb47cf917814f54fcc77e00c45943e8e2d
   ref: sf-fix-log-newline
   specs:
     travis-support (0.0.1)
-
-PATH
-  remote: ../travis-settings
-  specs:
-    travis-settings (0.0.1)
-      activemodel
-      virtus
 
 GEM
   remote: https://rubygems.org/
@@ -111,7 +112,7 @@ GEM
       metriks (>= 0.9.9.6)
     mocha (0.10.5)
       metaclass (~> 0.0.1)
-    multi_json (1.11.0)
+    multi_json (1.11.2)
     multipart-post (2.0.0)
     parser (2.2.0.3)
       ast (>= 1.1, < 3.0)
