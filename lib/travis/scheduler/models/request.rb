@@ -9,6 +9,8 @@ class Request < ActiveRecord::Base
   belongs_to :repository
   belongs_to :owner, polymorphic: true
 
+  serialize :payload
+
   def pull_request?
     event_type == 'pull_request'
   end
@@ -36,7 +38,7 @@ class Request < ActiveRecord::Base
     base_repo = payload.try(:pull_request).try(:base).try(:repo).try(:full_name)
     !!(head_repo && base_repo && head_repo == base_repo)
   rescue => e
-    Travis.config.error "[request:#{id}] Couldn't determine whether pull request is from the same repository: #{e.message}"
+    Travis::Scheduler.logger.error "[request:#{id}] Couldn't determine whether pull request is from the same repository: #{e.message}"
     false
   end
 end
