@@ -64,6 +64,7 @@ module Travis
             end
 
             def max_queueable
+              puts "max_queueable: owner.login=#{owner.login.inspect}"
               return config[:default] if owner.login.nil?
 
               if unlimited?
@@ -75,6 +76,8 @@ module Travis
             end
 
             def max_jobs
+              puts "max_queueable: config[:by_owner]=#{config[:by_owner].inspect}"
+              puts "max_queueable: config[:by_owner][owner.login]=#{config[:by_owner][owner.login].inspect}"
               config[:by_owner][owner.login] || config[:default]
             end
 
