@@ -6,7 +6,6 @@ gem 'travis-support',     github: 'travis-ci/travis-support', ref: 'sf-fix-log-n
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-config',      '~> 0.1.0'
 
-gem 'jemalloc'
 gem 'rake'
 gem 'activerecord'
 gem 'dalli'

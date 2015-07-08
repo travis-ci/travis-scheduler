@@ -1,1 +1,1 @@
-schedule: je ./bin/schedule
+schedule: ./bin/schedule
