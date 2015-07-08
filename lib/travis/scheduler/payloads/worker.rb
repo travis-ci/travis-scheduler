@@ -57,11 +57,11 @@ module Travis
             'commit_message' => commit.message,
             'branch' => commit.branch,
             'ref' => commit.pull_request? ? commit.ref : nil,
+            'tag' => request.tag_name.present? ? request.tag_name : nil,
+            'pull_request' => commit.pull_request? ? commit.pull_request_number : false,
             'state' => job.state.to_s,
             'secure_env_enabled' => job.secure_env?
           }
-          data['tag'] = request.tag_name if include_tag_name?
-          data['pull_request'] = commit.pull_request? ? commit.pull_request_number : false
           data
         end
 
@@ -116,10 +116,6 @@ module Travis
           timeout = settings.send(:"timeout_#{type}")
           timeout = timeout * 60 if timeout # worker handles timeouts in seconds
           timeout
-        end
-
-        def include_tag_name?
-          Travis.config.include_tag_name_in_worker_payload && request.tag_name.present?
         end
 
         def settings

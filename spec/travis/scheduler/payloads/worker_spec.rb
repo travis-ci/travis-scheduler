@@ -65,6 +65,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'commit_message' => 'the commit message',
         'branch' => 'master',
         'ref' => nil,
+        'tag' => nil,
         'pull_request' => false,
         'state' => 'passed',
         'secure_env_enabled' => true
@@ -81,6 +82,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'commit_message' => 'the commit message',
         'branch' => 'master',
         'ref'    => nil,
+        'tag' => nil,
         'pull_request' => false,
         'state' => 'passed',
         'secure_env_enabled' => true
@@ -105,7 +107,6 @@ describe Travis::Scheduler::Payloads::Worker do
     end
 
     it "includes the tag name" do
-      Travis.config.include_tag_name_in_worker_payload = true
       request.stubs(:tag_name).returns 'v1.2.3'
       expect(data['job']['tag']).to eq('v1.2.3')
     end
@@ -162,6 +163,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'commit_message' => 'the commit message',
         'branch' => 'master',
         'ref'    => 'refs/pull/180/merge',
+        'tag' => nil,
         'pull_request' => 180,
         'state' => 'passed',
         'secure_env_enabled' => false
@@ -178,6 +180,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'commit_message' => 'the commit message',
         'branch' => 'master',
         'ref'    => 'refs/pull/180/merge',
+        'tag' => nil,
         'pull_request' => 180,
         'state' => 'passed',
         'secure_env_enabled' => false
