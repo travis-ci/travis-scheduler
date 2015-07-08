@@ -95,7 +95,7 @@ module Travis
 
           def jobs
             Metriks.timer('enqueue.fetch_jobs').time do
-              jobs = Job.includes(:owner).queueable.all
+              jobs = Job.includes(:owner, :repository).queueable.all
               Travis.logger.info "Found #{jobs.size} jobs in total." if jobs.size > 0
               jobs
             end
