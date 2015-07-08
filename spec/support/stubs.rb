@@ -68,7 +68,7 @@ module Travis
       alias stub_repository stub_repo
 
       def stub_settings
-        Stubs.stub 'settings', 'ssh_keys' => [], 'env_vars' => []
+        Stubs.stub 'settings', 'ssh_keys' => [], 'env_vars' => [], maximum_number_of_builds: 0
       end
 
       def stub_key(attributes = {})

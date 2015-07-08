@@ -20,7 +20,7 @@ module Travis
           def filter_by_repository(jobs)
             queueable_by_repository_id = {}
             jobs.reject do |job|
-              if job.repository.settings.restricts_number_of_builds?
+              if job.repository.settings.maximum_number_of_builds.to_i > 0
                 queueable?(job, queueable_by_repository_id, running_by_repository_id)
               end
             end
@@ -40,8 +40,7 @@ module Travis
             repository = job.repository_id
             queueable[repository] ||= 0
 
-            runnable_count = queueable[repository] +
-                              (running[repository] || 0)
+            runnable_count = queueable[repository] + (running[repository] || 0)
             if runnable_count < job.repository.settings.maximum_number_of_builds
               queueable[repository] += 1
               false
