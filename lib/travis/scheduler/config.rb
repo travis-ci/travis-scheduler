@@ -7,7 +7,7 @@ module Travis
               database:      { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
               encryption:    Travis.env == 'development' || Travis.env == 'test' ? { key: 'secret' * 10 } : {},
               github:        { },
-              interval:      3,
+              interval:      2,
               limit:         { strategy: 'default', default: 5, by_owner: {}, delegate: {} },
               logger:        { time_format: false, process_id: true, thread_id: true },
               metrics:       { reporter: 'librato' },
