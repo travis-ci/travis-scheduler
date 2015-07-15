@@ -1,5 +1,6 @@
 require 'travis/support/exceptions/handling'
 require 'travis/scheduler/helpers/benchmark'
+require 'travis/scheduler/helpers/live'
 require 'travis/scheduler/models/organization'
 require 'travis/scheduler/models/user'
 require 'travis/scheduler/payloads/worker'
@@ -18,7 +19,7 @@ module Travis
         TIMEOUT = 2
 
         extend Travis::Exceptions::Handling
-        include Helpers::Benchmark
+        include Helpers::Benchmark, Helpers::Live
 
         def self.run
           new.run
@@ -78,8 +79,7 @@ module Travis
 
               Metriks.timer('enqueue.enqueue_job').time do
                 job.update_attributes!(state: :queued, queued_at: Time.now.utc)
-                # TODO needs to notify Pusher, right
-                # notify(:queue)
+                notify_live(job)
               end
             end
           end
