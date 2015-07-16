@@ -34,9 +34,14 @@ class Job < ActiveRecord::Base
   belongs_to :commit
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
+  has_one    :log
 
   serialize :config
   delegate :secure_env?, :full_addons?, to: :source
+
+  def log_id
+    log.id
+  end
 
   def ssh_key
     config[:source_key]
