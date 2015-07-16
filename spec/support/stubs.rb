@@ -174,10 +174,6 @@ module Travis
           request_id: 1,
           commit_id: commit.id,
           commit: commit,
-          log: log,
-          log_id: log.id,
-          annotations: [annotation],
-          annotation_ids: [annotation.id],
           number: '2.1',
           config: { 'rvm' => '1.8.7', 'gemfile' => 'test/Gemfile.rails-2.3.x' },
           decrypted_config: { 'rvm' => '1.8.7', 'gemfile' => 'test/Gemfile.rails-2.3.x' },
@@ -214,7 +210,6 @@ module Travis
       def stub_log_part(attributes = {})
         Stubs.stub 'log_part', attributes.reverse_merge(
           id: 1,
-          log_id: 1,
           content: 'the test log',
           number: 1,
           final: false

@@ -1,6 +1,7 @@
 require 'active_record'
 require 'travis/scheduler/models/build'
 require 'travis/scheduler/models/commit'
+require 'travis/scheduler/models/log'
 require 'travis/scheduler/models/organization'
 require 'travis/scheduler/models/repository'
 require 'travis/scheduler/models/user'
@@ -34,14 +35,9 @@ class Job < ActiveRecord::Base
   belongs_to :commit
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
-  has_one    :log
 
   serialize :config
   delegate :secure_env?, :full_addons?, to: :source
-
-  def log_id
-    log.id
-  end
 
   def ssh_key
     config[:source_key]

@@ -24,12 +24,10 @@ module Travis
                 repository_private: repo.private,
                 build_id:           job.source_id,
                 commit_id:          job.commit_id,
-                log_id:             job.log_id,
                 number:             job.number,
                 state:              job.state.to_s,
                 queue:              job.queue,
                 allow_failure:      job.allow_failure,
-                annotation_ids:     job.annotation_ids,
                 commit: {
                   id:              commit.id,
                   sha:             commit.commit,

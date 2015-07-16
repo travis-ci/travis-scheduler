@@ -23,10 +23,8 @@ describe Travis::Scheduler::Helpers::Live::Notifier do
           repository_slug:    'svenfuchs/minimal',
           repository_private: false,
           number:             '2.1',
-          annotation_ids:     [1],
           state:              'queued',
           queue:              'builds.linux',
-          log_id:             1,
           commit_id:          1,
           allow_failure:      false,
           commit: {

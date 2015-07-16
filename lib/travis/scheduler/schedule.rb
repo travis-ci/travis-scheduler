@@ -1,10 +1,11 @@
 require 'multi_json'
 
+require 'core_ext/kernel/run_periodically'
 require 'travis/support/amqp'
 require 'travis/support/database'
-require 'core_ext/kernel/run_periodically'
 require 'travis/scheduler/services/enqueue_jobs'
 require 'travis/support/logging'
+require 'travis/scheduler/support/sidekiq'
 
 module Travis
   module Scheduler
@@ -14,6 +15,7 @@ module Travis
         Travis::Database.connect
         Travis::Exceptions::Reporter.start
         Travis::Metrics.setup
+        Support::Sidekiq.setup(Travis.config)
 
         declare_exchanges_and_queues
       end
