@@ -17,7 +17,8 @@ module Travis
               redis:         { url: 'redis://localhost:6379' },
               sentry:        { },
               sidekiq:       { namespace: 'sidekiq', pool_size: 3 },
-              ssl:           { }
+              ssl:           { },
+              scheduler:     { exception_threshold: 5 }
 
       default _access: [:key]
 

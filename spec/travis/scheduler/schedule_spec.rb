@@ -27,5 +27,17 @@ describe Travis::Scheduler::Schedule do
       subject.expects(:enqueue_jobs_periodically)
       subject.run
     end
+
+    context 'when there are repeated errors' do
+      before do
+        Travis.config.scheduler.exception_threshold = 2
+        Travis::Scheduler::Services::EnqueueJobs.stubs(:run).raises(StandardError.new('boom'))
+      end
+
+      it 're-raises the error' do
+        expect { subject.send(:enqueue_jobs) }.to_not raise_error
+        expect { subject.send(:enqueue_jobs) }.to raise_error
+      end
+    end
   end
 end
