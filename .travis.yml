@@ -21,6 +21,9 @@ env:
 
 before_install: gem install bundler
 
+before_script:
+  - bundle exec rake db:create --trace
+
 script: bundle exec rspec spec
 
 # matrix:
