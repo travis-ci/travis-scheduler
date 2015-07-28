@@ -11,6 +11,8 @@ require 'travis/scheduler/support/sidekiq'
 module Travis
   module Scheduler
     class Schedule
+      include Travis::Logging
+
       def setup
         Travis::Amqp.config = Travis.config.amqp
         Travis::Database.connect
