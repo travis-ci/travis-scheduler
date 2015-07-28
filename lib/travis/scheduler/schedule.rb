@@ -21,7 +21,6 @@ module Travis
         Support::Sidekiq.setup(Travis.config)
 
         declare_exchanges_and_queues
-        @exception_count = 0
       end
 
       def run
