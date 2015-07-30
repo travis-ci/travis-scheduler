@@ -1,0 +1,131 @@
+module Travis
+  module Scheduler
+    module Payloads
+      class Worker
+        attr_reader :job
+
+        def initialize(job, options = {})
+          @job = job
+        end
+
+        def commit
+          job.commit
+        end
+
+        def repository
+          job.repository
+        end
+
+        def request
+          build.request
+        end
+
+        def build
+          job.source
+        end
+
+
+        def data
+          {
+            'type' => 'test',
+            # TODO legacy. remove this once workers respond to a 'job' key
+            'build' => job_data,
+            'job' => job_data,
+            'source' => build_data,
+            'repository' => repository_data,
+            'config' => job.decrypted_config,
+            'queue' => job.queue,
+            'ssh_key' => ssh_key,
+            'env_vars' => env_vars,
+            'timeouts' => timeouts
+          }
+        end
+
+        def build_data
+          {
+            'id' => build.id,
+            'number' => build.number
+          }
+        end
+
+        def job_data
+          data = {
+            'id' => job.id,
+            'number' => job.number,
+            'commit' => commit.commit,
+            'commit_range' => commit.range,
+            'commit_message' => commit.message,
+            'branch' => commit.branch,
+            'ref' => commit.pull_request? ? commit.ref : nil,
+            'tag' => request.tag_name.present? ? request.tag_name : nil,
+            'pull_request' => commit.pull_request? ? commit.pull_request_number : false,
+            'state' => job.state.to_s,
+            'secure_env_enabled' => job.secure_env?
+          }
+          data
+        end
+
+        def repository_data
+          {
+            'id' => repository.id,
+            'slug' => repository.slug,
+            'github_id' => repository.github_id,
+            'source_url' => repository.source_url,
+            'api_url' => repository.api_url,
+            'last_build_id' => repository.last_build_id,
+            'last_build_number' => repository.last_build_number,
+            'last_build_started_at' => format_date(repository.last_build_started_at),
+            'last_build_finished_at' => format_date(repository.last_build_finished_at),
+            'last_build_duration' => repository.last_build_duration,
+            'last_build_state' => repository.last_build_state.to_s,
+            'description' => repository.description
+          }
+        end
+
+        def ssh_key
+          if repository.public?
+            nil
+          elsif ssh_key = repository.settings.ssh_key
+            { 'source' => 'repository_settings', 'value' => ssh_key.value.decrypt, 'encoded' => false }
+          elsif ssh_key = job.ssh_key
+            { 'source' => 'travis_yaml', 'value' => ssh_key, 'encoded' => true }
+          else
+            ssh_key = repository.key.private_key
+            { 'source' => 'default_repository_key', 'value' => repository.key.private_key, 'encoded' => false }
+          end
+        end
+
+        def env_vars
+          vars = settings.env_vars
+          vars = vars.public unless job.secure_env?
+
+          vars.map do |var|
+            {
+              'name' => var.name,
+              'value' => var.value.decrypt,
+              'public' => var.public
+            }
+          end
+        end
+
+        def timeouts
+          { 'hard_limit' => timeout(:hard_limit), 'log_silence' => timeout(:log_silence) }
+        end
+
+        def timeout(type)
+          timeout = settings.send(:"timeout_#{type}")
+          timeout = timeout * 60 if timeout # worker handles timeouts in seconds
+          timeout
+        end
+
+        def settings
+          repository.settings
+        end
+
+        def format_date(date)
+          date && date.strftime('%Y-%m-%dT%H:%M:%SZ')
+        end
+      end
+    end
+  end
+end

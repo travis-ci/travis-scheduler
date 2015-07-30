@@ -2,16 +2,18 @@ source 'https://rubygems.org'
 
 ruby '2.1.5'
 
-gem 'travis-core',        github: 'travis-ci/travis-core'
-gem 'travis-support',     github: 'travis-ci/travis-support'
+gem 'travis-support',     github: 'travis-ci/travis-support', ref: 'sf-fix-log-newline'
+gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-config',      '~> 0.1.0'
-gem 'travis-sidekiqs',    github: 'travis-ci/travis-sidekiqs', require: nil
 
+gem 'rake'
+gem 'activerecord'
 gem 'dalli'
 
 gem 'sentry-raven',       github: 'getsentry/raven-ruby'
 gem 'metriks-librato_metrics'
 gem 'rails_12factor'
+gem 'virtus'
 
 # can't be removed yet, even though we're on jruby 1.6.7 everywhere
 # this is due to Invalid gemspec errors
@@ -29,13 +31,10 @@ group :test do
   gem 'guard'
   gem 'guard-rspec'
   gem 'mocha',            '~> 0.10.0'
-  gem 'rspec',            '~> 2.7.0'
+  gem 'rspec'
   gem 'rubocop',          require: false
   gem 'ruby-progressbar', '1.7.1' # this should not be needed, but rubygems is giving me an old version for some reason, well, a newer version which was yanked
   gem 'simplecov',        require: false
   gem 'webmock',          '~> 1.8.0'
-end
-
-group :development, :test do
-  gem 'micro_migrations'
+  gem 'factory_girl'
 end

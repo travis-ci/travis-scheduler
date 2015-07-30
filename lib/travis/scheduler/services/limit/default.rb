@@ -1,16 +1,16 @@
-require 'travis/model/job'
+require 'travis/scheduler/models/job'
 
 module Travis
   module Scheduler
     module Services
-      module Helpers
-        class Limit
+      module Limit
+        class Default
           attr_reader :owner, :jobs, :config
 
           def initialize(owner, jobs)
             @owner = owner
             @jobs  = jobs
-            @config = Travis.config.queue.limit
+            @config = Travis.config.limit || {}
           end
 
           def queueable
@@ -18,25 +18,29 @@ module Travis
           end
 
           def filter_by_repository(jobs)
-            return jobs unless Travis.config.limit_per_repo_enabled?
             queueable_by_repository_id = {}
             jobs.reject do |job|
-              if job.repository.settings.restricts_number_of_builds?
+              if job.repository.settings.maximum_number_of_builds.to_i > 0
                 queueable?(job, queueable_by_repository_id, running_by_repository_id)
               end
             end
           end
 
           def running_by_repository_id
-            @running_by_repository ||= Hash[running_jobs.group_by(&:repository_id).map {|repository_id, jobs| [repository_id, jobs.size]}]
+            @running_by_repository ||= Hash[repository_id_grouping]
+          end
+
+          def repository_id_grouping
+            running_jobs.group_by(&:repository_id).map do |repository_id, jobs|
+              [repository_id, jobs.size]
+            end
           end
 
           def queueable?(job, queueable, running)
             repository = job.repository_id
             queueable[repository] ||= 0
 
-            runnable_count = queueable[repository] +
-                              (running[repository] || 0)
+            runnable_count = queueable[repository] + (running[repository] || 0)
             if runnable_count < job.repository.settings.maximum_number_of_builds
               queueable[repository] += 1
               false
@@ -56,11 +60,11 @@ module Travis
             end
 
             def running
-              @running ||= Job.owned_by(owner).running.count(:id)
+              @running ||= running_jobs.to_a.size
             end
 
             def max_queueable
-              return config.default if owner.login.nil?
+              return config[:default] if owner.login.nil?
 
               if unlimited?
                 999
@@ -71,11 +75,11 @@ module Travis
             end
 
             def max_jobs
-              config.by_owner[owner.login] || config.default
+              config[:by_owner][owner.login] || config[:default]
             end
 
             def unlimited?
-              config.by_owner[owner.login] == -1
+              config[:by_owner][owner.login] == -1
             end
         end
       end

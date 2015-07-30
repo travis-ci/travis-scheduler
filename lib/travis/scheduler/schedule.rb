@@ -1,59 +1,33 @@
 require 'multi_json'
 
-require 'travis'
-require 'travis/model'
-require 'travis/states_cache'
-require 'travis/support/amqp'
-require 'travis/patches/amqp/publisher'
 require 'core_ext/kernel/run_periodically'
+require 'travis/support/amqp'
+require 'travis/support/database'
 require 'travis/scheduler/services/enqueue_jobs'
 require 'travis/support/logging'
+require 'travis/scheduler/support/sidekiq'
 
 module Travis
   module Scheduler
     class Schedule
-      include Travis::Logging
-
       def setup
-        Travis::Async.enabled = true
         Travis::Amqp.config = Travis.config.amqp
-
-        Travis.logger.info('[schedule] connecting to database')
         Travis::Database.connect
-
-        if Travis.config.logs_database
-          Travis.logger.info('[schedule] connecting to logs database')
-          Log.establish_connection 'logs_database'
-          Log::Part.establish_connection 'logs_database'
-        end
-
-        Travis.logger.info('[schedule] setting up sidekiq')
-        Travis::Async::Sidekiq.setup(Travis.config.redis.url, Travis.config.sidekiq)
-
-        Travis.logger.info('[schedule] starting exceptions reporter')
         Travis::Exceptions::Reporter.start
-
-        Travis.logger.info('[schedule] setting up metrics')
         Travis::Metrics.setup
-
-        Travis.logger.info('[schedule] setting up notifications')
-        Travis::Notification.setup
-
-        Travis.logger.info('[schedule] setting up addons')
-        Travis::Addons.register
+        Support::Sidekiq.setup(Travis.config)
 
         declare_exchanges_and_queues
       end
 
       def run
-        Travis.logger.info('[schedule] starting the onslaught')
         enqueue_jobs_periodically
       end
 
       private
 
         def enqueue_jobs_periodically
-          run_periodically(Travis.config.queue.interval) do
+          run_periodically(Travis.config.interval) do
             Metriks.timer("schedule.enqueue_jobs").time { enqueue_jobs }
           end
           sleep
@@ -66,7 +40,6 @@ module Travis
         end
 
         def declare_exchanges_and_queues
-          Travis.logger.info('[schedule] connecting to amqp')
           channel = Travis::Amqp.connection.create_channel
           channel.exchange 'reporting', durable: true, auto_delete: false, type: :topic
           channel.queue 'builds.linux', durable: true, exclusive: false

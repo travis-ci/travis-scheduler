@@ -1,5 +1,6 @@
 $stdout.sync = true
 
+require 'travis/support'
 require 'travis/support/logging'
 require 'travis/support/logger'
 require 'travis/scheduler/config'

@@ -1,6 +1,11 @@
-require 'travis/support/instrumentation'
 require 'travis/support/exceptions/handling'
-require 'travis/scheduler/services/helpers/limit'
+require 'travis/scheduler/helpers/benchmark'
+require 'travis/scheduler/helpers/live'
+require 'travis/scheduler/models/organization'
+require 'travis/scheduler/models/user'
+require 'travis/scheduler/payloads/worker'
+require 'travis/scheduler/services/limit/default'
+require 'travis/scheduler/services/limit/configurable'
 
 module Travis
   module Scheduler
@@ -13,7 +18,8 @@ module Travis
       class EnqueueJobs
         TIMEOUT = 2
 
-        extend Travis::Instrumentation, Travis::Exceptions::Handling
+        extend Travis::Exceptions::Handling
+        include Helpers::Benchmark, Helpers::Live
 
         def self.run
           new.run
@@ -24,12 +30,18 @@ module Travis
         end
 
         def run
-          enqueue_all && reports
+          benchmark 'enqueue jobs' do
+            enqueue_all
+            Travis.logger.info(format_reports(reports))
+          end
         end
-        instrument :run
         rescues :run, from: Exception, backtrace: false
 
         private
+
+          def strategy
+            Limit.const_get(Travis.config.limit.strategy.camelize)
+          end
 
           def enqueue_all
             grouped_jobs = jobs.group_by(&:owner)
@@ -41,8 +53,8 @@ module Travis
                   limit = nil
                   queueable = nil
                   Metriks.timer('enqueue.limit_per_owner').time do
+                    limit = strategy.new(owner, jobs)
                     Travis.logger.info "About to evaluate jobs for: #{owner.login}."
-                    limit = Helpers::Limit.new(owner, jobs)
                     queueable = limit.queueable
                   end
 
@@ -66,21 +78,24 @@ module Travis
               end
 
               Metriks.timer('enqueue.enqueue_job').time do
-                job.enqueue
+                job.update_attributes!(state: :queued, queued_at: Time.now.utc)
+                notify_live(job)
               end
             end
           end
 
           def publish(job)
             Metriks.timer('enqueue.publish_job').time do
-              payload = Travis::Api.data(job, for: 'worker', type: 'Job::Test', version: 'v0')
-              publisher(job.queue).publish(payload, properties: { type: payload['type'], persistent: true })
+              payload = Payloads::Worker.new(job).data
+              # check the properties are being set correctly,
+              # and type is being used
+              publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
             end
           end
 
           def jobs
             Metriks.timer('enqueue.fetch_jobs').time do
-              jobs = Job.includes(:owner).queueable.all
+              jobs = Job.includes(:owner, :commit, repository: :key, source: :request).queueable.all
               Travis.logger.info "Found #{jobs.size} jobs in total." if jobs.size > 0
               jobs
             end
@@ -90,24 +105,17 @@ module Travis
             Travis::Amqp::Publisher.builds(queue)
           end
 
-          class Instrument < Notification::Instrument
-            def run_completed
-              publish(msg: format(target.reports), reports: target.reports)
-            end
-
-            def format(reports)
-              reports = Array(reports)
-              if reports.any?
-                reports = reports.map do |repo, report|
-                  "  #{repo}: #{report.map { |key, value| "#{key}: #{value}" }.join(', ')}"
-                end
-                "enqueued:\n#{reports.join("\n")}"
-              else
-                'nothing to enqueue.'
+          def format_reports(reports)
+            reports = Array(reports)
+            if reports.any?
+              reports = reports.map do |repo, report|
+                "  #{repo}: #{report.map { |key, value| "#{key}: #{value}" }.join(', ')}"
               end
+              "enqueued:\n#{reports.join("\n")}"
+            else
+              'nothing to enqueue.'
             end
           end
-          Instrument.attach_to(self)
       end
     end
   end
