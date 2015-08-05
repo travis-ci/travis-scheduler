@@ -4,12 +4,14 @@ require 'core_ext/kernel/run_periodically'
 require 'travis/support/amqp'
 require 'travis/support/database'
 require 'travis/scheduler/services/enqueue_jobs'
-require 'travis/support/logging'
+require 'travis/support/exceptions'
 require 'travis/scheduler/support/sidekiq'
 
 module Travis
   module Scheduler
     class Schedule
+      extend Travis::Exceptions::Handling
+
       def setup
         Travis::Amqp.config = Travis.config.amqp
         Travis::Database.connect
@@ -35,9 +37,8 @@ module Travis
 
         def enqueue_jobs
           Services::EnqueueJobs.run
-        rescue => e
-          log_exception(e)
         end
+        rescues :enqueue_jobs
 
         def declare_exchanges_and_queues
           channel = Travis::Amqp.connection.create_channel
