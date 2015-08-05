@@ -41,7 +41,7 @@ module Travis
             queueable[repository] ||= 0
 
             runnable_count = queueable[repository] + (running[repository] || 0)
-            if runnable_count < job.repository.settings.maximum_number_of_builds
+            if runnable_count < job.repository.settings.maximum_number_of_builds.to_i
               queueable[repository] += 1
               false
             else
