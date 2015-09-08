@@ -25,7 +25,7 @@ describe Repository do
 
       it 'returns the public git source url for a public repository' do
         repo.private = false
-        expect(repo.source_url).to eq('git://github.com/travis-ci/travis-ci.git')
+        expect(repo.source_url).to eq('https://github.com/travis-ci/travis-ci.git')
       end
 
       it 'returns the private git source url for a private repository' do
