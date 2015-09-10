@@ -20,7 +20,7 @@ class Repository < ActiveRecord::Base
   end
 
   def source_url
-    private? || force_private? ? "git@#{source_host}:#{slug}.git": "git://#{source_host}/#{slug}.git"
+    private? || force_private? ? "git@#{source_host}:#{slug}.git": "https://#{source_host}/#{slug}.git"
   end
 
   def force_private?
