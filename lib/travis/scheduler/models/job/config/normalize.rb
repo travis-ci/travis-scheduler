@@ -7,6 +7,7 @@ class Job
         apt_sources
         firefox
         hosts
+        mariadb
         postgresql
         ssh_known_hosts
       ).freeze
