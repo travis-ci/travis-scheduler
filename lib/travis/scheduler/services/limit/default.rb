@@ -75,7 +75,15 @@ module Travis
             end
 
             def max_jobs
-              config[:by_owner][owner.login] || config[:default]
+              max_boost_jobs(owner.login) || config[:by_owner][owner.login] || config[:default]
+            end
+
+            def max_boost_jobs(login)
+              limit = Travis::Scheduler.redis.get("scheduler.owner.limit.#{login}").to_i
+              limit if limit > 0
+            rescue Redis::BaseError => e
+              Scheduler.logger.error([e.message] + e.backtrace)
+              nil
             end
 
             def unlimited?

@@ -67,7 +67,8 @@ module Travis
           end
 
           def max_jobs
-            config[:by_owner][owner.login] ||
+            max_boost_jobs(owner.login) ||
+              config[:by_owner][owner.login] ||
               max_jobs_from_container_account ||
               max_jobs_based_on_plan(owner) ||
               config[:default]
@@ -90,9 +91,10 @@ module Travis
           end
 
           def max_jobs_from_container_account
-            if delegate
-              config[:by_owner][delegate.login] || max_jobs_based_on_plan(delegate)
-            end
+            return unless delegate
+            max_boost_jobs(delegate.login) ||
+              config[:by_owner][delegate.login] ||
+              max_jobs_based_on_plan(delegate)
           end
 
           def number_of_running_delegatees_jobs

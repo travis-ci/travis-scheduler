@@ -4,8 +4,9 @@ require 'travis/scheduler/models/repository'
 describe Travis::Scheduler::Services::Limit::Configurable do
   include Travis::Testing::Stubs
 
-  let(:jobs)  { 10.times.map { stub_test } }
+  let(:jobs)  { 10.times.map { |id| stub_test(id: id) } }
   let(:limit) { described_class.new(organization, jobs) }
+  let(:redis) { Travis::Scheduler.redis }
 
   let(:organization) do
     Organization.new(login: 'travis-ci', subscription: subscription)
@@ -16,7 +17,7 @@ describe Travis::Scheduler::Services::Limit::Configurable do
   end
 
   let(:subscription) do
-    Subscription.new({
+    Subscription.create!({
       selected_plan: 'travis-ci-two-builds',
       cc_token: 'empty',
       valid_to: 14.days.from_now
@@ -76,6 +77,16 @@ describe Travis::Scheduler::Services::Limit::Configurable do
       organization.subscription.valid_to = nil
       limit.stubs(:running).returns(0)
       expect(limit.queueable.size).to eq(1)
+    end
+  end
+
+  describe 'with a boost' do
+    before { redis.set("scheduler.owner.limit.travis-ci", 10) }
+    after  { redis.del("scheduler.owner.limit.travis-ci") }
+
+    it 'allows the first 10 jobs if the org has a boost of 10 jobs' do
+      limit.stubs(running: 0)
+      expect(limit.queueable).to eq(jobs[0, 10])
     end
   end
 
@@ -192,6 +203,18 @@ describe Travis::Scheduler::Services::Limit::Configurable do
         expect(limit.queueable.size).to eq(0)
       end
 
+      describe 'with a boost' do
+        let!(:travis_ci)    { Organization.create!(login: 'travis-ci') }
+        let!(:organization) { Organization.create!(login: 'travis-pro') }
+
+        after  { redis.del("scheduler.owner.limit.travis-ci") }
+        before { redis.set("scheduler.owner.limit.travis-ci", 10) }
+
+        it 'allows the first 10 jobs if the org has a boost of 10 jobs' do
+          expect(limit.queueable.size).to eq(10)
+        end
+      end
+
       describe "with a custom limit" do
         before do
           Travis.config.limit[:by_owner]['travis-ci'] = 2
@@ -202,12 +225,9 @@ describe Travis::Scheduler::Services::Limit::Configurable do
         end
 
         it "allows overriding the delegate limit in the configuration" do
-          job = Job::Test.new(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
-          job.save validate: false
-          job = Job::Test.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
-          job.save validate: false
-          job = Job::Test.new(owner: organization, state: 'queued', repository: Repository.new(owner: organization))
-          job.save validate: false
+          Job::Test.create!(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
+          Job::Test.create!(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
+          Job::Test.create!(owner: organization, state: 'queued', repository: Repository.new(owner: organization))
           expect(limit.max_jobs_from_container_account).to eq(2)
         end
       end

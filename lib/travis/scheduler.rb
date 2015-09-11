@@ -1,5 +1,6 @@
 $stdout.sync = true
 
+require 'redis'
 require 'travis/support'
 require 'travis/support/logging'
 require 'travis/support/logger'
@@ -19,6 +20,10 @@ module Travis
 
       def logger=(logger)
         @logger = Logger.configure(logger)
+      end
+
+      def redis
+        @redis ||= Redis.connect(config[:redis])
       end
 
       def uuid=(uuid)
