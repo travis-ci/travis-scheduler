@@ -55,7 +55,7 @@ module Travis
           end
 
           def decrypt_value(value)
-            decoded = Base64.decode64(value)
+            decoded = Base64.decode64(value.to_s)
             # TODO should probably be checked earlier
             if key.respond_to?(:decrypt)
               key.decrypt(decoded)
