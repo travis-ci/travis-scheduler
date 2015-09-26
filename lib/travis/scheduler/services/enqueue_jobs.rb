@@ -74,7 +74,7 @@ module Travis
               reports[owner.login] = limit.report
             end
           rescue => e
-            Travis.logger.error("Unable to evaluate jobs for owner #{owner.login}. Job ids: #{jobs.map(&:id)}")
+            Travis.logger.error("[alert] Unable to evaluate jobs for owner #{owner.login}. Job ids: #{jobs.map(&:id)}")
             Travis::Exceptions.handle(e)
           end
 
@@ -94,11 +94,18 @@ module Travis
 
           def publish(job)
             Metriks.timer('enqueue.publish_job').time do
-              payload = Payloads::Worker.new(job).data
               # check the properties are being set correctly,
               # and type is being used
-              publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
+              publisher(job.queue).publish(payload(job), properties: { type: "test", persistent: true })
             end
+          end
+
+          def payload(job)
+            Payloads::Worker.new(job).data
+          rescue => e
+            # TODO this would ideally error the job
+            Travis.logger.error("[alert] Unable to generate worker payload for job #{job.id}.")
+            Travis::Exceptions.handle(e)
           end
 
           def jobs
