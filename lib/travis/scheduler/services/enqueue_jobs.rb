@@ -33,6 +33,7 @@ module Travis
           benchmark 'enqueue jobs' do
             enqueue_all
             Travis.logger.info(format_reports(reports))
+            Metriks.meter('enqueue.all').mark
           end
         end
         rescues :run, from: Exception, backtrace: false
