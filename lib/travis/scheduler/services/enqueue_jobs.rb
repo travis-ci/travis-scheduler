@@ -50,24 +50,32 @@ module Travis
               grouped_jobs.each do |owner, jobs|
                 next unless owner
                 Metriks.timer('enqueue.full_enqueue_per_owner').time do
-                  limit = nil
-                  queueable = nil
-                  Metriks.timer('enqueue.limit_per_owner').time do
-                    limit = strategy.new(owner, jobs)
-                    Travis.logger.info "About to evaluate jobs for: #{owner.login}."
-                    queueable = limit.queueable
-                  end
-
-                  Metriks.timer('enqueue.enqueue_per_owner').time do
-                    enqueue(queueable)
-                  end
-
-                  Metriks.timer('enqueue.report_per_owner').time do
-                    reports[owner.login] = limit.report
-                  end
+                  enqueue_owner(owner, jobs)
                 end
               end
             end
+          end
+
+          def enqueue_owner(owner, jobs)
+            limit = nil
+            queueable = nil
+
+            Metriks.timer('enqueue.limit_per_owner').time do
+              limit = strategy.new(owner, jobs)
+              Travis.logger.info "About to evaluate jobs for: #{owner.login}."
+              queueable = limit.queueable
+            end
+
+            Metriks.timer('enqueue.enqueue_per_owner').time do
+              enqueue(queueable)
+            end
+
+            Metriks.timer('enqueue.report_per_owner').time do
+              reports[owner.login] = limit.report
+            end
+          rescue => e
+            Travis.logger.error("Unable to evaluate jobs for owner #{owner.login}. Job ids: #{jobs.map(&:id)}")
+            Travis::Exceptions.handle(e)
           end
 
           def enqueue(jobs)
