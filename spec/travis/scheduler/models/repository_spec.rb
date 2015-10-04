@@ -54,9 +54,8 @@ describe Repository do
   end
 
   describe 'source_host' do
-    before :each do
-      Travis.config.github.stubs(:source_host).returns('localhost')
-    end
+    before { Travis.config.github.source_host = 'localhost' }
+    after  { Travis.config.github.source_host = nil }
 
     it 'returns the source_host name from Travis.config' do
       expect(Repository.new.source_host).to eq('localhost')

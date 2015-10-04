@@ -28,8 +28,8 @@ GIT
 
 GIT
   remote: git://github.com/travis-ci/travis-support.git
-  revision: 57a8155f9cc2ab7c2ab4890babfc4ce781ac5386
-  ref: sf-fix-log-newline
+  revision: a87fea0681550741dd449a2c09b3388dd7627fdf
+  ref: sf-instrumentation
   specs:
     travis-support (0.0.1)
 
@@ -92,7 +92,7 @@ GEM
       thor (>= 0.14.6)
     guard-rspec (1.2.1)
       guard (>= 1.1)
-    hashr (0.0.22)
+    hashr (2.0.0.rc1)
     hitimes (1.2.2)
     i18n (0.7.0)
     ice_nine (0.11.1)
@@ -174,8 +174,8 @@ GEM
     thread_safe (0.3.5)
     timers (4.0.1)
       hitimes
-    travis-config (0.1.0)
-      hashr (~> 0.0)
+    travis-config (1.0.0.rc1)
+      hashr (~> 2.0.0.rc1)
     tzinfo (0.3.43)
     virtus (1.0.5)
       axiom-types (~> 0.1)
@@ -210,7 +210,7 @@ DEPENDENCIES
   sentry-raven!
   sidekiq
   simplecov
-  travis-config (~> 0.1.0)
+  travis-config (~> 1.0.0rc1)
   travis-settings!
   travis-support!
   virtus

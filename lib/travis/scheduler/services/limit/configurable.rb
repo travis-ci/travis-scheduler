@@ -47,7 +47,7 @@ module Travis
 
             if login = config[:delegate] && config[:delegate][owner.login.to_sym]
               @delegate = find_account(login)
-              @delegatees = config[:delegate].select { |delegatee, delegate| delegate == login }.map { |delegatee, delegate| find_account(delegatee) }.compact
+              @delegatees = config[:delegate].to_h.select { |delegatee, delegate| delegate == login }.map { |delegatee, delegate| find_account(delegatee) }.compact
               Travis.logger.info("Delegating #{owner.login} to #{login}")
             end
           end
@@ -83,7 +83,7 @@ module Travis
           def max_jobs_based_on_plan(owner)
             return unless subscribed?(owner)
             plan = owner.subscription.selected_plan
-            plan && Travis.config.plans.present? && Travis.config.plans[plan]
+            plan && Travis.config.plans && Travis.config.plans[plan]
           end
 
           def subscribed?(owner)
