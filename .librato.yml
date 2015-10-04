@@ -1,0 +1,23 @@
+spaces:
+  -
+    name: Scheduler
+    order:
+      - scheduler_enqueued_total
+      - scheduler_median
+      - scheduler_95th_percentile
+      - scheduler_load_avg
+      - scheduler_memory_total
+      - postgres_load_avg
+accounts:
+  org:
+    user: mathias@travis-ci.org
+    vars:
+      app: travis-scheduler
+      db_source: travis-production.heroku_postgresql_white
+      db_name: white
+  com:
+    user: mathias@travis-ci.com
+    vars:
+      app: travis-pro-scheduler
+      db_source: travis-pro-production.heroku_postgresql_maroon
+      db_name: maroon
