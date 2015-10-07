@@ -41,7 +41,7 @@ module Travis
           def initialize(owner, jobs)
             super(owner, jobs)
 
-            unless Travis.config.plans.present?
+            unless Travis.config.plans.to_h.present?
               Travis.logger.warn "No plans present in the config, all builds will default to #{config[:default]} concurrent jobs"
             end
 
