@@ -5,7 +5,7 @@ module Travis
     class Config < Travis::Config
       define  amqp:          { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
               database:      { adapter: 'postgresql', database: "travis_development", encoding: 'unicode', min_messages: 'warning' },
-              encryption:    Travis.env == 'development' || Travis.env == 'test' ? { key: 'secret' * 10 } : {},
+              encryption:    { },
               github:        { },
               interval:      2,
               limit:         { strategy: 'default', default: 5, by_owner: {}, delegate: {} },
@@ -18,16 +18,6 @@ module Travis
               sentry:        { },
               sidekiq:       { namespace: 'sidekiq', pool_size: 3 },
               ssl:           { }
-
-      default _access: [:key]
-
-      def self.env
-        ENV['ENV'] || ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
-      end
-
-      def env
-        self.class.env
-      end
     end
   end
 end

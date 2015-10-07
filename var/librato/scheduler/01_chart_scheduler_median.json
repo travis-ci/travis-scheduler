@@ -1,0 +1,28 @@
+{
+  "name": "Scheduler Median",
+  "type": "stacked",
+  "streams": [
+    {
+      "metric": "enqueue.total.median",
+      "type": "gauge",
+      "source": "*",
+      "group_function": "average",
+      "summary_function": "average",
+      "downsample_function": "average"
+    },
+    {
+      "metric": "enqueue.fetch_jobs.median",
+      "type": "gauge",
+      "source": "*",
+      "group_function": "average",
+      "summary_function": "average",
+      "downsample_function": "average"
+    },
+    {
+      "metric": "heroku.logs.releases",
+      "type": "annotation",
+      "source": "*",
+      "downsample_function": "average"
+    }
+  ]
+}

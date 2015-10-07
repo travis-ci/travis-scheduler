@@ -13,10 +13,8 @@ require 'support/active_record'
 require 'support/factories'
 require 'support/stubs'
 
-# require 'travis/testing/matchers'
-
 Travis.logger = Logger.new(StringIO.new)
-# Travis.services = Travis::Services
+Travis::Scheduler.config.encryption.key = 'secret' * 10
 
 include Mocha::API
 

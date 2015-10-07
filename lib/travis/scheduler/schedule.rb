@@ -13,11 +13,11 @@ module Travis
       extend Travis::Exceptions::Handling
 
       def setup
-        Travis::Amqp.config = Travis.config.amqp
-        Travis::Database.connect
+        Travis::Amqp.config = config.amqp.to_h
+        Travis::Database.connect(config.database.to_h)
         Travis::Exceptions::Reporter.start
         Travis::Metrics.setup
-        Support::Sidekiq.setup(Travis.config)
+        Support::Sidekiq.setup(config)
 
         declare_exchanges_and_queues
       end
@@ -44,6 +44,10 @@ module Travis
           channel = Travis::Amqp.connection.create_channel
           channel.exchange 'reporting', durable: true, auto_delete: false, type: :topic
           channel.queue 'builds.linux', durable: true, exclusive: false
+        end
+
+        def config
+          Scheduler.config
         end
     end
   end

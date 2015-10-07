@@ -23,7 +23,7 @@ module Travis
       end
 
       def redis
-        @redis ||= Redis.connect(config[:redis])
+        @redis ||= Redis.connect(config[:redis].to_h)
       end
 
       def uuid=(uuid)
