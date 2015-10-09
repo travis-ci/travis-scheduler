@@ -1,6 +1,6 @@
-# Travis Scheduler
+# Travis Scheduler [![Build Status](https://travis-ci.org/travis-ci/travis-scheduler.svg?branch=master)](https://travis-ci.org/travis-ci/travis-scheduler)
 
-Scheduler is an application that, in the process of accepting,
+Scheduler is the application that, in the life-cycle of accepting,
 evaluating, and executing a build request, sits in the third position.
 
 The first two positions are: Listener accepts a "request" (an incoming event
@@ -58,8 +58,7 @@ Note that we're using a [central issue tracker]
 (https://github.com/travis-ci/travis-ci/issues) for all the Travis projects.
 
 
-## License & copyright information ##
+## License & copyright
 
-See LICENSE file.
+See [MIT-LICENSE](MIT-LICENSE.md).
 
-Copyright (c) 2011-2015 [Travis CI development team](https://github.com/travis-ci).

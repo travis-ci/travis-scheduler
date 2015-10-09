@@ -1,6 +1,6 @@
-MIT LICENSE
+# MIT LICENSE
 
-Copyright (c) 2011-2015 Travis CI development team
+Copyright (c) 2011-2015 Travis CI GmbH <contact@travis-ci.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
