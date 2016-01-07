@@ -4,7 +4,7 @@ require 'travis/scheduler/models/repository'
 describe Travis::Scheduler::Services::Limit::Configurable do
   include Travis::Testing::Stubs
 
-  let(:jobs)  { 10.times.map { |id| stub_test(id: id) } }
+  let(:jobs)  { 10.times.map { |id| stub_job(id: id) } }
   let(:limit) { described_class.new(organization, jobs) }
   let(:redis) { Travis::Scheduler.redis }
 

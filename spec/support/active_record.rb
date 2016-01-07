@@ -5,15 +5,7 @@ require 'database_cleaner'
 
 FileUtils.mkdir_p('log')
 
-# TODO: why not make this use Travis::Database.connect ?
-config = Travis.config.database.to_h
-config.merge!('adapter' => 'jdbcpostgresql', 'username' => ENV['USER']) if RUBY_PLATFORM == 'java'
-config['database'] = "travis_test"
-
-ActiveRecord::Base.default_timezone = :utc
 ActiveRecord::Base.logger = Logger.new('log/test.db.log')
-ActiveRecord::Base.configurations = { 'test' => config }
-ActiveRecord::Base.establish_connection('test')
 
 ActiveRecord::Base.connection.drop_table "subscriptions" rescue nil
 ActiveRecord::Base.connection.create_table "subscriptions", :force => true do |t|

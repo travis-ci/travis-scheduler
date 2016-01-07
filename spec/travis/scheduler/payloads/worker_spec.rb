@@ -6,7 +6,7 @@ require 'travis/scheduler/payloads/worker'
 describe Travis::Scheduler::Payloads::Worker do
   include Travis::Testing::Stubs
 
-  let(:data) { described_class.new(test).data }
+  let(:data) { described_class.new(job).data }
   let(:foo)  { Travis::Settings::EncryptedColumn.new(use_prefix: false).dump('bar') }
   let(:bar)  { Travis::Settings::EncryptedColumn.new(use_prefix: false).dump('baz') }
 
@@ -23,7 +23,7 @@ describe Travis::Scheduler::Payloads::Worker do
 
   before :each do
     Travis.config.encryption.key = 'secret' * 10
-    test.repository.stubs(:settings).returns(settings)
+    job.repository.stubs(:settings).returns(settings)
   end
 
   describe 'for a push request' do
@@ -35,6 +35,7 @@ describe Travis::Scheduler::Payloads::Worker do
     it 'contains the expected data' do
       expect(data.except('job', 'build', 'repository')).to eq(
         'type' => 'test',
+        'vm_type' => 'default',
         'config' => {
           'rvm' => '1.8.7',
           'gemfile' => 'test/Gemfile.rails-2.3.x'
@@ -106,9 +107,30 @@ describe Travis::Scheduler::Payloads::Worker do
       )
     end
 
-    it "includes the tag name" do
+    it 'includes the tag name' do
       request.stubs(:tag_name).returns 'v1.2.3'
       expect(data['job']['tag']).to eq('v1.2.3')
+    end
+
+    describe 'with the premium_vms feature flag active' do
+      let(:features) { Travis::Scheduler::Support::Features }
+      let(:repo)     { job.repository }
+      let(:owner)    { job.repository.owner }
+
+      after do
+        features.deactivate_repository(:premium_vms, repo)
+        features.deactivate_owner(:premium_vms, owner)
+      end
+
+      describe 'for the repo' do
+        before { features.activate_repository(:premium_vms, repo) }
+        it { expect(data['vm_type']).to eq('premium') }
+      end
+
+      describe 'for the owner' do
+        before { features.activate_owner(:premium_vms, owner) }
+        it { expect(data['vm_type']).to eq('premium') }
+      end
     end
   end
 
@@ -117,23 +139,13 @@ describe Travis::Scheduler::Payloads::Worker do
       commit.stubs(:pull_request?).returns(true)
       commit.stubs(:ref).returns('refs/pull/180/merge')
       commit.stubs(:pull_request_number).returns(180)
-      test.stubs(:secure_env?).returns(false)
-    end
-
-    describe 'from the same repository' do
-      before do
-        test.stubs(:secure_env?).returns(true)
-      end
-
-      it 'enables secure env variables' do
-        expect(data['job']['secure_env_enabled']).to eq(true)
-        expect(data['env_vars'].size).to eql(2)
-      end
+      job.stubs(:secure_env?).returns(false)
     end
 
     it 'contains the expected data' do
       expect(data.except('job', 'build', 'repository')).to eq(
         'type' => 'test',
+        'vm_type' => 'default',
         'config' => {
           'rvm' => '1.8.7',
           'gemfile' => 'test/Gemfile.rails-2.3.x'
@@ -202,6 +214,17 @@ describe Travis::Scheduler::Payloads::Worker do
         'description' => 'the repo description',
         'github_id' => 549743
       )
+    end
+
+    describe 'from the same repository' do
+      before do
+        job.stubs(:secure_env?).returns(true)
+      end
+
+      it 'enables secure env variables' do
+        expect(data['job']['secure_env_enabled']).to eq(true)
+        expect(data['env_vars'].size).to eql(2)
+      end
     end
   end
 

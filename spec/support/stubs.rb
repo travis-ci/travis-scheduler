@@ -15,7 +15,8 @@ module Travis
             let(:request)             { stub_request             }
             let(:commit)              { stub_commit              }
             let(:build)               { stub_build               }
-            let(:test)                { stub_test                }
+            let(:test)                { stub_job                 }
+            let(:job)                 { stub_job                 }
             let(:log)                 { stub_log                 }
             let(:annotation)          { stub_annotation          }
             let(:annotation_provider) { stub_annotation_provider }
@@ -138,7 +139,7 @@ module Travis
           request: request,
           commit_id: commit.id,
           commit: commit,
-          matrix: attributes[:matrix] || [stub_test(id: 1, number: '2.1'), stub_test(id: 2, number: '2.2')],
+          matrix: attributes[:matrix] || [stub_job(id: 1, number: '2.1'), stub_job(id: 2, number: '2.2')],
           matrix_ids: [1, 2],
           cached_matrix_ids: [1, 2],
           number: 2,
@@ -162,7 +163,7 @@ module Travis
         )
       end
 
-      def stub_test(attributes = {})
+      def stub_job(attributes = {})
         log = self.log
         annotation = stub_annotation(job_id: 1)
         test = Stubs.stub 'test', attributes.reverse_merge(
@@ -220,7 +221,7 @@ module Travis
         Stubs.stub 'annotation', attributes.reverse_merge(
           class: Stubs.stub('class', name: 'Annotation'),
           id: 1,
-          job_id: attributes[:job_id] || test.id, # Needed to break the infinite loop in stub_test
+          job_id: attributes[:job_id] || test.id, # Needed to break the infinite loop in stub_job
           annotation_provider_id: annotation_provider.id,
           annotation_provider: annotation_provider,
           description: "The job passed.",
@@ -330,14 +331,6 @@ module Travis
       def stub_email(attributes = {})
         Stubs.stub 'email', attributes.reverse_merge(
           email: 'email'
-        )
-      end
-
-      def stub_job(attributes = {})
-        Stubs.stub 'job', attributes.reverse_merge(
-          repository: stub_repository,
-          id: '42.1',
-          enqueue: true
         )
       end
     end

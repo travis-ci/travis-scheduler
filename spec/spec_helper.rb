@@ -1,20 +1,19 @@
 ENV['RAILS_ENV'] ||= 'test'
 
 require 'simplecov' if ENV['RAILS_ENV'] == 'test' && ENV['COVERAGE']
-
 require 'travis/scheduler'
 require 'travis/support'
-
 require 'stringio'
 require 'mocha'
 require 'factory_girl'
 
+Travis::Scheduler::Schedule.new.setup
+Travis::Scheduler.config.encryption.key = 'secret' * 10
+Travis.logger = Logger.new(StringIO.new)
+
 require 'support/active_record'
 require 'support/factories'
 require 'support/stubs'
-
-Travis.logger = Logger.new(StringIO.new)
-Travis::Scheduler.config.encryption.key = 'secret' * 10
 
 include Mocha::API
 
