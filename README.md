@@ -1,5 +1,7 @@
 # Travis Scheduler [![Build Status](https://travis-ci.org/travis-ci/travis-scheduler.svg?branch=master)](https://travis-ci.org/travis-ci/travis-scheduler)
 
+*Keeper of the limits*
+
 Scheduler is the application that, in the life-cycle of accepting,
 evaluating, and executing a build request, sits in the third position.
 

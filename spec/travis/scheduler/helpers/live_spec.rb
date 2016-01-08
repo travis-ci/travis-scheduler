@@ -3,7 +3,7 @@ require 'travis/scheduler/helpers/live'
 describe Travis::Scheduler::Helpers::Live::Notifier do
   include Travis::Testing::Stubs
 
-  let(:job) { stub_test(state: :queued) }
+  let(:job) { stub_job(state: :queued) }
   subject   { described_class.new(job) }
 
   describe 'enqueues a sidekiq job to pusher_tasks' do

@@ -4,7 +4,7 @@ require 'travis/scheduler/services/limit/default'
 describe Travis::Scheduler::Services::Limit::Default do
   include Travis::Testing::Stubs
 
-  let(:jobs)  { 12.times.map { stub_test } }
+  let(:jobs)  { 12.times.map { stub_job } }
   let(:limit) { described_class.new(org, jobs) }
   let(:redis) { Travis::Scheduler.redis }
 
@@ -67,22 +67,22 @@ describe Travis::Scheduler::Services::Limit::Default do
 
     it 'schedules the maximum number of builds for a single repository' do
       limit.stubs(running: 1)
-      limit.stubs(running_jobs: [OpenStruct.new(repository_id: test.repository_id)])
+      limit.stubs(running_jobs: [OpenStruct.new(repository_id: job.repository_id)])
       expect(limit.queueable.size).to eq(2)
     end
 
     it "schedules jobs for other repositories" do
-      test = stub_test(repository_id: 11111, repository: stub_repo)
-      test.repository.stubs(:settings).returns OpenStruct.new({:restricts_number_of_builds? => false})
+      job = stub_job(repository_id: 11111, repository: stub_repo)
+      job.repository.stubs(:settings).returns OpenStruct.new({:restricts_number_of_builds? => false})
       limit.stubs(running: 1)
-      limit.stubs(running_jobs: [OpenStruct.new(repository_id: test.repository_id)])
+      limit.stubs(running_jobs: [OpenStruct.new(repository_id: job.repository_id)])
       expect(limit.queueable.size).to eq(3)
     end
 
     it "doesn't fail for repositories with no running jobs and restriction enabled" do
-      test = stub_test(repository_id: 11111, repository: stub_repo)
+      job = stub_job(repository_id: 11111, repository: stub_repo)
       limit.stubs(running: 1)
-      limit.stubs(running_jobs: [OpenStruct.new(repository_id: test.repository_id)])
+      limit.stubs(running_jobs: [OpenStruct.new(repository_id: job.repository_id)])
       expect(limit.queueable.size).to eq(3)
     end
 

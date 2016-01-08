@@ -4,7 +4,7 @@ require 'travis/scheduler/payloads/worker'
 describe Travis::Scheduler::Services::EnqueueJobs do
   include Travis::Testing::Stubs
 
-  let(:test)    { stub_test(state: :created, update_attributes!: nil) }
+  let(:job)     { stub_job(state: :created, update_attributes!: nil) }
   let(:service) { described_class.new }
 
   describe 'run' do
@@ -15,20 +15,20 @@ describe Travis::Scheduler::Services::EnqueueJobs do
         restricts_number_of_builds?: false,
         env_vars: []
       )
-      test.repository.stubs(:settings).returns(settings)
+      job.repository.stubs(:settings).returns(settings)
       scope = stub('scope')
-      scope.stubs(:all).returns([test])
+      scope.stubs(:all).returns([job])
       Job.stubs(:queueable).returns(scope)
       service.stubs(:publisher).returns(publisher)
     end
 
     it 'enqueues queueable jobs' do
-      test.expects(:update_attributes!).with(state: :queued, queued_at: Time.now)
+      job.expects(:update_attributes!).with(state: :queued, queued_at: Time.now)
       service.run
     end
 
     it 'publishes queueable jobs' do
-      payload = Travis::Scheduler::Payloads::Worker.new(test).data
+      payload = Travis::Scheduler::Payloads::Worker.new(job).data
       publisher.expects(:publish).with(payload, properties: { type: 'test', persistent: true })
       service.run
     end
@@ -66,7 +66,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
     it 'logs the enqueue' do
       service.stubs(:publish)
       Travis.logger.expects(:info).with("enqueueing slug=svenfuchs/minimal job_id=1").once
-      service.send(:enqueue, [test])
+      service.send(:enqueue, [job])
     end
   end
 end

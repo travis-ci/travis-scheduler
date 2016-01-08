@@ -1,3 +1,5 @@
+require 'travis/scheduler/support/features'
+
 module Travis
   module Scheduler
     module Payloads
@@ -28,6 +30,7 @@ module Travis
         def data
           {
             'type' => 'test',
+            'vm_type' => vm_type,
             # TODO legacy. remove this once workers respond to a 'job' key
             'build' => job_data,
             'job' => job_data,
@@ -80,6 +83,10 @@ module Travis
             'last_build_state' => repository.last_build_state.to_s,
             'description' => repository.description
           }
+        end
+
+        def vm_type
+          Support::Features.active?(:premium_vms, repository) ? 'premium' : 'default'
         end
 
         def ssh_key

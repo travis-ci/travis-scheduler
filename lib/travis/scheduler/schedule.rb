@@ -18,6 +18,7 @@ module Travis
         Travis::Exceptions::Reporter.start
         Travis::Metrics.setup
         Support::Sidekiq.setup(config)
+        Support::Features.setup(config)
 
         declare_exchanges_and_queues
       end
