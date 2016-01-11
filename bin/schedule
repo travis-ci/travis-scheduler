@@ -10,7 +10,7 @@ require 'travis/scheduler'
 
 app = Travis::Scheduler::Schedule.new
 
-Travis.logger.info('[scheduler] setting up schduler app')
+Travis.logger.info('[scheduler] setting up scheduler app')
 app.setup
 
 Travis.logger.info('[scheduler] start queuing dem jobs')
