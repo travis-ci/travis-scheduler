@@ -6,6 +6,7 @@ require 'travis/support'
 require 'stringio'
 require 'mocha'
 require 'factory_girl'
+require 'travis/migrations'
 
 Travis::Scheduler::Schedule.new.setup
 Travis::Scheduler.config.encryption.key = 'secret' * 10

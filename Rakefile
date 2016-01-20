@@ -1,8 +1,12 @@
 require 'rake'
+require 'travis/migrations'
 
 # Rails.application.config.paths.add("spec/support/db/create.sql", with: "#{Gem.loaded_specs['travis-migrations'].full_gem_path}/db/structure.sql")
 
+
 task default: :spec
+
+FileUtils.cp("#{Gem.loaded_specs['travis-migrations'].full_gem_path}/db/structure.sql", 'spec/support/db/create.sql')
 
 namespace :db do
   desc 'Create the test database'
