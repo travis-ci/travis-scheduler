@@ -1,5 +1,7 @@
 require 'rake'
 
+Rails.application.config.paths.add("spec/support/db/create.sql", with: "#{Gem.loaded_specs['travis-migrations'].full_gem_path}/db/structure.sql")
+
 task default: :spec
 
 namespace :db do
@@ -9,4 +11,3 @@ namespace :db do
     sh 'psql -q < spec/support/db/create.sql'
   end
 end
-

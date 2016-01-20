@@ -37,4 +37,5 @@ group :test do
   gem 'simplecov',        require: false
   gem 'webmock',          '~> 1.8.0'
   gem 'factory_girl'
+  gem 'travis-migrations',  github: 'travis-ci/travis-migrations'
 end
