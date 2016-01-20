@@ -6,7 +6,7 @@ require 'travis/migrations'
 
 task default: :spec
 
-FileUtils.cp("#{Gem.loaded_specs['travis-migrations'].full_gem_path}/db/structure.sql", 'spec/support/db/create.sql')
+# FileUtils.cp("#{Gem.loaded_specs['travis-migrations'].full_gem_path}/db/structure.sql", 'spec/support/db/create.sql')
 
 namespace :db do
   desc 'Create the test database'
