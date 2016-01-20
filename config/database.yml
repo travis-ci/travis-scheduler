@@ -14,5 +14,4 @@ development:
 
 test:
   <<: *defaults
-  database: travis_test
-
+  database: travis
