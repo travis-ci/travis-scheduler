@@ -3,7 +3,6 @@ require 'travis/migrations'
 
 task default: :spec
 
-
 namespace :db do
   desc 'Create the test database'
   task :create do
