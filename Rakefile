@@ -8,6 +8,6 @@ namespace :db do
   task :create do
     sh 'createdb travis_test' rescue nil
     sh "cp #{Gem.loaded_specs['travis-migrations'].full_gem_path}/db/structure.sql spec/support/db/create.sql"
-    sh 'psql travis_test < spec/support/db/create.sql'
+    sh 'psql -p travis_test < spec/support/db/create.sql'
   end
 end
