@@ -33,14 +33,14 @@ module Travis
 
         def enqueue_jobs_periodically
           run_periodically(Travis.config.interval) do
-            time { enqueue_jobs }
+            enqueue_jobs
           end
           sleep
         end
 
         def enqueue_jobs
           exclusive do
-            Services::EnqueueJobs.run
+            time { Services::EnqueueJobs.run }
           end
         end
         rescues :enqueue_jobs
