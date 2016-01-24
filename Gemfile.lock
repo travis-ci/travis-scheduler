@@ -228,7 +228,7 @@ DEPENDENCIES
   sentry-raven!
   sidekiq
   simplecov
-  travis-config (~> 1.0.0rc1)
+  travis-config (~> 1.0.3)
   travis-lock!
   travis-migrations!
   travis-settings!
