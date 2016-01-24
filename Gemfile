@@ -5,7 +5,7 @@ ruby '2.1.5' if ENV['DYNO']
 gem 'travis-support',     github: 'travis-ci/travis-support', ref: 'sf-instrumentation'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-lock',        github: 'travis-ci/travis-lock'
-gem 'travis-config',      '~> 1.0.0rc1'
+gem 'travis-config',      '~> 1.0.3'
 
 gem 'rake'
 gem 'activerecord'
