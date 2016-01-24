@@ -20,7 +20,7 @@ GIT
 
 GIT
   remote: git://github.com/travis-ci/travis-amqp.git
-  revision: 4eaadb995e44bf41d252b5e903b86e0e3950f3ae
+  revision: c388299757b7eda2cc0e33cdc7d90113cf283e6a
   specs:
     travis-amqp (0.0.1)
 
