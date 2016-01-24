@@ -1,7 +1,7 @@
 require 'multi_json'
 
 require 'core_ext/kernel/run_periodically'
-require 'travis/support/amqp'
+require 'travis/amqp'
 require 'travis/support/database'
 require 'travis/scheduler/helpers/locking'
 require 'travis/scheduler/services/enqueue_jobs'
