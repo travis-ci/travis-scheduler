@@ -15,7 +15,7 @@ module Travis
       include Helpers::Locking
 
       def setup
-        Travis::Amqp.config = config.amqp.to_h
+        Travis::Amqp.setup(config.amqp.to_h)
         Travis::Database.connect(config.database.to_h)
         Travis::Exceptions::Reporter.start
         Travis::Metrics.setup
