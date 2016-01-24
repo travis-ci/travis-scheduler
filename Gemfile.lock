@@ -19,6 +19,12 @@ GIT
     coder (0.4.0)
 
 GIT
+  remote: git://github.com/travis-ci/travis-amqp.git
+  revision: 4eaadb995e44bf41d252b5e903b86e0e3950f3ae
+  specs:
+    travis-amqp (0.0.1)
+
+GIT
   remote: git://github.com/travis-ci/travis-lock.git
   revision: 8aadc4cd7a1c8d89788dfc096507ee96a71fceb6
   specs:
@@ -228,6 +234,7 @@ DEPENDENCIES
   sentry-raven!
   sidekiq
   simplecov
+  travis-amqp!
   travis-config (~> 1.0.3)
   travis-lock!
   travis-migrations!
