@@ -3,8 +3,10 @@ source 'https://rubygems.org'
 ruby '2.1.5' if ENV['DYNO']
 
 gem 'travis-support',     github: 'travis-ci/travis-support', ref: 'sf-instrumentation'
+gem 'travis-amqp',        github: 'travis-ci/travis-amqp'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
-gem 'travis-config',    '~> 1.0.0rc1'
+gem 'travis-lock',        github: 'travis-ci/travis-lock'
+gem 'travis-config',      '~> 1.0.3'
 
 gem 'rake'
 gem 'activerecord'
@@ -19,10 +21,9 @@ gem 'virtus'
 # this is due to Invalid gemspec errors
 gem 'rollout',            github: 'jamesgolick/rollout', ref: 'v1.1.0'
 gem 'sidekiq'
-
 gem 'bunny'
-
 gem 'pg'
+gem 'redlock'
 
 gem 'coder',              github: 'rkh/coder'
 
