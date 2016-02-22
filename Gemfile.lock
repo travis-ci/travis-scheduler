@@ -188,7 +188,7 @@ GEM
     thread_safe (0.3.5)
     timers (4.0.1)
       hitimes
-    travis-config (1.0.3)
+    travis-config (1.0.4)
       hashr (~> 2.0.0)
     tzinfo (0.3.43)
     virtus (1.0.5)
@@ -226,7 +226,7 @@ DEPENDENCIES
   sidekiq
   simplecov
   travis-amqp!
-  travis-config (~> 1.0.3)
+  travis-config (~> 1.0.4)
   travis-lock!
   travis-settings!
   travis-support!
