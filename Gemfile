@@ -6,7 +6,7 @@ gem 'travis-support',     github: 'travis-ci/travis-support', ref: 'sf-instrumen
 gem 'travis-amqp',        github: 'travis-ci/travis-amqp'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-lock',        github: 'travis-ci/travis-lock'
-gem 'travis-config',      '~> 1.0.4'
+gem 'travis-config',      '~> 1.0.6'
 
 gem 'rake'
 gem 'activerecord'
