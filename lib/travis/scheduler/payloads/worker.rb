@@ -63,7 +63,8 @@ module Travis
             'tag' => request.tag_name.present? ? request.tag_name : nil,
             'pull_request' => commit.pull_request? ? commit.pull_request_number : false,
             'state' => job.state.to_s,
-            'secure_env_enabled' => job.secure_env?
+            'secure_env_enabled' => job.secure_env?,
+            'debug_options' => job.debug_options
           }
           data
         end
