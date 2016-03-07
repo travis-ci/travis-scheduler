@@ -136,6 +136,17 @@ describe Travis::Scheduler::Payloads::Worker do
     end
   end
 
+  describe 'for a debug build request' do
+    let(:debug_options) { {"stage"=>"before_install", "previous_state"=>"failed", "created_by"=>"svenfuchs", "quiet"=>"false"} }
+    before :each do
+      job.stubs(:debug_options).returns(debug_options)
+    end
+
+    it 'contains expected data' do
+      expect(data['job']['debug_options']).to eq(debug_options)
+    end
+  end
+
   describe 'for a pull request' do
     before :each do
       commit.stubs(:pull_request?).returns(true)
