@@ -69,7 +69,8 @@ describe Travis::Scheduler::Payloads::Worker do
         'tag' => nil,
         'pull_request' => false,
         'state' => 'passed',
-        'secure_env_enabled' => true
+        'secure_env_enabled' => true,
+        'debug_options' => {}
       )
     end
 
@@ -86,7 +87,8 @@ describe Travis::Scheduler::Payloads::Worker do
         'tag' => nil,
         'pull_request' => false,
         'state' => 'passed',
-        'secure_env_enabled' => true
+        'secure_env_enabled' => true,
+        'debug_options' => {}
       )
     end
 
@@ -134,6 +136,17 @@ describe Travis::Scheduler::Payloads::Worker do
     end
   end
 
+  describe 'for a debug build request' do
+    let(:debug_options) { {"stage"=>"before_install", "previous_state"=>"failed", "created_by"=>"svenfuchs", "quiet"=>"false"} }
+    before :each do
+      job.stubs(:debug_options).returns(debug_options)
+    end
+
+    it 'contains expected data' do
+      expect(data['job']['debug_options']).to eq(debug_options)
+    end
+  end
+
   describe 'for a pull request' do
     before :each do
       commit.stubs(:pull_request?).returns(true)
@@ -178,7 +191,8 @@ describe Travis::Scheduler::Payloads::Worker do
         'tag' => nil,
         'pull_request' => 180,
         'state' => 'passed',
-        'secure_env_enabled' => false
+        'secure_env_enabled' => false,
+        'debug_options' => {}
       )
     end
 
@@ -195,7 +209,9 @@ describe Travis::Scheduler::Payloads::Worker do
         'tag' => nil,
         'pull_request' => 180,
         'state' => 'passed',
-        'secure_env_enabled' => false
+        'secure_env_enabled' => false,
+        'debug_options' => {}
+
       )
     end
 

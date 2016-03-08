@@ -37,6 +37,7 @@ class Job < ActiveRecord::Base
   belongs_to :owner, polymorphic: true
 
   serialize :config
+  serialize :debug_options
   delegate :secure_env?, :full_addons?, to: :source
 
   def ssh_key
