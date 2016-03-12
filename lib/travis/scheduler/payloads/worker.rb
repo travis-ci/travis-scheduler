@@ -40,7 +40,12 @@ module Travis
             'queue' => job.queue,
             'ssh_key' => ssh_key,
             'env_vars' => env_vars,
-            'timeouts' => timeouts
+            'timeouts' => timeouts,
+            'cache_settings' => {
+              'bucket' => 'secret_bucket',
+              'access_key_id' => ENV['SCHEDULER_ACCESS_KEY_ID'],
+              'secret_access_key' => ENV['SCHEDULER_SECRET_ACCESS_KEY']
+            }
           }
         end
 
