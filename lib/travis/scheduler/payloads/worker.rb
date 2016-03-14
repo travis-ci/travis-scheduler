@@ -28,7 +28,7 @@ module Travis
 
 
         def data
-          {
+          data = {
             'type' => 'test',
             'vm_type' => vm_type,
             # TODO legacy. remove this once workers respond to a 'job' key
@@ -41,12 +41,11 @@ module Travis
             'ssh_key' => ssh_key,
             'env_vars' => env_vars,
             'timeouts' => timeouts,
-            'cache_settings' => {
-              'bucket' => 'secret_bucket',
-              'access_key_id' => ENV['SCHEDULER_ACCESS_KEY_ID'],
-              'secret_access_key' => ENV['SCHEDULER_SECRET_ACCESS_KEY']
-            }
           }
+          if Travis.config.cache_settings.to_h.tap {|x| puts x}
+            data.merge!({ 'cache_settings' => Travis.config.cache_settings.to_h[job.queue.to_sym] })
+          end
+          data
         end
 
         def build_data
