@@ -43,7 +43,7 @@ module Travis
             'timeouts' => timeouts,
           }
           if Travis.config.cache_settings.to_h.tap {|x| puts x}
-            data.merge!({ 'cache_settings' => Travis.config.cache_settings.to_h[job.queue.to_sym].tap {|x| puts "chosen: #{x}"} })
+            data.merge!({ 'cache_settings' => Travis.config.cache_settings.to_h[job.queue.to_sym.tap {|x| puts "key: #{x}"}].tap {|x| puts "chosen: #{x}"} })
           end
           data
         end
