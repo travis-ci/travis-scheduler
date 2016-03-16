@@ -135,6 +135,7 @@ GEM
     minitest (5.8.4)
     mocha (0.10.5)
       metaclass (~> 0.0.1)
+    multi_json (1.11.2)
     multipart-post (2.0.0)
     nenv (0.3.0)
     notiffany (0.0.8)
@@ -223,6 +224,7 @@ DEPENDENCIES
   guard-rspec
   metriks-librato_metrics
   mocha (~> 0.10.0)
+  multi_json (~> 1.11)
   pg
   rails_12factor
   rake

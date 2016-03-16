@@ -26,6 +26,7 @@ gem 'pg'
 gem 'redlock'
 
 gem 'coder',              github: 'rkh/coder'
+gem 'multi_json',         '~> 1.11'
 
 group :test do
   gem 'database_cleaner', '~> 0.8.0'
