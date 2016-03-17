@@ -19,6 +19,8 @@ module Travis
             obj.respond_to?(:dup) ? obj.dup : obj
           end
         end
+
+        extend self
       end
     end
   end
