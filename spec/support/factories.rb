@@ -2,8 +2,8 @@ require 'factory_girl'
 
 FactoryGirl.define do
   factory :build do
-    owner { User.first || FactoryGirl(:user) }
-    repository { Repository.first || FactoryGirl(:repository) }
+    owner { User.first || FactoryGirl.create(:user) }
+    repository { Repository.first || FactoryGirl.create(:repository) }
     association :request
     association :commit
     started_at { Time.now.utc }
@@ -25,11 +25,11 @@ FactoryGirl.define do
   end
 
   factory :test, :class => 'Job::Test' do
-    owner      { User.first || FactoryGirl(:user) }
-    repository { Repository.first || FactoryGirl(:repository) }
-    commit     { FactoryGirl(:commit) }
-    source     { FactoryGirl(:build) }
-    log        { FactoryGirl(:log) }
+    owner      { User.first || FactoryGirl.create(:user) }
+    repository { Repository.first || FactoryGirl.create(:repository) }
+    commit     { FactoryGirl.create(:commit) }
+    source     { FactoryGirl.create(:build) }
+    log        { FactoryGirl.create(:log) }
     config     { { 'rvm' => '1.8.7', 'gemfile' => 'test/Gemfile.rails-2.3.x' } }
     number     '2.1'
     tags       ""
@@ -40,7 +40,7 @@ FactoryGirl.define do
   end
 
   factory :request do
-    repository { Repository.first || FactoryGirl(:repository) }
+    repository { Repository.first || FactoryGirl.create(:repository) }
     association :commit
     token 'the-token'
     event_type 'push'
@@ -49,7 +49,7 @@ FactoryGirl.define do
   REPO_KEY = OpenSSL::PKey::RSA.generate(4096)
 
   factory :repository do
-    owner { User.find_by_login('svenfuchs') || FactoryGirl(:user) }
+    owner { User.find_by_login('svenfuchs') || FactoryGirl.create(:user) }
     name 'minimal'
     owner_name 'svenfuchs'
     owner_email 'svenfuchs@artweb-design.de'
@@ -73,12 +73,12 @@ FactoryGirl.define do
     name 'enginex'
     owner_name 'josevalim'
     owner_email 'josevalim@email.com'
-    owner { User.find_by_login('josevalim') || FactoryGirl(:user, :login => 'josevalim') }
+    owner { User.find_by_login('josevalim') || FactoryGirl.create(:user, :login => 'josevalim') }
   end
 
   factory :event do
-    repository { Repository.first || FactoryGirl(:repository) }
-    source { Build.first || FactoryGirl(:build) }
+    repository { Repository.first || FactoryGirl.create(:repository) }
+    source { Build.first || FactoryGirl.create(:build) }
     event 'build:started'
   end
 
@@ -124,8 +124,8 @@ FactoryGirl.define do
   factory :annotation do
     url "https://travis-ci.org/travis-ci/travis-ci/jobs/12345"
     description "Job passed"
-    job { FactoryGirl(:test) }
-    annotation_provider { FactoryGirl(:annotation_provider) }
+    job { FactoryGirl.create(:test) }
+    annotation_provider { FactoryGirl.create(:annotation_provider) }
   end
 
   factory :annotation_provider do
