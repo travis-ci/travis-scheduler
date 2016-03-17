@@ -2,8 +2,8 @@ require 'factory_girl'
 
 FactoryGirl.define do
   factory :build do
-    owner { User.first || Factory(:user) }
-    repository { Repository.first || Factory(:repository) }
+    owner { User.first || FactoryGirl(:user) }
+    repository { Repository.first || FactoryGirl(:repository) }
     association :request
     association :commit
     started_at { Time.now.utc }
@@ -25,11 +25,11 @@ FactoryGirl.define do
   end
 
   factory :test, :class => 'Job::Test' do
-    owner      { User.first || Factory(:user) }
-    repository { Repository.first || Factory(:repository) }
-    commit     { Factory(:commit) }
-    source     { Factory(:build) }
-    log        { Factory(:log) }
+    owner      { User.first || FactoryGirl(:user) }
+    repository { Repository.first || FactoryGirl(:repository) }
+    commit     { FactoryGirl(:commit) }
+    source     { FactoryGirl(:build) }
+    log        { FactoryGirl(:log) }
     config     { { 'rvm' => '1.8.7', 'gemfile' => 'test/Gemfile.rails-2.3.x' } }
     number     '2.1'
     tags       ""
@@ -40,7 +40,7 @@ FactoryGirl.define do
   end
 
   factory :request do
-    repository { Repository.first || Factory(:repository) }
+    repository { Repository.first || FactoryGirl(:repository) }
     association :commit
     token 'the-token'
     event_type 'push'
@@ -49,7 +49,7 @@ FactoryGirl.define do
   REPO_KEY = OpenSSL::PKey::RSA.generate(4096)
 
   factory :repository do
-    owner { User.find_by_login('svenfuchs') || Factory(:user) }
+    owner { User.find_by_login('svenfuchs') || FactoryGirl(:user) }
     name 'minimal'
     owner_name 'svenfuchs'
     owner_email 'svenfuchs@artweb-design.de'
@@ -73,12 +73,12 @@ FactoryGirl.define do
     name 'enginex'
     owner_name 'josevalim'
     owner_email 'josevalim@email.com'
-    owner { User.find_by_login('josevalim') || Factory(:user, :login => 'josevalim') }
+    owner { User.find_by_login('josevalim') || FactoryGirl(:user, :login => 'josevalim') }
   end
 
   factory :event do
-    repository { Repository.first || Factory(:repository) }
-    source { Build.first || Factory(:build) }
+    repository { Repository.first || FactoryGirl(:repository) }
+    source { Build.first || FactoryGirl(:build) }
     event 'build:started'
   end
 
@@ -94,28 +94,28 @@ FactoryGirl.define do
   end
 
   factory :running_build, :parent => :build do
-    repository { Factory(:repository, :name => 'running_build') }
+    repository { FactoryGirl(:repository, :name => 'running_build') }
     state :started
   end
 
   factory :successful_build, :parent => :build do
-    repository { |b| Factory(:repository, :name => 'successful_build') }
+    repository { |b| FactoryGirl(:repository, :name => 'successful_build') }
     state :passed
     started_at { Time.now.utc }
     finished_at { Time.now.utc }
   end
 
   factory :broken_build, :parent => :build do
-    repository { Factory(:repository, :name => 'broken_build', :last_build_state => :failed) }
+    repository { FactoryGirl(:repository, :name => 'broken_build', :last_build_state => :failed) }
     state :failed
     started_at { Time.now.utc }
     finished_at { Time.now.utc }
   end
 
   factory :broken_build_with_tags, :parent => :build do
-    repository  { Factory(:repository, :name => 'broken_build_with_tags', :last_build_state => :errored) }
-    matrix      {[Factory(:test, :tags => "database_missing,rake_not_bundled",   :number => "1.1"),
-                  Factory(:test, :tags => "database_missing,log_limit_exceeded", :number => "1.2")]}
+    repository  { FactoryGirl(:repository, :name => 'broken_build_with_tags', :last_build_state => :errored) }
+    matrix      {[FactoryGirl(:test, :tags => "database_missing,rake_not_bundled",   :number => "1.1"),
+                  FactoryGirl(:test, :tags => "database_missing,log_limit_exceeded", :number => "1.2")]}
     state       :failed
     started_at  { Time.now.utc }
     finished_at { Time.now.utc }
@@ -124,8 +124,8 @@ FactoryGirl.define do
   factory :annotation do
     url "https://travis-ci.org/travis-ci/travis-ci/jobs/12345"
     description "Job passed"
-    job { Factory(:test) }
-    annotation_provider { Factory(:annotation_provider) }
+    job { FactoryGirl(:test) }
+    annotation_provider { FactoryGirl(:annotation_provider) }
   end
 
   factory :annotation_provider do
