@@ -24,15 +24,14 @@ FactoryGirl.define do
     compare_url 'https://github.com/svenfuchs/minimal/compare/master...develop'
   end
 
-  factory :test, :class => 'Job::Test' do
+  factory :job do
     owner      { User.first || FactoryGirl.create(:user) }
     repository { Repository.first || FactoryGirl.create(:repository) }
     commit     { FactoryGirl.create(:commit) }
     source     { FactoryGirl.create(:build) }
-    log        { FactoryGirl.create(:log) }
     config     { { 'rvm' => '1.8.7', 'gemfile' => 'test/Gemfile.rails-2.3.x' } }
+    type       'test' # legacy
     number     '2.1'
-    tags       ""
   end
 
   factory :log do
