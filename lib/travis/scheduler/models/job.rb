@@ -9,8 +9,6 @@ require 'travis/scheduler/models/user'
 class Job < ActiveRecord::Base
   require 'travis/scheduler/models/job/config'
 
-  class Test < Job; end
-
   class << self
     # what needs to be queued up
     def queueable(queue = nil)
@@ -30,6 +28,8 @@ class Job < ActiveRecord::Base
       where(owner_id: owner.id, owner_type: owner.class.to_s)
     end
   end
+
+  self.inheritance_column = :_disabled
 
   belongs_to :repository
   belongs_to :commit

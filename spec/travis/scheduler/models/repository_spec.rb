@@ -63,7 +63,7 @@ describe Repository do
   end
 
   describe 'settings' do
-    let(:repo) { Factory.create(:repository) }
+    let(:repo) { FactoryGirl.create(:repository) }
 
     it 'adds repository_id to collection records' do
       env_var = repo.settings.env_vars.create(name: 'FOO')

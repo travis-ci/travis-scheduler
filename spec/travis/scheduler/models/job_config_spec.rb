@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Job::Config do
-  let(:repo)    { Factory(:repository) }
+  let(:repo)    { FactoryGirl.create(:repository) }
   let(:secure)  { repo.key.secure }
   subject       { described_class.decrypt(config, secure, options) }
 

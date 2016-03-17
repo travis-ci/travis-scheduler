@@ -1,4 +1,4 @@
-require 'active_support/core_ext/hash/deep_dup'
+require 'active_support/core_ext/object/deep_dup'
 require 'travis/scheduler/models/job/config/decrypt'
 require 'travis/scheduler/models/job/config/normalize'
 
