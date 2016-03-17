@@ -89,7 +89,7 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     dalli (2.7.6)
-    database_cleaner (0.8.0)
+    database_cleaner (1.5.1)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
@@ -218,7 +218,7 @@ DEPENDENCIES
   bunny
   coder!
   dalli
-  database_cleaner (~> 0.8.0)
+  database_cleaner (~> 1.5.1)
   factory_girl
   guard
   guard-rspec

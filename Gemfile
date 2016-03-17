@@ -29,7 +29,7 @@ gem 'coder',              github: 'rkh/coder'
 gem 'multi_json',         '~> 1.11'
 
 group :test do
-  gem 'database_cleaner', '~> 0.8.0'
+  gem 'database_cleaner', '~> 1.5.1'
   gem 'guard'
   gem 'guard-rspec'
   gem 'mocha',            '~> 0.10.0'
