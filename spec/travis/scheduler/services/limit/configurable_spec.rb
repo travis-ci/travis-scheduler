@@ -174,31 +174,31 @@ describe Travis::Scheduler::Services::Limit::Configurable do
       end
 
       it "checks all running jobs for the delegatees" do
-        job = Job::Test.new(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
+        job = Job.new(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
         job.save validate: false
-        job = Job::Test.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
+        job = Job.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
         job.save validate: false
         expect(limit.running).to eq(2)
       end
 
       it "returns a number of jobs that are runnable based on the overall delegatees" do
-        job = Job::Test.new(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
+        job = Job.new(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
         job.save validate: false
-        job = Job::Test.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
+        job = Job.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
         job.save validate: false
         expect(limit.queueable.size).to eq(3)
       end
 
       it "checks the number of builds for the container organization" do
-        job = Job::Test.new(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
+        job = Job.new(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
         job.save validate: false
-        job = Job::Test.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
+        job = Job.new(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
         job.save validate: false
-        job = Job::Test.new(owner: organization, state: 'queued', repository: Repository.new(owner: organization))
+        job = Job.new(owner: organization, state: 'queued', repository: Repository.new(owner: organization))
         job.save validate: false
-        job = Job::Test.new(owner: organization, state: 'started', repository: Repository.new(owner: organization))
+        job = Job.new(owner: organization, state: 'started', repository: Repository.new(owner: organization))
         job.save validate: false
-        job = Job::Test.new(owner: organization, state: 'started', repository: Repository.new(owner: organization))
+        job = Job.new(owner: organization, state: 'started', repository: Repository.new(owner: organization))
         job.save validate: false
         expect(limit.queueable.size).to eq(0)
       end
@@ -225,9 +225,9 @@ describe Travis::Scheduler::Services::Limit::Configurable do
         end
 
         it "allows overriding the delegate limit in the configuration" do
-          Job::Test.create!(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
-          Job::Test.create!(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
-          Job::Test.create!(owner: organization, state: 'queued', repository: Repository.new(owner: organization))
+          Job.create!(owner: roidrage, state: 'started', repository: Repository.new(owner: roidrage))
+          Job.create!(owner: travispro, state: 'started', repository: Repository.new(owner: travispro))
+          Job.create!(owner: organization, state: 'queued', repository: Repository.new(owner: organization))
           expect(limit.max_jobs_from_container_account).to eq(2)
         end
       end
