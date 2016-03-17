@@ -21,6 +21,7 @@ gem 'virtus'
 # this is due to Invalid gemspec errors
 gem 'rollout',            github: 'jamesgolick/rollout', ref: 'v1.1.0'
 gem 'sidekiq'
+gem 'redis-namespace',    '~> 1.5'
 gem 'bunny'
 gem 'pg'
 gem 'redlock'
