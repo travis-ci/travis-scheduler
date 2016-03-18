@@ -9,7 +9,7 @@ gem 'travis-lock',        github: 'travis-ci/travis-lock'
 gem 'travis-config',      '~> 1.0.6'
 
 gem 'rake'
-gem 'activerecord'
+gem 'activerecord',       '~> 3.2'
 gem 'dalli'
 
 gem 'sentry-raven',       github: 'getsentry/raven-ruby'
