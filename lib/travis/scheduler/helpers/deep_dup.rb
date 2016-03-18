@@ -13,7 +13,7 @@ module Travis
             obj.inject([]) do |array, value|
               array << deep_dup(value)
             end
-          when NilClass, TrueClass, FalseClass, Fixnum, Symbol
+          when NilClass, TrueClass, FalseClass, Numeric, Symbol
             obj
           else
             obj.respond_to?(:dup) ? obj.dup : obj
