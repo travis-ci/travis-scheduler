@@ -24,6 +24,42 @@ describe Travis::Scheduler::Helpers::DeepDup do
     let(:obj) { 'string' }
 
     it { expect(dup).to eq obj }
+    it { expect(dup.object_id).to_not eq obj.object_id }
+  end
+
+  describe 'nil (cannot be duped)' do
+    let(:obj) { nil }
+
+    it { expect(dup).to eq obj }
+    it { expect(dup.object_id).to eq obj.object_id }
+  end
+
+  describe 'true (cannot be duped)' do
+    let(:obj) { true }
+
+    it { expect(dup).to eq obj }
+    it { expect(dup.object_id).to eq obj.object_id }
+  end
+
+  describe 'false (cannot be duped)' do
+    let(:obj) { false }
+
+    it { expect(dup).to eq obj }
+    it { expect(dup.object_id).to eq obj.object_id }
+  end
+
+  describe 'an integer (cannot be duped)' do
+    let(:obj) { 1 }
+
+    it { expect(dup).to eq obj }
+    it { expect(dup.object_id).to eq obj.object_id }
+  end
+
+  describe 'a float (cannot be duped)' do
+    let(:obj) { 1.2 }
+
+    it { expect(dup).to eq obj }
+    it { expect(dup.object_id).to eq obj.object_id }
   end
 end
 
