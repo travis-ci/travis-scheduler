@@ -7,6 +7,7 @@ gem 'travis-amqp',        github: 'travis-ci/travis-amqp'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-lock',        github: 'travis-ci/travis-lock'
 gem 'travis-config',      '~> 1.0.6'
+gem 'travis-migrations',  github: 'travis-ci/travis-migrations'
 
 gem 'rake'
 gem 'activerecord',       '~> 3.2'
@@ -40,5 +41,4 @@ group :test do
   gem 'simplecov',        require: false
   gem 'webmock',          '~> 1.8.0'
   gem 'factory_girl'
-  gem 'travis-migrations',  github: 'travis-ci/travis-migrations'
 end
