@@ -42,9 +42,13 @@ module Travis
             'env_vars' => env_vars,
             'timeouts' => timeouts,
           }
-          if Travis.config.cache_settings && queue_settings = Travis.config.cache_settings.to_h.fetch(job.queue.to_sym, nil)
-            data.merge!({ 'cache_settings' => queue_settings })
+
+          if Support::Features.active?(:cache_settings, repository)
+            if Travis.config.cache_settings && queue_settings = Travis.config.cache_settings.to_h.fetch(job.queue.to_sym, nil)
+              data.merge!({ 'cache_settings' => queue_settings })
+            end
           end
+
           data
         end
 
