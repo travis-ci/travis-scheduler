@@ -40,6 +40,7 @@ describe Travis::Scheduler::Payloads::Worker do
     before :each do
       commit.stubs(:pull_request?).returns(false)
       commit.stubs(:ref).returns(nil)
+      Travis::Scheduler::Support::Features.activate_owner(:cache_settings, job.repository.owner)
     end
 
     it 'contains the expected data' do
