@@ -4,9 +4,7 @@ $stdout.sync = true
 
 $LOAD_PATH << 'lib'
 
-require 'bundler/setup'
 require 'travis/scheduler'
-
 
 app = Travis::Scheduler::Schedule.new
 

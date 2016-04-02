@@ -1,1 +1,1 @@
-schedule: ./bin/schedule
+schedule: bundle exec ./bin/schedule
