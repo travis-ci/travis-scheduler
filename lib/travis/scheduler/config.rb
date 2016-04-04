@@ -18,7 +18,8 @@ module Travis
               sentry:        { },
               sidekiq:       { namespace: 'sidekiq', pool_size: 3 },
               lock:          { strategy: :redis, ttl: 150 },
-              ssl:           { }
+              ssl:           { },
+              cache_settings: { }
     end
   end
 end
