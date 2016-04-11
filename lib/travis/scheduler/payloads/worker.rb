@@ -28,7 +28,7 @@ module Travis
 
 
         def data
-          {
+          data = {
             'type' => 'test',
             'vm_type' => vm_type,
             # TODO legacy. remove this once workers respond to a 'job' key
@@ -40,8 +40,16 @@ module Travis
             'queue' => job.queue,
             'ssh_key' => ssh_key,
             'env_vars' => env_vars,
-            'timeouts' => timeouts
+            'timeouts' => timeouts,
           }
+
+          if Support::Features.active?(:cache_settings, repository)
+            if Travis.config.cache_settings && queue_settings = Travis.config.cache_settings.to_h.fetch(job.queue.to_sym, nil)
+              data.merge!({ 'cache_settings' => queue_settings })
+            end
+          end
+
+          data
         end
 
         def build_data

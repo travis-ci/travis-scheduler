@@ -9,6 +9,13 @@ describe Travis::Scheduler::Payloads::Worker do
   let(:data) { described_class.new(job).data }
   let(:foo)  { Travis::Settings::EncryptedColumn.new(use_prefix: false).dump('bar') }
   let(:bar)  { Travis::Settings::EncryptedColumn.new(use_prefix: false).dump('baz') }
+  let(:cache_settings_linux) {
+    {
+      access_key_id:      'ACCESS_KEY_ID',
+      secret_access_key:  'SECRET_ACCESS_KEY',
+      bucket_name:        'cache_bucket'
+    }
+  }
 
   let(:settings) do
     Repository::Settings.load({
@@ -23,6 +30,9 @@ describe Travis::Scheduler::Payloads::Worker do
 
   before :each do
     Travis.config.encryption.key = 'secret' * 10
+    Travis.config.cache_settings = {
+      :'builds.linux' => cache_settings_linux
+    }
     job.repository.stubs(:settings).returns(settings)
   end
 
@@ -30,6 +40,7 @@ describe Travis::Scheduler::Payloads::Worker do
     before :each do
       commit.stubs(:pull_request?).returns(false)
       commit.stubs(:ref).returns(nil)
+      Travis::Scheduler::Support::Features.activate_owner(:cache_settings, job.repository.owner)
     end
 
     it 'contains the expected data' do
@@ -53,7 +64,8 @@ describe Travis::Scheduler::Payloads::Worker do
         'timeouts' => {
           'hard_limit' => 180 * 60, # worker handles timeouts in seconds
           'log_silence' => 20 * 60
-        }
+        },
+        'cache_settings' => cache_settings_linux
       )
     end
 
@@ -175,7 +187,8 @@ describe Travis::Scheduler::Payloads::Worker do
         'timeouts' => {
           'hard_limit' => 180 * 60, # worker handles timeouts in seconds
           'log_silence' => 20 * 60
-        }
+        },
+        'cache_settings' => cache_settings_linux
       )
     end
 
