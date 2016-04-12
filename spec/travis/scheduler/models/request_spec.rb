@@ -50,6 +50,30 @@ describe Request do
   end
 
   describe 'same_repo_pull_request?' do
+    it 'returns false if the ref is a sha' do
+      request.payload = {
+        'pull_request' => {
+          'base' => { 'repo' => { 'full_name' => 'travis-ci/travis-core' } },
+          'head' => { 'repo' => { 'full_name' => 'travis-ci/travis-core' },
+                      'ref' => 'abc123', 'sha' => 'abc123bde266593ee3a9d32d376430437a6fc392' }
+        }
+      }
+
+      expect(request.same_repo_pull_request?).to eq(false)
+    end
+
+    it 'returns true if the ref is not a sha' do
+      request.payload = {
+        'pull_request' => {
+          'base' => { 'repo' => { 'full_name' => 'travis-ci/travis-core' } },
+          'head' => { 'repo' => { 'full_name' => 'travis-ci/travis-core' },
+                      'ref' => 'abc124', 'sha' => 'abc123bde266593ee3a9d32d376430437a6fc392' }
+        }
+      }
+
+      expect(request.same_repo_pull_request?).to eq(true)
+    end
+
     it 'returns true if the base and head repos match' do
       request.payload = {
         'pull_request' => {

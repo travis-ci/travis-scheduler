@@ -34,9 +34,15 @@ class Request < ActiveRecord::Base
 
   def same_repo_pull_request?
     payload = Hashr.new(self.payload)
-    head_repo = payload.pull_request.try(:head).try(:repo).try(:full_name)
+    head = payload.pull_request.try(:head)
+
+    return false unless head
+
     base_repo = payload.pull_request.try(:base).try(:repo).try(:full_name)
-    !!(head_repo && base_repo && head_repo == base_repo)
+    head_repo = head.try(:repo).try(:full_name)
+    head_sha = head.sha
+    head_ref = head.ref
+    !!(head_repo && base_repo && head_repo == base_repo && head_sha !~ /^#{head_ref}/)
   rescue => e
     Travis::Scheduler.logger.error "[request:#{id}] Couldn't determine whether pull request is from the same repository: #{e.message}"
     false
