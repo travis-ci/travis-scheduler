@@ -72,7 +72,7 @@ module Travis
             'tag' => request.tag_name.present? ? request.tag_name : nil,
             'pull_request' => commit.pull_request? ? commit.pull_request_number : false,
             'state' => job.state.to_s,
-            'secure_env_enabled' => job.secure_env?,
+            'secure_env_enabled' => secure_env?,
             'debug_options' => job.debug_options
           }
           data
@@ -114,7 +114,7 @@ module Travis
 
         def env_vars
           vars = settings.env_vars
-          vars = vars.public unless job.secure_env?
+          vars = vars.public unless secure_env?
 
           vars.map do |var|
             {
@@ -141,6 +141,11 @@ module Travis
 
         def format_date(date)
           date && date.strftime('%Y-%m-%dT%H:%M:%SZ')
+        end
+
+        def secure_env?
+          return @secure_env if defined? @secure_env
+          @secure_env = job.secure_env?
         end
       end
     end

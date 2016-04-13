@@ -20,7 +20,8 @@ module Travis
               lock:          { strategy: :redis, ttl: 150 },
               ssl:           { },
               cache_settings: { },
-              queue_redirections: { }
+              queue_redirections: { },
+              oauth2:        { }
     end
   end
 end
