@@ -55,7 +55,8 @@ module Travis
         def build_data
           {
             'id' => build.id,
-            'number' => build.number
+            'number' => build.number,
+            'event_type' => build.event_type
           }
         end
 
