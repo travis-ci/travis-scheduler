@@ -55,7 +55,8 @@ describe Travis::Scheduler::Payloads::Worker do
         'ssh_key' => nil,
         'source' => {
           'id' => 1,
-          'number' => 2
+          'number' => 2,
+          'event_type' => 'push'
         },
         'env_vars' => [
           { 'name' => 'FOO', 'value' => 'bar', 'public' => false },
@@ -165,6 +166,7 @@ describe Travis::Scheduler::Payloads::Worker do
       commit.stubs(:ref).returns('refs/pull/180/merge')
       commit.stubs(:pull_request_number).returns(180)
       job.stubs(:secure_env?).returns(false)
+      job.source.stubs(:event_type).returns('pull')
     end
 
     it 'contains the expected data' do
@@ -179,7 +181,8 @@ describe Travis::Scheduler::Payloads::Worker do
         'ssh_key' => nil,
         'source' => {
           'id' => 1,
-          'number' => 2
+          'number' => 2,
+          'event_type' => 'pull'
         },
         'env_vars' => [
           { 'name' => 'BAR', 'value' => 'baz', 'public' => true }
