@@ -72,6 +72,8 @@ module Travis
 
           def enqueue(jobs)
             jobs.each do |job|
+              queue_redirect(job)
+
               Travis.logger.info("enqueueing slug=#{job.repository.slug} job_id=#{job.id}")
               Metriks.timer('enqueue.publish_job').time do
                 publish(job)
@@ -116,7 +118,14 @@ module Travis
               'nothing to enqueue.'
             end
           end
-      end
+
+          def queue_redirect(job)
+            if Travis::Scheduler::Config.queue_redirections.key?(job.queue)
+              job.queue = Travis::Scheduler::Config.queue_redirections[job.queue]
+              job.save
+            end
+          end
+        end
     end
   end
 end

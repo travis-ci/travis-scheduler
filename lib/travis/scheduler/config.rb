@@ -19,7 +19,8 @@ module Travis
               sidekiq:       { namespace: 'sidekiq', pool_size: 3 },
               lock:          { strategy: :redis, ttl: 150 },
               ssl:           { },
-              cache_settings: { }
+              cache_settings: { },
+              queue_redirections: { }
     end
   end
 end
