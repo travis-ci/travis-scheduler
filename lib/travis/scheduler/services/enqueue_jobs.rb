@@ -120,9 +120,12 @@ module Travis
           end
 
           def queue_redirect(job)
+            Travis.logger.info "Found job with job.queue #{job.queue}"
             if Travis::Scheduler.config.queue_redirections.key?(job.queue)
+              Travis.logger.info "Now job.queue is #{job.queue}. Should be build.linux"
               job.queue = Travis::Scheduler.config.queue_redirections[job.queue]
               job.save
+              Travis.logger.info "Changed job.queue to #{job.queue}"
             end
           end
         end
