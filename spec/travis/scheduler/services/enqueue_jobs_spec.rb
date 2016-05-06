@@ -4,7 +4,7 @@ require 'travis/scheduler/payloads/worker'
 describe Travis::Scheduler::Services::EnqueueJobs do
   include Travis::Testing::Stubs
 
-  let(:job)     { stub_job(state: :created, update_attributes!: nil) }
+  let(:job)     { stub_job(state: :created, queue: 'builds.gce', update_attributes!: nil) }
   let(:service) { described_class.new }
 
   describe 'run' do
@@ -37,6 +37,25 @@ describe Travis::Scheduler::Services::EnqueueJobs do
       service.run
       expect(service.reports).to eq({ 'svenfuchs' => { total: 1, running: 0, max: 5, queueable: 1 } })
     end
+
+    describe 'given queue redirection config' do
+      before do
+        Travis::Scheduler.config.queue_redirections['builds.linux'] = 'builds.gce'
+      end
+
+      it 'keeps the job queue if it does not match' do
+        job.stubs(:queue).returns('builds.macosx')
+        job.expects(:queue=).never
+        service.run
+      end
+
+      it 'redirects the job queue if it matches' do
+        job.stubs(:queue).returns('builds.linux')
+        job.expects(:queue=).with('builds.gce')
+        job.expects(:save!)
+        service.run
+      end
+    end
   end
 
   # describe 'Instrument' do
@@ -63,6 +82,10 @@ describe Travis::Scheduler::Services::EnqueueJobs do
   # end
 
   describe 'Logging' do
+    before do
+      Travis.logger.stubs(:info)
+    end
+
     it 'logs the enqueue' do
       service.stubs(:publish)
       Travis.logger.expects(:info).with("enqueueing slug=svenfuchs/minimal job_id=1").once

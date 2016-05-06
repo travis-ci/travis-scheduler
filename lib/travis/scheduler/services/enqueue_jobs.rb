@@ -120,9 +120,8 @@ module Travis
           end
 
           def queue_redirect(job)
-            Travis.logger.info "Found job with job.queue #{job.queue}"
             if queue = Travis::Scheduler.config.queue_redirections[job.queue]
-              Travis.logger.info "Now job.queue is #{job.queue}. Redirecting to: #{queue}"
+              Travis.logger.info "Found job.queue: #{job.queue}. Redirecting to: #{queue}"
               job.queue = queue
               job.save!
             end
