@@ -41,6 +41,7 @@ module Travis
             'ssh_key' => ssh_key,
             'env_vars' => env_vars,
             'timeouts' => timeouts,
+            'encrypted_env_removed' => job.encrypted_env_removed?
           }
 
           if Support::Features.active?(:cache_settings, repository)

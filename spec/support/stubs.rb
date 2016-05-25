@@ -194,7 +194,8 @@ module Travis
           secure_env?: true,
           debug_options: {
 
-          }
+          },
+          encrypted_env_removed?: false
         )
 
         source = stub_build(:matrix => [test])

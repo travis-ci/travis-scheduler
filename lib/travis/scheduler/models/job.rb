@@ -48,4 +48,8 @@ class Job < ActiveRecord::Base
     options = { full_addons: full_addons?, secure_env: secure_env? }
     Config.decrypt(config, repository.key.secure, options)
   end
+
+  def encrypted_env_removed?
+    Config.encrypted_env_removed?
+  end
 end

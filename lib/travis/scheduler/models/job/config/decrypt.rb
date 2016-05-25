@@ -10,6 +10,10 @@ class Job
         config
       end
 
+      def encrypted_env_removed?
+        !options[:secure_env]
+      end
+
       private
 
         def secure_env?

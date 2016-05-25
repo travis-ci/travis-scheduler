@@ -7,10 +7,16 @@ class Job
     class << self
       include Travis::Scheduler::Helpers::DeepDup
 
+      def encrypted_env_removed?
+        @encrypted_env_removed
+      end
+
       def decrypt(config, decryptor, options)
         config = deep_dup(config)
         config = Config::Normalize.new(config, options).apply
-        config = Config::Decrypt.new(config, decryptor, options).apply
+        decryptor = Config::Decrypt.new(config, decryptor, options)
+        config = decryptor.apply
+        @encrypted_env_removed = decryptor.encrypted_env_removed?
         config
       end
     end
