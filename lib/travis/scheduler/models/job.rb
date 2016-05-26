@@ -50,6 +50,9 @@ class Job < ActiveRecord::Base
   end
 
   def encrypted_env_removed?
-    Config.encrypted_env_removed?
+    !(secure_env?) && config[:env] &&
+      config[:env].any? do |var|
+        var.is_a?(Hash) && var.has_key?(:secure)
+      end
   end
 end
