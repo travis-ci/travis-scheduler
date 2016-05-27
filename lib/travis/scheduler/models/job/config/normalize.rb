@@ -6,6 +6,7 @@ class Job
         apt_packages
         apt_sources
         firefox
+        hostname
         hosts
         mariadb
         postgresql
