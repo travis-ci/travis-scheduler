@@ -130,7 +130,7 @@ module Travis
         end
 
         def timeout(type)
-          timeout = settings.send(:"timeout_#{type}")
+          timeout = Integer(settings.send(:"timeout_#{type}"))
           timeout = timeout * 60 if timeout # worker handles timeouts in seconds
           timeout
         end
