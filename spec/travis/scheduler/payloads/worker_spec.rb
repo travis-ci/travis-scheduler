@@ -260,6 +260,23 @@ describe Travis::Scheduler::Payloads::Worker do
     end
   end
 
+  describe 'for a build with string timeouts' do
+    let(:settings) do
+      Repository::Settings.load({
+        'env_vars' => [
+          { 'name' => 'FOO', 'value' => foo },
+          { 'name' => 'BAR', 'value' => bar, 'public' => true }
+        ],
+        'timeout_hard_limit' => '180',
+        'timeout_log_silence' => '20'
+      })
+    end
+
+    it 'converts them to ints' do
+      expect(data['timeouts']).to eq({'hard_limit' => 180*60, 'log_silence' => 20*60})
+    end
+  end
+
   def json_format_time(time)
     time.strftime('%Y-%m-%dT%H:%M:%SZ')
   end
