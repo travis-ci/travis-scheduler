@@ -192,9 +192,8 @@ module Travis
           log_content: log.content,
           ssh_key: nil,
           secure_env?: true,
-          debug_options: {
-
-          },
+          secure_env_vars_removed?: false,
+          debug_options: {},
           encrypted_env_removed?: false
         )
 

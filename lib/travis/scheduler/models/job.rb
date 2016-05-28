@@ -49,7 +49,7 @@ class Job < ActiveRecord::Base
     Config.decrypt(config, repository.key.secure, options)
   end
 
-  def encrypted_env_removed?
+  def secure_env_vars_removed?
     !(secure_env?) &&
     [:env, :global_env].any? do |key|
       config.has_key?(key) &&
