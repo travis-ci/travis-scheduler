@@ -279,8 +279,8 @@ describe Travis::Scheduler::Payloads::Worker do
 
   describe 'ssh_key' do
     let(:repo) { job.repository }
-    before { Travis.config.enterprise = false }
     before { repo.key.stubs(:private_key).returns('repo key') }
+    after  { Travis.config.enterprise = false }
 
     shared_examples_for 'does not include an ssh key' do
       it { expect(data['ssh_key']).to eq nil }
