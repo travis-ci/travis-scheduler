@@ -100,7 +100,7 @@ module Travis
         end
 
         def ssh_key
-          if repository.public?
+          if repository.public? && !Travis.config.enterprise
             nil
           elsif ssh_key = repository.settings.ssh_key
             { 'source' => 'repository_settings', 'value' => ssh_key.value.decrypt, 'encoded' => false }
