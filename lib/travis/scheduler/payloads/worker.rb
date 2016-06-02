@@ -107,7 +107,6 @@ module Travis
           elsif ssh_key = job.ssh_key
             { 'source' => 'travis_yaml', 'value' => ssh_key, 'encoded' => true }
           else
-            ssh_key = repository.key.private_key
             { 'source' => 'default_repository_key', 'value' => repository.key.private_key, 'encoded' => false }
           end
         end
