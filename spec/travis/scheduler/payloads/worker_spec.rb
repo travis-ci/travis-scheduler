@@ -83,6 +83,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'pull_request' => false,
         'state' => 'passed',
         'secure_env_enabled' => true,
+        'secure_env_vars_removed' => false,
         'debug_options' => {}
       )
     end
@@ -101,6 +102,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'pull_request' => false,
         'state' => 'passed',
         'secure_env_enabled' => true,
+        'secure_env_vars_removed' => false,
         'debug_options' => {}
       )
     end
@@ -208,6 +210,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'pull_request' => 180,
         'state' => 'passed',
         'secure_env_enabled' => false,
+        'secure_env_vars_removed' => false,
         'debug_options' => {}
       )
     end
@@ -226,8 +229,8 @@ describe Travis::Scheduler::Payloads::Worker do
         'pull_request' => 180,
         'state' => 'passed',
         'secure_env_enabled' => false,
+        'secure_env_vars_removed' => false,
         'debug_options' => {}
-
       )
     end
 
