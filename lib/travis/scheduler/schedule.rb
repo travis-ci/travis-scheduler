@@ -7,6 +7,7 @@ require 'travis/scheduler/helpers/locking'
 require 'travis/scheduler/services/enqueue_jobs'
 require 'travis/support/exceptions'
 require 'travis/scheduler/support/sidekiq'
+require 'travis/scheduler/github'
 
 module Travis
   module Scheduler
@@ -21,6 +22,7 @@ module Travis
         Travis::Metrics.setup
         Support::Sidekiq.setup(config)
         Support::Features.setup(config)
+        Travis::Scheduler::Github.setup
 
         declare_exchanges_and_queues
       end

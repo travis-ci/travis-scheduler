@@ -7,6 +7,8 @@ gem 'travis-lock',        github: 'travis-ci/travis-lock'
 gem 'travis-config',      '~> 1.0.6'
 gem 'travis-migrations',  github: 'travis-ci/travis-migrations'
 
+gem 'gh',                 github: 'travis-ci/gh'
+
 gem 'rake'
 gem 'activerecord',       '~> 3.2'
 gem 'dalli'

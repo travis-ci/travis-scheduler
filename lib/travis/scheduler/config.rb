@@ -6,6 +6,7 @@ module Travis
       define  amqp:          { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
               database:      { adapter: 'postgresql', database: "travis_#{env}", encoding: 'unicode', min_messages: 'warning' },
               encryption:    { },
+              enterprise:    false,
               github:        { },
               interval:      2,
               limit:         { strategy: 'default', default: 5, by_owner: {}, delegate: {} },
@@ -20,7 +21,8 @@ module Travis
               lock:          { strategy: :redis, ttl: 150 },
               ssl:           { },
               cache_settings: { },
-              queue_redirections: { }
+              queue_redirections: { },
+              oauth2:        { }
     end
   end
 end
