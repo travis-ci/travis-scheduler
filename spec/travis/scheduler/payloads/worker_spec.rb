@@ -260,6 +260,77 @@ describe Travis::Scheduler::Payloads::Worker do
     end
   end
 
+  describe 'for a build with string timeouts' do
+    let(:settings) do
+      Repository::Settings.load({
+        'env_vars' => [
+          { 'name' => 'FOO', 'value' => foo },
+          { 'name' => 'BAR', 'value' => bar, 'public' => true }
+        ],
+        'timeout_hard_limit' => '180',
+        'timeout_log_silence' => '20'
+      })
+    end
+
+    it 'converts them to ints' do
+      expect(data['timeouts']).to eq({'hard_limit' => 180*60, 'log_silence' => 20*60})
+    end
+  end
+
+  describe 'ssh_key' do
+    let(:repo) { job.repository }
+    before { repo.key.stubs(:private_key).returns('repo key') }
+    after  { Travis.config.enterprise = false }
+
+    shared_examples_for 'does not include an ssh key' do
+      it { expect(data['ssh_key']).to eq nil }
+    end
+
+    shared_examples_for 'includes an ssh key' do
+      describe 'from the repo settings' do
+        before { repo.settings.ssh_key = { value: 'settings key' } }
+        it { expect(data['ssh_key']).to eq('source' => 'repository_settings', 'value' => 'settings key', 'encoded' => false) }
+      end
+
+      describe 'from the job' do
+        before { job.stubs(:ssh_key).returns('job key') }
+        it { expect(data['ssh_key']).to eq('source' => 'travis_yaml', 'value' => 'job key', 'encoded' => true) }
+      end
+
+      describe 'from the repo' do
+        it { expect(data['ssh_key']).to eq('source' => 'default_repository_key', 'value' => 'repo key', 'encoded' => false) }
+      end
+    end
+
+    describe 'outside enterprise' do
+      before { Travis.config.enterprise = false }
+
+      describe 'on a public repo' do
+        before { repo.stubs(:public?).returns(true) }
+        include_examples 'does not include an ssh key'
+      end
+
+      describe 'on a private repo' do
+        before { repo.stubs(:public?).returns(false) }
+        include_examples 'includes an ssh key'
+      end
+    end
+
+    describe 'on enterprise' do
+      before { Travis.config.enterprise = true }
+
+      describe 'on a public repo' do
+        before { repo.stubs(:public?).returns(true) }
+        include_examples 'includes an ssh key'
+      end
+
+      describe 'on a private repo' do
+        before { repo.stubs(:public?).returns(false) }
+        include_examples 'includes an ssh key'
+      end
+    end
+  end
+
   def json_format_time(time)
     time.strftime('%Y-%m-%dT%H:%M:%SZ')
   end

@@ -72,7 +72,7 @@ module Travis
             'tag' => request.tag_name.present? ? request.tag_name : nil,
             'pull_request' => commit.pull_request? ? commit.pull_request_number : false,
             'state' => job.state.to_s,
-            'secure_env_enabled' => job.secure_env?,
+            'secure_env_enabled' => secure_env?,
             'debug_options' => job.debug_options
           }
           data
@@ -100,7 +100,7 @@ module Travis
         end
 
         def ssh_key
-          if repository.public?
+          if repository.public? && !Travis.config.enterprise
             nil
           elsif ssh_key = repository.settings.ssh_key
             { 'source' => 'repository_settings', 'value' => ssh_key.value.decrypt, 'encoded' => false }
@@ -114,7 +114,7 @@ module Travis
 
         def env_vars
           vars = settings.env_vars
-          vars = vars.public unless job.secure_env?
+          vars = vars.public unless secure_env?
 
           vars.map do |var|
             {
@@ -130,9 +130,10 @@ module Travis
         end
 
         def timeout(type)
-          timeout = settings.send(:"timeout_#{type}")
-          timeout = timeout * 60 if timeout # worker handles timeouts in seconds
-          timeout
+          if timeout = settings.send(:"timeout_#{type}")
+            timeout = Integer(timeout)
+            timeout * 60 # worker handles timeouts in seconds
+          end
         end
 
         def settings
@@ -141,6 +142,11 @@ module Travis
 
         def format_date(date)
           date && date.strftime('%Y-%m-%dT%H:%M:%SZ')
+        end
+
+        def secure_env?
+          return @secure_env if defined? @secure_env
+          @secure_env = job.secure_env?
         end
       end
     end

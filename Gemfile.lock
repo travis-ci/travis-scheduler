@@ -19,6 +19,18 @@ GIT
     coder (0.4.0)
 
 GIT
+  remote: git://github.com/travis-ci/gh.git
+  revision: 27e30fd01f6d5144d8d7d0c88db7875b95ed8939
+  specs:
+    gh (0.14.0)
+      addressable
+      backports
+      faraday (~> 0.8)
+      multi_json (~> 1.0)
+      net-http-persistent (>= 2.7)
+      net-http-pipeline
+
+GIT
   remote: git://github.com/travis-ci/travis-amqp.git
   revision: 3966b3651adfd1c544f53d49d5986ac16cd9c4bc
   specs:
@@ -76,6 +88,7 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
+    backports (3.6.8)
     builder (3.0.4)
     bunny (2.3.0)
       amq-protocol (>= 2.0.1)
@@ -135,6 +148,8 @@ GEM
     multi_json (1.11.2)
     multipart-post (2.0.0)
     nenv (0.3.0)
+    net-http-persistent (2.9.4)
+    net-http-pipeline (1.0.1)
     notiffany (0.0.8)
       nenv (~> 0.1)
       shellany (~> 0.0)
@@ -218,6 +233,7 @@ DEPENDENCIES
   dalli
   database_cleaner (~> 1.5.1)
   factory_girl
+  gh!
   guard
   guard-rspec
   metriks-librato_metrics

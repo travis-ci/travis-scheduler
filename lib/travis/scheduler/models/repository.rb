@@ -1,11 +1,15 @@
 require 'active_record'
 require 'travis/scheduler/models/organization'
+require 'travis/scheduler/models/permission'
 require 'travis/scheduler/models/ssl_key'
 require 'travis/scheduler/models/user'
 
 class Repository < ActiveRecord::Base
   belongs_to :owner, polymorphic: true
   has_one    :key, class_name: :SslKey
+
+  has_many :permissions
+  has_many :users, :through => :permissions
 
   def slug
     @slug ||= [owner_name, name].join('/')
