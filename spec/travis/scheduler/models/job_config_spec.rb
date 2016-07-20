@@ -113,7 +113,7 @@ describe Job::Config do
       end
     end
 
-    [:firefox, :postgresql, :hostname, :hosts, :apt_packages, :apt_sources].each do |name|
+    Job::Config::Normalize::WHITELISTED_ADDONS.map(&:to_sym).each do |name|
       describe "keeps the #{name} addon" do
         let(:config) { { addons: { name => :config } } }
         it { should eql(config) }
