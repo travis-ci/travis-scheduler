@@ -10,6 +10,7 @@ class Job
         hosts
         mariadb
         postgresql
+        rethinkdb
         ssh_known_hosts
       ).freeze
 
