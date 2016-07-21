@@ -5,6 +5,7 @@ class Job
         apt
         apt_packages
         apt_sources
+        browserstack
         firefox
         hostname
         hosts
