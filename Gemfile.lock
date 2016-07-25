@@ -230,6 +230,7 @@ DEPENDENCIES
   activerecord (~> 3.2)
   bunny
   coder!
+  concurrent-ruby
   dalli
   database_cleaner (~> 1.5.1)
   factory_girl
@@ -259,6 +260,3 @@ DEPENDENCIES
   travis-support!
   virtus
   webmock (~> 1.8.0)
-
-BUNDLED WITH
-   1.11.2
