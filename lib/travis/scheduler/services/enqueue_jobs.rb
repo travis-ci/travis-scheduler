@@ -90,7 +90,15 @@ module Travis
               queue_redirect(job)
 
               Travis.logger.info("enqueueing slug=#{job.repository.slug} job_id=#{job.id}")
-              publish(job)
+              if ENV['PUBLISH_POOL_ENABLED'] =~ /^(true|1)$/i
+                Travis.logger.info("thread pool enabled slug=#{job.repository.slug} job_id=#{job.id}")
+                publish_pool.post do
+                  publish(job)
+                end
+              else
+                Travis.logger.info("thread pool disabled slug=#{job.repository.slug} job_id=#{job.id}")
+                publish(job)
+              end
 
               Metriks.timer('enqueue.enqueue_job').time do
                 job.update_attributes!(state: :queued, queued_at: Time.now.utc)
@@ -104,13 +112,7 @@ module Travis
               payload = Payloads::Worker.new(job).data
               # check the properties are being set correctly,
               # and type is being used
-              if ENV['PUBLISH_POOL_ENABLED'] =~ /^(true|1)$/i
-                publish_pool.post do
-                  publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
-                end
-              else
-                publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
-              end
+              publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
             end
           end
 
