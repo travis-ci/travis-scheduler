@@ -84,7 +84,11 @@ module Travis
               Travis.logger.info("enqueueing slug=#{job.repository.slug} job_id=#{job.id}")
               if publish_pool
                 publish_pool.post do
-                  publish(job)
+                  begin
+                    publish(job)
+                  rescue => e
+                    Travis.logger.error("error during enqueuing : #{e.inspect}")
+                  end
                 end
               else
                 publish(job)
