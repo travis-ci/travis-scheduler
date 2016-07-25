@@ -44,7 +44,9 @@ module Travis
 
       def fetch_branch
         tries ||= 1
-        GH["/repos/#{repository.slug}/branches/#{URI.escape(branch_name)}"]
+        Metriks.timer('branch_validator.github_fetch_branch').time do
+          GH["/repos/#{repository.slug}/branches/#{URI.escape(branch_name)}"]
+        end
       rescue GH::TokenInvalid
         raise
       rescue GH::Error => e
