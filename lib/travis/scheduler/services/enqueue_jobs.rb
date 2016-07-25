@@ -90,9 +90,7 @@ module Travis
               queue_redirect(job)
 
               Travis.logger.info("enqueueing slug=#{job.repository.slug} job_id=#{job.id}")
-              Metriks.timer('enqueue.publish_job').time do
-                publish(job)
-              end
+              publish(job)
 
               Metriks.timer('enqueue.enqueue_job').time do
                 job.update_attributes!(state: :queued, queued_at: Time.now.utc)
