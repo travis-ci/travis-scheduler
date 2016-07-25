@@ -35,6 +35,9 @@ module Travis
         # use :caller_runs fallback policy to block the main thread
         # when no worker threads are available -- this creates
         # backpressure and prevents memory from leaking.
+        #
+        # make sure to also scale the DATABASE_POOL_SIZE env var
+        # when you scale these values.
         def publish_pool
           @pool ||= Concurrent::ThreadPoolExecutor.new(
            min_threads: ENV['PUBLISH_POOL_MIN_THREADS'] || 4,
