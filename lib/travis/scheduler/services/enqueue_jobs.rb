@@ -87,7 +87,6 @@ module Travis
                   publish(job)
                 end
               else
-                Travis.logger.info("thread pool disabled slug=#{job.repository.slug} job_id=#{job.id}")
                 publish(job)
               end
 
