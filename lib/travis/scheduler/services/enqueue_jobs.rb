@@ -22,7 +22,7 @@ module Travis
         extend Travis::Exceptions::Handling
         include Helpers::Benchmark, Helpers::Live
 
-        def self.run(publish_pool)
+        def self.run(publish_pool=nil)
           new(publish_pool).run
         end
 
