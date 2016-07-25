@@ -106,7 +106,7 @@ module Travis
               payload = Payloads::Worker.new(job).data
               # check the properties are being set correctly,
               # and type is being used
-              if ENV['PUBLISH_POOL_ENABLED'].to_b
+              if ENV['PUBLISH_POOL_ENABLED'] =~ /^(true|1)$/i
                 publish_pool.post do
                   publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
                 end
