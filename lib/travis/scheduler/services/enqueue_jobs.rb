@@ -22,29 +22,18 @@ module Travis
         extend Travis::Exceptions::Handling
         include Helpers::Benchmark, Helpers::Live
 
-        def self.run
-          new.run
+        def self.run(publish_pool=nil)
+          new(publish_pool).run
+        end
+
+        attr_reader :publish_pool
+
+        def initialize(publish_pool=nil)
+          @publish_pool = publish_pool
         end
 
         def reports
           @reports ||= {}
-        end
-
-        # thread pool for parallel publishing of jobs to rabbitmq
-        #
-        # use :caller_runs fallback policy to block the main thread
-        # when no worker threads are available -- this creates
-        # backpressure and prevents memory from leaking.
-        #
-        # make sure to also scale the DATABASE_POOL_SIZE env var
-        # when you scale these values.
-        def publish_pool
-          @pool ||= Concurrent::ThreadPoolExecutor.new(
-           min_threads: ENV['PUBLISH_POOL_MIN_THREADS'] || 4,
-           max_threads: ENV['PUBLISH_POOL_MIN_THREADS'] || 4,
-           max_queue: ENV['PUBLISH_POOL_MAX_QUEUE'] || 10,
-           fallback_policy: :caller_runs
-          )
         end
 
         def run
@@ -93,13 +82,15 @@ module Travis
               queue_redirect(job)
 
               Travis.logger.info("enqueueing slug=#{job.repository.slug} job_id=#{job.id}")
-              if ENV['PUBLISH_POOL_ENABLED'] =~ /^(true|1)$/i
-                Travis.logger.info("thread pool enabled slug=#{job.repository.slug} job_id=#{job.id}")
+              if publish_pool
                 publish_pool.post do
-                  publish(job)
+                  begin
+                    publish(job)
+                  rescue => e
+                    Travis.logger.error("error during enqueuing : #{e.inspect}")
+                  end
                 end
               else
-                Travis.logger.info("thread pool disabled slug=#{job.repository.slug} job_id=#{job.id}")
                 publish(job)
               end
 
@@ -111,8 +102,13 @@ module Travis
           end
 
           def publish(job)
-            Metriks.timer('enqueue.publish_job').time do
+            payload = nil
+
+            Metriks.timer('enqueue.build_worker_payload').time do
               payload = Payloads::Worker.new(job).data
+            end
+
+            Metriks.timer('enqueue.publish_job').time do
               # check the properties are being set correctly,
               # and type is being used
               publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
