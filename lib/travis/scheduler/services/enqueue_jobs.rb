@@ -6,6 +6,7 @@ require 'travis/scheduler/models/user'
 require 'travis/scheduler/payloads/worker'
 require 'travis/scheduler/services/limit/default'
 require 'travis/scheduler/services/limit/configurable'
+require 'concurrent'
 
 module Travis
   module Scheduler
@@ -27,6 +28,20 @@ module Travis
 
         def reports
           @reports ||= {}
+        end
+
+        # thread pool for parallel publishing of jobs to rabbitmq
+        #
+        # use :caller_runs fallback policy to block the main thread
+        # when no worker threads are available -- this creates
+        # backpressure and prevents memory from leaking.
+        def publish_pool
+          @pool ||= Concurrent::ThreadPoolExecutor.new(
+           min_threads: ENV['PUBLISH_POOL_MIN_THREADS'] || 4,
+           max_threads: ENV['PUBLISH_POOL_MIN_THREADS'] || 4,
+           max_queue: ENV['PUBLISH_POOL_MAX_QUEUE'] || 10,
+           fallback_policy: :caller_runs
+          )
         end
 
         def run
@@ -91,7 +106,13 @@ module Travis
               payload = Payloads::Worker.new(job).data
               # check the properties are being set correctly,
               # and type is being used
-              publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
+              if ENV['PUBLISH_POOL_ENABLED'].to_b
+                publish_pool.post do
+                  publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
+                end
+              else
+                publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
+              end
             end
           end
 
