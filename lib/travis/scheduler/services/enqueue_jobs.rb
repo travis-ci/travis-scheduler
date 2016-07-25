@@ -102,8 +102,13 @@ module Travis
           end
 
           def publish(job)
-            Metriks.timer('enqueue.publish_job').time do
+            payload = nil
+
+            Metriks.timer('enqueue.build_worker_payload').time do
               payload = Payloads::Worker.new(job).data
+            end
+
+            Metriks.timer('enqueue.publish_job').time do
               # check the properties are being set correctly,
               # and type is being used
               publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
