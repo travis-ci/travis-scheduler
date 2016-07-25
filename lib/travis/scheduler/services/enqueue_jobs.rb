@@ -28,7 +28,7 @@ module Travis
 
         attr_reader :publish_pool
 
-        def initialize(publish_pool)
+        def initialize(publish_pool=nil)
           @publish_pool = publish_pool
         end
 
