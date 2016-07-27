@@ -44,6 +44,10 @@ module Travis
             'prefer_https' => prefer_https?
           }
 
+          if prefer_https?
+            data['oauth_token'] = repository.admin.github_oauth_token
+          end
+
           if Support::Features.active?(:cache_settings, repository)
             if Travis.config.cache_settings && queue_settings = Travis.config.cache_settings.to_h.fetch(job.queue && job.queue.to_sym, nil)
               data.merge!({ 'cache_settings' => queue_settings })

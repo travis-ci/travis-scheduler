@@ -148,6 +148,40 @@ describe Travis::Scheduler::Payloads::Worker do
         it { expect(data['vm_type']).to eq('premium') }
       end
     end
+
+    context 'when prefer_https is set in config' do
+      before { Travis.config.prefer_https = true  }
+      after  { Travis.config.prefer_https = false }
+
+      it 'contains the expected data' do
+        expect(data.except('job', 'build', 'repository')).to eq(
+          'type' => 'test',
+          'vm_type' => 'default',
+          'config' => {
+            'rvm' => '1.8.7',
+            'gemfile' => 'test/Gemfile.rails-2.3.x'
+          },
+          'queue' => 'builds.linux',
+          'ssh_key' => nil,
+          'source' => {
+            'id' => 1,
+            'number' => 2,
+            'event_type' => 'push'
+          },
+          'env_vars' => [
+            { 'name' => 'FOO', 'value' => 'bar', 'public' => false },
+            { 'name' => 'BAR', 'value' => 'baz', 'public' => true }
+          ],
+          'timeouts' => {
+            'hard_limit' => 180 * 60, # worker handles timeouts in seconds
+            'log_silence' => 20 * 60
+          },
+          'cache_settings' => cache_settings_linux,
+          'prefer_https' => true,
+          'oauth_token' => "token"
+        )
+      end
+    end
   end
 
   describe 'for a debug build request' do

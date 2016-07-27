@@ -24,7 +24,7 @@ class Repository < ActiveRecord::Base
   end
 
   def source_url
-    private? || force_private? ? "git@#{source_host}:#{slug}.git": "https://#{source_host}/#{slug}.git"
+    ( private? || force_private? ) && !Travis.config.prefer_https ? "git@#{source_host}:#{slug}.git": "https://#{source_host}/#{slug}.git"
   end
 
   def force_private?
