@@ -41,6 +41,7 @@ module Travis
             'ssh_key' => ssh_key,
             'env_vars' => env_vars,
             'timeouts' => timeouts,
+            'prefer_https' => prefer_https?
           }
 
           if Support::Features.active?(:cache_settings, repository)
@@ -147,6 +148,10 @@ module Travis
         def secure_env?
           return @secure_env if defined? @secure_env
           @secure_env = job.secure_env?
+        end
+
+        def prefer_https?
+          Travis.config.prefer_https
         end
       end
     end
