@@ -40,7 +40,7 @@ class Repository < ActiveRecord::Base
   end
 
   def admin
-    candidates = repository.users.where("github_oauth_token IS NOT NULL").
+    candidates = users.where("github_oauth_token IS NOT NULL").
                                   order("updated_at DESC")
 
     candidates.first
