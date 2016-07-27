@@ -40,15 +40,10 @@ class Repository < ActiveRecord::Base
   end
 
   def admin
-    candicates = User.with_github_token.with_permissions(:repository_id => id, :admin => true).first
-    admin = candicates.first
+    candidates = repository.users.where("github_oauth_token IS NOT NULL").
+                                  order("updated_at DESC")
 
-    admin || begin
-      Travis.logger.error("[github-scheduler] repository #{slug} does not have admin")
-      nil
-    end
-  rescue
-    nil
+    candidates.first
   end
 end
 
