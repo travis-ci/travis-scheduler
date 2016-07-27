@@ -151,7 +151,7 @@ module Travis
         end
 
         def prefer_https?
-          Travis.config.prefer_https
+          Travis.config.prefer_https || false
         end
       end
     end
