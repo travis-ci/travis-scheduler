@@ -45,7 +45,7 @@ module Travis
           }
 
           if prefer_https?
-            data['oauth_token'] = repository.admin.github_oauth_token
+            data['oauth_token'] = oauth_token
           end
 
           if Support::Features.active?(:cache_settings, repository)
@@ -156,6 +156,10 @@ module Travis
 
         def prefer_https?
           Travis.config.prefer_https || false
+        end
+
+        def oauth_token
+          repository.admin.github_oauth_token
         end
       end
     end

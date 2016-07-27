@@ -21,6 +21,7 @@ describe Repository do
 
       before :each do
         Travis.config.github.source_host = nil
+        repo.stubs(:admin).returns User.new
       end
 
       it 'returns the public git source url for a public repository' do
@@ -59,7 +60,11 @@ describe Repository do
     context 'when prefer_https is set' do
       let(:repo) { Repository.new(owner_name: 'travis-ci', name: 'travis-ci') }
 
-      before { Travis.config.prefer_https = true  }
+      before :each do
+        Travis.config.prefer_https = true
+        repo.stubs(:admin).returns User.new
+      end
+
       after  { Travis.config.prefer_https = false }
 
       it 'returns the https source url the repository' do

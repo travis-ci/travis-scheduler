@@ -24,7 +24,7 @@ class Repository < ActiveRecord::Base
   end
 
   def source_url
-    ( private? || force_private? ) && !Travis.config.prefer_https ? "git@#{source_host}:#{slug}.git": "https://#{source_host}/#{slug}.git"
+    ( private? || force_private? || admin.nil? ) && !Travis.config.prefer_https ? "git@#{source_host}:#{slug}.git": "https://#{source_host}/#{slug}.git"
   end
 
   def force_private?
@@ -37,6 +37,18 @@ class Repository < ActiveRecord::Base
 
   def settings
     @settings ||= Repository::Settings.load(super, repository_id: id)
+  end
+
+  def admin
+    candicates = User.with_github_token.with_permissions(:repository_id => id, :admin => true).first
+    admin = candicates.first
+
+    admin || begin
+      Travis.logger.error("[github-scheduler] repository #{slug} does not have admin")
+      nil
+    end
+  rescue
+    nil
   end
 end
 
