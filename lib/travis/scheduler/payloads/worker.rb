@@ -159,7 +159,7 @@ module Travis
         end
 
         def oauth_token
-          repository.admin.github_oauth_token
+          repository.admin && repository.admin.github_oauth_token
         end
       end
     end
