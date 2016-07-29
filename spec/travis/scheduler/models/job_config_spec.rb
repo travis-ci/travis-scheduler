@@ -35,6 +35,11 @@ describe Job::Config do
       let(:config) { { rvm: '1.8.7', env: nil, global_env: nil } }
       it { should eql(config) }
     end
+
+    describe 'with a [nil] env' do
+      let(:config) { { rvm: '1.8.7', env: [ nil ], global_env: [ nil ] } }
+      it { should eql({ rvm: '1.8.7', env: [], global_env: [] }) }
+    end
   end
 
   describe 'with secure env enabled' do
