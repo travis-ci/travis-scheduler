@@ -49,7 +49,7 @@ class Job
         end
 
         def normalize_env(env)
-          [env].flatten.map do |line|
+          [env].flatten.compact.map do |line|
             if line.is_a?(Hash) && !line.has_key?(:secure)
               line.map { |k, v| "#{k}=#{v}" }.join(' ')
             else
