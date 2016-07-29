@@ -9,6 +9,7 @@ class Job
         firefox
         hostname
         hosts
+        jwt
         mariadb
         postgresql
         rethinkdb
