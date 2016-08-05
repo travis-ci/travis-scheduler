@@ -9,9 +9,8 @@ module Travis
         register :service, :notify
 
         def run
-          p job.repository.owner_name
-          fail('kaputt. testing exception tracking.') if job.repository.owner_name == 'svenfuchs'
-          info "Publishing worker payload for job=#{job.id} queue=#{job.queue}."
+          # fail('kaputt. testing exception tracking.') if job.repository.owner_name == 'svenfuchs'
+          info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
           publish
         end
 
@@ -30,7 +29,7 @@ module Travis
           end
 
           def publisher
-            Amqp::Publisher.builds(job.queue)
+            Amqp::Publisher.new(job.queue)
           end
 
           def job

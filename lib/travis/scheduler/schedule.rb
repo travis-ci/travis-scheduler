@@ -18,13 +18,14 @@ module Travis
       include Helpers::Locking
 
       def setup
-        Travis::Amqp.setup(config.amqp.to_h)
+        Travis::Amqp.setup(config.amqp.to_h, logger)
         Travis::Database.connect(config.database.to_h)
         Travis::Exceptions::Reporter.start
         Travis::Metrics.setup
         Support::Sidekiq.setup(config)
         Support::Features.setup(config)
         Travis::Scheduler::Github.setup
+        ActiveRecord::Base.logger.level = ::Logger::INFO # TODO
 
         declare_exchanges_and_queues
       end
@@ -65,6 +66,10 @@ module Travis
 
         def config
           Scheduler.config
+        end
+
+        def logger
+          Scheduler.logger
         end
     end
   end

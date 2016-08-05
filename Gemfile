@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'travis-support',     github: 'travis-ci/travis-support', ref: 'sf-instrumentation'
-gem 'travis-amqp',        github: 'travis-ci/travis-amqp'
 gem 'travis-metrics',     github: 'travis-ci/travis-metrics'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-lock',        github: 'travis-ci/travis-lock'

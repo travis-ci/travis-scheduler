@@ -31,12 +31,6 @@ GIT
       net-http-pipeline
 
 GIT
-  remote: git://github.com/travis-ci/travis-amqp.git
-  revision: 3966b3651adfd1c544f53d49d5986ac16cd9c4bc
-  specs:
-    travis-amqp (0.0.1)
-
-GIT
   remote: git://github.com/travis-ci/travis-lock.git
   revision: 8aadc4cd7a1c8d89788dfc096507ee96a71fceb6
   specs:
@@ -98,7 +92,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     backports (3.6.8)
     builder (3.0.4)
-    bunny (2.3.0)
+    bunny (2.5.0)
       amq-protocol (>= 2.0.1)
     coderay (1.1.1)
     coercible (1.0.0)
@@ -264,7 +258,6 @@ DEPENDENCIES
   sentry-raven!
   sidekiq-pro!
   simplecov
-  travis-amqp!
   travis-config (~> 1.0.6)
   travis-lock!
   travis-metrics!
