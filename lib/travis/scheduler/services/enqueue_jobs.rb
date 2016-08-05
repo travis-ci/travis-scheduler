@@ -82,37 +82,21 @@ module Travis
               queue_redirect(job)
 
               Travis.logger.info("enqueueing slug=#{job.repository.slug} job_id=#{job.id}")
-              if publish_pool
-                publish_pool.post do
-                  begin
-                    publish(job)
-                  rescue => e
-                    Travis.logger.error("error during enqueuing : #{e.inspect}")
-                  end
-                end
-              else
-                publish(job)
-              end
 
               Metriks.timer('enqueue.enqueue_job').time do
                 job.update_attributes!(state: :queued, queued_at: Time.now.utc)
+                notify(job)
                 notify_live(job)
               end
             end
           end
 
-          def publish(job)
-            payload = nil
-
-            Metriks.timer('enqueue.build_worker_payload').time do
-              payload = Payloads::Worker.new(job).data
-            end
-
-            Metriks.timer('enqueue.publish_job').time do
-              # check the properties are being set correctly,
-              # and type is being used
-              publisher(job.queue).publish(payload, properties: { type: "test", persistent: true })
-            end
+          def notify(job)
+            Sidekiq::Client.push(
+              'queue' => :scheduler,
+              'class' => 'Travis::Scheduler::Worker',
+              'args'  => [:notify, job: { id: job.id }]
+            )
           end
 
           def jobs
@@ -121,10 +105,6 @@ module Travis
               Travis.logger.info "Found #{jobs.size} jobs in total." if jobs.size > 0
               jobs
             end
-          end
-
-          def publisher(queue)
-            Travis::Amqp::Publisher.builds(queue)
           end
 
           def format_reports(reports)

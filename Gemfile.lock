@@ -43,6 +43,13 @@ GIT
     travis-lock (0.1.0)
 
 GIT
+  remote: git://github.com/travis-ci/travis-metrics.git
+  revision: 37eac93bd1e9bd949a9842f28154c335ebeda42a
+  specs:
+    travis-metrics (0.0.1)
+      metriks-librato_metrics (~> 1.0)
+
+GIT
   remote: git://github.com/travis-ci/travis-migrations.git
   revision: fcf6eea3e3122a7cbb857826db835de69974c54d
   specs:
@@ -65,6 +72,7 @@ GIT
 
 GEM
   remote: https://rubygems.org/
+  remote: https://gems.contribsys.com/
   specs:
     activemodel (3.2.22.2)
       activesupport (= 3.2.22.2)
@@ -130,6 +138,7 @@ GEM
     hitimes (1.2.3)
     i18n (0.7.0)
     ice_nine (0.11.2)
+    jemalloc (1.0.1)
     json (1.8.3)
     listen (3.0.6)
       rb-fsevent (>= 0.9.3)
@@ -202,6 +211,8 @@ GEM
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
       redis (~> 3.2, >= 3.2.1)
+    sidekiq-pro (3.3.2)
+      sidekiq (>= 4.0.0)
     simplecov (0.11.2)
       docile (~> 1.1.0)
       json (~> 1.8)
@@ -237,6 +248,7 @@ DEPENDENCIES
   gh!
   guard
   guard-rspec
+  jemalloc
   metriks-librato_metrics
   mocha (~> 0.10.0)
   multi_json (~> 1.11)
@@ -250,16 +262,14 @@ DEPENDENCIES
   rubocop
   ruby-progressbar (= 1.7.1)
   sentry-raven!
-  sidekiq
+  sidekiq-pro!
   simplecov
   travis-amqp!
   travis-config (~> 1.0.6)
   travis-lock!
+  travis-metrics!
   travis-migrations!
   travis-settings!
   travis-support!
   virtus
   webmock (~> 1.8.0)
-
-BUNDLED WITH
-   1.12.4

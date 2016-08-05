@@ -2,19 +2,18 @@ source 'https://rubygems.org'
 
 gem 'travis-support',     github: 'travis-ci/travis-support', ref: 'sf-instrumentation'
 gem 'travis-amqp',        github: 'travis-ci/travis-amqp'
+gem 'travis-metrics',     github: 'travis-ci/travis-metrics'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-lock',        github: 'travis-ci/travis-lock'
 gem 'travis-config',      '~> 1.0.6'
 gem 'travis-migrations',  github: 'travis-ci/travis-migrations'
 
 gem 'concurrent-ruby'
-
+gem 'jemalloc'
 gem 'gh',                 github: 'travis-ci/gh'
-
 gem 'rake'
 gem 'activerecord',       '~> 3.2'
 gem 'dalli'
-
 gem 'sentry-raven',       github: 'getsentry/raven-ruby'
 gem 'metriks-librato_metrics'
 gem 'rails_12factor'
@@ -23,7 +22,7 @@ gem 'virtus'
 # can't be removed yet, even though we're on jruby 1.6.7 everywhere
 # this is due to Invalid gemspec errors
 gem 'rollout',            github: 'jamesgolick/rollout', ref: 'v1.1.0'
-gem 'sidekiq'
+gem 'sidekiq-pro', require: 'sidekiq-pro', source: 'https://gems.contribsys.com'
 gem 'redis-namespace',    '~> 1.5'
 gem 'bunny'
 gem 'pg'

@@ -8,6 +8,8 @@ require 'travis/scheduler/services/enqueue_jobs'
 require 'travis/support/exceptions'
 require 'travis/scheduler/support/sidekiq'
 require 'travis/scheduler/github'
+require 'travis/scheduler/services'
+require 'travis/scheduler/worker'
 
 module Travis
   module Scheduler
@@ -23,10 +25,6 @@ module Travis
         Support::Sidekiq.setup(config)
         Support::Features.setup(config)
         Travis::Scheduler::Github.setup
-
-        if ENV['PUBLISH_POOL_ENABLED'] =~ /^(true|1)$/i
-          setup_publish_pool
-        end
 
         declare_exchanges_and_queues
       end
@@ -50,26 +48,6 @@ module Travis
           end
         end
         rescues :enqueue_jobs
-
-        # thread pool for parallel publishing of jobs to rabbitmq
-        #
-        # use :caller_runs fallback policy to block the main thread
-        # when no worker threads are available -- this creates
-        # backpressure and prevents memory from leaking.
-        #
-        # make sure to also scale the DATABASE_POOL_SIZE env var
-        # when you scale these values.
-        def setup_publish_pool
-          @publish_pool ||= begin
-            Travis.logger.info("Setting up Publish Thread Pool")
-            Concurrent::ThreadPoolExecutor.new(
-              min_threads: ENV['PUBLISH_POOL_MIN_THREADS'] || 4,
-              max_threads: ENV['PUBLISH_POOL_MIN_THREADS'] || 4,
-              max_queue: ENV['PUBLISH_POOL_MAX_QUEUE'] || 10,
-              fallback_policy: :caller_runs
-            )
-          end
-        end
 
         def declare_exchanges_and_queues
           channel = Travis::Amqp.connection.create_channel
