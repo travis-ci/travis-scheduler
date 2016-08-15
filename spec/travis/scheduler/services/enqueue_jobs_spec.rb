@@ -20,6 +20,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
       scope.stubs(:all).returns([job])
       Job.stubs(:queueable).returns(scope)
       service.stubs(:publisher).returns(publisher)
+      Sidekiq::Client.stubs(:push)
     end
 
     it 'enqueues queueable jobs' do
@@ -28,8 +29,11 @@ describe Travis::Scheduler::Services::EnqueueJobs do
     end
 
     it 'publishes queueable jobs' do
-      payload = Travis::Scheduler::Payloads::Worker.new(job).data
-      publisher.expects(:publish).with(payload, properties: { type: 'test', persistent: true })
+      Sidekiq::Client.expects(:push).with(
+        'queue' => :scheduler,
+        'class' => 'Travis::Scheduler::Worker',
+        'args'  => [:notify, job: { id: job.id }]
+      )
       service.run
     end
 
