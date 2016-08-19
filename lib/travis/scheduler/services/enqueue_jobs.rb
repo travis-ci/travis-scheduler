@@ -70,7 +70,7 @@ module Travis
                   end
 
                   Metriks.timer('enqueue.report_per_owner').time do
-                    reports[owner.login] = limit.report
+                    reports["#{owner.login} (#{owner.class.name.underscore})"] = limit.report
                   end
                 end
               end
