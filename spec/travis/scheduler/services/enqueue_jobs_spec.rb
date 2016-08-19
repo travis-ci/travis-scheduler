@@ -20,6 +20,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
       scope.stubs(:all).returns([job])
       Job.stubs(:queueable).returns(scope)
       service.stubs(:publisher).returns(publisher)
+      Sidekiq::Client.stubs(:push)
     end
 
     it 'enqueues queueable jobs' do
@@ -28,14 +29,17 @@ describe Travis::Scheduler::Services::EnqueueJobs do
     end
 
     it 'publishes queueable jobs' do
-      payload = Travis::Scheduler::Payloads::Worker.new(job).data
-      publisher.expects(:publish).with(payload, properties: { type: 'test', persistent: true })
+      Sidekiq::Client.expects(:push).with(
+        'queue' => :scheduler,
+        'class' => 'Travis::Scheduler::Worker',
+        'args'  => [:notify, job: { id: job.id }]
+      )
       service.run
     end
 
     it 'keeps a report of enqueued jobs' do
       service.run
-      expect(service.reports).to eq({ 'svenfuchs' => { total: 1, running: 0, max: 5, queueable: 1 } })
+      expect(service.reports).to eq({ 'svenfuchs (user)' => { total: 1, running: 0, max: 5, queueable: 1 } })
     end
 
     describe 'given queue redirection config' do
@@ -61,7 +65,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
   # describe 'Instrument' do
   #   let(:publisher) { Travis::Notification::Publisher::Memory.new }
   #   let(:event)     { publisher.events.last }
-  #   let(:reports)   { { 'svenfuchs' => { total: 1, running: 0, max: 5, queueable: 1 } } }
+  #   let(:reports)   { { 'svenfuchs (user)' => { total: 1, running: 0, max: 5, queueable: 1 } } }
 
   #   before :each do
   #     Travis::Notification.publishers.replace([publisher])

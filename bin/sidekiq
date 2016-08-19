@@ -1,0 +1,16 @@
+#!/bin/bash
+
+threads=${SIDEKIQ_THREADS:-8}
+index=$(echo ${DYNO:-1} | sed 's/.*\.//')
+queues=$@
+
+export RUBYOPT="-Ilib $RUBYOPT"
+
+cmd="sidekiq -r ./lib/travis/scheduler/sidekiq.rb -c $threads -i $index"
+for queue in $queues; do
+  cmd="$cmd -q $queue"
+done
+
+echo "Running: $cmd"
+$cmd
+
