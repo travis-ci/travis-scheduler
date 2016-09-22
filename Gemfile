@@ -5,7 +5,6 @@ gem 'travis-metrics',     github: 'travis-ci/travis-metrics'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
 gem 'travis-lock',        github: 'travis-ci/travis-lock'
 gem 'travis-config',      '~> 1.0.6'
-gem 'travis-migrations',  github: 'travis-ci/travis-migrations'
 
 gem 'concurrent-ruby'
 gem 'jemalloc'

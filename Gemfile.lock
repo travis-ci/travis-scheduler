@@ -44,12 +44,6 @@ GIT
       metriks-librato_metrics (~> 1.0)
 
 GIT
-  remote: git://github.com/travis-ci/travis-migrations.git
-  revision: fcf6eea3e3122a7cbb857826db835de69974c54d
-  specs:
-    travis-migrations (0.0.1)
-
-GIT
   remote: git://github.com/travis-ci/travis-settings.git
   revision: bb64aa1320cd94c998d8209a305024292883e7cc
   specs:
@@ -261,7 +255,6 @@ DEPENDENCIES
   travis-config (~> 1.0.6)
   travis-lock!
   travis-metrics!
-  travis-migrations!
   travis-settings!
   travis-support!
   virtus
