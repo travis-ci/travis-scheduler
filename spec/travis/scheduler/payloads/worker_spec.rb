@@ -260,6 +260,38 @@ describe Travis::Scheduler::Payloads::Worker do
     end
   end
 
+  describe 'addons' do
+    let(:repo)   { FactoryGirl.build(:repository) }
+    let(:job)    { FactoryGirl.build(:job, repository: repo, config: config) }
+    let(:var)    { 'SAUCE_ACCESS_KEY=foo' }
+    let(:config) { { addons: { jwt: encrypt(var) } } }
+
+    def encrypt(string)
+      repo.key.secure.encrypt(string)
+    end
+
+    shared_examples_for 'includes the decrypted jwt addon config' do
+      describe 'jwt encrypted env var' do
+        before  { job.stubs(:config).returns(config) }
+        it { expect(data['config'][:addons][:jwt]).to eq var }
+      end
+    end
+
+    describe 'on a push request' do
+      before { job.source.stubs(:event_type).returns('push') }
+      it { expect(job.full_addons?).to eq true }
+      it { expect(job.secure_env?).to eq true }
+      include_examples 'includes the decrypted jwt addon config'
+    end
+
+    describe 'on a pull request' do
+      before { job.source.stubs(:event_type).returns('pull_request') }
+      it { expect(job.full_addons?).to eq false }
+      it { expect(job.secure_env?).to eq false }
+      include_examples 'includes the decrypted jwt addon config'
+    end
+  end
+
   describe 'for a build with string timeouts' do
     let(:settings) do
       Repository::Settings.load({

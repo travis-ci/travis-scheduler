@@ -124,6 +124,12 @@ describe Job::Config do
         it { should eql(config) }
       end
     end
+
+    describe 'jwt encrypted env var' do
+      let(:var)    { 'SAUCE_ACCESS_KEY=foo' }
+      let(:config) { { addons: { jwt: encrypt(var) } } }
+      it { should eql(addons: { jwt: var }) }
+    end
   end
 
   describe 'with full_addons being true' do
