@@ -1,7 +1,7 @@
 class Job
   module Config
     class Normalize
-      WHITELISTED_ADDONS = %w(
+      SAFE_ADDONS = %w(
         apt
         apt_packages
         apt_sources
@@ -28,7 +28,7 @@ class Job
         normalize_deploy if config[:deploy]
         normalize_addons
         filter_addons    if config[:addons] && !full_addons?
-        config
+        compact(config)
       end
 
       private
@@ -68,8 +68,11 @@ class Job
         end
 
         def filter_addons
-          config[:addons].keep_if { |key, _| WHITELISTED_ADDONS.include? key.to_s }
-          config.delete(:addons) if config[:addons].empty?
+          config[:addons] = Addons.new(config[:addons]).apply
+        end
+
+        def compact(hash)
+          hash.reject { |_, value| value.nil? }
         end
     end
   end
