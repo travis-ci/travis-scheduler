@@ -2,7 +2,7 @@ module Travis
   module Scheduler
     def self.push(*args)
       ::Sidekiq::Client.push(
-        'queue' => 'scheduler',
+        'queue' => ENV['SIDEKIQ_QUEUE'] || 'scheduler',
         'class' => 'Travis::Scheduler::Worker',
         'args'  => args
       )

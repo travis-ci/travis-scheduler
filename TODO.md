@@ -1,3 +1,6 @@
+- log in notify: add the repo slug
+
+- sidekiq exception handling middleware?
 - check recent commits to master
 
 - check with Hiro that the `cache_settings` feature flag can be removed

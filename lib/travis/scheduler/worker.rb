@@ -9,7 +9,7 @@ module Travis
       def perform(service, *args)
         run_service(service, *args)
       rescue => e
-        error e.message, e.backtrace
+        puts e.message, e.backtrace
         raise
       end
 
