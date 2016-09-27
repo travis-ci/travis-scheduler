@@ -1,3 +1,4 @@
+require 'travis/rollout'
 require 'travis/support/exceptions/handling'
 require 'travis/scheduler/helpers/benchmark'
 require 'travis/scheduler/helpers/live'
@@ -56,6 +57,7 @@ module Travis
             Metriks.timer('enqueue.total').time do
               grouped_jobs.each do |owner, jobs|
                 next unless owner
+                next if rollout?(owner)
                 Metriks.timer('enqueue.full_enqueue_per_owner').time do
                   limit = nil
                   queueable = nil
@@ -74,6 +76,12 @@ module Travis
                   end
                 end
               end
+            end
+          end
+
+          def rollout?(owner)
+            Rollout.matches?({ uid: owner.id, owner: owner.login }, redis: redis).tap do |rollout|
+              Travis.logger.info("Ignoring rollout owner: #{owner.login} (type=#{owner.class.name} id=#{owner.id})")
             end
           end
 
@@ -125,6 +133,10 @@ module Travis
               job.queue = queue
               job.save!
             end
+          end
+
+          def redis
+            Travis::Scheduler.redis
           end
         end
     end
