@@ -13,4 +13,3 @@ done
 
 echo "Running: $cmd"
 $cmd
-

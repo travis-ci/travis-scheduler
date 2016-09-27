@@ -17,7 +17,6 @@ module Travis
                 chain.add Metrics::Sidekiq
               end
 
-              # c.logger.formatter = LogFormat.new(config.logger)
               c.logger.level = ::Logger::WARN
 
               if pro?

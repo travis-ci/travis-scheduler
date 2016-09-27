@@ -6,7 +6,7 @@ module Travis
       class << self
         def channel
           @channel ||= Amqp.connection.create_channel.tap do
-            Amqp.logger.info "Creating AMQP channel."
+            Amqp.logger.debug "Creating AMQP channel."
           end
         end
       end
@@ -23,6 +23,7 @@ module Travis
       def publish(data, options = {})
         data = MultiJson.encode(data)
         exchange.publish(data, deep_merge(default_data, options))
+        debug "Published AMQP message to #{routing_key}."
       end
 
       protected
@@ -37,6 +38,10 @@ module Travis
 
         def deep_merge(hash, other)
           hash.merge(other, &(merger = proc { |key, v1, v2| Hash === v1 && Hash === v2 ? v1.merge(v2, &merger) : v2 }))
+        end
+
+        def debug(msg)
+          Amqp.logger.debug(msg)
         end
     end
   end
