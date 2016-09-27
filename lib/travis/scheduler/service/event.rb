@@ -8,7 +8,7 @@ module Travis
       class Event < Struct.new(:event, :data, :config)
         include Logging, Registry, Runner, Service
 
-        register :service, :enqueue_event
+        register :service, :event
 
         MSGS = {
           receive: 'Received event %s %s=%s for %s'

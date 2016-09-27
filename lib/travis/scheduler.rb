@@ -22,7 +22,7 @@ module Travis
         Database.connect(config.database.to_h)
         Exceptions.setup(config, config.env, logger)
         Metrics.setup(config.metrics.to_h, logger)
-        Support::Sidekiq.setup(config)
+        Sidekiq.setup(config)
         Features.setup(config)
       end
 
