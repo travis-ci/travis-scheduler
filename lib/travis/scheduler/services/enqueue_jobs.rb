@@ -81,7 +81,7 @@ module Travis
 
           def rollout?(owner)
             Rollout.matches?({ uid: owner.id, owner: owner.login }, redis: redis).tap do |rollout|
-              Travis.logger.info("Ignoring rollout owner: #{owner.login} (type=#{owner.class.name} id=#{owner.id})")
+              Travis.logger.info("Ignoring rollout owner: #{owner.login} (type=#{owner.class.name} id=#{owner.id})") if rollout
             end
           end
 
