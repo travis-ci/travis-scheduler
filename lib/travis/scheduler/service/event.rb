@@ -1,3 +1,4 @@
+require 'travis/rollout'
 require 'travis/scheduler/helper/logging'
 require 'travis/scheduler/helper/runner'
 require 'travis/support/registry'
@@ -11,15 +12,24 @@ module Travis
         register :service, :event
 
         MSGS = {
-          receive: 'Received event %s %s=%s for %s'
+          receive: 'Received event %s %s=%s for %s',
+          ignore:  'Ignoring owner based on rollout: %s (type=%s id=%s)'
         }
 
         def run
-          info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
-          inline :enqueue_owners, attrs, config
+          if ENV['ENV'] == 'test' || rollout?(obj.owner)
+            info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
+            inline :enqueue_owners, attrs, config
+          else
+            debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
+          end
         end
 
         private
+
+          def rollout?(owner)
+            Rollout.matches?({ uid: owner.id.to_i, owner: owner.login }, redis: Scheduler.redis)
+          end
 
           def attrs
             { owner_type: obj.owner_type, owner_id: obj.owner_id }
