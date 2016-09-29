@@ -5,7 +5,7 @@ describe Travis::Scheduler::Service::Event do
   let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
   let(:job)     { FactoryGirl.create(:job, state: :created) }
   let(:config)  { Travis::Scheduler.context.config }
-  let(:data)    { { id: build.id } }
+  let(:data)    { { id: build.id, jid: '1234' } }
   let(:event)   { 'build:created' }
   let(:service) { described_class.new(Travis::Scheduler.context, event, data) }
 

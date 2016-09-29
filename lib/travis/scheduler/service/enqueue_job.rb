@@ -2,7 +2,7 @@
 module Travis
   module Scheduler
     module Service
-      class EnqueueJob < Struct.new(:context, :job)
+      class EnqueueJob < Struct.new(:context, :job, :opts)
         include Service, Registry
 
         register :service, :enqueue_job
@@ -34,15 +34,8 @@ module Travis
             job.repository
           end
 
-          def redirect_queue
-            return unless queue = redirections[job.queue]
-            info MSGS[:redirect] % [job.queue, queue]
-            job.queue = queue
-            job.save!
-          end
-
-          def redirections
-            config.queue_redirections
+          def jid
+            opts[:jid]
           end
 
           def transaction(&block)

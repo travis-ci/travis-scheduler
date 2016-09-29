@@ -16,7 +16,7 @@ module Travis
         def run
           if ENV['ENV'] == 'test' || rollout?(obj.owner)
             info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
-            inline :enqueue_owners, attrs
+            inline :enqueue_owners, attrs, jid: jid
           else
             debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
           end
@@ -54,6 +54,10 @@ module Travis
 
           def action
             event.split(':').last
+          end
+
+          def jid
+            data[:jid]
           end
       end
     end

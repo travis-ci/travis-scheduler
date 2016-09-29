@@ -2,11 +2,11 @@ module Travis
   module Scheduler
     module Logging
       %i(info warn debug error fatal).each do |level|
-        define_method(level) { |msg, *args| log(level, msg, *args) }
+        define_method(level) { |msg| log(level, msg) }
       end
 
-      def log(level, msg, *args)
-        logger.send(level, msg, *args)
+      def log(level, msg)
+        logger.send(level, "JID=#{jid} #{msg}")
       end
     end
   end

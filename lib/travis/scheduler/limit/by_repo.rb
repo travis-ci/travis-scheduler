@@ -5,7 +5,7 @@ module Travis
   module Scheduler
     class Limit
       class ByRepo < Struct.new(:context, :owners, :job, :queued, :state, :config)
-        include Context, Logging
+        include Context
 
         def enqueue?
           unlimited? || by_settings

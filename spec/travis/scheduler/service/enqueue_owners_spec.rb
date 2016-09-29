@@ -5,7 +5,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:commit)  { FactoryGirl.create(:commit) }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { owner_type: 'User', owner_id: owner.id } }
-  let(:service) { described_class.new(Travis::Scheduler.context, data) }
+  let(:service) { described_class.new(Travis::Scheduler.context, data, jid: '1234') }
 
   before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, state: :created, queue: 'builds.gce') } }
   before { config.limit.delegate = { owner.login => org.login } }

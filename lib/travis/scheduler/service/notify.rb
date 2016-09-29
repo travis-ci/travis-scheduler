@@ -60,6 +60,10 @@ module Travis
           def redirections
             config.queue_redirections || {}
           end
+
+          def jid
+            data[:jid]
+          end
       end
     end
   end

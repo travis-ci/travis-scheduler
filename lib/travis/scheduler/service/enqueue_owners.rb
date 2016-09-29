@@ -4,7 +4,7 @@ require 'travis/scheduler/model/owners'
 module Travis
   module Scheduler
     module Service
-      class EnqueueOwners < Struct.new(:context, :attrs)
+      class EnqueueOwners < Struct.new(:context, :data, :opts)
         include Service, Registry
 
         register :service, :enqueue_owners
@@ -33,7 +33,7 @@ module Travis
 
           def enqueue
             limit.queueable.each do |job|
-              inline :enqueue_job, job
+              inline :enqueue_job, job, jid: jid
             end
           end
 
@@ -42,11 +42,15 @@ module Travis
           end
 
           def owners
-            @owners ||= Model::Owners.new(attrs, config)
+            @owners ||= Model::Owners.new(data, config)
           end
 
           def exclusive(&block)
             super(['scheduler.owners', owners.key].join('-'), config, &block)
+          end
+
+          def jid
+            opts[:jid]
           end
       end
     end
