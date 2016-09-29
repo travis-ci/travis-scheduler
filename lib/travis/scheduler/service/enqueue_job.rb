@@ -3,7 +3,8 @@ module Travis
   module Scheduler
     module Service
       class EnqueueJob < Struct.new(:context, :job, :opts)
-        include Service, Registry
+        include Registry, Helper::Context, Helper::Locking, Helper::Logging,
+          Helper::Metrics, Helper::Runner, Helper::With
 
         register :service, :enqueue_job
 

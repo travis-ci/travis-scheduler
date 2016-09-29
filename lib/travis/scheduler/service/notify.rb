@@ -5,7 +5,8 @@ module Travis
   module Scheduler
     module Services
       class Notify < Struct.new(:context, :data)
-        include Service, Registry
+        include Registry, Helper::Context, Helper::Locking, Helper::Logging,
+          Helper::Metrics, Helper::Runner, Helper::With
 
         register :service, :notify
 
@@ -28,12 +29,14 @@ module Travis
               publisher.publish(payload, properties: { type: 'test', persistent: true })
             end
           end
+          time :collect
 
           def payload
             Metriks.timer('enqueue.build_worker_payload').time do
               Serialize::Worker.new(job, config).data
             end
           end
+          time :collect
 
           def publisher
             Amqp::Publisher.new(job.queue)

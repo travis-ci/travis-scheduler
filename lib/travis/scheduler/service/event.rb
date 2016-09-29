@@ -4,7 +4,8 @@ module Travis
   module Scheduler
     module Service
       class Event < Struct.new(:context, :event, :data)
-        include Service, Registry
+        include Registry, Helper::Context, Helper::Locking, Helper::Logging,
+          Helper::Metrics, Helper::Runner, Helper::With
 
         register :service, :event
 
@@ -16,6 +17,7 @@ module Travis
         def run
           if ENV['ENV'] == 'test' || rollout?(obj.owner)
             info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
+            meter
             inline :enqueue_owners, attrs, jid: jid
           else
             debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
@@ -26,6 +28,10 @@ module Travis
 
           def rollout?(owner)
             Rollout.matches?({ uid: owner.id.to_i, owner: owner.login }, redis: Scheduler.redis)
+          end
+
+          def meter
+            super(event.sub(':', '.'))
           end
 
           def attrs

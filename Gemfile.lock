@@ -157,7 +157,7 @@ GEM
     tilt (2.0.5)
     travis-config (1.0.12)
       hashr (~> 2.0.0)
-    travis-metrics (2.0.0.rc4)
+    travis-metrics (2.0.0.rc8)
       metriks-librato_metrics (~> 1.0)
     travis-rollout (0.0.1)
     tzinfo (1.2.2)

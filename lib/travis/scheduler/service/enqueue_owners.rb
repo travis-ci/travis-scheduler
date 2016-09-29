@@ -6,7 +6,8 @@ module Travis
   module Scheduler
     module Service
       class EnqueueOwners < Struct.new(:context, :data, :opts)
-        include Service, Registry
+        include Registry, Helper::Context, Helper::Locking, Helper::Logging,
+          Helper::Metrics, Helper::Runner, Helper::With
         extend Forwardable
 
         register :service, :enqueue_owners
@@ -30,6 +31,7 @@ module Travis
           def collect
             limit.run
           end
+          time :collect
 
           def report
             reports.each { |line| info line }
@@ -38,6 +40,7 @@ module Travis
           def enqueue
             jobs.each { |job| inline :enqueue_job, job, jid: jid }
           end
+          time :enqueue
 
           def limit
             @limit ||= Limit::Jobs.new(context, owners)

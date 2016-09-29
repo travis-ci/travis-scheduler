@@ -12,8 +12,8 @@ module Travis
               interval:   2,
               limit:      { strategy: 'default', default: 5, by_owner: {}, delegate: {} },
               lock:       { strategy: :redis, ttl: 150 },
-              logger:     { time_format: false, process_id: true, thread_id: true },
-              log_level:  :debug,
+              logger:     { time_format: false, process_id: false, thread_id: false },
+              log_level:  :info,
               metrics:    { reporter: 'librato' },
               plans:      { },
               queue:      { redirect: {} },
@@ -25,6 +25,11 @@ module Travis
       def queue
         # TODO fix keychain
         queue_redirections ? { redirect: queue_redirections } : super
+      end
+
+      def metrics
+        # TODO fix keychain?
+        super.to_h.merge(librato: librato.to_h.merge(source: librato_source), graphite: graphite)
       end
     end
   end

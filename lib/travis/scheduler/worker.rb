@@ -7,13 +7,14 @@ module Travis
       include ::Sidekiq::Worker, Helper::Runner
 
       def perform(service, *args)
-        run_service(service, *normalize(args))
+        inline(service, *normalize(args))
       end
 
       private
 
         def normalize(args)
-          args.last[:params] ||= { jid: jid } if args.last.is_a?(Hash)
+          args.last[:jid] = jid if args.last.is_a?(Hash)
+          args
         end
 
         def context
