@@ -92,7 +92,7 @@ class Travis::EncryptedColumn
   end
 
   def config
-    Travis.config.encryption
+    Travis::Scheduler.context.config.encryption # TODO
   end
 
   def decode(str)

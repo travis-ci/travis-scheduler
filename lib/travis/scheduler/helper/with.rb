@@ -15,6 +15,7 @@ module Travis
 
       def self.included(base)
         base.extend(ClassMethods)
+        base.singleton_class.send(:define_method, :included, &method(:included))
       end
 
       private

@@ -8,7 +8,7 @@ module Support
       let(:stdout) { StringIO.new }
       let(:log)    { stdout.string }
       let(:logger) { Travis::Logger.new(stdout) }
-      before       { Travis::Scheduler.logger = logger }
+      before       { Travis::Scheduler.context.logger = logger }
       before       { Travis::Amqp.logger = logger }
     end
   end

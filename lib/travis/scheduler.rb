@@ -5,6 +5,7 @@ require 'travis/exceptions'
 require 'travis/logger'
 require 'travis/metrics'
 require 'travis/scheduler/config'
+require 'travis/scheduler/helper/context'
 require 'travis/scheduler/limit'
 require 'travis/scheduler/record'
 require 'travis/scheduler/service'
@@ -17,13 +18,19 @@ require 'travis/support/database'
 module Travis
   module Scheduler
     class << self
+      attr_reader :metrics
+
       def setup
         Amqp.setup(config.amqp.to_h, logger)
         Database.connect(config.database.to_h)
         Exceptions.setup(config, config.env, logger)
-        Metrics.setup(config.metrics.to_h, logger)
+        @metrics = Metrics.setup(config.metrics, logger)
         Sidekiq.setup(config)
         Features.setup(config)
+      end
+
+      def context
+        @context ||= Context.new(config, nil, nil, logger, metrics, redis)
       end
 
       def config
@@ -45,19 +52,12 @@ module Travis
       def redis
         @redis ||= Redis.connect(config[:redis].to_h) # TODO should be a pool, no?
       end
-
-      def uuid=(uuid)
-        Thread.current[:uuid] = uuid
-      end
-
-      def uuid
-        Thread.current[:uuid] ||= SecureRandom.uuid
-      end
     end
 
     setup
   end
 
+  # TODO used by travis-settings, apparently
   class << self
     def env
       Scheduler.env

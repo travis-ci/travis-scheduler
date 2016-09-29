@@ -1,3 +1,10 @@
+require 'travis/scheduler/helper/context'
+require 'travis/scheduler/helper/locking'
+require 'travis/scheduler/helper/logging'
+require 'travis/scheduler/helper/runner'
+require 'travis/scheduler/helper/with'
+require 'travis/support/registry'
+
 module Travis
   module Scheduler
     module Service
@@ -5,26 +12,7 @@ module Travis
         Travis::Registry[:service][key]
       end
 
-      def run_service(key, *args)
-        Service[key].new(*symbolize_keys(args)).run
-      end
-
-      def config
-        Scheduler.config
-      end
-
-      private
-
-        def symbolize_keys(obj)
-          case obj
-          when Array
-            obj.map { |obj| symbolize_keys(obj) }
-          when ::Hash
-            obj.map { |key, value| [key.to_sym, symbolize_keys(value)] }.to_h
-          else
-            obj
-          end
-        end
+      include Context, Locking, Logging, Runner, With
     end
   end
 end

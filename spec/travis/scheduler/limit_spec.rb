@@ -1,13 +1,14 @@
 describe Travis::Scheduler::Limit do
-  let(:org)    { FactoryGirl.create(:org, login: 'travis-ci') }
-  let(:repo)   { FactoryGirl.create(:repo) }
-  let(:owner)  { FactoryGirl.create(:user) }
-  let(:config) { Travis::Scheduler.config }
-  let(:owners) { Travis::Scheduler::Model::Owners.new(data, config) }
-  let(:redis)  { Travis::Scheduler.redis }
-  let(:data)   { { owner_type: 'User', owner_id: owner.id } }
-  let(:limit)  { described_class.new(owners, config) }
-  let(:report) { limit.reports }
+  let(:org)     { FactoryGirl.create(:org, login: 'travis-ci') }
+  let(:repo)    { FactoryGirl.create(:repo) }
+  let(:owner)   { FactoryGirl.create(:user) }
+  let(:owners)  { Travis::Scheduler::Model::Owners.new(data, config) }
+  let(:context) { Travis::Scheduler.context }
+  let(:redis)   { context.redis }
+  let(:config)  { context.config }
+  let(:data)    { { owner_type: 'User', owner_id: owner.id } }
+  let(:limit)   { described_class.new(context, owners) }
+  let(:report)  { limit.reports }
 
   subject { limit.run; limit.queueable }
   before  { config.limit.default = 5 }

@@ -1,10 +1,11 @@
+require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/logging'
 
 module Travis
   module Scheduler
     class Limit
-      class ByOwner < Struct.new(:owners, :job, :queued, :state, :config)
-        include Logging
+      class ByOwner < Struct.new(:context, :owners, :job, :queued, :state, :config)
+        include Context, Logging
 
         KEYS = [:by_boost, :by_config, :by_plan, :default]
 

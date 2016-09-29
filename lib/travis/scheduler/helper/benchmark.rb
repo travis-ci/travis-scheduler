@@ -38,7 +38,7 @@ module Travis
         end
 
         def benchmark(context = nil, &block)
-          Benchmark.new(context, Scheduler.logger, &block).realtime
+          Benchmark.new(context, logger, &block).realtime
         end
       end
     end

@@ -1,5 +1,3 @@
-require 'travis/scheduler/worker'
-
 module Travis
   module Scheduler
     module Runner
@@ -7,8 +5,8 @@ module Travis
         testing? ? inline(*args) : enqueue(*args)
       end
 
-      def inline(*args)
-        Worker.new.perform(*args)
+      def inline(service, *args)
+        Service[service].new(context, *symbolize_keys(args)).run
       end
 
       private
@@ -21,7 +19,16 @@ module Travis
           ENV['ENV'] == 'test'
         end
 
-        extend self
+        def symbolize_keys(obj)
+          case obj
+          when Array
+            obj.map { |obj| symbolize_keys(obj) }
+          when ::Hash
+            obj.map { |key, value| [key.to_sym, symbolize_keys(value)] }.to_h
+          else
+            obj
+          end
+        end
     end
   end
 end

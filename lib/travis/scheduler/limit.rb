@@ -1,9 +1,13 @@
+require 'travis/scheduler/helper/context'
+
 module Travis
   module Scheduler
-    class Limit < Struct.new(:owners, :config)
+    class Limit < Struct.new(:context, :owners)
       require 'travis/scheduler/limit/by_owner'
       require 'travis/scheduler/limit/by_repo'
       require 'travis/scheduler/limit/state'
+
+      include Context
 
       LIMITS = [ByOwner, ByRepo]
 
@@ -52,7 +56,7 @@ module Travis
         end
 
         def limits_for(job)
-          LIMITS.map { |limit| limit.new(owners, job, queueable.size, state, config) }
+          LIMITS.map { |limit| limit.new(context, owners, job, queueable.size, state, config) }
         end
 
         def summary
@@ -73,4 +77,3 @@ module Travis
     end
   end
 end
-

@@ -1,13 +1,11 @@
 require 'travis/scheduler/serialize/live'
 require 'travis/scheduler/serialize/worker'
-require 'travis/scheduler/helper/logging'
-require 'travis/support/registry'
 
 module Travis
   module Scheduler
     module Services
-      class Notify < Struct.new(:data)
-        include Logging, Registry, Service
+      class Notify < Struct.new(:context, :data)
+        include Service, Registry
 
         register :service, :notify
 
@@ -18,6 +16,7 @@ module Travis
         def run
           # fail('kaputt. testing exception tracking.') if job.repository.owner_name == 'svenfuchs'
           info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
+          redirect_queue
           publish
           notify_live
         end
@@ -52,18 +51,14 @@ module Travis
             data[:job] && data[:job][:id] or fail("No job id given: #{data}")
           end
 
-          def info(msg)
-            Scheduler.logger.info(msg)
-          end
-
-          def redirect_queue(job)
+          def redirect_queue
             queue = redirections[job.queue] or return
             info MSGS[:redirect] % [job.queue, queue]
             job.update_attributes!(queue: queue)
           end
 
           def redirections
-            config.queue_redirections
+            config.queue_redirections || {}
           end
       end
     end

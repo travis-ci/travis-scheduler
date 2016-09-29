@@ -44,7 +44,7 @@ describe Travis::Scheduler::Services::EnqueueJobs do
 
     describe 'given queue redirection config' do
       before do
-        Travis::Scheduler.config.queue_redirections['builds.linux'] = 'builds.gce'
+        config.queue_redirections['builds.linux'] = 'builds.gce'
       end
 
       it 'keeps the job queue if it does not match' do
@@ -61,29 +61,6 @@ describe Travis::Scheduler::Services::EnqueueJobs do
       end
     end
   end
-
-  # describe 'Instrument' do
-  #   let(:publisher) { Travis::Notification::Publisher::Memory.new }
-  #   let(:event)     { publisher.events.last }
-  #   let(:reports)   { { 'svenfuchs (user)' => { total: 1, running: 0, max: 5, queueable: 1 } } }
-
-  #   before :each do
-  #     Travis::Notification.publishers.replace([publisher])
-  #     service.stubs(:enqueue_all)
-  #     service.stubs(:reports).returns(reports)
-  #     service.run
-  #   end
-
-  #   it 'publishes a event' do
-  #     event.should publish_instrumentation_event(
-  #       event: 'travis.scheduler.services.enqueue_jobs.run:completed',
-  #       message: "Travis::Scheduler::Services::EnqueueJobs#run:completed enqueued:\n  svenfuchs: total: 1, running: 0, max: 5, queueable: 1",
-  #       data: {
-  #         reports: reports
-  #       }
-  #     )
-  #   end
-  # end
 
   describe 'Logging' do
     before do

@@ -1,10 +1,10 @@
 require 'sidekiq'
-require 'travis/scheduler/service'
+require 'travis/scheduler/helper/runner'
 
 module Travis
   module Scheduler
     class Worker
-      include ::Sidekiq::Worker, Service
+      include ::Sidekiq::Worker, Runner
 
       def perform(service, *args)
         run_service(service, *args)
@@ -17,6 +17,10 @@ module Travis
 
         def error(*msgs)
           logger.error(msgs.join("\n"))
+        end
+
+        def context
+          Scheduler.context
         end
 
         def logger

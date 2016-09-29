@@ -6,7 +6,7 @@ module Travis
       class << self
         def channel
           @channel ||= Amqp.connection.create_channel.tap do
-            Amqp.logger.debug "Creating AMQP channel."
+            Amqp.logger.debug "Created AMQP channel."
           end
         end
       end

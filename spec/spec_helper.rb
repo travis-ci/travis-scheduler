@@ -19,7 +19,8 @@ RSpec.configure do |c|
   c.before do
     DatabaseCleaner.start
     Time.now.utc.tap { |now| Time.stubs(:now).returns(now) }
-    Travis::Scheduler.instance_variable_set(:@config, nil)
+    Travis::Scheduler.instance_variable_set(:@context, nil)
+    Travis::Scheduler.instance_variable_set(:@config, nil) # TODO remove once everything uses context
     Travis::Scheduler.redis.flushall
   end
 

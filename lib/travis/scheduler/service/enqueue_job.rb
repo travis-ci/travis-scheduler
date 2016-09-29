@@ -1,14 +1,9 @@
-require 'travis/scheduler/helper/logging'
-require 'travis/scheduler/helper/locking'
-require 'travis/scheduler/helper/runner'
-require 'travis/scheduler/helper/with'
-require 'travis/support/registry'
 
 module Travis
   module Scheduler
     module Service
-      class EnqueueJob < Struct.new(:job, :config)
-        include Logging, Locking, Registry, Runner, With
+      class EnqueueJob < Struct.new(:context, :job)
+        include Service, Registry
 
         register :service, :enqueue_job
 
@@ -47,7 +42,7 @@ module Travis
           end
 
           def redirections
-            Travis::Scheduler.config.queue_redirections
+            config.queue_redirections
           end
 
           def transaction(&block)

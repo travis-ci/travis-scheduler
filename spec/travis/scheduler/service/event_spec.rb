@@ -4,10 +4,10 @@ describe Travis::Scheduler::Service::Event do
   let(:owner)   { FactoryGirl.create(:user) }
   let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
   let(:job)     { FactoryGirl.create(:job, state: :created) }
-  let(:config)  { Travis::Scheduler.config }
+  let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { id: build.id } }
   let(:event)   { 'build:created' }
-  let(:service) { described_class.new(event, data, config) }
+  let(:service) { described_class.new(Travis::Scheduler.context, event, data) }
 
   before { config.limit.delegate = { owner.login => org.login } }
   before { config.limit.default = 1 }

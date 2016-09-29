@@ -1,13 +1,10 @@
 require 'travis/rollout'
-require 'travis/scheduler/helper/logging'
-require 'travis/scheduler/helper/runner'
-require 'travis/support/registry'
 
 module Travis
   module Scheduler
     module Service
-      class Event < Struct.new(:event, :data, :config)
-        include Logging, Registry, Runner, Service
+      class Event < Struct.new(:context, :event, :data)
+        include Service, Registry
 
         register :service, :event
 
@@ -19,7 +16,7 @@ module Travis
         def run
           if ENV['ENV'] == 'test' || rollout?(obj.owner)
             info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
-            inline :enqueue_owners, attrs, config
+            inline :enqueue_owners, attrs
           else
             debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
           end

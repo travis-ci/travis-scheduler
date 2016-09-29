@@ -8,10 +8,6 @@ module Travis
       def log(level, msg, *args)
         logger.send(level, msg, *args)
       end
-
-      def logger
-        Scheduler.logger
-      end
     end
   end
 end

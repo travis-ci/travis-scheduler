@@ -1,16 +1,11 @@
-require 'travis/scheduler/helper/logging'
-require 'travis/scheduler/helper/locking'
-require 'travis/scheduler/helper/with'
-require 'travis/scheduler/helper/runner'
 require 'travis/scheduler/limit'
 require 'travis/scheduler/model/owners'
-require 'travis/support/registry'
 
 module Travis
   module Scheduler
     module Service
-      class EnqueueOwners < Struct.new(:attrs, :config)
-        include Logging, Locking, Registry, Runner, Service, With
+      class EnqueueOwners < Struct.new(:context, :attrs)
+        include Service, Registry
 
         register :service, :enqueue_owners
 
@@ -38,12 +33,12 @@ module Travis
 
           def enqueue
             limit.queueable.each do |job|
-              inline :enqueue_job, job, config
+              inline :enqueue_job, job
             end
           end
 
           def limit
-            @limit ||= Limit.new(owners, config)
+            @limit ||= Limit.new(context, owners)
           end
 
           def owners
