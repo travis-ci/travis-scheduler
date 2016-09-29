@@ -1,4 +1,4 @@
-describe Travis::Scheduler::Limit do
+describe Travis::Scheduler::Limit::Jobs do
   let(:org)     { FactoryGirl.create(:org, login: 'travis-ci') }
   let(:repo)    { FactoryGirl.create(:repo) }
   let(:owner)   { FactoryGirl.create(:user) }
@@ -10,9 +10,9 @@ describe Travis::Scheduler::Limit do
   let(:limit)   { described_class.new(context, owners) }
   let(:report)  { limit.reports }
 
-  subject { limit.run; limit.queueable }
   before  { config.limit.default = 5 }
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
+  subject { limit.run; limit.jobs }
 
   def create_jobs(count, owner, state)
     1.upto(count) { FactoryGirl.create(:job, repository: repo, owner: owner, state: state) }

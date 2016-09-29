@@ -1,4 +1,5 @@
-require 'travis/scheduler/limit'
+require 'forwardable'
+require 'travis/scheduler/limit/jobs'
 require 'travis/scheduler/model/owners'
 
 module Travis
@@ -6,12 +7,15 @@ module Travis
     module Service
       class EnqueueOwners < Struct.new(:context, :data, :opts)
         include Service, Registry
+        extend Forwardable
 
         register :service, :enqueue_owners
 
         MSGS = {
           schedule: 'Evaluating jobs for owner group: %s'
         }
+
+        def_delegators :limit, :reports, :jobs
 
         def run
           info MSGS[:schedule] % [owners.logins.join(', ')]
@@ -28,17 +32,15 @@ module Travis
           end
 
           def report
-            limit.reports.each { |line| info line }
+            reports.each { |line| info line }
           end
 
           def enqueue
-            limit.queueable.each do |job|
-              inline :enqueue_job, job, jid: jid
-            end
+            jobs.each { |job| inline :enqueue_job, job, jid: jid }
           end
 
           def limit
-            @limit ||= Limit.new(context, owners)
+            @limit ||= Limit::Jobs.new(context, owners)
           end
 
           def owners

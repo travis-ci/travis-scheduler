@@ -5,8 +5,6 @@ require 'travis/exceptions'
 require 'travis/logger'
 require 'travis/metrics'
 require 'travis/scheduler/config'
-require 'travis/scheduler/helper/context'
-require 'travis/scheduler/limit'
 require 'travis/scheduler/record'
 require 'travis/scheduler/service'
 require 'travis/scheduler/support/features'
@@ -17,6 +15,8 @@ require 'travis/support/database'
 
 module Travis
   module Scheduler
+    Context = Struct.new(:config, :amqp, :features, :logger, :metrics, :redis)
+
     class << self
       attr_reader :metrics
 

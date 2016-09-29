@@ -1,6 +1,7 @@
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/locking'
 require 'travis/scheduler/helper/logging'
+require 'travis/scheduler/helper/metrics'
 require 'travis/scheduler/helper/runner'
 require 'travis/scheduler/helper/with'
 require 'travis/support/registry'
@@ -12,7 +13,8 @@ module Travis
         Travis::Registry[:service][key]
       end
 
-      include Context, Locking, Logging, Runner, With
+      include Helper::Context, Helper::Locking, Helper::Logging,
+        Helper::Metrics, Helper::Runner, Helper::With
     end
   end
 end

@@ -1,6 +1,6 @@
 module Travis
   module Scheduler
-    class Limit
+    module Limit
       class State
         BOOST = 'scheduler.owner.limit.%s'
 

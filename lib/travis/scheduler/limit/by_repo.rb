@@ -3,9 +3,9 @@ require 'travis/scheduler/helper/logging'
 
 module Travis
   module Scheduler
-    class Limit
+    module Limit
       class ByRepo < Struct.new(:context, :owners, :job, :queued, :state, :config)
-        include Context
+        include Helper::Context
 
         def enqueue?
           unlimited? || by_settings

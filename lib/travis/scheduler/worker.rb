@@ -4,7 +4,7 @@ require 'travis/scheduler/helper/runner'
 module Travis
   module Scheduler
     class Worker
-      include ::Sidekiq::Worker, Runner
+      include ::Sidekiq::Worker, Helper::Runner
 
       def perform(service, *args)
         run_service(service, *normalize(args))

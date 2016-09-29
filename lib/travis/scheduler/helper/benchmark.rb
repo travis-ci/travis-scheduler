@@ -2,7 +2,7 @@ require 'benchmark'
 
 module Travis
   module Scheduler
-    module Helpers
+    module Helper
       module Benchmark
         class Benchmark
           attr_reader :logger, :context, :block, :status, :result, :error
