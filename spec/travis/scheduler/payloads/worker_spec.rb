@@ -118,6 +118,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'last_build_duration' => 60,
         'last_build_state' => 'passed',
         'description' => 'the repo description',
+        'default_branch' => 'master',
         'github_id' => 549743
       )
     end
@@ -244,6 +245,7 @@ describe Travis::Scheduler::Payloads::Worker do
         'last_build_duration' => 60,
         'last_build_state' => 'passed',
         'description' => 'the repo description',
+        'default_branch' => 'master',
         'github_id' => 549743
       )
     end
