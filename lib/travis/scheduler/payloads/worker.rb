@@ -75,6 +75,15 @@ module Travis
             'secure_env_enabled' => secure_env?,
             'debug_options' => job.debug_options
           }
+
+          if request.pull_request?
+            data.merge!(
+              {
+                'pull_request_head_branch' => request.pull_request_head_branch,
+                'pull_request_head_sha'    => request.pull_request_head_sha,
+              }
+            )
+          end
           data
         end
 

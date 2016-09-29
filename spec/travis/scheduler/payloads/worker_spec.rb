@@ -168,6 +168,9 @@ describe Travis::Scheduler::Payloads::Worker do
       commit.stubs(:pull_request_number).returns(180)
       job.stubs(:secure_env?).returns(false)
       job.source.stubs(:event_type).returns('pull')
+      request.stubs(:pull_request?).returns(true)
+      request.stubs(:pull_request_head_branch).returns("feature-branch")
+      request.stubs(:pull_request_head_sha).returns("1234567890abcdef")
     end
 
     it 'contains the expected data' do
@@ -209,7 +212,9 @@ describe Travis::Scheduler::Payloads::Worker do
         'pull_request' => 180,
         'state' => 'passed',
         'secure_env_enabled' => false,
-        'debug_options' => {}
+        'debug_options' => {},
+        'pull_request_head_branch' => 'feature-branch',
+        'pull_request_head_sha' => '1234567890abcdef'
       )
     end
 
@@ -227,8 +232,9 @@ describe Travis::Scheduler::Payloads::Worker do
         'pull_request' => 180,
         'state' => 'passed',
         'secure_env_enabled' => false,
-        'debug_options' => {}
-
+        'debug_options' => {},
+        'pull_request_head_branch' => 'feature-branch',
+        'pull_request_head_sha' => '1234567890abcdef'
       )
     end
 
