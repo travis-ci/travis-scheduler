@@ -1,9 +1,8 @@
 require 'active_record'
-require 'travis/scheduler/models/commit'
-require 'travis/scheduler/models/organization'
-require 'travis/scheduler/models/repository'
-require 'travis/scheduler/models/user'
-require 'travis/scheduler/branch_validator'
+require 'travis/scheduler/record/organization'
+require 'travis/scheduler/record/repository'
+require 'travis/scheduler/record/user'
+require 'travis/support/branch_validator'
 require 'gh'
 
 class Request < ActiveRecord::Base
@@ -12,39 +11,6 @@ class Request < ActiveRecord::Base
   belongs_to :owner, polymorphic: true
 
   serialize :payload
-
-  def pull_request?
-    event_type == 'pull_request'
-  end
-
-  def pull_request_title
-    payload && payload['pull_request'] && payload['pull_request']['title'] if pull_request?
-  end
-
-  # TODO duplicated in Commit
-  def pull_request_number
-    payload && payload['pull_request'] && payload['pull_request']['number'] if pull_request?
-  end
-
-  def pull_request_head
-    payload && payload['pull_request'] && payload['pull_request']['head'] if pull_request?
-  end
-
-  def pull_request_head_branch
-    pull_request_head['ref'] if pull_request_head
-  end
-
-  def pull_request_head_sha
-    pull_request_head['sha'] if pull_request_head
-  end
-
-  def branch_name
-    payload && payload['ref'] && payload['ref'].scan(%r{refs/heads/(.*?)$}).flatten.first
-  end
-
-  def tag_name
-    payload && payload['ref'] && payload['ref'].scan(%r{refs/tags/(.*?)$}).flatten.first
-  end
 
   # this method is overly long, but please don't refactor it just to shorten it,
   # I want it to be as clear as possible as any bug here can lead to security
@@ -85,8 +51,4 @@ class Request < ActiveRecord::Base
     Travis::Scheduler.logger.error "[request:#{id}] Couldn't determine whether pull request is from the same repository: #{e.message}"
     false
   end
-
-  private
-
-
 end
