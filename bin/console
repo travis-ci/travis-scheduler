@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+$: << 'lib'
+
+require 'irb'
+require 'travis/scheduler'
+
+Travis::Scheduler.setup
+IRB.start

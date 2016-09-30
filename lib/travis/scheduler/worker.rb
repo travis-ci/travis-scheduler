@@ -1,40 +1,24 @@
 require 'sidekiq'
+require 'travis/scheduler/helper/runner'
 
 module Travis
   module Scheduler
     class Worker
-      include ::Sidekiq::Worker
+      include ::Sidekiq::Worker, Helper::Runner
 
       def perform(service, *args)
-        Services[service].new(*symbolize_keys(args)).run
-      rescue => e
-        error e.message, e.backtrace
-        raise
+        inline(service, *normalize(args))
       end
 
       private
 
-        def error(*msgs)
-          logger.error(msgs.join("\n"))
+        def normalize(args)
+          args.last[:jid] = jid if args.last.is_a?(Hash)
+          args
         end
 
-        def logger
-          Scheduler.logger
-        end
-
-        def symbolize_keys(obj)
-          case obj
-          when Array
-            obj.map { |obj| symbolize_keys(obj) }
-          when ::Hash
-            obj.inject({}) do |hash, (key, value)|
-              key = key.respond_to?(:to_sym) ? key.to_sym : key
-              hash[key] = symbolize_keys(value)
-              hash
-            end
-          else
-            obj
-          end
+        def context
+          Scheduler.context
         end
     end
   end

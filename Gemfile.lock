@@ -1,11 +1,4 @@
 GIT
-  remote: git://github.com/getsentry/raven-ruby.git
-  revision: 8e1a23aa844708001e91471ba28a616a335ebbe2
-  specs:
-    sentry-raven (2.0.1)
-      faraday (>= 0.7.6, < 0.10.x)
-
-GIT
   remote: git://github.com/rkh/coder.git
   revision: 44b0cf89b98caecc654dd1a724a448e17ef7aa6c
   specs:
@@ -24,17 +17,29 @@ GIT
       net-http-pipeline
 
 GIT
+  remote: git://github.com/travis-ci/travis-exceptions.git
+  revision: 884b6a2b9c21ca09e7be5f85fb27b6e9aa7711e4
+  specs:
+    travis-exceptions (0.0.2)
+      sentry-raven
+
+GIT
   remote: git://github.com/travis-ci/travis-lock.git
   revision: 8aadc4cd7a1c8d89788dfc096507ee96a71fceb6
   specs:
     travis-lock (0.1.0)
 
 GIT
-  remote: git://github.com/travis-ci/travis-metrics.git
-  revision: 37eac93bd1e9bd949a9842f28154c335ebeda42a
+  remote: git://github.com/travis-ci/travis-logger.git
+  revision: 765046a4746617a70395fe2200e8a91dc416f1b3
   specs:
-    travis-metrics (0.0.1)
-      metriks-librato_metrics (~> 1.0)
+    travis-logger (0.0.1)
+
+GIT
+  remote: git://github.com/travis-ci/travis-migrations.git
+  revision: 7d9696ab7d2481d75ed85be268de8050a51363d2
+  specs:
+    travis-migrations (0.0.2)
 
 GIT
   remote: git://github.com/travis-ci/travis-settings.git
@@ -44,31 +49,26 @@ GIT
       activemodel
       virtus
 
-GIT
-  remote: git://github.com/travis-ci/travis-support.git
-  revision: 96b04f6b07d53918fff6e1bdb749fc5b9c8308a6
-  ref: sf-instrumentation
-  specs:
-    travis-support (0.0.1)
-
 GEM
   remote: https://rubygems.org/
   remote: https://gems.contribsys.com/
   specs:
-    activemodel (3.2.22.5)
-      activesupport (= 3.2.22.5)
-      builder (~> 3.0.0)
-    activerecord (3.2.22.5)
-      activemodel (= 3.2.22.5)
-      activesupport (= 3.2.22.5)
-      arel (~> 3.0.2)
-      tzinfo (~> 0.3.29)
-    activesupport (3.2.22.5)
-      i18n (~> 0.6, >= 0.6.4)
-      multi_json (~> 1.0)
+    activemodel (4.2.7)
+      activesupport (= 4.2.7)
+      builder (~> 3.1)
+    activerecord (4.2.7)
+      activemodel (= 4.2.7)
+      activesupport (= 4.2.7)
+      arel (~> 6.0)
+    activesupport (4.2.7)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
     addressable (2.4.0)
     amq-protocol (2.0.1)
-    arel (3.0.3)
+    arel (6.0.3)
     atomic (1.1.99)
     avl_tree (1.2.1)
       atomic (~> 1.1)
@@ -77,16 +77,15 @@ GEM
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
     backports (3.6.8)
-    builder (3.0.4)
-    bunny (2.5.1)
+    builder (3.2.2)
+    bunny (2.5.0)
       amq-protocol (>= 2.0.1)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
-    concurrent-ruby (1.0.2)
+    concurrent-ruby (1.0.1)
     connection_pool (2.2.0)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    dalli (2.7.6)
     database_cleaner (1.5.3)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
@@ -101,6 +100,7 @@ GEM
     i18n (0.7.0)
     ice_nine (0.11.2)
     jemalloc (1.0.1)
+    json (1.8.3)
     metaclass (0.0.4)
     metriks (0.9.9.7)
       atomic (~> 1.0)
@@ -108,22 +108,18 @@ GEM
       hitimes (~> 1.1)
     metriks-librato_metrics (1.0.5)
       metriks (>= 0.9.9.6)
+    minitest (5.9.0)
     mocha (0.10.5)
       metaclass (~> 0.0.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
     net-http-pipeline (1.0.1)
-    pg (0.19.0)
+    pg (0.18.4)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
-    rails_12factor (0.0.3)
-      rails_serve_static_assets
-      rails_stdout_logging
-    rails_serve_static_assets (0.0.5)
-    rails_stdout_logging (0.0.5)
-    rake (11.3.0)
+    rake (11.1.1)
     redis (3.3.1)
     redis-namespace (1.5.2)
       redis (~> 3.0, >= 3.0.4)
@@ -144,12 +140,14 @@ GEM
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
     safe_yaml (1.0.4)
+    sentry-raven (1.2.2)
+      faraday (>= 0.7.6, < 0.10.x)
     sidekiq (4.1.4)
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
       redis (~> 3.2, >= 3.2.1)
       sinatra (>= 1.4.7)
-    sidekiq-pro (3.3.3)
+    sidekiq-pro (3.3.2)
       sidekiq (>= 4.0.0)
     sinatra (1.4.7)
       rack (~> 1.5)
@@ -159,8 +157,11 @@ GEM
     tilt (2.0.5)
     travis-config (1.0.12)
       hashr (~> 2.0.0)
+    travis-metrics (2.0.0.rc8)
+      metriks-librato_metrics (~> 1.0)
     travis-rollout (0.0.1)
-    tzinfo (0.3.51)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
     virtus (1.0.5)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
@@ -174,34 +175,32 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord (~> 3.2)
+  activerecord
   bunny
   coder!
   concurrent-ruby
-  dalli
   database_cleaner (~> 1.5.1)
   factory_girl
   gh!
   jemalloc
-  metriks-librato_metrics
   mocha (~> 0.10.0)
   multi_json (~> 1.11)
   pg
-  rails_12factor
   rake
-  redis-namespace (~> 1.5)
+  redis-namespace
   redlock
-  rollout (~> 1.1.0)
+  rollout
   rspec
-  sentry-raven!
+  sentry-raven
   sidekiq-pro!
   travis-config (~> 1.0.6)
+  travis-exceptions!
   travis-lock!
-  travis-metrics!
+  travis-logger!
+  travis-metrics (~> 2.0.0.rc3)
+  travis-migrations!
   travis-rollout
   travis-settings!
-  travis-support!
-  virtus
   webmock (~> 1.8.0)
 
 BUNDLED WITH

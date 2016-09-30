@@ -23,7 +23,7 @@ module Travis
         self
       end
 
-      attr_reader :logger, :config, :options
+      attr_accessor :logger, :config, :options
 
       def connected?
         !!@connection
@@ -31,7 +31,7 @@ module Travis
 
       def connection
         @connection ||= Bunny.new(config, options).tap do |c|
-          logger.info "Starting connection to RabbitMQ."
+          logger.debug "Starting connection to RabbitMQ."
           c.start
         end
       end
@@ -39,7 +39,7 @@ module Travis
 
       def disconnect
         if connection
-          logger.info "Closing connection to RabbitMQ."
+          logger.debug "Closing connection to RabbitMQ."
           connection.close if connection.open?
           @connection = nil
         end
