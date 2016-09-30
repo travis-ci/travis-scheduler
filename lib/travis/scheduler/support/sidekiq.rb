@@ -12,11 +12,16 @@ module Travis
               namespace: config.sidekiq.namespace
             }
 
+            # Raven sets up a middleware unsolicitedly:
+            # https://github.com/getsentry/raven-ruby/blob/master/lib/raven/integrations/sidekiq.rb#L28-L34
+            c.error_handlers.clear
+
             c.server_middleware do |chain|
+              chain.add Exceptions::Sidekiq, config.env, logger if config.sentry.dsn
               chain.add Metrics::Sidekiq
             end
 
-            c.logger.level = ::Logger::WARN
+            c.logger.level = ::Logger::const_get(config.sidekiq.log_level.upcase.to_s)
 
             if pro?
               c.reliable_fetch!

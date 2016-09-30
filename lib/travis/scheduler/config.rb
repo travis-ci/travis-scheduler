@@ -19,7 +19,7 @@ module Travis
               queue:      { redirect: {} },
               redis:      { url: 'redis://localhost:6379' },
               sentry:     { },
-              sidekiq:    { namespace: 'sidekiq', pool_size: 3 },
+              sidekiq:    { namespace: 'sidekiq', pool_size: 3, log_level: :warn },
               ssl:        { }
 
       def queue
