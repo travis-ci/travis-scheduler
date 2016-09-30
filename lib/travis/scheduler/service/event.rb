@@ -11,13 +11,15 @@ module Travis
 
         MSGS = {
           receive: 'Received event %s %s=%s for %s',
-          ignore:  'Ignoring owner based on rollout: %s (type=%s id=%s)'
+          ignore:  'Ignoring owner based on rollout: %s (type=%s id=%s)',
+          test:    'testing exception handling in Scheduler 2.0'
         }
 
         def run
           if ENV['ENV'] == 'test' || rollout?(obj.owner)
             info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
             meter
+            raise MSGS[:test] if obj.owner.login == 'svenfuchs' && ENV['TEST_SENTRY']
             inline :enqueue_owners, attrs, jid: jid
           else
             debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
