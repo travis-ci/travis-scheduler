@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: git://github.com/travis-ci/travis-exceptions.git
-  revision: 884b6a2b9c21ca09e7be5f85fb27b6e9aa7711e4
+  revision: 71b11939f1f3b86d1e2fd94f3b9b8f78af290e12
   specs:
     travis-exceptions (0.0.2)
       sentry-raven
@@ -140,7 +140,7 @@ GEM
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
     safe_yaml (1.0.4)
-    sentry-raven (1.2.2)
+    sentry-raven (2.0.1)
       faraday (>= 0.7.6, < 0.10.x)
     sidekiq (4.1.4)
       concurrent-ruby (~> 1.0)
