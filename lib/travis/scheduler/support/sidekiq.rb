@@ -6,7 +6,7 @@ module Travis
   module Scheduler
     module Sidekiq
       class << self
-        def setup(config)
+        def setup(config, logger)
           ::Sidekiq.configure_server do |c|
             c.redis = {
               url: config.redis.url,

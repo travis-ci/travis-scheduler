@@ -25,7 +25,7 @@ module Travis
         Database.connect(config.database.to_h)
         Exceptions.setup(config, config.env, logger)
         @metrics = Metrics.setup(config.metrics, logger)
-        Sidekiq.setup(config)
+        Sidekiq.setup(config, logger)
         Features.setup(config)
       end
 
