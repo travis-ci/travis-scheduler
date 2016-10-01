@@ -41,7 +41,12 @@ module Travis
             'ssh_key' => ssh_key,
             'env_vars' => env_vars,
             'timeouts' => timeouts,
+            'prefer_https' => prefer_https?
           }
+
+          if prefer_https?
+            data['oauth_token'] = oauth_token
+          end
 
           if Support::Features.active?(:cache_settings, repository)
             if Travis.config.cache_settings && queue_settings = Travis.config.cache_settings.to_h.fetch(job.queue && job.queue.to_sym, nil)
@@ -157,6 +162,14 @@ module Travis
         def secure_env?
           return @secure_env if defined? @secure_env
           @secure_env = job.secure_env?
+        end
+
+        def prefer_https?
+          Travis.config.prefer_https || false
+        end
+
+        def oauth_token
+          repository.admin && repository.admin.github_oauth_token
         end
       end
     end

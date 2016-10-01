@@ -21,6 +21,7 @@ describe Repository do
 
       before :each do
         Travis.config.github.source_host = nil
+        repo.stubs(:admin).returns User.new
       end
 
       it 'returns the public git source url for a public repository' do
@@ -41,6 +42,10 @@ describe Repository do
         Travis.config.github.source_host = 'localhost'
       end
 
+      after :each do
+        Travis.config.github.source_host = nil
+      end
+
       it 'returns the private git source url for a public repository' do
         repo.private = false
         expect(repo.source_url).to eq('git@localhost:travis-ci/travis-ci.git')
@@ -49,6 +54,21 @@ describe Repository do
       it 'returns the private git source url for a private repository' do
         repo.private = true
         expect(repo.source_url).to eq('git@localhost:travis-ci/travis-ci.git')
+      end
+    end
+
+    context 'when prefer_https is set' do
+      let(:repo) { Repository.new(owner_name: 'travis-ci', name: 'travis-ci') }
+
+      before :each do
+        Travis.config.prefer_https = true
+        repo.stubs(:admin).returns User.new
+      end
+
+      after  { Travis.config.prefer_https = false }
+
+      it 'returns the https source url the repository' do
+        expect(repo.source_url).to eq('https://github.com/travis-ci/travis-ci.git')
       end
     end
   end

@@ -23,7 +23,8 @@ module Travis
               ssl:           { },
               cache_settings: { },
               queue_redirections: { },
-              oauth2:        { }
+              oauth2:        { },
+              prefer_https:  false
     end
   end
 end

@@ -24,7 +24,7 @@ class Repository < ActiveRecord::Base
   end
 
   def source_url
-    private? || force_private? ? "git@#{source_host}:#{slug}.git": "https://#{source_host}/#{slug}.git"
+    ( private? || force_private? || admin.nil? ) && !Travis.config.prefer_https ? "git@#{source_host}:#{slug}.git": "https://#{source_host}/#{slug}.git"
   end
 
   def force_private?
@@ -37,6 +37,13 @@ class Repository < ActiveRecord::Base
 
   def settings
     @settings ||= Repository::Settings.load(super, repository_id: id)
+  end
+
+  def admin
+    candidates = users.where("github_oauth_token IS NOT NULL").
+                                  order("updated_at DESC")
+
+    candidates.first
   end
 end
 
