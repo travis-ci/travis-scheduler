@@ -3,7 +3,7 @@ require 'travis/scheduler/serialize/worker'
 
 module Travis
   module Scheduler
-    module Services
+    module Service
       class Notify < Struct.new(:context, :data)
         include Registry, Helper::Context, Helper::Locking, Helper::Logging,
           Helper::Metrics, Helper::Runner, Helper::With
@@ -18,33 +18,29 @@ module Travis
           # fail('kaputt. testing exception tracking.') if job.repository.owner_name == 'svenfuchs'
           info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
           redirect_queue
-          publish
+          notify_workers
           notify_live
         end
 
         private
 
-          def publish
-            Metriks.timer('enqueue.publish_job').time do
-              publisher.publish(payload, properties: { type: 'test', persistent: true })
-            end
-          end
-          time :collect
-
-          def payload
-            Metriks.timer('enqueue.build_worker_payload').time do
-              Serialize::Worker.new(job, config).data
-            end
-          end
-          time :collect
-
-          def publisher
-            Amqp::Publisher.new(job.queue)
+          def notify_workers
+            amqp.publish(worker_payload, properties: { type: 'test', persistent: true })
           end
 
           def notify_live
-            Live.push(Serialize::Live.new(job).data, event: 'job:queued')
+            Live.push(live_payload, event: 'job:queued')
           end
+
+          def worker_payload
+            Serialize::Worker.new(job, config).data
+          end
+          time :worker_payload
+
+          def live_payload
+            Serialize::Live.new(job).data
+          end
+          time :live_payload
 
           def job
             @job ||= Job.find(job_id)
@@ -54,6 +50,10 @@ module Travis
             data[:job] && data[:job][:id] or fail("No job id given: #{data}")
           end
 
+          def amqp
+            Amqp::Publisher.new(job.queue)
+          end
+
           def redirect_queue
             queue = redirections[job.queue] or return
             info MSGS[:redirect] % [job.queue, queue]
@@ -61,7 +61,7 @@ module Travis
           end
 
           def redirections
-            config.queue_redirections || {}
+            config[:queue_redirections] || {}
           end
 
           def jid

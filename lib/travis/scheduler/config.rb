@@ -22,11 +22,6 @@ module Travis
               sidekiq:    { namespace: 'sidekiq', pool_size: 3, log_level: :warn },
               ssl:        { }
 
-      def queue
-        # TODO fix keychain
-        queue_redirections ? { redirect: queue_redirections } : super
-      end
-
       def metrics
         # TODO fix keychain?
         super.to_h.merge(librato: librato.to_h.merge(source: librato_source), graphite: graphite)

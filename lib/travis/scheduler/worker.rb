@@ -13,7 +13,7 @@ module Travis
       private
 
         def normalize(args)
-          args.last[:jid] = jid if args.last.is_a?(Hash)
+          args.last[:jid] ||= jid if args.last.is_a?(Hash)
           args
         end
 

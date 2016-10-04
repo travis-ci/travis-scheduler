@@ -1,4 +1,3 @@
-
 module Travis
   module Scheduler
     module Service
@@ -28,7 +27,7 @@ module Travis
           end
 
           def notify
-            async :notify, job: { id: job.id }
+            async :notify, job: { id: job.id }, jid: jid
           end
 
           def repo
