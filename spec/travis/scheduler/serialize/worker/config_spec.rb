@@ -135,18 +135,33 @@ describe Travis::Scheduler::Serialize::Worker::Config do
 
     describe 'decrypts addons config' do
       let(:config) { { addons: { sauce_connect: { access_key: encrypt('foo') } } } }
-
-      it do
-        should eql(addons: { sauce_connect: { access_key: 'foo' } })
-      end
+      it { should eql(addons: { sauce_connect: { access_key: 'foo' } }) }
     end
 
     describe 'decrypts deploy addon config' do
       let(:config) { { deploy: { foo: encrypt('foobar') } } }
+      it { should eql(addons: { deploy: { foo: 'foobar' } }) }
+    end
+  end
 
-      it do
-        should eql(addons: { deploy: { foo: 'foobar' } })
+  describe 'addons' do
+    let(:var)    { 'SAUCE_ACCESS_KEY=foo' }
+    let(:config) { { addons: { jwt: encrypt(var) } } }
+
+    shared_examples_for 'includes the decrypted jwt addon config' do
+      describe 'jwt encrypted env var' do
+        it { expect(subject[:addons][:jwt]).to eq var }
       end
+    end
+
+    describe 'on a push request' do
+      let(:options) { { full_addons: true } }
+      include_examples 'includes the decrypted jwt addon config'
+    end
+
+    describe 'on a pull request' do
+      let(:options) { { full_addons: false } }
+      include_examples 'includes the decrypted jwt addon config'
     end
   end
 end
