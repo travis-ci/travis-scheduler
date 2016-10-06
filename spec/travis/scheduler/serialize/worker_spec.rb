@@ -7,7 +7,7 @@ describe Travis::Scheduler::Serialize::Worker do
 
   let(:features)  { Travis::Features }
   let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }) }
-  let(:request)   { FactoryGirl.create(:request, event_type: event) }
+  let(:request)   { FactoryGirl.create(:request, event_type: event, payload: payload) }
   let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
   let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
   let(:repo)      { FactoryGirl.create(:repo, default_branch: 'branch') }
@@ -18,6 +18,7 @@ describe Travis::Scheduler::Serialize::Worker do
   let(:event)     { 'push' }
   let(:ref)       { 'refs/tags/v1.2.3' }
   let(:pr_number) { nil }
+  let(:payload)   { {} }
 
   let(:settings) do
     Repository::Settings.load({
@@ -58,7 +59,7 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request: false,
           state: 'queued',
           secure_env_enabled: true,
-          debug_options: {}
+          debug_options: {},
         },
         source: {
           id: build.id,
@@ -114,6 +115,7 @@ describe Travis::Scheduler::Serialize::Worker do
     let(:event)     { 'pull_request' }
     let(:ref)       { 'refs/pull/180/merge' }
     let(:pr_number) { 180 }
+    let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '12345' } } } }
 
     before :each do
       request.stubs(:base_commit).returns('0cd9ff')
@@ -144,7 +146,9 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request: 180,
           state: 'queued',
           secure_env_enabled: false,
-          debug_options: {}
+          debug_options: {},
+          pull_request_head_branch: 'head_branch',
+          pull_request_head_sha: '12345'
         },
         source: {
           id: build.id,
