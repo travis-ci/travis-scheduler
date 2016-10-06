@@ -19,7 +19,6 @@ module Travis
           if ENV['ENV'] == 'test' || rollout?(obj.owner)
             info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
             meter
-            raise MSGS[:test] if obj.owner.login == 'svenfuchs' && ENV['TEST_SENTRY']
             inline :enqueue_owners, attrs, jid: jid
           else
             debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
