@@ -36,12 +36,6 @@ GIT
     travis-logger (0.0.1)
 
 GIT
-  remote: git://github.com/travis-ci/travis-migrations.git
-  revision: 7d9696ab7d2481d75ed85be268de8050a51363d2
-  specs:
-    travis-migrations (0.0.2)
-
-GIT
   remote: git://github.com/travis-ci/travis-settings.git
   revision: d510e63b6c6f059cccae141c265e7a0c7236d1fd
   specs:
@@ -198,7 +192,6 @@ DEPENDENCIES
   travis-lock!
   travis-logger!
   travis-metrics (~> 2.0.0.rc3)
-  travis-migrations!
   travis-rollout
   travis-settings!
   webmock (~> 1.8.0)

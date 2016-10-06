@@ -7,7 +7,6 @@ gem 'travis-exceptions',  github: 'travis-ci/travis-exceptions'
 gem 'travis-lock',        github: 'travis-ci/travis-lock'
 gem 'travis-logger',      github: 'travis-ci/travis-logger'
 gem 'travis-settings',    github: 'travis-ci/travis-settings'
-gem 'travis-migrations',  github: 'travis-ci/travis-migrations'
 gem 'gh',                 github: 'travis-ci/gh'
 gem 'coder',              github: 'rkh/coder'
 
