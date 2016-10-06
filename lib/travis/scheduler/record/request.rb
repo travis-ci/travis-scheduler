@@ -12,6 +12,18 @@ class Request < ActiveRecord::Base
 
   serialize :payload
 
+  def pull_request_head
+    payload && payload['pull_request'] && payload['pull_request']['head']
+  end
+
+  def pull_request_head_branch
+    pull_request_head['ref'] if pull_request_head
+  end
+
+  def pull_request_head_sha
+    pull_request_head['sha'] if pull_request_head
+  end
+
   # this method is overly long, but please don't refactor it just to shorten it,
   # I want it to be as clear as possible as any bug here can lead to security
   # issues

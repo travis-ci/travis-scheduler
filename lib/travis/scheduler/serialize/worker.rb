@@ -37,7 +37,7 @@ module Travis
           end
 
           def job_data
-            {
+            data = {
               id: job.id,
               number: job.number,
               commit: commit.commit,
@@ -51,6 +51,17 @@ module Travis
               secure_env_enabled: job.secure_env?,
               debug_options: job.debug_options || {}
             }
+
+            if job.pull_request?
+              data.merge!(
+                {
+                  pull_request_head_branch: request.pull_request_head_branch,
+                  pull_request_head_sha: request.pull_request_head_sha
+                }
+              )
+            end
+
+            data
           end
 
           def repository_data

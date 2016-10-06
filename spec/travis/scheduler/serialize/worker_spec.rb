@@ -118,6 +118,8 @@ describe Travis::Scheduler::Serialize::Worker do
     before :each do
       request.stubs(:base_commit).returns('0cd9ff')
       request.stubs(:head_commit).returns('62aaef')
+      request.stubs(:pull_request_head_branch).returns('feature-branch')
+      request.stubs(:pull_request_head_sha).returns('0123456789abcdef')
     end
 
     it 'data' do
@@ -144,7 +146,9 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request: 180,
           state: 'queued',
           secure_env_enabled: false,
-          debug_options: {}
+          debug_options: {},
+          pull_request_head_branch: 'feature-branch',
+          pull_request_head_sha: '0123456789abcdef'
         },
         source: {
           id: build.id,

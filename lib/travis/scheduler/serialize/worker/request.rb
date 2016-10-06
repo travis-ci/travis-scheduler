@@ -7,7 +7,8 @@ module Travis
         class Request < Struct.new(:request, :config)
           extend Forwardable
 
-          def_delegators :request, :id, :event_type, :base_commit, :head_commit
+          def_delegators :request, :id, :event_type, :base_commit, :head_commit,
+            :pull_request_head_branch, :pull_request_head_sha
 
           def tag_name
             request.tag_name if request.tag_name.present?
