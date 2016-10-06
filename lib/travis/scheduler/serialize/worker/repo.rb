@@ -10,7 +10,7 @@ module Travis
           def_delegators :repo, :id, :github_id, :slug,
             :last_build_id, :last_build_number, :last_build_started_at,
             :last_build_finished_at, :last_build_duration, :last_build_state,
-            :description, :key, :settings, :private?
+            :default_branch, :description, :key, :settings, :private?
 
           def vm_type
             Features.active?(:premium_vms, repo) ? :premium : :default

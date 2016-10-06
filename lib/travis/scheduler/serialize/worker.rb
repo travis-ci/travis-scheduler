@@ -67,6 +67,7 @@ module Travis
               last_build_finished_at: format_date(repo.last_build_finished_at),
               last_build_duration: repo.last_build_duration,
               last_build_state: repo.last_build_state.to_s,
+              default_branch: repo.default_branch,
               description: repo.description
             }
           end

@@ -6,12 +6,12 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   let(:features)  { Travis::Features }
-  let(:job)       { FactoryGirl.create(:job, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }) }
+  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }) }
   let(:request)   { FactoryGirl.create(:request, event_type: event) }
   let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
   let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
-  let(:repo)      { job.repository }
-  let(:owner)     { job.repository.owner }
+  let(:repo)      { FactoryGirl.create(:repo, default_branch: 'branch') }
+  let(:owner)     { repo.owner }
   let(:data)      { described_class.new(job, config).data }
   let(:config)    { { cache_settings: { 'builds.gce' => s3 }, github: { source_host: 'github.com', api_url: 'https://api.github.com' } } }
   let(:s3)        { { access_key_id: 'ACCESS_KEY_ID', secret_access_key: 'SECRET_ACCESS_KEY', bucket_name: 'bucket' } }
@@ -77,6 +77,7 @@ describe Travis::Scheduler::Serialize::Worker do
           last_build_number: '2',
           last_build_duration: 60,
           last_build_state: 'passed',
+          default_branch: 'branch',
           description: 'description',
         },
         ssh_key: nil,
@@ -162,6 +163,7 @@ describe Travis::Scheduler::Serialize::Worker do
           last_build_number: '2',
           last_build_duration: 60,
           last_build_state: 'passed',
+          default_branch: 'branch',
           description: 'description',
         },
         ssh_key: nil,
@@ -188,7 +190,6 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   describe 'ssh_key' do
-    let(:repo) { job.repository }
     before { repo.key.stubs(:private_key).returns('repo key') }
 
     shared_examples_for 'does not include an ssh key' do
