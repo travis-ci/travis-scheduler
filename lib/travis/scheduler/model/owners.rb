@@ -29,6 +29,10 @@ module Travis
           key == other.key
         end
 
+        def to_s
+          all.map { |owner| [owner.is_a?(User) ? 'user' : 'org', owner.login].join(' ') }.join(', ')
+        end
+
         private
 
           def subscriptions

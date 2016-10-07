@@ -19,7 +19,7 @@ module Travis
         def_delegators :limit, :reports, :jobs
 
         def run
-          info MSGS[:schedule] % [owners.logins.join(', ')]
+          info MSGS[:schedule] % [owners.to_s]
           collect
           report
           enqueue

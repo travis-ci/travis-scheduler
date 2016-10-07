@@ -40,7 +40,7 @@ module Travis
           end
 
           def report(key, value)
-            reports << MSGS[:max] % [repo.slug, key.to_s.sub('by_', ''), value]
+            reports << MSGS[:max] % ["repo #{repo.slug}", key.to_s.sub('by_', ''), value]
             value
           end
       end

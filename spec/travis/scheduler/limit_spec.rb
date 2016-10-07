@@ -24,8 +24,8 @@ describe Travis::Scheduler::Limit::Jobs do
     before { subject }
 
     it { expect(subject.size).to eq 2 }
-    it { expect(report).to include('max jobs for svenfuchs by boost: 2') }
-    it { expect(report).to include('svenfuchs: total: 3, running: 0, queueable: 2') }
+    it { expect(report).to include('max jobs for user svenfuchs by boost: 2') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 2') }
   end
 
   describe 'with a subscription limit 1' do
@@ -34,8 +34,8 @@ describe Travis::Scheduler::Limit::Jobs do
     before { subject }
 
     it { expect(subject.size).to eq 1 }
-    it { expect(report).to include('max jobs for svenfuchs by plan: 1 (svenfuchs)') }
-    it { expect(report).to include('svenfuchs: total: 3, running: 0, queueable: 1') }
+    it { expect(report).to include('max jobs for user svenfuchs by plan: 1 (svenfuchs)') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
   end
 
   describe 'with a custom config limit unlimited' do
@@ -44,8 +44,8 @@ describe Travis::Scheduler::Limit::Jobs do
     before { subject }
 
     it { expect(subject.size).to eq 3 }
-    it { expect(report).to include('max jobs for svenfuchs by unlimited: true') }
-    it { expect(report).to include('svenfuchs: total: 3, running: 0, queueable: 3') }
+    it { expect(report).to include('max jobs for user svenfuchs by unlimited: true') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 3') }
   end
 
   describe 'with a custom config limit 1' do
@@ -54,8 +54,8 @@ describe Travis::Scheduler::Limit::Jobs do
     before { subject }
 
     it { expect(subject.size).to eq 1 }
-    it { expect(report).to include('max jobs for svenfuchs by config: 1') }
-    it { expect(report).to include('svenfuchs: total: 3, running: 0, queueable: 1') }
+    it { expect(report).to include('max jobs for user svenfuchs by config: 1') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
   end
 
   describe 'with a default limit 1' do
@@ -64,8 +64,8 @@ describe Travis::Scheduler::Limit::Jobs do
     before { subject }
 
     it { expect(subject.size).to eq 1 }
-    it { expect(report).to include('max jobs for svenfuchs by default: 1') }
-    it { expect(report).to include('svenfuchs: total: 3, running: 0, queueable: 1') }
+    it { expect(report).to include('max jobs for user svenfuchs by default: 1') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
   end
 
   describe 'with a repo settings limit 1' do
@@ -74,8 +74,8 @@ describe Travis::Scheduler::Limit::Jobs do
     before { subject }
 
     it { expect(subject.size).to eq 1 }
-    it { expect(report).to include('max jobs for svenfuchs/gem-release by repo_settings: 1') }
-    it { expect(report).to include('svenfuchs: total: 3, running: 0, queueable: 1') }
+    it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 1') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
   end
 
   describe 'with a repo settings limit 5' do
@@ -86,9 +86,9 @@ describe Travis::Scheduler::Limit::Jobs do
     before { subject }
 
     it { expect(subject.size).to eq 2 }
-    it { expect(report).to include('max jobs for svenfuchs by plan: 7 (svenfuchs)') }
-    it { expect(report).to include('max jobs for svenfuchs/gem-release by repo_settings: 5') }
-    it { expect(report).to include('svenfuchs: total: 7, running: 3, queueable: 2') }
+    it { expect(report).to include('max jobs for user svenfuchs by plan: 7 (svenfuchs)') }
+    it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 5') }
+    it { expect(report).to include('user svenfuchs: total: 7, running: 3, queueable: 2') }
   end
 
   describe 'delegated accounts' do
@@ -107,8 +107,8 @@ describe Travis::Scheduler::Limit::Jobs do
 
       it { expect(subject.size).to eq 5 }
       it { expect(subject.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 2 }
-      it { expect(report).to include('max jobs for svenfuchs by plan: 7 (travis-ci)') }
-      it { expect(report).to include('carla, svenfuchs, travis-ci: total: 6, running: 2, queueable: 5') }
+      it { expect(report).to include('max jobs for user svenfuchs by plan: 7 (travis-ci)') }
+      it { expect(report).to include('user carla, user svenfuchs, org travis-ci: total: 6, running: 2, queueable: 5') }
     end
 
     describe 'with multiple subscriptions' do
@@ -118,8 +118,8 @@ describe Travis::Scheduler::Limit::Jobs do
 
       it { expect(subject.size).to eq 6 }
       it { expect(subject.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 3 }
-      it { expect(report).to include('max jobs for svenfuchs by plan: 8 (svenfuchs, travis-ci)') }
-      it { expect(report).to include('carla, svenfuchs, travis-ci: total: 6, running: 2, queueable: 6') }
+      it { expect(report).to include('max jobs for user svenfuchs by plan: 8 (svenfuchs, travis-ci)') }
+      it { expect(report).to include('user carla, user svenfuchs, org travis-ci: total: 6, running: 2, queueable: 6') }
     end
   end
 end

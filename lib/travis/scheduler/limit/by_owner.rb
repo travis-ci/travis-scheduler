@@ -60,7 +60,8 @@ module Travis
 
           def report(key, value)
             key  = key.to_s.sub('by_', '').to_sym
-            args = [job.owner.login, key, value]
+            name = [job.owner.is_a?(User) ? 'user' : 'org', job.owner.login].join(' ')
+            args = [name, key, value]
             args << owners.subscribed_owners.join(', ') if key == :plan
             msg  = MSGS[:"max_#{key}"] || MSGS[:max]
             reports << msg % args

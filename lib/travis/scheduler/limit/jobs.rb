@@ -61,7 +61,7 @@ module Travis
           end
 
           def summary
-            MSGS[:summary] % [owners.logins.join(', '), queueable.size, state.running_by_owners, jobs.size]
+            MSGS[:summary] % [owners.to_s, queueable.size, state.running_by_owners, jobs.size]
           end
 
           def report(*reports)
