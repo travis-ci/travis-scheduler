@@ -6,6 +6,7 @@ require 'travis/logger'
 require 'travis/metrics'
 require 'travis/scheduler/config'
 require 'travis/scheduler/record'
+require 'travis/scheduler/ping'
 require 'travis/scheduler/service'
 require 'travis/scheduler/support/features'
 require 'travis/scheduler/support/sidekiq'
@@ -52,9 +53,11 @@ module Travis
       def redis
         @redis ||= Redis.connect(config[:redis].to_h) # TODO should be a pool, no?
       end
-    end
 
-    setup
+      def ping
+        Ping.new(context).start if ENV['PING']
+      end
+    end
   end
 
   # TODO used by travis-settings, apparently

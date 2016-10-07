@@ -1,12 +1,14 @@
 ENV['ENV'] = ENV['RAILS_ENV'] = 'test'
 
-require 'travis/scheduler'
 require 'database_cleaner'
 require 'mocha'
 require 'support/factories'
 require 'support/logger'
+require 'travis/scheduler'
 
 include Mocha::API
+
+Travis::Scheduler.setup
 
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :transaction

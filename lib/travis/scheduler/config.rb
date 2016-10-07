@@ -20,7 +20,8 @@ module Travis
               redis:      { url: 'redis://localhost:6379' },
               sentry:     { },
               sidekiq:    { namespace: 'sidekiq', pool_size: 3, log_level: :warn },
-              ssl:        { }
+              ssl:        { },
+              ping:       { interval: 5 * 60 }
 
       def metrics
         # TODO fix keychain?
