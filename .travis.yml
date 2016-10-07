@@ -1,18 +1,24 @@
+sudo: false
+
 language: ruby
-rvm: 2.1.5
+rvm: 2.2
+
 services:
-- redis
-- rabbitmq
+  - redis
+  - rabbitmq
 addons:
   postgresql: 9.3
 cache: bundler
-sudo: false
+
 env:
   matrix:
   - RAKE_TASK=spec
   global:
     secure: BdVC3OHqYcgePLrkKIk28Ewn/dxCYFf3Cx+Q8P+BCDj6UPJyRSbKmILBzuX96H5xhKmUFo0A/upUhJI9UUP9aXHO7MzRe04/c88QdO4wGacVUaIyB20S0pr262zbc/nA50K9cVgpmWc64n6uQR1tgM6ZyyBnBeXkLzCAOHPq99I=
-before_install: gem install bundler
+
+before_install:
+  - gem install bundler
 before_script:
-- bundle exec rake db:create --trace
-script: bundle exec rspec spec
+  - bundle exec rake db:create --trace
+script:
+  - bundle exec rspec spec
