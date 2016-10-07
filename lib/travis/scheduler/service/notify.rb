@@ -5,8 +5,7 @@ module Travis
   module Scheduler
     module Service
       class Notify < Struct.new(:context, :data)
-        include Registry, Helper::Context, Helper::Locking, Helper::Logging,
-          Helper::Metrics, Helper::Runner, Helper::With
+        include Registry, Helper::Context, Helper::Logging, Helper::Metrics
 
         register :service, :notify
 
