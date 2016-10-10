@@ -20,7 +20,7 @@ module Travis
 
           def ping
             owners.each do |owner_id, owner_type|
-              async :enqueue_owners, owner_id: owner_id.to_i, owner_type: owner_type
+              async :enqueue_owners, owner_id: owner_id.to_i, owner_type: owner_type, src: :ping
             end
           end
 
@@ -28,7 +28,7 @@ module Travis
             scope = Job.where(state: :created).where('created_at <= ?', Time.now - 2 * 60)
             scope = scope.distinct
             scope = scope.select(:owner_type, :owner_id)
-            scope.map { |job| [job.owner_id, job.owner_type] }
+            scope.map { |job| [job.owner_id, job.owner_type] }.uniq
           end
 
           def jid

@@ -55,7 +55,7 @@ module Travis
       end
 
       def ping
-        Ping.new(context).start if ENV['PING']
+        Ping.new(context).start if ENV['PING'] # TODO remove the env var if we decide to use this
       end
     end
   end
