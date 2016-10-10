@@ -5,8 +5,6 @@ module Travis
         include Registry, Helper::Context, Helper::Locking, Helper::Logging,
           Helper::Metrics, Helper::Runner
 
-        QUERY = %(SELECT DISTINCT owner_id, owner_type FROM jobs WHERE state = 'created')
-
         register :service, :ping
 
         MSGS = {
@@ -21,13 +19,16 @@ module Travis
         private
 
           def ping
-            owners.each do |id, type|
-              async :enqueue_owners, owner_id: id.to_i, owner_type: type
+            owners.each do |owner_id, owner_type|
+              async :enqueue_owners, owner_id: owner_id.to_i, owner_type: owner_type
             end
           end
 
           def owners
-            ActiveRecord::Base.connection.select_rows(QUERY)
+            scope = Job.where(state: :created).where('created_at <= ?', Time.now - 2 * 60)
+            scope = scope.distinct
+            scope = scope.select(:owner_type, :owner_id)
+            scope.map { |job| [job.owner_id, job.owner_type] }
           end
 
           def jid
