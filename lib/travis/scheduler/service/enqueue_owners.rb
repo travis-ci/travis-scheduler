@@ -57,6 +57,10 @@ module Travis
           def jid
             opts[:jid]
           end
+
+          def opts
+            super || {}
+          end
       end
     end
   end
