@@ -21,7 +21,7 @@ module Travis
               sentry:     { },
               sidekiq:    { namespace: 'sidekiq', pool_size: 3, log_level: :warn },
               ssl:        { },
-              ping:       { interval: 5 * 60 }
+              ping:       { interval: 2 * 60 }
 
       def metrics
         # TODO fix keychain?
