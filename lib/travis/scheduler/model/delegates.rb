@@ -10,7 +10,7 @@ module Travis
           logins = [login, delegate].compact
           logins = logins.concat(delegatees(logins))
           logins = logins.concat(delegators(logins))
-          logins.uniq
+          logins.uniq.compact
         end
 
         private
