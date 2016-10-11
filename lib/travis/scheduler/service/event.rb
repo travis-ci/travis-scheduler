@@ -16,7 +16,7 @@ module Travis
         }
 
         def run
-          if ENV['ENV'] == 'test' || rollout?(obj.owner)
+          if ENV['ENV'] == 'test' || ENV['ROLLOUT'].nil? || rollout?(obj.owner)
             info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
             meter
             inline :enqueue_owners, attrs, jid: jid
