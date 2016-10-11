@@ -27,4 +27,10 @@ describe Travis::Scheduler::Service::Notify do
       expect(job.reload.queue).to eq 'builds.gce'
     end
   end
+
+  describe 'does not raise on encoding issues ("\xC3" from ASCII-8BIT to UTF-8)' do
+    let(:config) { { global_env: ["SECURE GH_USER_NAME=Max Nöthe".force_encoding('ASCII-8BIT')] } }
+    before { job.update_attributes!(config: config) }
+    it { expect { service.run }.to_not raise_error }
+  end
 end

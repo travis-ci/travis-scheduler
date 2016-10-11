@@ -1,3 +1,4 @@
+require 'coder'
 require 'travis/scheduler/serialize/live'
 require 'travis/scheduler/serialize/worker'
 
@@ -32,7 +33,7 @@ module Travis
           end
 
           def worker_payload
-            Serialize::Worker.new(job, config).data
+            deep_clean(Serialize::Worker.new(job, config).data)
           end
           time :worker_payload
 
@@ -69,6 +70,19 @@ module Travis
 
           def src
             data[:src]
+          end
+
+          def deep_clean(obj)
+            case obj
+            when ::Hash, Hashr
+              obj.to_h.map { |key, value| [key, deep_clean(value)] }.to_h
+            when Array
+              obj.map { |obj| deep_clean(obj) }
+            when String
+              ::Coder.clean(obj)
+            else
+              obj
+            end
           end
       end
     end
