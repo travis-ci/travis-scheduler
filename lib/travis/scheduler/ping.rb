@@ -9,17 +9,17 @@ module Travis
 
       def start
         Thread.new do
-          exclusive 'scheduler.ping', config do
-            loop(&method(:run))
-          end
+          loop(&method(:run))
         end
       end
 
       private
 
         def run
-          ping
-          sleep interval
+          exclusive 'scheduler.ping', config do
+            ping
+            sleep interval
+          end
         rescue => e
           logger.error e.message, e.backtrace
         end
