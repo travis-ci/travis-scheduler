@@ -8,11 +8,11 @@ module Travis
         register :service, :ping
 
         MSGS = {
-          start: 'Pinging all owners'
+          start: 'Found %s owners to ping.'
         }
 
         def run
-          info MSGS[:start]
+          info MSGS[:start] % owners.size
           ping
         end
 
@@ -25,10 +25,12 @@ module Travis
           end
 
           def owners
-            scope = Job.where(state: :created).where('created_at <= ?', Time.now - 2 * 60)
-            scope = scope.distinct
-            scope = scope.select(:owner_type, :owner_id)
-            scope.map { |job| [job.owner_id, job.owner_type] }.uniq
+            @owners ||= begin
+              scope = Job.where(state: :created).where('created_at <= ?', Time.now - 2 * 60)
+              scope = scope.distinct
+              scope = scope.select(:owner_type, :owner_id)
+              scope.map { |job| [job.owner_id, job.owner_type] }.uniq
+            end
           end
 
           def jid
