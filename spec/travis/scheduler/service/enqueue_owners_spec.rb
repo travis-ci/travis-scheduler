@@ -5,8 +5,8 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:commit)  { FactoryGirl.create(:commit) }
   let(:job)     { Job.first }
   let(:config)  { Travis::Scheduler.context.config }
-  let(:data)    { { owner_type: 'User', owner_id: owner.id } }
-  let(:service) { described_class.new(Travis::Scheduler.context, data, jid: '1234') }
+  let(:data)    { { owner_type: 'User', owner_id: owner.id, jid: '1234' } }
+  let(:service) { described_class.new(Travis::Scheduler.context, data) }
 
   context do
     before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, state: :created, queue: 'builds.gce') } }

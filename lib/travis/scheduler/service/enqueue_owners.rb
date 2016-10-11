@@ -5,7 +5,7 @@ require 'travis/scheduler/model/owners'
 module Travis
   module Scheduler
     module Service
-      class EnqueueOwners < Struct.new(:context, :data, :opts)
+      class EnqueueOwners < Struct.new(:context, :data)
         include Registry, Helper::Context, Helper::Locking, Helper::Logging,
           Helper::Metrics, Helper::Runner, Helper::With
         extend Forwardable
@@ -55,7 +55,11 @@ module Travis
           end
 
           def jid
-            opts[:jid]
+            data[:jid]
+          end
+
+          def src
+            data[:src]
           end
 
           def opts

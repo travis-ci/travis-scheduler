@@ -66,6 +66,10 @@ module Travis
           def jid
             data[:jid]
           end
+
+          def src
+            data[:src]
+          end
       end
     end
   end

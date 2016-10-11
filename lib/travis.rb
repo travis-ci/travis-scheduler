@@ -4,7 +4,8 @@ module Travis
       ::Sidekiq::Client.push(
         'queue' => ENV['SIDEKIQ_QUEUE'] || 'scheduler',
         'class' => 'Travis::Scheduler::Worker',
-        'args'  => args
+        'args'  => args,
+        'at'    => args.last.is_a?(Hash) ? args.last.delete(:at) : nil
       )
     end
   end

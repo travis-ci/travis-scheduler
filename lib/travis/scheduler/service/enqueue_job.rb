@@ -38,6 +38,10 @@ module Travis
             opts[:jid]
           end
 
+          def src
+            opts[:src]
+          end
+
           def transaction(&block)
             ActiveRecord::Base.transaction(&block)
           end

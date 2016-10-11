@@ -19,7 +19,7 @@ module Travis
           if ENV['ENV'] == 'test' || ENV['ROLLOUT'].nil? || rollout?(obj.owner)
             info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
             meter
-            inline :enqueue_owners, attrs, jid: jid
+            inline :enqueue_owners, attrs
           else
             debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
           end
@@ -36,7 +36,7 @@ module Travis
           end
 
           def attrs
-            { owner_type: obj.owner_type, owner_id: obj.owner_id }
+            { owner_type: obj.owner_type, owner_id: obj.owner_id, jid: jid }
           end
 
           def obj
@@ -65,6 +65,10 @@ module Travis
 
           def jid
             data[:jid]
+          end
+
+          def src
+            data[:src]
           end
       end
     end
