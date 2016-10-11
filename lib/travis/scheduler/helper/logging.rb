@@ -5,8 +5,8 @@ module Travis
         class Format < Struct.new(:msg, :context)
           def apply
             msg = []
-            msg << jid[0..5] if jid
-            msg << src       if src
+            msg << jid[0..5]  if jid
+            msg << "[#{src}]" if src
             msg << self.msg
             msg.join(' ')
           end
