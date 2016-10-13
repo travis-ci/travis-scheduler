@@ -31,7 +31,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
 
     describe 'with a nil env' do
       let(:config) { { rvm: '1.8.7', env: nil, global_env: nil } }
-      it { should eql(config) }
+      it { should eql(rvm: '1.8.7') }
     end
 
     describe 'with a [nil] env' do
@@ -116,7 +116,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    described_class::Normalize::WHITELISTED_ADDONS.map(&:to_sym).each do |name|
+    described_class::Addons::SAFE.map(&:to_sym).each do |name|
       describe "keeps the #{name} addon" do
         let(:config) { { addons: { name => :config } } }
         it { should eql(config) }
