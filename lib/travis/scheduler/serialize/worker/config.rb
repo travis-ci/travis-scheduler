@@ -1,4 +1,5 @@
 require 'travis/scheduler/helper/deep_dup'
+require 'travis/scheduler/serialize/worker/config/addons'
 require 'travis/scheduler/serialize/worker/config/decrypt'
 require 'travis/scheduler/serialize/worker/config/normalize'
 
