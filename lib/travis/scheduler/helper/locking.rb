@@ -7,7 +7,7 @@ module Travis
         def exclusive(key, config, &block)
           options = config[:lock]
           options[:url] ||= config[:redis][:url] if options[:strategy] == :redis
-          logger.debug "Locking #{key} with: #{options[:strategy]}, ttl: #{options[:ttl]}"
+          debug "Locking #{key} with: #{options[:strategy]}, ttl: #{options[:ttl]}"
           Lock.exclusive(key, options, &block)
         end
       end

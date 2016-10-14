@@ -24,7 +24,7 @@ module Travis
           report
           enqueue
         end
-        with :exclusive
+        with :run, :exclusive
 
         private
 

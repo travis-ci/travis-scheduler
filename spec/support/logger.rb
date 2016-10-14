@@ -7,7 +7,7 @@ module Support
     included do
       let(:stdout) { StringIO.new }
       let(:log)    { stdout.string }
-      let(:logger) { Travis::Logger.new(stdout) }
+      let(:logger) { Travis::Logger.new(stdout, logger: { level: :debug }) }
       before       { Travis::Scheduler.context.logger = logger }
       before       { Travis::Amqp.logger = logger }
     end

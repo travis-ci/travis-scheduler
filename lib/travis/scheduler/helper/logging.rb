@@ -27,7 +27,10 @@ module Travis
         end
 
         def log(level, msg)
-          logger.send(level, Format.new(msg, jid: jid, src: src).apply)
+          opts = {}
+          opts[:jid] = jid if respond_to?(:jid, true)
+          opts[:src] = src if respond_to?(:src, true)
+          logger.send(level, Format.new(msg, opts).apply)
         end
       end
     end

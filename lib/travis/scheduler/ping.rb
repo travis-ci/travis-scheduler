@@ -1,11 +1,12 @@
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/locking'
+require 'travis/scheduler/helper/logging'
 require 'travis/scheduler/helper/runner'
 
 module Travis
   module Scheduler
     class Ping < Struct.new(:context)
-      include Helper::Context, Helper::Locking, Helper::Runner
+      include Helper::Context, Helper::Locking, Helper::Logging, Helper::Runner
 
       def start
         Thread.new do
