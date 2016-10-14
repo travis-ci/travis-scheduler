@@ -16,6 +16,7 @@ module Travis
               mariadb
               postgresql
               rethinkdb
+              sonarqube
               ssh_known_hosts
             )
 
