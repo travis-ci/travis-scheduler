@@ -6,25 +6,32 @@ module Travis
   module Scheduler
     module Service
       class Notify < Struct.new(:context, :data)
-        include Registry, Helper::Context, Helper::Logging, Helper::Metrics
+        include Registry, Helper::Context, Helper::Logging, Helper::Metrics,
+          Helper::Runner
 
         register :service, :notify
 
-        MSGS = {
-          redirect: 'Found job.queue: %s. Redirecting to: %s'
-        }
-
         def run
           # fail('kaputt. testing exception tracking.') if job.repository.owner_name == 'svenfuchs'
-          info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
-          redirect_queue
+          set_queue if set_queue?
           notify_workers
           notify_live
         end
 
         private
 
+          def set_queue?
+            return unless owners = ENV['QUEUE_SELECTION']
+            owners = owners.split(',')
+            owners.include?(job.owner.login)
+          end
+
+          def set_queue
+            inline :set_queue, job, jid: jid, src: src
+          end
+
           def notify_workers
+            info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
             amqp.publish(worker_payload, properties: { type: 'test', persistent: true })
           end
 
@@ -52,16 +59,6 @@ module Travis
 
           def amqp
             Amqp::Publisher.new(job.queue)
-          end
-
-          def redirect_queue
-            queue = redirections[job.queue] or return
-            info MSGS[:redirect] % [job.queue, queue]
-            job.update_attributes!(queue: queue)
-          end
-
-          def redirections
-            config[:queue_redirections] || {}
           end
 
           def jid

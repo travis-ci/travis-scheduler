@@ -4,6 +4,7 @@ require 'travis/amqp'
 require 'travis/exceptions'
 require 'travis/logger'
 require 'travis/metrics'
+require 'travis/queue'
 require 'travis/scheduler/config'
 require 'travis/scheduler/record'
 require 'travis/scheduler/ping'
@@ -13,6 +14,8 @@ require 'travis/scheduler/support/sidekiq'
 require 'travis/scheduler/worker'
 require 'travis/support/branch_validator' # TODO move to gatekeeper
 require 'travis/support/database'
+
+Travis::Exceptions::Queue = ::Queue # TODO fix in travis-exceptions
 
 module Travis
   module Scheduler
