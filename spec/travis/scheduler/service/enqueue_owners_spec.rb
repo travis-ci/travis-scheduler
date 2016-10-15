@@ -16,7 +16,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
 
     it { expect(Job.order(:id).pluck(:state)).to eq %w[queued created] }
 
-    it { expect(log).to include "D 1234 Locking scheduler.owners-svenfuchs:travis-ci with: redis, ttl: 150" }
+    it { expect(log).to include "I 1234 Locking scheduler.owners-svenfuchs:travis-ci with: redis, ttl: 150s" }
     it { expect(log).to include "I 1234 Evaluating jobs for owner group: user svenfuchs, org travis-ci" }
     it { expect(log).to include "I 1234 enqueueing job #{job.id} (svenfuchs/gem-release)" }
     it { expect(log).to include "I 1234 max jobs for user svenfuchs by default: 1" }
