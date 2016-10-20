@@ -1,18 +1,18 @@
 GIT
-  remote: git://github.com/getsentry/raven-ruby.git
-  revision: 8e1a23aa844708001e91471ba28a616a335ebbe2
+  remote: https://github.com/getsentry/raven-ruby
+  revision: eafa3b5a4499b220a4dfb5e9075ee658dbb4e518
   specs:
-    sentry-raven (2.0.1)
+    sentry-raven (2.1.0)
       faraday (>= 0.7.6, < 0.10.x)
 
 GIT
-  remote: git://github.com/rkh/coder.git
+  remote: https://github.com/rkh/coder
   revision: 44b0cf89b98caecc654dd1a724a448e17ef7aa6c
   specs:
     coder (0.4.0)
 
 GIT
-  remote: git://github.com/travis-ci/gh.git
+  remote: https://github.com/travis-ci/gh
   revision: 30d522ebde91c24fa7e6b40a1b38107d74934b28
   specs:
     gh (0.14.0)
@@ -24,20 +24,20 @@ GIT
       net-http-pipeline
 
 GIT
-  remote: git://github.com/travis-ci/travis-lock.git
+  remote: https://github.com/travis-ci/travis-lock
   revision: 8aadc4cd7a1c8d89788dfc096507ee96a71fceb6
   specs:
     travis-lock (0.1.0)
 
 GIT
-  remote: git://github.com/travis-ci/travis-metrics.git
+  remote: https://github.com/travis-ci/travis-metrics
   revision: 37eac93bd1e9bd949a9842f28154c335ebeda42a
   specs:
     travis-metrics (0.0.1)
       metriks-librato_metrics (~> 1.0)
 
 GIT
-  remote: git://github.com/travis-ci/travis-settings.git
+  remote: https://github.com/travis-ci/travis-settings
   revision: d510e63b6c6f059cccae141c265e7a0c7236d1fd
   specs:
     travis-settings (0.0.1)
@@ -45,7 +45,7 @@ GIT
       virtus
 
 GIT
-  remote: git://github.com/travis-ci/travis-support.git
+  remote: https://github.com/travis-ci/travis-support
   revision: 96b04f6b07d53918fff6e1bdb749fc5b9c8308a6
   ref: sf-instrumentation
   specs:
@@ -112,7 +112,8 @@ GEM
       metaclass (~> 0.0.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
-    net-http-persistent (2.9.4)
+    net-http-persistent (3.0.0)
+      connection_pool (~> 2.2)
     net-http-pipeline (1.0.1)
     pg (0.19.0)
     rack (1.6.4)
@@ -205,4 +206,4 @@ DEPENDENCIES
   webmock (~> 1.8.0)
 
 BUNDLED WITH
-   1.13.1
+   1.13.5
