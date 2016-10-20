@@ -32,5 +32,5 @@ group :test do
   gem 'factory_girl',     '~> 4.7.0'
   gem 'mocha',            '~> 0.10.0'
   gem 'rspec'
-  gem 'webmock',          '~> 1.8.0'
+  gem 'webmock'
 end

@@ -10,6 +10,7 @@ describe Travis::Scheduler::Service::Event do
   let(:service) { described_class.new(Travis::Scheduler.context, event, data) }
 
   context do
+    before { Travis::JobBoard.stubs(:post) }
     before { config.limit.delegate = { owner.login => org.login } }
     before { config.limit.default = 1 }
     before { service.run }
