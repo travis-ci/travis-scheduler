@@ -8,6 +8,8 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:data)    { { owner_type: 'User', owner_id: owner.id, jid: '1234' } }
   let(:service) { described_class.new(Travis::Scheduler.context, data) }
 
+  before { Travis::JobBoard.stubs(:post) }
+
   context do
     before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, state: :created, queue: 'builds.gce', config: {}) } }
     before { config.limit.delegate = { owner.login => org.login } }

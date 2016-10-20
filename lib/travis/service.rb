@@ -1,3 +1,7 @@
+require 'faraday'
+require 'json'
+require 'travis/service/job_board'
+
 module Travis
   module Scheduler
     def self.push(*args)
@@ -27,6 +31,22 @@ module Travis
         'class'   => 'Travis::Async::Sidekiq::Worker',
         'args'    => [nil, nil, nil, *args]
       )
+    end
+  end
+
+  module JobBoard
+    class << self
+      def post(job_id, data)
+        Service::JobBoard.new(job_id, data, config, logger).post
+      end
+
+      def config
+        Scheduler.context.config
+      end
+
+      def logger
+        Scheduler.context.logger
+      end
     end
   end
 end

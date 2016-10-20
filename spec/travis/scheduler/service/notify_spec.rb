@@ -4,11 +4,139 @@ describe Travis::Scheduler::Service::Notify do
   let(:context) { Travis::Scheduler.context }
   let(:service) { described_class.new(context, data) }
   let(:amqp)    { Travis::Amqp::Publisher.any_instance }
+  let(:jobs)    { Travis::JobBoard }
   let(:live)    { Travis::Live }
+  let(:auth)    { Base64.strict_encode64('user:pass').chomp }
+  let(:url)     { 'https://job-board.travis-ci.org/jobs/add' }
+  let(:status)  { 201 }
+  let(:body)    { 'Created' }
 
-  it 'publishes to rabbit' do
-    amqp.expects(:publish).with(instance_of(Hash), properties: { type: 'test', persistent: true })
-    service.run
+  before { stub_request(:post, url).to_return(status: status, body: body)  }
+
+  describe 'with rollout job_board not enabled' do
+    before { disable_rollout('job_board', job.owner) }
+
+    it 'publishes to rabbit' do
+      amqp.expects(:publish).with(instance_of(Hash), properties: { type: 'test', persistent: true })
+      service.run
+    end
+  end
+
+  describe 'with rollout job_board enabled' do
+    before { enable_rollout('job_board', job.owner) }
+
+    shared_examples_for 'raises' do
+      it 'raises' do
+        expect { service.run }.to raise_error(Faraday::ClientError)
+      end
+    end
+
+    shared_examples_for 'does not raise' do
+      it 'does not raise' do
+        expect { service.run }.to_not raise_error
+      end
+    end
+
+    def rescueing
+      yield
+    rescue => e
+    end
+
+    describe 'publishes to job_board' do
+      describe 'with a valid request' do
+        it 'sends the expected request'  do
+          service.run
+          expect(WebMock).to have_requested(:post, url).with { |request|
+            body = JSON.parse(request.body)
+            expect(body['@type']).to                    eq 'job'
+            expect(body['id']).to                       eq job.id
+            expect(body['data']).to                     be_a Hash
+            expect(request.headers['Authorization']).to eq "Basic #{auth}"
+            expect(request.headers['Content-Type']).to  eq 'application/json'
+            expect(request.headers['Travis-Site']).to   eq 'org'
+          }
+        end
+
+        include_examples 'does not raise'
+
+        it 'logs' do
+          service.run
+          expect(log).to include "I POST to https://job-board.travis-ci.org/jobs/add responded 201 (job #{job.id} created)"
+        end
+      end
+
+      describe 'when the job already exists in job board' do
+        let(:status) { 204 }
+        let(:body)   { nil }
+
+        include_examples 'does not raise'
+
+        it 'logs' do
+          service.run
+          expect(log).to include "W POST to https://job-board.travis-ci.org/jobs/add responded 204 (job #{job.id} already exists)"
+        end
+      end
+
+      describe 'when the request is invalid' do
+        let(:status) { 400 }
+        let(:body)   { nil }
+
+        include_examples 'raises'
+
+        it 'logs' do
+          rescueing { service.run }
+          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 400 (bad request: #{body})"
+        end
+      end
+
+      describe 'when the site header is missing' do
+        let(:status) { 412 }
+        let(:body)   { nil }
+
+        include_examples 'raises'
+
+        it 'logs' do
+          rescueing { service.run }
+          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 412 (site header missing)"
+        end
+      end
+
+      describe 'when the authorization header is missing' do
+        let(:status) { 401 }
+        let(:body)   { nil }
+
+        include_examples 'raises'
+
+        it 'logs' do
+          rescueing { service.run }
+          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 401 (auth header missing)"
+        end
+      end
+
+      describe 'when the authorization header is invalid' do
+        let(:status) { 403 }
+        let(:body)   { nil }
+
+        include_examples 'raises'
+
+        it 'logs' do
+          rescueing { service.run }
+          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 403 (auth header invalid)"
+        end
+      end
+
+      describe 'when job board raises' do
+        let(:status) { 500 }
+        let(:body)   { nil }
+
+        include_examples 'raises'
+
+        it 'logs' do
+          rescueing { service.run }
+          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 500 (internal error)"
+        end
+      end
+    end
   end
 
   it 'publishes to live' do
