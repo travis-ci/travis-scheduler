@@ -24,12 +24,6 @@ GIT
       sentry-raven
 
 GIT
-  remote: git://github.com/travis-ci/travis-lock.git
-  revision: 8aadc4cd7a1c8d89788dfc096507ee96a71fceb6
-  specs:
-    travis-lock (0.1.0)
-
-GIT
   remote: git://github.com/travis-ci/travis-logger.git
   revision: 765046a4746617a70395fe2200e8a91dc416f1b3
   specs:
@@ -151,6 +145,7 @@ GEM
     tilt (2.0.5)
     travis-config (1.0.12)
       hashr (~> 2.0.0)
+    travis-lock (0.1.1)
     travis-metrics (2.0.0.rc8)
       metriks-librato_metrics (~> 1.0)
     travis-rollout (0.0.1)
@@ -189,7 +184,7 @@ DEPENDENCIES
   sidekiq-pro!
   travis-config (~> 1.0.6)
   travis-exceptions!
-  travis-lock!
+  travis-lock
   travis-logger!
   travis-metrics (~> 2.0.0.rc3)
   travis-rollout

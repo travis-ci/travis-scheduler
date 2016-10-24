@@ -12,7 +12,8 @@ module Travis
         MSGS = {
           receive: 'Received event %s %s=%s for %s',
           ignore:  'Ignoring owner based on rollout: %s (type=%s id=%s)',
-          test:    'testing exception handling in Scheduler 2.0'
+          test:    'testing exception handling in Scheduler 2.0',
+          drop:    'Owner group %s is locked and already being evaluated. Dropping event %s for %s=%s.'
         }
 
         def run
@@ -23,6 +24,8 @@ module Travis
           else
             debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
           end
+        rescue Lock::Redis::LockError => e
+          info MSGS[:drop] % [e.key, event, type, data[:id]]
         end
 
         private
