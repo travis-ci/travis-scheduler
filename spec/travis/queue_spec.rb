@@ -30,12 +30,19 @@ describe Travis::Queue do
 
   after do
     context.config.queues = nil
+    context.config.docker_default_queue_cutoff = nil
     context.redis.flushall
   end
 
   describe 'by default' do
     let(:slug) { 'travis-ci/travis-ci' }
     it { expect(queue).to eq 'builds.gce' }
+  end
+
+  describe 'by default, with a docker cutoff' do
+    before { context.config.docker_default_queue_cutoff = '2015-01-01' }
+    let(:config) { { language: 'php', os: 'linux', group: 'stable', dist: 'precise' } }
+    it { expect(queue).to eq 'builds.docker' }
   end
 
   describe 'by app config' do
