@@ -25,6 +25,7 @@ describe Travis::Scheduler::Service::Notify do
     before { service.run }
 
     it { expect(job.reload.queue).to eq 'builds.mac_osx' }
+    it { expect(log).to include "W Queue selection evaluated to builds.mac_osx, but the current queue is builds.gce for job=#{job.id}" }
     it { expect(log).to include "I Setting queue to builds.mac_osx for job=#{job.id}" }
   end
 

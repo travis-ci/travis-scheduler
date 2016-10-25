@@ -8,20 +8,34 @@ module Travis
 
         MSGS = {
           # redirect: 'Found job.queue: %s. Redirecting to: %s'
+          check: 'Queue selection evaluated to %s, but the current queue is %s for job=%s',
           queue: 'Setting queue to %s for job=%s'
         }
 
         def run
-          job.update_attributes!(queue: queue)
+          check
+          set if set?
         end
 
         private
 
-          def queue
-            queue = Queue.new(job, config, logger).select
-            queue = redirect(queue)
+          def check
+            warn MSGS[:check] % [queue, job.queue, job.id] unless queue == job.queue
+          end
+
+          def set?
+            return unless owners = ENV['QUEUE_SELECTION']
+            owners = owners.split(',')
+            owners.include?(job.owner.login)
+          end
+
+          def set
             info MSGS[:queue] % [queue, job.id]
-            queue
+            job.update_attributes!(queue: queue)
+          end
+
+          def queue
+            @queue ||= redirect(Queue.new(job, config, logger).select)
           end
 
           # TODO confirm we don't need queue redirection any more

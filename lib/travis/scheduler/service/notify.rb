@@ -13,18 +13,12 @@ module Travis
 
         def run
           # fail('kaputt. testing exception tracking.') if job.repository.owner_name == 'svenfuchs'
-          set_queue if set_queue?
+          set_queue
           notify_workers
           notify_live
         end
 
         private
-
-          def set_queue?
-            return unless owners = ENV['QUEUE_SELECTION']
-            owners = owners.split(',')
-            owners.include?(job.owner.login)
-          end
 
           def set_queue
             inline :set_queue, job, jid: jid, src: src
