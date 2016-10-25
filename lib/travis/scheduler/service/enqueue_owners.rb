@@ -51,7 +51,7 @@ module Travis
           end
 
           def exclusive(&block)
-            super(['scheduler.owners', owners.key].join('-'), config, &block)
+            super(['scheduler.owners', owners.key].join('-'), config, retries: 0, &block)
           end
 
           def jid

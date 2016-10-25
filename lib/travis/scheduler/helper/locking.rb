@@ -4,8 +4,9 @@ module Travis
   module Scheduler
     module Helper
       module Locking
-        def exclusive(key, config, &block)
+        def exclusive(key, config, opts = {}, &block)
           options = config[:lock].to_h
+          options = options.merge(opts)
           options[:url] ||= config[:redis][:url] if options[:strategy] == :redis
           options[:ttl] ||= 2
           info "Locking #{key} with: #{options[:strategy]}, ttl: #{options[:ttl]}s"
