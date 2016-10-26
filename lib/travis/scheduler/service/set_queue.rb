@@ -1,6 +1,6 @@
 module Travis
   module Scheduler
-    module Services
+    module Service
       class SetQueue < Struct.new(:context, :job, :opts)
         include Registry, Helper::Context, Helper::Logging
 

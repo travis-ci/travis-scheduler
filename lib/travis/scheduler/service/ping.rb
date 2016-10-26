@@ -1,6 +1,6 @@
 module Travis
   module Scheduler
-    module Services
+    module Service
       class Ping < Struct.new(:context, :data)
         include Registry, Helper::Context, Helper::Locking, Helper::Logging,
           Helper::Metrics, Helper::Runner

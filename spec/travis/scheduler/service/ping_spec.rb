@@ -1,4 +1,4 @@
-describe Travis::Scheduler::Services::Ping do
+describe Travis::Scheduler::Service::Ping do
   let(:now)      { Time.now }
   let(:context)  { Travis::Scheduler.context }
   let(:interval) { context.config[:ping][:interval] }
