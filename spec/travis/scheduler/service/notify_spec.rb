@@ -20,7 +20,7 @@ describe Travis::Scheduler::Service::Notify do
     let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx'} }
     let(:job)    { FactoryGirl.create(:job, state: :queued, config: config) }
 
-    before { ENV['QUEUE_SELECTION'] = 'svenfuchs' }
+    before { ENV['QUEUE_SELECTION_OWNERS'] = 'svenfuchs' }
     before { context.config.queues = [{ queue: 'builds.mac_osx', os: 'osx' }] }
     before { service.run }
 

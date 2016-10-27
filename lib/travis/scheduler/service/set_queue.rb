@@ -24,7 +24,8 @@ module Travis
           end
 
           def set?
-            return unless owners = ENV['QUEUE_SELECTION']
+            return true if ENV['QUEUE_SELECTION']
+            return false unless owners = ENV['QUEUE_SELECTION_OWNERS']
             owners = owners.split(',')
             owners.include?(job.owner.login)
           end
