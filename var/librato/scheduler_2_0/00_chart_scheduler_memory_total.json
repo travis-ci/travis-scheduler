@@ -5,17 +5,14 @@
     {
       "metric": "heroku.logs.memory_total",
       "type": "gauge",
-      "source": "%{app}.*",
+      "source": "*scheduler*",
       "group_function": "breakout",
-      "summary_function": "max",
-      "split_axis": false
-    },
-    {
-      "metric": "heroku.logs.releases",
-      "type": "annotation",
-      "source": "*",
+      "summary_function": "average",
+      "position": 0,
       "split_axis": false
     }
   ],
-  "thresholds": null
+  "thresholds": [
+
+  ]
 }

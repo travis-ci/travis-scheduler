@@ -8,7 +8,7 @@
       "source": "*",
       "group_function": "average",
       "summary_function": "average",
-      "downsample_function": "average"
+      "split_axis": false
     },
     {
       "metric": "enqueue.fetch_jobs.95th_percentile",
@@ -16,13 +16,14 @@
       "source": "*",
       "group_function": "average",
       "summary_function": "average",
-      "downsample_function": "average"
+      "split_axis": false
     },
     {
       "metric": "heroku.logs.releases",
       "type": "annotation",
       "source": "*",
-      "downsample_function": "average"
+      "split_axis": false
     }
-  ]
+  ],
+  "thresholds": null
 }

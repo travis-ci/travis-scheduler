@@ -1,9 +1,9 @@
 {
-  "name": "Scheduler Median",
-  "type": "stacked",
+  "name": "Events counts",
+  "type": "line",
   "streams": [
     {
-      "metric": "enqueue.total.median",
+      "metric": "scheduler.service.event.job.canceled",
       "type": "gauge",
       "source": "*",
       "group_function": "average",
@@ -12,7 +12,7 @@
       "split_axis": false
     },
     {
-      "metric": "enqueue.fetch_jobs.median",
+      "metric": "scheduler.service.event.job.finished",
       "type": "gauge",
       "source": "*",
       "group_function": "average",
@@ -21,28 +21,19 @@
       "split_axis": false
     },
     {
-      "metric": "heroku.logs.releases",
-      "type": "annotation",
+      "metric": "scheduler.service.event.build.created",
+      "type": "gauge",
       "source": "*",
+      "group_function": "average",
+      "summary_function": "average",
       "position": 2,
       "split_axis": false
     },
     {
-      "metric": "enqueue.branch_validator.github_fetch_branch.median",
-      "type": "gauge",
+      "metric": "heroku.logs.releases",
+      "type": "annotation",
       "source": "*",
-      "group_function": "average",
-      "summary_function": "average",
       "position": 3,
-      "split_axis": false
-    },
-    {
-      "metric": "enqueue.build_worker_payload.median",
-      "type": "gauge",
-      "source": "*",
-      "group_function": "average",
-      "summary_function": "average",
-      "position": 4,
       "split_axis": false
     }
   ],

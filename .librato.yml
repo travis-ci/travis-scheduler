@@ -8,6 +8,21 @@ spaces:
       - scheduler_load_avg
       - scheduler_memory_total
       - postgres_load_avg
+  -
+    name: Scheduler 2.0
+    order:
+      - events_counts
+      - sidekiq_jobs_median
+      - sidekiq_jobs_95th
+      - sidekiq_queue_size
+      - scheduler_load_avg
+      - scheduler_memory_total
+      - sidekiq_jobs_count
+      - collect_median
+      - collect_95th
+      - enqueue_median
+      - enqueue_95th
+
 accounts:
   org:
     user: mathias@travis-ci.org

@@ -1,21 +1,25 @@
 {
-  "name": "Scheduler Enqueued Total",
+  "name": "Sidekiq queue size",
   "type": "line",
   "streams": [
     {
-      "metric": "enqueue.total",
+      "metric": "sidekiq.queue.scheduler-2",
       "type": "gauge",
       "source": "*",
-      "group_function": "sum",
-      "summary_function": "sum",
+      "group_function": "average",
+      "summary_function": "average",
+      "position": 0,
       "split_axis": false
     },
     {
       "metric": "heroku.logs.releases",
       "type": "annotation",
       "source": "*",
+      "position": 1,
       "split_axis": false
     }
   ],
-  "thresholds": null
+  "thresholds": [
+
+  ]
 }

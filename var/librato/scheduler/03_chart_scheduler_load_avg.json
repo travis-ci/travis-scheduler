@@ -8,7 +8,7 @@
       "source": "%{app}.*",
       "group_function": "breakout",
       "summary_function": "max",
-      "downsample_function": "average"
+      "split_axis": false
     },
     {
       "metric": "heroku.logs.load_avg_15m",
@@ -16,7 +16,7 @@
       "source": "%{app}.*",
       "group_function": "max",
       "summary_function": "max",
-      "downsample_function": "average"
+      "split_axis": false
     },
     {
       "metric": "heroku.logs.load_avg_1m",
@@ -24,13 +24,14 @@
       "source": "%{app}.*",
       "group_function": "max",
       "summary_function": "max",
-      "downsample_function": "average"
+      "split_axis": false
     },
     {
       "metric": "heroku.logs.releases",
       "type": "annotation",
       "source": "*",
-      "downsample_function": "average"
+      "split_axis": false
     }
-  ]
+  ],
+  "thresholds": null
 }

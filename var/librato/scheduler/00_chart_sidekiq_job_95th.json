@@ -1,0 +1,18 @@
+{
+  "name": "Sidekiq Job 95th",
+  "type": "line",
+  "streams": [
+    {
+      "metric": "sidekiq.jobs.scheduler.perform.95th_percentile",
+      "type": "gauge",
+      "source": "*",
+      "group_function": "max",
+      "summary_function": "max",
+      "position": 0,
+      "split_axis": false
+    }
+  ],
+  "thresholds": [
+
+  ]
+}

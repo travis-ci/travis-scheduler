@@ -1,0 +1,18 @@
+{
+  "name": "Enqueue median",
+  "type": "line",
+  "streams": [
+    {
+      "metric": "scheduler.service.enqueue_owners.enqueue.median",
+      "type": "gauge",
+      "source": "*",
+      "group_function": "average",
+      "summary_function": "average",
+      "position": 0,
+      "split_axis": false
+    }
+  ],
+  "thresholds": [
+
+  ]
+}
