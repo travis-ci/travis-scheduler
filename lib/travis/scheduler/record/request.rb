@@ -2,7 +2,6 @@ require 'active_record'
 require 'travis/scheduler/record/organization'
 require 'travis/scheduler/record/repository'
 require 'travis/scheduler/record/user'
-require 'travis/support/branch_validator'
 require 'gh'
 
 class Request < ActiveRecord::Base
@@ -28,27 +27,15 @@ class Request < ActiveRecord::Base
     base_repo = base.repo.try(:full_name)
     head_repo = head.repo.try(:full_name)
     return false if base_repo.nil? or base_repo.nil?
-
-    sha = head.sha
-    ref = head.ref.to_s
-    return false if sha.nil? or ref.nil?
+    return false if head.sha.nil? or head.ref.nil?
 
     # it's not the same repo PR if repo names don't match
     return false if head_repo != base_repo
 
     # it may not be same repo PR if ref is a commit
-    return false if sha =~ /^#{Regexp.escape(ref)}/
+    return false if head.sha =~ /^#{Regexp.escape(head.ref)}/
 
-    return true if ENV['SKIP_BRANCH_VALIDATION']
-
-    validator = Travis::Scheduler::BranchValidator.new(ref, repository)
-    result = validator.valid?
-
-    unless result
-      Travis::Scheduler.logger.info "[request:#{id}] PR is not for the same repo slug=#{repository.slug} head_repo=#{head_repo} base_repo=#{base_repo} sha=#{sha} ref=#{ref} validator.valid_branch_name?=#{!!validator.valid_branch_name?} validator.branch_exists_in_the_db?=#{!!validator.branch_exists_in_the_db?} validator.branch_exists_on_github?=#{!!validator.branch_exists_on_github?} validator.last_response_status=#{validator.last_response_status.inspect} last_error_message=#{validator.last_error_message}"
-    end
-
-    result
+    true
   rescue => e
     Travis::Scheduler.logger.error "[request:#{id}] Couldn't determine whether pull request is from the same repository: #{e.message}"
     false
