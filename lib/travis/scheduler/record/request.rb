@@ -39,6 +39,8 @@ class Request < ActiveRecord::Base
     # it may not be same repo PR if ref is a commit
     return false if sha =~ /^#{Regexp.escape(ref)}/
 
+    return true if ENV['SKIP_BRANCH_VALIDATION']
+
     validator = Travis::Scheduler::BranchValidator.new(ref, repository)
     result = validator.valid?
 
