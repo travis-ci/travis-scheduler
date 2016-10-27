@@ -20,12 +20,10 @@ describe Travis::Scheduler::Service::Notify do
     let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx'} }
     let(:job)    { FactoryGirl.create(:job, state: :queued, config: config) }
 
-    before { ENV['QUEUE_SELECTION_OWNERS'] = 'svenfuchs' }
     before { context.config.queues = [{ queue: 'builds.mac_osx', os: 'osx' }] }
     before { service.run }
 
     it { expect(job.reload.queue).to eq 'builds.mac_osx' }
-    it { expect(log).to include "W Queue selection evaluated to builds.mac_osx, but the current queue is builds.gce for job=#{job.id}" }
     it { expect(log).to include "I Setting queue to builds.mac_osx for job=#{job.id}" }
   end
 

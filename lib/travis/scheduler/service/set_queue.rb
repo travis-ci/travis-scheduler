@@ -7,33 +7,16 @@ module Travis
         register :service, :set_queue
 
         MSGS = {
-          # redirect: 'Found job.queue: %s. Redirecting to: %s'
-          check: 'Queue selection evaluated to %s, but the current queue is %s for job=%s',
-          queue: 'Setting queue to %s for job=%s'
+          redirect: 'Found job.queue: %s. Redirecting to: %s',
+          queue:    'Setting queue to %s for job=%s'
         }
 
         def run
-          check
-          set if set?
+          info MSGS[:queue] % [queue, job.id]
+          job.update_attributes!(queue: queue)
         end
 
         private
-
-          def check
-            warn MSGS[:check] % [queue, job.queue, job.id] unless queue == job.queue
-          end
-
-          def set?
-            return true if ENV['QUEUE_SELECTION']
-            return false unless owners = ENV['QUEUE_SELECTION_OWNERS']
-            owners = owners.split(',')
-            owners.include?(job.owner.login)
-          end
-
-          def set
-            info MSGS[:queue] % [queue, job.id]
-            job.update_attributes!(queue: queue)
-          end
 
           def queue
             @queue ||= redirect(Queue.new(job, config, logger).select)
