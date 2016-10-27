@@ -12,7 +12,6 @@ require 'travis/scheduler/service'
 require 'travis/scheduler/support/features'
 require 'travis/scheduler/support/sidekiq'
 require 'travis/scheduler/worker'
-require 'travis/support/branch_validator' # TODO move to gatekeeper
 require 'travis/support/database'
 
 Travis::Exceptions::Queue = ::Queue # TODO fix in travis-exceptions
