@@ -17,11 +17,11 @@ module Travis
           end
 
           def plan_limit(plan)
-            config[plan.to_sym] # TODO log if unknown
+            config[plan.to_sym]
           end
 
           def plans
-            subscriptions.map(&:selected_plan)
+            subscriptions.map(&:selected_plan).compact
           end
 
           def subscriptions

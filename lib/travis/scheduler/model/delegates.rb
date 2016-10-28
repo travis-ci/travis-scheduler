@@ -32,7 +32,7 @@ module Travis
           end
 
           def config
-            super[:limit][:delegate]
+            super && super[:limit] && super[:limit][:delegate] || {}
           end
       end
     end
