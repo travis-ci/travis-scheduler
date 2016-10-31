@@ -159,12 +159,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord
-  bunny
+  activerecord (~> 4.2.7)
+  bunny (~> 2.6.1)
   coder!
   concurrent-ruby
   database_cleaner (~> 1.5.1)
-  factory_girl
+  factory_girl (~> 4.7.0)
   gh!
   jemalloc
   mocha (~> 0.10.0)
