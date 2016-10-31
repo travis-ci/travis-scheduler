@@ -10,7 +10,8 @@ describe Travis::Scheduler::Limit::Jobs do
   let(:limit)   { described_class.new(context, owners) }
   let(:report)  { limit.reports }
 
-  before  { config.limit.default = 5 }
+  before  { config.limit.trial = nil }
+  before  { config.limit.default = 1 }
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
   subject { limit.run; limit.jobs }
 
@@ -58,6 +59,17 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
   end
 
+  describe 'with a trial' do
+    before { create_jobs(3, owner, :created) }
+    before { config.limit.trial = 2 }
+    before { context.redis.set("trial:#{owner.login}", 5) }
+    before { subject }
+
+    it { expect(subject.size).to eq 2 }
+    it { expect(report).to include('max jobs for user svenfuchs by trial: 2') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 2') }
+  end
+
   describe 'with a default limit 1' do
     before { create_jobs(3, owner, :created) }
     before { config.limit.default = 1 }
@@ -68,17 +80,19 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
   end
 
-  describe 'with a repo settings limit 1' do
+  describe 'with a default limit 5 and a repo settings limit 2' do
+    before { config.limit.default = 5 }
     before { create_jobs(3, owner, :created) }
-    before { repo.settings.update_attributes!(maximum_number_of_builds: 1) }
+    before { repo.settings.update_attributes!(maximum_number_of_builds: 2) }
     before { subject }
 
-    it { expect(subject.size).to eq 1 }
-    it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 1') }
-    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
+    it { expect(subject.size).to eq 2 }
+    it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 2') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 2') }
   end
 
-  describe 'with a repo settings limit 5' do
+  describe 'with a default limit 1 and a repo settings limit 5' do
+    before { config.limit.default = 1 }
     before { create_jobs(7, owner, :created) }
     before { create_jobs(3, owner, :started) }
     before { FactoryGirl.create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
