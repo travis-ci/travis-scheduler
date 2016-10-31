@@ -1,5 +1,6 @@
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/logging'
+require 'travis/scheduler/model/trial'
 
 module Travis
   module Scheduler
@@ -7,7 +8,7 @@ module Travis
       class ByOwner < Struct.new(:context, :owners, :job, :queued, :state, :config)
         include Helper::Context
 
-        KEYS = [:by_boost, :by_config, :by_plan, :default]
+        KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
 
         def enqueue?
           unlimited || current < max || throw(:result, :limited)
@@ -26,7 +27,7 @@ module Travis
           def max
             KEYS.each do |key|
               value = send(key)
-              break report(key, value) if value > 0
+              break report(key, value) if value && value > 0
             end
           end
 
@@ -46,6 +47,10 @@ module Travis
             owners.max_jobs
           end
 
+          def by_trial
+            max_trial if max_trial && trial.active?
+          end
+
           def unlimited?
             owners.logins.any? { |login| config_for(login) == -1 }
           end
@@ -54,8 +59,16 @@ module Travis
             config[:limit][:by_owner][login].to_i
           end
 
+          def max_trial
+            config[:limit][:trial]
+          end
+
           def default
             config[:limit][:default] || 5
+          end
+
+          def trial
+            @trial ||= Model::Trial.new(owners, context.redis)
           end
 
           def report(key, value)
