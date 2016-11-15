@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby '2.3.1'
+
 gem 'travis-config',      '~> 1.0.6'
 gem 'travis-metrics',     '~> 2.0.0.rc3'
 gem 'travis-lock'
