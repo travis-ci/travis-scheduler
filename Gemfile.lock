@@ -1,11 +1,11 @@
 GIT
-  remote: git://github.com/rkh/coder.git
+  remote: https://github.com/rkh/coder
   revision: 44b0cf89b98caecc654dd1a724a448e17ef7aa6c
   specs:
     coder (0.4.0)
 
 GIT
-  remote: git://github.com/travis-ci/gh.git
+  remote: https://github.com/travis-ci/gh
   revision: 30d522ebde91c24fa7e6b40a1b38107d74934b28
   specs:
     gh (0.14.0)
@@ -17,20 +17,20 @@ GIT
       net-http-pipeline
 
 GIT
-  remote: git://github.com/travis-ci/travis-exceptions.git
+  remote: https://github.com/travis-ci/travis-exceptions
   revision: 71b11939f1f3b86d1e2fd94f3b9b8f78af290e12
   specs:
     travis-exceptions (0.0.2)
       sentry-raven
 
 GIT
-  remote: git://github.com/travis-ci/travis-logger.git
+  remote: https://github.com/travis-ci/travis-logger
   revision: 765046a4746617a70395fe2200e8a91dc416f1b3
   specs:
     travis-logger (0.0.1)
 
 GIT
-  remote: git://github.com/travis-ci/travis-settings.git
+  remote: https://github.com/travis-ci/travis-settings
   revision: d510e63b6c6f059cccae141c265e7a0c7236d1fd
   specs:
     travis-settings (0.0.1)
