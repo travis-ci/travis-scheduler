@@ -54,7 +54,8 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.4.0)
+    addressable (2.5.0)
+      public_suffix (~> 2.0, >= 2.0.2)
     amq-protocol (2.0.1)
     arel (6.0.3)
     atomic (1.1.99)
@@ -94,16 +95,18 @@ GEM
       atomic (~> 1.0)
       avl_tree (~> 1.2.0)
       hitimes (~> 1.1)
-    metriks-librato_metrics (1.0.5)
+    metriks-librato_metrics (1.0.6)
       metriks (>= 0.9.9.6)
     minitest (5.9.1)
     mocha (0.10.5)
       metaclass (~> 0.0.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
-    net-http-persistent (2.9.4)
+    net-http-persistent (3.0.0)
+      connection_pool (~> 2.2)
     net-http-pipeline (1.0.1)
-    pg (0.18.4)
+    pg (0.19.0)
+    public_suffix (2.0.4)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
@@ -111,9 +114,9 @@ GEM
     redis (3.3.1)
     redis-namespace (1.5.2)
       redis (~> 3.0, >= 3.0.4)
-    redlock (0.1.5)
-      redis (~> 3, >= 3.0.5)
-    rollout (1.1.0)
+    redlock (0.1.8)
+      redis (~> 3, >= 3.0.0)
+    rollout (2.4.0)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -186,3 +189,9 @@ DEPENDENCIES
   travis-rollout
   travis-settings!
   webmock (~> 1.8.0)
+
+RUBY VERSION
+   ruby 2.3.1p112
+
+BUNDLED WITH
+   1.13.6
