@@ -37,7 +37,7 @@ module Travis
           def enqueue
             jobs = limit.selected
             jobs = jobs.partition { |job| !job.allow_failure }
-            jobs.flatten.each { |job| inline :enqueue_job, job, jid: jid }
+            jobs.flatten.each { |job| inline :enqueue_job, job, jid: jid, meta: meta }
           end
           time :enqueue
 
@@ -59,6 +59,10 @@ module Travis
 
           def src
             data[:src]
+          end
+
+          def meta
+            data[:meta] || {}
           end
 
           def opts

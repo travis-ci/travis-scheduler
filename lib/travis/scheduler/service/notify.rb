@@ -53,7 +53,7 @@ module Travis
           end
 
           def worker_payload
-            deep_clean(Serialize::Worker.new(job, config).data)
+            deep_clean(Serialize::Worker.new(job, meta, config).data)
           end
           time :worker_payload
 
@@ -78,18 +78,8 @@ module Travis
             Amqp::Publisher.new(job.queue)
           end
 
-          def redirect_queue
-            queue = redirections[job.queue] or return
-            info MSGS[:redirect] % [job.queue, queue]
-            job.update_attributes!(queue: queue)
-          end
-
-          def redirections
-            config[:queue_redirections] || {}
-          end
-
-          def amqp
-            Amqp::Publisher.new(job.queue)
+          def meta
+            data[:meta] || {}
           end
 
           def jid
@@ -98,6 +88,16 @@ module Travis
 
           def src
             data[:src]
+          end
+
+          def redirect_queue
+            queue = redirections[job.queue] or return
+            info MSGS[:redirect] % [job.queue, queue]
+            job.update_attributes!(queue: queue)
+          end
+
+          def redirections
+            config[:queue_redirections] || {}
           end
       end
     end

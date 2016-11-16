@@ -10,14 +10,14 @@ module Travis
         register :service, :event
 
         MSGS = {
-          receive: 'Received event %s %s=%s for %s',
+          receive: 'Received event %s %s=%s for %s (state update count: %p)',
           ignore:  'Ignoring owner based on rollout: %s (type=%s id=%s)',
-          test:    'testing exception handling in Scheduler 2.0',
+          test:    'Testing exception handling in Scheduler 2.0',
           drop:    'Owner group %s is locked and already being evaluated. Dropping event %s for %s=%s.'
         }
 
         def run
-          info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
+          info MSGS[:receive] % [event, type, obj.id, repo.owner_name, meta[:state_update_count]]
           meter
           inline :enqueue_owners, attrs
         rescue Lock::Redis::LockError => e
@@ -35,7 +35,7 @@ module Travis
           end
 
           def attrs
-            { owner_type: obj.owner_type, owner_id: obj.owner_id, jid: jid }
+            { owner_type: obj.owner_type, owner_id: obj.owner_id, jid: jid, meta: meta }
           end
 
           def obj
@@ -64,6 +64,10 @@ module Travis
 
           def jid
             data[:jid]
+          end
+
+          def meta
+            data[:meta] || {}
           end
 
           def src

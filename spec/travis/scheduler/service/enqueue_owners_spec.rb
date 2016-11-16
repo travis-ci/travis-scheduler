@@ -5,7 +5,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:commit)  { FactoryGirl.create(:commit) }
   let(:job)     { Job.first }
   let(:config)  { Travis::Scheduler.context.config }
-  let(:data)    { { owner_type: 'User', owner_id: owner.id, jid: '1234' } }
+  let(:data)    { { owner_type: 'User', owner_id: owner.id, jid: '1234', meta: { state_update_count: 2 } } }
   let(:service) { described_class.new(Travis::Scheduler.context, data) }
 
   before { Travis::JobBoard.stubs(:post) }

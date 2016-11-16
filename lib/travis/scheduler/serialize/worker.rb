@@ -1,7 +1,7 @@
 module Travis
   module Scheduler
     module Serialize
-      class Worker < Struct.new(:job, :config)
+      class Worker < Struct.new(:job, :meta, :config)
         require 'travis/scheduler/serialize/worker/build'
         require 'travis/scheduler/serialize/worker/commit'
         require 'travis/scheduler/serialize/worker/config'
@@ -23,7 +23,9 @@ module Travis
             ssh_key: ssh_key,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
+            meta: meta
           }
+          p [:meta, meta]
           value[:oauth_token] = github_oauth_token if Travis.config.prefer_https?
           value
         end
@@ -82,6 +84,12 @@ module Travis
               last_build_state: repo.last_build_state.to_s,
               default_branch: repo.default_branch,
               description: repo.description
+            }
+          end
+
+          def meta
+            {
+              state_update_count: super[:state_update_count]
             }
           end
 

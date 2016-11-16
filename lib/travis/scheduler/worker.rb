@@ -7,6 +7,7 @@ module Travis
       include ::Sidekiq::Worker, Helper::Runner
 
       def perform(service, *args)
+        p [service, *args]
         inline(service, *normalize(args))
       end
 

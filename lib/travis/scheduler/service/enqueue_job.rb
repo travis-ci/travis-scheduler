@@ -8,12 +8,11 @@ module Travis
         register :service, :enqueue_job
 
         MSGS = {
-          queueing: 'enqueueing job %s (%s)',
-          redirect: 'Found job.queue: %s. Redirecting to: %s'
+          queueing: 'enqueueing job %s (%s) with state update count: %p'
         }
 
         def run
-          info MSGS[:queueing] % [job.id, repo.slug]
+          info MSGS[:queueing] % [job.id, repo.slug, update_count]
           set_queued
           notify
         end
@@ -28,11 +27,15 @@ module Travis
           end
 
           def notify
-            async :notify, job: { id: job.id }, jid: jid
+            async :notify, job: { id: job.id }, meta: meta, jid: jid
           end
 
           def repo
             job.repository
+          end
+
+          def meta
+            { state_update_count: update_count }
           end
 
           def jid
@@ -41,6 +44,10 @@ module Travis
 
           def src
             opts[:src]
+          end
+
+          def update_count
+            @update_count ||= opts.fetch(:meta, {})[:state_update_count].to_i + 1
           end
 
           def transaction(&block)
