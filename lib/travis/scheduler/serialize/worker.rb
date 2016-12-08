@@ -121,7 +121,7 @@ module Travis
               ! u.github_oauth_token.nil?
             end
 
-            admin.github_oauth_token
+            admin && admin.github_oauth_token
           end
       end
     end
