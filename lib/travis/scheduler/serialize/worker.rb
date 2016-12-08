@@ -117,10 +117,9 @@ module Travis
           end
 
           def github_oauth_token
-            admin = job.repository.users.find do |u|
-              ! u.github_oauth_token.nil?
-            end
-
+            candidates = job.repository.users.where("github_oauth_token IS NOT NULL").
+                    order("updated_at DESC")
+            admin = candidates.first
             admin && admin.github_oauth_token
           end
       end
