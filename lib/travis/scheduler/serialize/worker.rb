@@ -22,7 +22,8 @@ module Travis
             repository: repository_data,
             ssh_key: ssh_key,
             timeouts: repo.timeouts,
-            cache_settings: cache_settings
+            cache_settings: cache_settings,
+            oauth_token: github_oauth_token
           }
         end
 
@@ -113,6 +114,14 @@ module Travis
 
           def format_date(date)
             date && date.strftime('%Y-%m-%dT%H:%M:%SZ')
+          end
+
+          def github_oauth_token
+            admin = job.repository.users.find do |u|
+              ! u.github_oauth_token.nil?
+            end
+
+            admin.github_oauth_token
           end
       end
     end
