@@ -87,7 +87,7 @@ describe Travis::Scheduler::Serialize::Worker do
           log_silence: 20 * 60
         },
         cache_settings: s3,
-        oauth_token: nil
+        oauth_token: 'token'
       )
     end
 
@@ -239,7 +239,7 @@ describe Travis::Scheduler::Serialize::Worker do
           log_silence: 20 * 60
         },
         cache_settings: s3,
-        oauth_token: nil
+        oauth_token: 'token'
       )
     end
 
