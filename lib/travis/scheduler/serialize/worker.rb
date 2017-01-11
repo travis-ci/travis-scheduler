@@ -25,7 +25,6 @@ module Travis
             ssh_key: ssh_key,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
-            queued_at: DateTime.parse(job.queued_at).iso8601,
           }
         end
 
@@ -53,6 +52,7 @@ module Travis
               state: job.state.to_s,
               secure_env_enabled: job.secure_env?,
               debug_options: job.debug_options || {},
+              queued_at: DateTime.parse(job.queued_at).iso8601,
             }
             if build.pull_request?
               data = data.merge(

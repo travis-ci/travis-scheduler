@@ -60,6 +60,7 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: true,
           debug_options: {},
+          queued_at: DateTime.parse(job.queued_at.utc).iso8601,
         },
         source: {
           id: build.id,
@@ -87,7 +88,6 @@ describe Travis::Scheduler::Serialize::Worker do
           log_silence: 20 * 60
         },
         cache_settings: s3,
-        queued_at: DateTime.parse(job.queued_at.utc).iso8601,
       )
     end
   end
@@ -148,8 +148,9 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: false,
           debug_options: {},
+          queued_at: DateTime.parse(job.queued_at.utc).iso8601,
           pull_request_head_branch: 'head_branch',
-          pull_request_head_sha: '12345'
+          pull_request_head_sha: '12345',
         },
         source: {
           id: build.id,
@@ -177,7 +178,6 @@ describe Travis::Scheduler::Serialize::Worker do
           log_silence: 20 * 60
         },
         cache_settings: s3,
-        queued_at: DateTime.parse(job.queued_at.utc).iso8601,
       )
     end
 
