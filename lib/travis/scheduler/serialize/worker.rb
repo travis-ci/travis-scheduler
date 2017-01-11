@@ -1,3 +1,5 @@
+require 'date'
+
 module Travis
   module Scheduler
     module Serialize
@@ -22,7 +24,8 @@ module Travis
             repository: repository_data,
             ssh_key: ssh_key,
             timeouts: repo.timeouts,
-            cache_settings: cache_settings
+            cache_settings: cache_settings,
+            queued_at: DateTime.parse(job.queued_at).iso8601,
           }
         end
 
