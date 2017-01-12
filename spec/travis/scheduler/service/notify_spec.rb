@@ -18,7 +18,7 @@ describe Travis::Scheduler::Service::Notify do
 
   describe 'sets the queue' do
     let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx'} }
-    let(:job)    { FactoryGirl.create(:job, state: :queued, config: config, queued_at: Time.now) }
+    let(:job)    { FactoryGirl.create(:job, state: :queued, config: config, queued_at: Time.parse('2016-01-01T10:30:00Z')) }
 
     before { context.config.queues = [{ queue: 'builds.mac_osx', os: 'osx' }] }
     before { service.run }
