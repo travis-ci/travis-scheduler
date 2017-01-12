@@ -1,5 +1,5 @@
 describe Travis::Scheduler::Service::Notify do
-  let(:job)     { FactoryGirl.create(:job, state: :queued, queued_at: Time.now) }
+  let(:job)     { FactoryGirl.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z')) }
   let(:data)    { { job: { id: job.id } } }
   let(:context) { Travis::Scheduler.context }
   let(:service) { described_class.new(context, data) }

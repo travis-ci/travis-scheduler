@@ -6,7 +6,7 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   let(:features)  { Travis::Features }
-  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }, queued_at: Time.now) }
+  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }, queued_at: Time.parse('2016-01-01T10:30:00Z')) }
   let(:request)   { FactoryGirl.create(:request, event_type: event, payload: payload) }
   let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
   let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
@@ -60,7 +60,7 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: true,
           debug_options: {},
-          queued_at: DateTime.parse(job.queued_at.utc.to_s).iso8601,
+          queued_at: '2016-01-01T10:30:00Z',
         },
         source: {
           id: build.id,
@@ -148,7 +148,7 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: false,
           debug_options: {},
-          queued_at: DateTime.parse(job.queued_at.utc.to_s).iso8601,
+          queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',
           pull_request_head_sha: '12345',
         },
