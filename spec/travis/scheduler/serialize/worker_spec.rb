@@ -6,7 +6,7 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   let(:features)  { Travis::Features }
-  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }) }
+  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }), queued_at: Time.now }
   let(:request)   { FactoryGirl.create(:request, event_type: event, payload: payload) }
   let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
   let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
