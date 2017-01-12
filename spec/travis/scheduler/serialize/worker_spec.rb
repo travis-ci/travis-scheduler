@@ -60,7 +60,7 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: true,
           debug_options: {},
-          queued_at: DateTime.parse(job.queued_at.utc).iso8601,
+          queued_at: DateTime.parse(job.queued_at.utc.to_s).iso8601,
         },
         source: {
           id: build.id,
@@ -148,7 +148,7 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: false,
           debug_options: {},
-          queued_at: DateTime.parse(job.queued_at.utc).iso8601,
+          queued_at: DateTime.parse(job.queued_at.utc.to_s).iso8601,
           pull_request_head_branch: 'head_branch',
           pull_request_head_sha: '12345',
         },

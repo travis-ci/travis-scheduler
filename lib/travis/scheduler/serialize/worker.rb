@@ -52,7 +52,7 @@ module Travis
               state: job.state.to_s,
               secure_env_enabled: job.secure_env?,
               debug_options: job.debug_options || {},
-              queued_at: DateTime.parse(job.queued_at).iso8601,
+              queued_at: DateTime.parse(job.queued_at.utc.to_s).iso8601,
             }
             if build.pull_request?
               data = data.merge(
