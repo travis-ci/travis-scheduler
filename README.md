@@ -36,7 +36,8 @@ another-org: total: 20, running: 2, max: 2, queueable: 0
 The terminology used here can be confusing. The terms mean:
 
 * `total` is the number of jobs waiting in the `created` state
-* `running` is the number of jobs already running.
+* `running` is the number of jobs already running, so the number of jobs that
+   have state `queued`, `received`, or `started`
 * `max` is the concurrency limit for the given owner, i.e. the maximum number
    of jobs
 * `queueable` is the result of the evaluation: how many jobs can be queued up,
