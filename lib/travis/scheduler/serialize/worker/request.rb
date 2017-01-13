@@ -22,7 +22,7 @@ module Travis
           end
 
           def pull_request_head_slug
-            pull_request_head['repo']['full_name']
+            pull_request_head['repo'] && pull_request_head['repo']['full_name']
           end
 
           def pull_request_head
