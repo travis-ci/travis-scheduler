@@ -50,6 +50,7 @@ module Travis
               state: job.state.to_s,
               secure_env_enabled: job.secure_env?,
               debug_options: job.debug_options || {},
+              queued_at: format_date(job.queued_at)
             }
             if build.pull_request?
               data = data.merge(
