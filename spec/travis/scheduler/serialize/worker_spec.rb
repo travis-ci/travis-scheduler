@@ -60,7 +60,7 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: true,
           debug_options: {},
-          queued_at: '2016-01-01T10:30:00Z',
+          queued_at: '2016-01-01T10:30:00Z'
         },
         source: {
           id: build.id,
@@ -87,7 +87,7 @@ describe Travis::Scheduler::Serialize::Worker do
           hard_limit: 180 * 60, # worker handles timeouts in seconds
           log_silence: 20 * 60
         },
-        cache_settings: s3,
+        cache_settings: s3
       )
     end
   end
@@ -150,7 +150,7 @@ describe Travis::Scheduler::Serialize::Worker do
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',
-          pull_request_head_sha: '12345',
+          pull_request_head_sha: '12345'
         },
         source: {
           id: build.id,
@@ -177,7 +177,7 @@ describe Travis::Scheduler::Serialize::Worker do
           hard_limit: 180 * 60, # worker handles timeouts in seconds
           log_silence: 20 * 60
         },
-        cache_settings: s3,
+        cache_settings: s3
       )
     end
 
