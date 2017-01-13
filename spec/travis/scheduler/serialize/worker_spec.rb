@@ -115,7 +115,7 @@ describe Travis::Scheduler::Serialize::Worker do
     let(:event)     { 'pull_request' }
     let(:ref)       { 'refs/pull/180/merge' }
     let(:pr_number) { 180 }
-    let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '12345' } } } }
+    let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '12345', 'repo' => {'full_name' => 'travis-ci/gem-release'} } } } }
 
     before :each do
       request.stubs(:base_commit).returns('0cd9ff')
@@ -148,7 +148,8 @@ describe Travis::Scheduler::Serialize::Worker do
           secure_env_enabled: false,
           debug_options: {},
           pull_request_head_branch: 'head_branch',
-          pull_request_head_sha: '12345'
+          pull_request_head_sha: '12345',
+          pull_request_head_slug: 'travis-ci/gem-release',
         },
         source: {
           id: build.id,

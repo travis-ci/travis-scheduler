@@ -21,6 +21,10 @@ module Travis
             pull_request_head['sha']
           end
 
+          def pull_request_head_slug
+            pull_request_head['repo']['full_name']
+          end
+
           def pull_request_head
             payload && payload['pull_request'] && payload['pull_request']['head'] || {}
           end
