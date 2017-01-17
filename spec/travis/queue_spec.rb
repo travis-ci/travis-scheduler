@@ -24,7 +24,8 @@ describe Travis::Queue do
       { queue: 'builds.mac_stable', osx_image: 'stable' },
       { queue: 'builds.mac_beta', osx_image: 'beta' },
       { queue: 'builds.new-foo', language: 'foo', percentage: percent },
-      { queue: 'builds.old-foo', language: 'foo' }
+      { queue: 'builds.old-foo', language: 'foo' },
+      { queue: 'builds.multi-owner', owners: ['foo', 'bar'] },
     ]
   end
 
@@ -54,6 +55,11 @@ describe Travis::Queue do
     describe 'by owner name' do
       let(:slug) { 'cloudfoundry/bosh' }
       it { expect(queue).to eq 'builds.cloudfoundry' }
+    end
+
+    describe 'by multiple owners' do
+      let(:slug) { 'bar/foobar' }
+      it { expect(queue).to eq 'builds.multi-owner' }
     end
   end
 

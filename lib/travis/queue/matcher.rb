@@ -1,8 +1,8 @@
 module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
-      KEYS = %i(slug owner os language sudo dist group osx_image percentage
-        services)
+      KEYS = %i(slug owner owners os language sudo dist group osx_image
+                percentage services)
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
@@ -25,6 +25,10 @@ module Travis
 
         def owner
           repo.owner_name
+        end
+
+        def owners
+          ->(owners) { Array(owners).include?(repo.owner_name) }
         end
 
         def os
