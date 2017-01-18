@@ -34,6 +34,13 @@ module Travis
               compact(config)
             end
 
+            def jwt_sanitize
+              if config && config.fetch(:addons,{}).key?(:jwt)
+                config[:addons] = Addons.new(config[:addons]).jwt_sanitize
+              end
+              config
+            end
+
             private
 
               def full_addons?
