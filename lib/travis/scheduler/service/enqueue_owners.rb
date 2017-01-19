@@ -38,7 +38,7 @@ module Travis
           end
 
           def enqueue
-            jobs.each { |job| inline :enqueue_job, job, jid: jid }
+            jobs.partition { |job| !job.allow_failure }.flatten.each { |job| inline :enqueue_job, job, jid: jid }
           end
           time :enqueue
 
