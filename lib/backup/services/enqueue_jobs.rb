@@ -86,7 +86,7 @@ module Travis
           end
 
           def enqueue(jobs)
-            jobs.each do |job|
+            jobs.partition { |j| !j.allow_failure }.flatten.each do |job|
               queue_redirect(job)
 
               Travis.logger.info("enqueueing slug=#{job.repository.slug} job_id=#{job.id}")
