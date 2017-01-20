@@ -187,6 +187,20 @@ describe Travis::Scheduler::Serialize::Worker::Config do
         include_examples 'does not include the decrypted jwt addon config'
       end
     end
+
+    context "with non-safelisted env var" do
+      let(:var) { "ARBITRARY_ACCESS_KEY=foo012345678901234565789" }
+
+      describe 'on a push request' do
+        let(:options) { { full_addons: true } }
+        include_examples 'does not include the decrypted jwt addon config'
+      end
+
+      describe 'on a pull request' do
+        let(:options) { { full_addons: false } }
+        include_examples 'does not include the decrypted jwt addon config'
+      end
+    end
   end
 
 end
