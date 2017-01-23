@@ -116,7 +116,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    described_class::Addons::SAFE.map(&:to_sym).each do |name|
+    described_class::Addons::SAFE.map(&:to_sym).delete_if {|name| name == :jwt}.each do |name|
       describe "keeps the #{name} addon" do
         let(:config) { { addons: { name => :config } } }
         it { should eql(config) }
@@ -124,9 +124,9 @@ describe Travis::Scheduler::Serialize::Worker::Config do
     end
 
     describe 'jwt encrypted env var' do
-      let(:var)    { 'SAUCE_ACCESS_KEY=foo' }
+      let(:var)    { 'SAUCE_ACCESS_KEY=foo012345678901234565789' }
       let(:config) { { addons: { jwt: encrypt(var) } } }
-      it { should eql(addons: { jwt: var }) }
+      it { should eql(addons: { jwt: Array(var) }) }
     end
   end
 
@@ -144,24 +144,63 @@ describe Travis::Scheduler::Serialize::Worker::Config do
     end
   end
 
-  describe 'addons' do
-    let(:var)    { 'SAUCE_ACCESS_KEY=foo' }
-    let(:config) { { addons: { jwt: encrypt(var) } } }
+  describe 'jwt addon with encrypted data' do
+    let(:var)    { "SAUCE_ACCESS_KEY=#{sauce_access_key}" }
+    let(:config) { { addons: { sauce_connect: { username: 'sauce_connect_user' }, jwt: encrypt(var) } } }
 
     shared_examples_for 'includes the decrypted jwt addon config' do
       describe 'jwt encrypted env var' do
-        it { expect(subject[:addons][:jwt]).to eq var }
+        it { expect(subject[:addons][:jwt]).to eq Array(var) }
       end
     end
 
-    describe 'on a push request' do
-      let(:options) { { full_addons: true } }
-      include_examples 'includes the decrypted jwt addon config'
+    shared_examples_for 'does not include the decrypted jwt addon config' do
+      describe 'jwt encrypted env var' do
+        it { expect(subject[:addons][:jwt]).to eq [] }
+      end
     end
 
-    describe 'on a pull request' do
-      let(:options) { { full_addons: false } }
-      include_examples 'includes the decrypted jwt addon config'
+    context "with long SAUCE_ACCESS_KEY" do
+      let(:sauce_access_key) { 'foo012345678901234565789' }
+
+      describe 'on a push request' do
+        let(:options) { { full_addons: true } }
+        include_examples 'includes the decrypted jwt addon config'
+      end
+
+      describe 'on a pull request' do
+        let(:options) { { full_addons: false } }
+        include_examples 'includes the decrypted jwt addon config'
+      end
+    end
+
+    context "with short SAUCE_ACCESS_KEY" do
+      let(:sauce_access_key) { 'foo' }
+
+      describe 'on a push request' do
+        let(:options) { { full_addons: true } }
+        include_examples 'does not include the decrypted jwt addon config'
+      end
+
+      describe 'on a pull request' do
+        let(:options) { { full_addons: false } }
+        include_examples 'does not include the decrypted jwt addon config'
+      end
+    end
+
+    context "with non-safelisted env var" do
+      let(:var) { "ARBITRARY_ACCESS_KEY=foo012345678901234565789" }
+
+      describe 'on a push request' do
+        let(:options) { { full_addons: true } }
+        include_examples 'does not include the decrypted jwt addon config'
+      end
+
+      describe 'on a pull request' do
+        let(:options) { { full_addons: false } }
+        include_examples 'does not include the decrypted jwt addon config'
+      end
     end
   end
+
 end
