@@ -25,7 +25,7 @@ module Travis
           end
 
           def source_url
-            ((private? || force_private?) && !!!Travis.config.prefer_https) ? source_git_url : source_http_url
+            ((private? || force_private?) && !Travis.config.prefer_https) ? source_git_url : source_http_url
           end
 
           private
