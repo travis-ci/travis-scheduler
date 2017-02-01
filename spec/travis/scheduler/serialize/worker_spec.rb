@@ -6,7 +6,7 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   let(:features)  { Travis::Features }
-  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }) }
+  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }, queued_at: Time.parse('2016-01-01T10:30:00Z'), allow_failure: allow_failure) }
   let(:request)   { FactoryGirl.create(:request, event_type: event, payload: payload) }
   let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
   let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
@@ -19,6 +19,7 @@ describe Travis::Scheduler::Serialize::Worker do
   let(:ref)       { 'refs/tags/v1.2.3' }
   let(:pr_number) { nil }
   let(:payload)   { {} }
+  let(:allow_failure) { false }
 
   let(:settings) do
     Repository::Settings.load({
@@ -60,6 +61,8 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: true,
           debug_options: {},
+          queued_at: '2016-01-01T10:30:00Z',
+          allow_failure: allow_failure
         },
         source: {
           id: build.id,
@@ -178,7 +181,7 @@ describe Travis::Scheduler::Serialize::Worker do
     let(:event)     { 'pull_request' }
     let(:ref)       { 'refs/pull/180/merge' }
     let(:pr_number) { 180 }
-    let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '12345' } } } }
+    let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '12345', 'repo' => {'full_name' => 'travis-ci/gem-release'} } } } }
 
     before :each do
       request.stubs(:base_commit).returns('0cd9ff')
@@ -210,8 +213,11 @@ describe Travis::Scheduler::Serialize::Worker do
           state: 'queued',
           secure_env_enabled: false,
           debug_options: {},
+          queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',
-          pull_request_head_sha: '12345'
+          pull_request_head_sha: '12345',
+          pull_request_head_slug: 'travis-ci/gem-release',
+          allow_failure: allow_failure
         },
         source: {
           id: build.id,
