@@ -124,6 +124,8 @@ describe Travis::Scheduler::Serialize::Worker do
             state: 'queued',
             secure_env_enabled: true,
             debug_options: {},
+            queued_at: '2016-01-01T10:30:00Z',
+            allow_failure: false,
           },
           source: {
             id: build.id,
