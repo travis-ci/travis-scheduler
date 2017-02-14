@@ -11,7 +11,7 @@ module Travis
         require 'travis/scheduler/serialize/worker/ssh_key'
 
         def data
-          {
+          value = {
             type: :test,
             vm_type: repo.vm_type,
             queue: job.queue,
@@ -23,8 +23,9 @@ module Travis
             ssh_key: ssh_key,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
-            oauth_token: github_oauth_token
           }
+          value[:oauth_token] = github_oauth_token if Travis.config.prefer_https?
+          value
         end
 
         private

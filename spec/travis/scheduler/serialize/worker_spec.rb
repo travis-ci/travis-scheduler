@@ -89,8 +89,7 @@ describe Travis::Scheduler::Serialize::Worker do
           hard_limit: 180 * 60, # worker handles timeouts in seconds
           log_silence: 20 * 60
         },
-        cache_settings: s3,
-        oauth_token: 'token'
+        cache_settings: s3
       )
     end
 
@@ -246,8 +245,7 @@ describe Travis::Scheduler::Serialize::Worker do
           hard_limit: 180 * 60, # worker handles timeouts in seconds
           log_silence: 20 * 60
         },
-        cache_settings: s3,
-        oauth_token: 'token'
+        cache_settings: s3
       )
     end
 
