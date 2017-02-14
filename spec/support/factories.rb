@@ -5,6 +5,7 @@ FactoryGirl.define do
 
   factory :user do
     login 'svenfuchs'
+    github_oauth_token 'token'
   end
 
   factory :org, :class => 'Organization' do
@@ -21,6 +22,7 @@ FactoryGirl.define do
     owner      { User.first || FactoryGirl.create(:user) }
     owner_name { owner.login }
     key        { SslKey.create(public_key: REPO_KEY.public_key, private_key: REPO_KEY.to_pem) }
+    users      { [ owner ] }
 
     # TODO why is the worker payload interested in these at all?
     last_build_id 1
