@@ -1,17 +1,7 @@
 sentry: &sentry
   dsn: https://tok:en@app.getsentry.com/app_id
-    
+
 production:
-  domain: travis-ci.local
-  notifications:
-    - pusher
-    - email
-    - irc
-    - webhook
-    - campfire
-    - hipchat
-    - flowdock
-    - github_commit_status
   database:
     username: some.username
     password: t0p.s3kr3t
@@ -23,10 +13,36 @@ production:
     username: cute.bunny
     password: t0p.s3kr3t
     vhost: travisci.production
-  ssl:
-    ca_file: /usr/lib/ssl/certs/ca-certificates.crt
   sentry:
     <<: *sentry
+  # cache_settings
+  # This key governs various caching backend configuations for each
+  # build queue.
+  cache_settings:
+    builds.docker:
+      # `type` refers to the caching backend we currently support.
+      # The value is either `s3` or `gcs`.
+      # `s3` is any AWSv4-sig-compliant backend (though only S3 has been tested)
+      # `gcs` is any AWSv2-sig-compliant backend. Only GCS and Minio (https://minio.io/) has been tested
+      # The structure of configuration is dependent on the type, but
+      # they should be straightforward. (See above.)
+      type: 's3'
+      s3:
+        access_key_id: ABCDEFGHIJ
+        secret_access_key: abcdefghijklmnopqrstuvwxyzA
+        hostname: s3.amazonaws.com
+        bucket: my-caches
+        aws_signature_version: '4'
+      timeouts:
+        fetch_timeout: 1200
+        push_timeout: 7200
+  # prefer_https
+  # when `true`, we use HTTPS instead of GIT+SSH to clone repo
+  # also, put GitHub OAuth token on the payload so `travis-build` can
+  # write it to ~/.netrc while cloning
+  # this is `false` for hosted services, `true` for Enterprise installations
+  # where SSH is not an option
+  prefer_https: false
 
 development:
   database:
@@ -40,8 +56,6 @@ development:
     username: travisci_hub
     password: travisci_hub_password
     vhost: travisci.development
-  notifications:
-    - pusher
 
 test:
   domain: test.travis-ci.local
