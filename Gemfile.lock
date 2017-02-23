@@ -37,8 +37,9 @@ GIT
       activemodel
       virtus
 
-PATH
-  remote: ../travis-stages
+GIT
+  remote: https://github.com/travis-ci/travis-stages
+  revision: 82f1f9e15f021794af270e9f573aa3c51cbd6d8c
   specs:
     travis-stages (0.0.1)
 
@@ -200,4 +201,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.13.6
+   1.14.3
