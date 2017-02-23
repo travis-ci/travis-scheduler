@@ -1,6 +1,7 @@
 describe Travis::Scheduler::Limit::Jobs do
   let(:org)     { FactoryGirl.create(:org, login: 'travis-ci') }
   let(:repo)    { FactoryGirl.create(:repo) }
+  let(:build)   { FactoryGirl.create(:build) }
   let(:owner)   { FactoryGirl.create(:user) }
   let(:owners)  { Travis::Scheduler::Model::Owners.new(data, config) }
   let(:context) { Travis::Scheduler.context }
@@ -15,10 +16,13 @@ describe Travis::Scheduler::Limit::Jobs do
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
   subject { limit.run; limit.selected }
 
-  # TODO refactor signature
   def create_jobs(count, owner, state, repo = nil, queue = nil)
     1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, state: state, queue: queue) }
   end
+
+  # def create_jobs(count, owner, state, stage = nil)
+  #   1.upto(count) { FactoryGirl.create(:job, repository: repo, owner: owner, source: build, state: state, stage: stage) }
+  # end
 
   describe 'with a boost limit 2' do
     before { create_jobs(3, owner, :created) }
@@ -169,4 +173,15 @@ describe Travis::Scheduler::Limit::Jobs do
       it { expect(report).to include('user carla, user svenfuchs, org travis-ci: total: 6, running: 2, queueable: 6') }
     end
   end
+
+  # describe 'stages' do
+  #   before { create_jobs(1, owner, :created, '1.1') }
+  #   before { create_jobs(1, owner, :created, '1.2') }
+  #   before { create_jobs(1, owner, :created, '2.1') }
+  #   before { config.limit.default = 5 }
+  #   before { subject }
+  #
+  #   it { expect(subject.size).to eq 2 }
+  #   it { expect(report).to include("jobs for build #{build.id} limited by stage: 1") }
+  # end
 end
