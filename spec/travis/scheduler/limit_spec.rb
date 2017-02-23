@@ -16,8 +16,16 @@ describe Travis::Scheduler::Limit::Jobs do
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
   subject { limit.run; limit.selected }
 
+<<<<<<< HEAD
   def create_jobs(count, owner, state, repo = nil, queue = nil)
     1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, state: state, queue: queue) }
+||||||| merged common ancestors
+  def create_jobs(count, owner, state, stage = nil)
+    1.upto(count) { FactoryGirl.create(:job, repository: repo, owner: owner, source: build, state: state, stage: stage) }
+=======
+  def create_jobs(count, owner, state, stage = nil)
+    1.upto(count) { FactoryGirl.create(:job, repository: repo, owner: owner, source: build, state: state, stage_number: stage) }
+>>>>>>> use travis-migrations/sf-job-stage on Travis CI
   end
 
   # def create_jobs(count, owner, state, stage = nil)
@@ -174,14 +182,14 @@ describe Travis::Scheduler::Limit::Jobs do
     end
   end
 
-  # describe 'stages' do
-  #   before { create_jobs(1, owner, :created, '1.1') }
-  #   before { create_jobs(1, owner, :created, '1.2') }
-  #   before { create_jobs(1, owner, :created, '2.1') }
-  #   before { config.limit.default = 5 }
-  #   before { subject }
-  #
-  #   it { expect(subject.size).to eq 2 }
-  #   it { expect(report).to include("jobs for build #{build.id} limited by stage: 1") }
-  # end
+  describe 'stages' do
+    before { create_jobs(1, owner, :created, '1.1') }
+    before { create_jobs(1, owner, :created, '1.2') }
+    before { create_jobs(1, owner, :created, '2.1') }
+    before { config.limit.default = 5 }
+    before { subject }
+
+    it { expect(subject.size).to eq 2 }
+    it { expect(report).to include("jobs for build #{build.id} limited at stage: 1") }
+  end
 end

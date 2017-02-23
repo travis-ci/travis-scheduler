@@ -6,7 +6,7 @@ module Travis
       MSGS = {
         max:       'max jobs for %s by %s: %s',
         max_plan:  'max jobs for %s by %s: %s (%s)',
-        max_stage: 'jobs for %s limited by stage: %s',
+        max_stage: 'jobs for %s limited at stage: %s',
         summary:   '%s: total: %s, running: %s, queueable: %s'
       }
 
