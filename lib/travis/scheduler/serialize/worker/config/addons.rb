@@ -29,6 +29,11 @@ module Travis
                 'SAUCE_ACCESS_KEY' => {
                   minimum_length: 20
                 }
+              },
+              browserstack: {
+                'BROWSERSTACK_ACCESS_KEY' => {
+                  minimum_length: 20
+                }
               }
             }
 

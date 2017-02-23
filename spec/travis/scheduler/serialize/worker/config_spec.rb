@@ -145,8 +145,6 @@ describe Travis::Scheduler::Serialize::Worker::Config do
   end
 
   describe 'jwt addon with encrypted data' do
-    let(:var)    { "SAUCE_ACCESS_KEY=#{sauce_access_key}" }
-    let(:config) { { addons: { sauce_connect: { username: 'sauce_connect_user' }, jwt: encrypt(var) } } }
 
     shared_examples_for 'includes the decrypted jwt addon config' do
       describe 'jwt encrypted env var' do
@@ -160,10 +158,8 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    context "with long SAUCE_ACCESS_KEY" do
-      let(:sauce_access_key) { 'foo012345678901234565789' }
-
-      describe 'on a push request' do
+    shared_examples_for 'JWT allowed on push and pull requests' do
+      describe "on a push request" do
         let(:options) { { full_addons: true } }
         include_examples 'includes the decrypted jwt addon config'
       end
@@ -174,10 +170,8 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    context "with short SAUCE_ACCESS_KEY" do
-      let(:sauce_access_key) { 'foo' }
-
-      describe 'on a push request' do
+    shared_examples_for 'JWT not allowed on push and pull requests' do
+      describe "on a push request" do
         let(:options) { { full_addons: true } }
         include_examples 'does not include the decrypted jwt addon config'
       end
@@ -188,17 +182,47 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    context "with non-safelisted env var" do
-      let(:var) { "ARBITRARY_ACCESS_KEY=foo012345678901234565789" }
+    context 'for SAUCE_ACCESS_KEY' do
+      let(:var)    { "SAUCE_ACCESS_KEY=#{sauce_access_key}" }
+      let(:config) { { addons: { sauce_connect: { username: 'sauce_connect_user' }, jwt: encrypt(var) } } }
 
-      describe 'on a push request' do
-        let(:options) { { full_addons: true } }
-        include_examples 'does not include the decrypted jwt addon config'
+      context "with long SAUCE_ACCESS_KEY" do
+        let(:sauce_access_key) { 'foo012345678901234565789' }
+
+        include_examples 'JWT allowed on push and pull requests'
       end
 
-      describe 'on a pull request' do
-        let(:options) { { full_addons: false } }
-        include_examples 'does not include the decrypted jwt addon config'
+      context "with short SAUCE_ACCESS_KEY" do
+        let(:sauce_access_key) { 'foo' }
+
+        include_examples 'JWT not allowed on push and pull requests'
+      end
+    end
+
+    context 'for BROWSERSTACK_ACCESS_KEY' do
+      let(:var)    { "BROWSERSTACK_ACCESS_KEY=#{browserstack_access_key}" }
+      let(:config) { { addons: { jwt: encrypt(var) } } }
+
+      context "with valid BROWSERSTACK_ACCESS_KEY" do
+        let(:browserstack_access_key) { 'bar012345678901234565789' }
+
+        include_examples 'JWT allowed on push and pull requests'
+      end
+
+      context "with short BROWSERSTACK_ACCESS_KEY" do
+        let(:browserstack_access_key) { 'bar' }
+
+        include_examples 'JWT not allowed on push and pull requests'
+      end
+    end
+
+    context 'for arbitrary keys' do
+      context "with non-safelisted env var" do
+
+        let(:var) { "ARBITRARY_ACCESS_KEY=foo012345678901234565789" }
+        let(:config) { { addons: {jwt: encrypt(var) } } }
+
+        include_examples 'JWT not allowed on push and pull requests'
       end
     end
   end
