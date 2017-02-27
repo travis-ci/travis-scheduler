@@ -183,6 +183,7 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'stages' do
+    before { ENV['JOB_STAGES'] = 'true' } # TODO remove when shipped
     before { create_jobs(1, owner, :created, '1.1') }
     before { create_jobs(1, owner, :created, '1.2') }
     before { create_jobs(1, owner, :created, '2.1') }

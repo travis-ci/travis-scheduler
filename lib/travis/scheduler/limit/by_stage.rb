@@ -8,7 +8,7 @@ module Travis
         include Helper::Context
 
         def enqueue?
-          return true unless job.stage_number
+          return true unless ENV['JOB_STAGES'] && job.stage_number
           !!report if queueable?
         end
 
@@ -19,8 +19,11 @@ module Travis
         private
 
           def queueable?
-            queueable = Stages.build(jobs).startable
             queueable.map { |attrs| attrs[:id] }.include?(job.id)
+          end
+
+          def queueable
+            @queueable ||= Stages.build(jobs).startable
           end
 
           ATTRS = [:id, :state, :stage_number]
@@ -30,8 +33,16 @@ module Travis
             @jobs ||= begin
               # TODO would it make sense to cache these on `state`?
               scope = Job.where(source_id: job.source_id).order(:stage_number)
-              scope.pluck(*ATTRS).map { |values| KEYS.zip(values).to_h }
+              scope.map { |job| attrs(job) }
             end
+          end
+
+          def attrs(job)
+            {
+              id:    job.id,
+              stage: job.stage_number,
+              state: job.finished? ? :finished : :created
+            }
           end
 
           def stages
@@ -39,7 +50,7 @@ module Travis
           end
 
           def report
-            reports << MSGS[:max_stage] % ["build #{job.source_id}", stages.first.split('.').first]
+            reports << MSGS[:max_stage] % ["build #{job.source_id}", job.stage.number, queueable.size]
           end
       end
     end
