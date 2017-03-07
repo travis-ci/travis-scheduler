@@ -13,7 +13,7 @@ describe Travis::Scheduler::Limit::Jobs do
   before  { config.limit.trial = nil }
   before  { config.limit.default = 1 }
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
-  subject { limit.run; limit.jobs }
+  subject { limit.run; limit.selected }
 
   # TODO refactor signature
   def create_jobs(count, owner, state, repo = nil, queue = nil)

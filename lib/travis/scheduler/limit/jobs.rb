@@ -28,8 +28,8 @@ module Travis
           @reports ||= []
         end
 
-        def jobs
-          @jobs ||= []
+        def selected
+          @selected ||= []
         end
 
         private
@@ -40,7 +40,7 @@ module Travis
               when :limited
                 break
               when true
-                jobs << job
+                selected << job
               end
             end
           end
@@ -62,11 +62,11 @@ module Travis
           end
 
           def limits_for(job)
-            LIMITS.map { |limit| limit.new(context, owners, job, jobs, state, config) }
+            LIMITS.map { |limit| limit.new(context, owners, job, selected, state, config) }
           end
 
           def summary
-            MSGS[:summary] % [owners.to_s, queueable.size, state.running_by_owners, jobs.size]
+            MSGS[:summary] % [owners.to_s, queueable.size, state.running_by_owners, selected.size]
           end
 
           def report(*reports)
