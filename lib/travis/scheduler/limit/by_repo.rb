@@ -4,7 +4,7 @@ require 'travis/scheduler/helper/logging'
 module Travis
   module Scheduler
     module Limit
-      class ByRepo < Struct.new(:context, :owners, :job, :queued, :state, :config)
+      class ByRepo < Struct.new(:context, :owners, :job, :selected, :state, :config)
         include Helper::Context
 
         def enqueue?
@@ -28,7 +28,7 @@ module Travis
           end
 
           def current
-            state.running_by_repo(repo.id) + queued
+            state.running_by_repo(repo.id) + selected.select { |j| j.repository_id == repo.id }.size
           end
 
           def max

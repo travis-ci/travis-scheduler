@@ -15,8 +15,9 @@ describe Travis::Scheduler::Limit::Jobs do
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
   subject { limit.run; limit.jobs }
 
-  def create_jobs(count, owner, state)
-    1.upto(count) { FactoryGirl.create(:job, repository: repo, owner: owner, state: state) }
+  # TODO refactor signature
+  def create_jobs(count, owner, state, repo = nil, queue = nil)
+    1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, state: state, queue: queue) }
   end
 
   describe 'with a boost limit 2' do
@@ -103,6 +104,38 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('max jobs for user svenfuchs by plan: 7 (svenfuchs)') }
     it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 5') }
     it { expect(report).to include('user svenfuchs: total: 7, running: 3, queueable: 2') }
+  end
+
+  describe 'with a by_queue limit of 2' do
+    before { create_jobs(9, owner, :created, repo, 'builds.osx') }
+    before { create_jobs(1, owner, :created, repo, 'builds.docker') }
+    before { config.limit.default = 99 }
+    before { ENV['BY_QUEUE_LIMIT'] = "#{owner.login}=2" }
+    before { ENV['BY_QUEUE_NAME'] = 'builds.osx' }
+    after  { ENV.delete('BY_QUEUE_LIMIT') }
+    after  { ENV.delete('BY_QUEUE_NAME') }
+    before { subject }
+
+    it { expect(subject.size).to eq 3 }
+    it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
+    it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+  end
+
+  describe 'with a by_queue limit of 2 and a repo limit of 3 on another repo' do
+    let(:other) { FactoryGirl.create(:repo, github_id: 2) }
+    before { create_jobs(9, owner, :created, repo, 'builds.osx') }
+    before { create_jobs(5, owner, :created, other, 'builds.docker') }
+    before { config.limit.default = 99 }
+    before { other.settings.update_attributes!(maximum_number_of_builds: 3) }
+    before { ENV['BY_QUEUE_LIMIT'] = "#{owner.login}=2" }
+    before { ENV['BY_QUEUE_NAME'] = 'builds.osx' }
+    after  { ENV.delete('BY_QUEUE_LIMIT') }
+    after  { ENV.delete('BY_QUEUE_NAME') }
+    before { subject }
+
+    it { expect(subject.size).to eq 5 }
+    it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
+    it { expect(report).to include('user svenfuchs: total: 14, running: 0, queueable: 5') }
   end
 
   describe 'delegated accounts' do

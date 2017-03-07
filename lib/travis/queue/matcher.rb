@@ -65,7 +65,7 @@ module Travis
 
         def check_unknown_matchers(used)
           unknown = used - KEYS
-          logger.warn MSGS[:unknown_matchers] % [name, unknown, repo.slug] if unknown.any?
+          logger.warn MSGS[:unknown_matchers] % [name, unknown, repo.slug] if logger && unknown.any?
         end
     end
   end

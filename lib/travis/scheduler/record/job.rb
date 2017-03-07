@@ -16,6 +16,10 @@ class Job < ActiveRecord::Base
       where(owned_by(owners))
     end
 
+    def by_queue(queue)
+      where(queue: queue)
+    end
+
     def owned_by(owners)
       owners.map { |o| owner_id.eq(o.id).and(owner_type.eq(o.class.name)) }.inject(&:or)
     end

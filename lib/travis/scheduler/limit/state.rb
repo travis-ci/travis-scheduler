@@ -9,7 +9,7 @@ module Travis
         def initialize(owners, config = {})
           @owners = owners
           @config = config
-          @count  = { repo: {} }
+          @count  = { repo: {}, queue: {} }
           @boosts = {}
         end
 
@@ -19,6 +19,10 @@ module Travis
 
         def running_by_repo(id)
           @count[:repo][id] ||= Job.by_repo(id).running.count
+        end
+
+        def running_by_queue(queue)
+          @count[:queue][queue] ||= Job.by_owners(owners.all).by_queue(queue).running.count
         end
 
         def boost_for(login)
