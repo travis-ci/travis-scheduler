@@ -34,7 +34,7 @@ module Travis
           end
 
           def queue
-            job.queue ||= Queue.new(job, config, nil).select
+            job.queue ||= Queue.new(job, context.config, nil).select
           end
 
           def repo
