@@ -11,12 +11,13 @@ module Travis
 
       class Jobs < Struct.new(:context, :owners)
         require 'travis/scheduler/limit/by_owner'
+        require 'travis/scheduler/limit/by_queue'
         require 'travis/scheduler/limit/by_repo'
         require 'travis/scheduler/limit/state'
 
         include Helper::Context
 
-        LIMITS = [ByOwner, ByRepo]
+        LIMITS = [ByOwner, ByRepo, ByQueue]
 
         def run
           check_all
@@ -27,8 +28,8 @@ module Travis
           @reports ||= []
         end
 
-        def jobs
-          @jobs ||= []
+        def selected
+          @selected ||= []
         end
 
         private
@@ -39,9 +40,13 @@ module Travis
               when :limited
                 break
               when true
-                jobs << job
+                selected << job
               end
             end
+          end
+
+          def set_queue(job)
+            inline :set_queue, job
           end
 
           def check(job)
@@ -57,11 +62,11 @@ module Travis
           end
 
           def limits_for(job)
-            LIMITS.map { |limit| limit.new(context, owners, job, jobs.size, state, config) }
+            LIMITS.map { |limit| limit.new(context, owners, job, selected, state, config) }
           end
 
           def summary
-            MSGS[:summary] % [owners.to_s, queueable.size, state.running_by_owners, jobs.size]
+            MSGS[:summary] % [owners.to_s, queueable.size, state.running_by_owners, selected.size]
           end
 
           def report(*reports)

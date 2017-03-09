@@ -1,4 +1,3 @@
-require 'forwardable'
 require 'travis/scheduler/limit/jobs'
 require 'travis/scheduler/model/owners'
 
@@ -16,8 +15,6 @@ module Travis
           schedule: 'Evaluating jobs for owner group: %s'
         }
 
-        def_delegators :limit, :reports, :jobs
-
         def run
           info MSGS[:schedule] % [owners.to_s]
           collect
@@ -34,11 +31,13 @@ module Travis
           time :collect
 
           def report
-            reports.each { |line| info line }
+            limit.reports.each { |line| info line }
           end
 
           def enqueue
-            jobs.partition { |job| !job.allow_failure }.flatten.each { |job| inline :enqueue_job, job, jid: jid }
+            jobs = limit.selected
+            jobs = jobs.partition { |job| !job.allow_failure }
+            jobs.flatten.each { |job| inline :enqueue_job, job, jid: jid }
           end
           time :enqueue
 
