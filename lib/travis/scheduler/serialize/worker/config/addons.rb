@@ -64,11 +64,19 @@ module Travis
 
             private
             def filtered
+              if jwt? && config.keys.any? {|key| jwt_aware?(key)}
+                # jwt key is in the wrong place
+                if config.key?(:sauce_connect)
+                  config[:sauce_connect] = { :jwt => config[:jwt] }
+                end
+              end
               config.map { |key, value| [key, filter(key, value)] }.to_h
             end
 
             def filter(name, config)
               if safe?(name)
+                config
+              elsif jwt_aware?(name) && config.respond_to?(:key?) && config.key?(:jwt)
                 config
               elsif jwt? && jwt_aware?(name)
                 strip_encrypted(config)
@@ -98,6 +106,10 @@ module Travis
 
             def jwt_aware?(name)
               JWT_AWARE.include?(name.to_sym)
+            end
+
+            def has_jwt_under?(name)
+              jwt_aware?(name) && config[name.to_sym].respond_to?(:keys) && config[name.to_sym].keys.include?(:jwt)
             end
 
             def encrypted?(value)
