@@ -1,7 +1,11 @@
 class Job < ActiveRecord::Base
   class << self
     def queueable
-      where(state: :created).order(:id)
+      if column_names.include?('queueable')
+        where(queueable: true).order(:id)
+      else
+        where(state: :created).order(:id)
+      end
     end
 
     def running

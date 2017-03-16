@@ -16,12 +16,12 @@ describe Travis::Scheduler::Limit::Jobs do
   subject { limit.run; limit.selected }
 
   # TODO refactor signature
-  def create_jobs(count, owner, state, repo = nil, queue = nil)
-    1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, state: state, queue: queue) }
+  def create_jobs(count, owner, state, queueable, repo = nil, queue = nil)
+    1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, state: state, queueable: queueable, queue: queue) }
   end
 
   describe 'with a boost limit 2' do
-    before { create_jobs(3, owner, :created) }
+    before { create_jobs(3, owner, :created, true) }
     before { redis.set("scheduler.owner.limit.#{owner.login}", 2) }
     before { subject }
 
@@ -31,7 +31,7 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'with a subscription limit 1' do
-    before { create_jobs(3, owner, :created) }
+    before { create_jobs(3, owner, :created, true) }
     before { FactoryGirl.create(:subscription, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id, selected_plan: :one) }
     before { subject }
 
@@ -41,7 +41,7 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'with a custom config limit unlimited' do
-    before { create_jobs(3, owner, :created) }
+    before { create_jobs(3, owner, :created, true) }
     before { config.limit.by_owner[owner.login] = -1 }
     before { subject }
 
@@ -51,7 +51,7 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'with a custom config limit 1' do
-    before { create_jobs(3, owner, :created) }
+    before { create_jobs(3, owner, :created, true) }
     before { config.limit.by_owner[owner.login] = 1 }
     before { subject }
 
@@ -61,7 +61,7 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'with a trial' do
-    before { create_jobs(3, owner, :created) }
+    before { create_jobs(3, owner, :created, true) }
     before { config.limit.trial = 2 }
     before { context.redis.set("trial:#{owner.login}", 5) }
     before { subject }
@@ -72,7 +72,7 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'with a default limit 1' do
-    before { create_jobs(3, owner, :created) }
+    before { create_jobs(3, owner, :created, true) }
     before { config.limit.default = 1 }
     before { subject }
 
@@ -83,7 +83,7 @@ describe Travis::Scheduler::Limit::Jobs do
 
   describe 'with a default limit 5 and a repo settings limit 2' do
     before { config.limit.default = 5 }
-    before { create_jobs(3, owner, :created) }
+    before { create_jobs(3, owner, :created, true) }
     before { repo.settings.update_attributes!(maximum_number_of_builds: 2) }
     before { subject }
 
@@ -94,8 +94,8 @@ describe Travis::Scheduler::Limit::Jobs do
 
   describe 'with a default limit 1 and a repo settings limit 5' do
     before { config.limit.default = 1 }
-    before { create_jobs(7, owner, :created) }
-    before { create_jobs(3, owner, :started) }
+    before { create_jobs(7, owner, :created, true) }
+    before { create_jobs(3, owner, :started, false) }
     before { FactoryGirl.create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
     before { repo.settings.update_attributes!(maximum_number_of_builds: 5) }
     before { subject }
@@ -107,8 +107,8 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'with a by_queue limit of 2' do
-    before { create_jobs(9, owner, :created, repo, 'builds.osx') }
-    before { create_jobs(1, owner, :created, repo, 'builds.docker') }
+    before { create_jobs(9, owner, :created, true, repo, 'builds.osx') }
+    before { create_jobs(1, owner, :created, true, repo, 'builds.docker') }
     before { config.limit.default = 99 }
     before { ENV['BY_QUEUE_LIMIT'] = "#{owner.login}=2" }
     before { ENV['BY_QUEUE_NAME'] = 'builds.osx' }
@@ -123,8 +123,8 @@ describe Travis::Scheduler::Limit::Jobs do
 
   describe 'with a by_queue limit of 2 and a repo limit of 3 on another repo' do
     let(:other) { FactoryGirl.create(:repo, github_id: 2) }
-    before { create_jobs(9, owner, :created, repo, 'builds.osx') }
-    before { create_jobs(5, owner, :created, other, 'builds.docker') }
+    before { create_jobs(9, owner, :created, true, repo, 'builds.osx') }
+    before { create_jobs(5, owner, :created, true, other, 'builds.docker') }
     before { config.limit.default = 99 }
     before { other.settings.update_attributes!(maximum_number_of_builds: 3) }
     before { ENV['BY_QUEUE_LIMIT'] = "#{owner.login}=2" }
@@ -141,10 +141,10 @@ describe Travis::Scheduler::Limit::Jobs do
   describe 'delegated accounts' do
     let(:carla) { FactoryGirl.create(:user, login: 'carla') }
 
-    before { create_jobs(3, owner, :created) }
-    before { create_jobs(3, org,   :created) }
-    before { create_jobs(1, owner, :started) }
-    before { create_jobs(1, org,   :started) }
+    before { create_jobs(3, owner, :created, true) }
+    before { create_jobs(3, org,   :created, true) }
+    before { create_jobs(1, owner, :started, false) }
+    before { create_jobs(1, org,   :started, false) }
 
     before { config.limit.delegate = { owner.login => org.login, carla.login => org.login } }
 

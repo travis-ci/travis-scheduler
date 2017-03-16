@@ -26,7 +26,8 @@ module Travis
 
           def owners
             @owners ||= begin
-              scope = Job.where(state: :created).where('created_at <= ?', Time.now - interval)
+              scope = Job.column_names.include?('queueable') ? Job.where(queueable: true) : Job.where(state: :created)
+              scope = scope.where('created_at <= ?', Time.now - interval)
               scope = scope.distinct
               scope = scope.select(:owner_type, :owner_id)
               scope.map { |job| [job.owner_id, job.owner_type] }.uniq
