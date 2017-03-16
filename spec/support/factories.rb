@@ -44,6 +44,7 @@ FactoryGirl.define do
     number     '2.1'
     queue      'builds.gce'
     state      :created
+    queueable  true
   end
 
   factory :build do
