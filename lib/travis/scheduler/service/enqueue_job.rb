@@ -24,6 +24,7 @@ module Travis
 
           def set_queued
             job.update_attributes!(state: :queued, queued_at: Time.now.utc)
+            job.queueable = false
           end
 
           def notify
