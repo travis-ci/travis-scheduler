@@ -14,7 +14,8 @@ describe Travis::Scheduler::Service::EnqueueOwners do
     before { config.limit.default = 1 }
     before { service.run }
 
-    it { expect(Job.order(:id).pluck(:state)).to eq %w[queued created] }
+    it { expect(Job.order(:id).map(&:state)).to eq %w[queued created] }
+    it { expect(Job.order(:id).map { |job| !!job.queueable }).to eq [false, true] if Job.queueable_jobs? }
 
     it { expect(log).to include "I 1234 Locking scheduler.owners-svenfuchs:travis-ci with: redis, ttl: 150s" }
     it { expect(log).to include "I 1234 Evaluating jobs for owner group: user svenfuchs, org travis-ci" }

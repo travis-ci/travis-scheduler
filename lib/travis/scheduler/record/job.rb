@@ -1,11 +1,17 @@
 class Job < ActiveRecord::Base
   class << self
+    SQL = {
+      queueable: 'RIGHT JOIN queueable_jobs on queueable_jobs.job_id = jobs.id'
+    }
+
+    def queueable_jobs?
+      Job.connection.tables.include?('queueable_jobs')
+    end
+
     def queueable
-      if column_names.include?('queueable')
-        where(queueable: true).order(:id)
-      else
-        where(state: :created).order(:id)
-      end
+      jobs = where(state: :created).order(:id).to_a
+      jobs + joins(SQL[:queueable]).order(:id).to_a if queueable_jobs?
+      jobs.uniq
     end
 
     def running
@@ -43,7 +49,21 @@ class Job < ActiveRecord::Base
   belongs_to :commit
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
+  has_one :queueable
 
   serialize :config
   serialize :debug_options
+
+  def queueable=(value)
+    return unless Job.queueable_jobs?
+    if value
+      queueable || create_queueable
+    else
+      queueable && queueable.destroy
+    end
+  end
+
+  # def queueable?
+  #   !!queueable
+  # end
 end
