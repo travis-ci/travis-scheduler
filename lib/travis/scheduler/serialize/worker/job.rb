@@ -30,16 +30,6 @@ module Travis
             request.same_repo_pull_request?
           end
 
-          def secure_env_vars_removed?
-            !secure_env? &&
-            [:env, :global_env].any? do |key|
-              config.has_key?(key) &&
-              config[key].any? do |var|
-                var.is_a?(Hash) && var.has_key?(:secure)
-              end
-            end
-          end
-
           def ssh_key
             config[:source_key]
           end
