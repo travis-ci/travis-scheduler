@@ -30,7 +30,7 @@ module Travis
             request.same_repo_pull_request?
           end
 
-          def secure_env_vars_removed?
+          def secure_env_removed?
             !secure_env? &&
             job.repository.settings.has_secure_vars? || [:env, :global_env].any? do |key|
               config.key?(key) &&

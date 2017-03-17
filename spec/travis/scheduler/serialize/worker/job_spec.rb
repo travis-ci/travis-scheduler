@@ -43,10 +43,10 @@ describe Travis::Scheduler::Serialize::Worker::Job do
     end
   end
 
-  describe '#secure_env_vars_removed?' do
+  describe '#secure_env_removed?' do
     describe 'with a push event' do
       before { build.event_type = 'push' }
-      it { expect(subject.secure_env_vars_removed?).to eq(false) }
+      it { expect(subject.secure_env_removed?).to eq(false) }
     end
 
     describe 'with a pull_request event' do
@@ -54,7 +54,7 @@ describe Travis::Scheduler::Serialize::Worker::Job do
 
       describe 'from the same repository' do
         before { request.stubs(:same_repo_pull_request?).returns(true) }
-        it { expect(subject.secure_env_vars_removed?).to eq(false) }
+        it { expect(subject.secure_env_removed?).to eq(false) }
       end
 
       describe 'from a different repository' do
@@ -62,12 +62,12 @@ describe Travis::Scheduler::Serialize::Worker::Job do
 
         context "when .travis.yml defines a secure var" do
           let(:config) { { env: { secure: "secret" } } }
-          it { expect(subject.secure_env_vars_removed?).to eq(true) }
+          it { expect(subject.secure_env_removed?).to eq(true) }
         end
 
         context "when repository settings define a secure var" do
           before { repository.settings.stubs(:has_secure_vars?).returns(true) }
-          it { expect(subject.secure_env_vars_removed?).to eq(true) }
+          it { expect(subject.secure_env_removed?).to eq(true) }
         end
       end
 
