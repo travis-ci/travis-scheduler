@@ -60,6 +60,7 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request: false,
           state: 'queued',
           secure_env_enabled: true,
+          secure_env_vars_removed: false,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
           allow_failure: allow_failure
@@ -122,6 +123,7 @@ describe Travis::Scheduler::Serialize::Worker do
             pull_request: false,
             state: 'queued',
             secure_env_enabled: true,
+            secure_env_vars_removed: false,
             debug_options: {},
             queued_at: '2016-01-01T10:30:00Z',
             allow_failure: false,
@@ -213,6 +215,7 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request: 180,
           state: 'queued',
           secure_env_enabled: false,
+          secure_env_vars_removed: false,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',
