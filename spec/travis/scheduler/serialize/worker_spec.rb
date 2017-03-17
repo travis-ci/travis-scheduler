@@ -215,7 +215,7 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request: 180,
           state: 'queued',
           secure_env_enabled: false,
-          secure_env_vars_removed: false,
+          secure_env_vars_removed: true,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',

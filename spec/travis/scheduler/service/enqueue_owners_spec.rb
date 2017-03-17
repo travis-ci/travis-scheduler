@@ -9,7 +9,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:service) { described_class.new(Travis::Scheduler.context, data) }
 
   context do
-    before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, state: :created, queue: 'builds.gce') } }
+    before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, state: :created, queue: 'builds.gce', config: {}) } }
     before { config.limit.delegate = { owner.login => org.login } }
     before { config.limit.default = 1 }
     before { service.run }

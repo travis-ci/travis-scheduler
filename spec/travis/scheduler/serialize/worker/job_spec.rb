@@ -1,7 +1,8 @@
 describe Travis::Scheduler::Serialize::Worker::Job do
   let(:request) { Request.new }
   let(:build)   { Build.new(request: request) }
-  let(:job)     { Job.new(source: build, config: config) }
+  let(:repository) { Repository.new }
+  let(:job)     { Job.new(source: build, config: config, repository: repository) }
   let(:config)  { {} }
   subject       { described_class.new(job) }
 
@@ -57,10 +58,19 @@ describe Travis::Scheduler::Serialize::Worker::Job do
       end
 
       describe 'from a different repository' do
-        let(:config) { { env: { secure: "secret" } } }
         before { request.stubs(:same_repo_pull_request?).returns(false) }
-        it { expect(subject.secure_env_vars_removed?).to eq(true) }
+
+        context "when .travis.yml defines a secure var" do
+          let(:config) { { env: { secure: "secret" } } }
+          it { expect(subject.secure_env_vars_removed?).to eq(true) }
+        end
+
+        context "when repository settings define a secure var" do
+          before { repository.settings.stubs(:has_secure_var?).returns(true) }
+          it { expect(subject.secure_env_vars_removed?).to eq(true) }
+        end
       end
+
     end
   end
 end
