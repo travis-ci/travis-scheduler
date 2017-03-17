@@ -32,11 +32,11 @@ module Travis
 
           def secure_env_removed?
             !secure_env? &&
-            job.repository.settings.has_secure_vars? || [:env, :global_env].any? do |key|
+            (job.repository.settings.has_secure_vars? || [:env, :global_env].any? do |key|
               config.key?(key) &&
               config[key].respond_to?(:key?) &&
               config[key].key?(:secure)
-            end
+            end)
           end
 
           def ssh_key
