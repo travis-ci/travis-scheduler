@@ -4,14 +4,8 @@ class Job < ActiveRecord::Base
       queueable: 'RIGHT JOIN queueable_jobs on queueable_jobs.job_id = jobs.id'
     }
 
-    def queueable_jobs?
-      Job.connection.tables.include?('queueable_jobs')
-    end
-
     def queueable
-      jobs = where(state: :created).order(:id).to_a
-      jobs + joins(SQL[:queueable]).order(:id).to_a if queueable_jobs?
-      jobs.uniq
+      joins(SQL[:queueable]).order(:id)
     end
 
     def running
@@ -55,15 +49,10 @@ class Job < ActiveRecord::Base
   serialize :debug_options
 
   def queueable=(value)
-    return unless Job.queueable_jobs?
     if value
       queueable || create_queueable
     else
       queueable && queueable.destroy
     end
   end
-
-  # def queueable?
-  #   !!queueable
-  # end
 end
