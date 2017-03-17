@@ -51,6 +51,7 @@ module Travis
               pull_request: build.pull_request? ? build.pull_request_number : false,
               state: job.state.to_s,
               secure_env_enabled: job.secure_env?,
+              secure_env_vars_removed: job.secure_env_vars_removed?,
               debug_options: job.debug_options || {},
               queued_at: format_date(job.queued_at),
               allow_failure: job.allow_failure,
