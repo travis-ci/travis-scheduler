@@ -32,7 +32,7 @@ module Travis
 
           def secure_env_vars_removed?
             !secure_env? &&
-            job.repository.settings.has_secure_var? || [:env, :global_env].any? do |key|
+            job.repository.settings.has_secure_vars? || [:env, :global_env].any? do |key|
               config.has_key?(key) &&
               config[key].respond_to?(:has_key?) &&
               config[key].has_key?(:secure)

@@ -66,7 +66,7 @@ describe Travis::Scheduler::Serialize::Worker::Job do
         end
 
         context "when repository settings define a secure var" do
-          before { repository.settings.stubs(:has_secure_var?).returns(true) }
+          before { repository.settings.stubs(:has_secure_vars?).returns(true) }
           it { expect(subject.secure_env_vars_removed?).to eq(true) }
         end
       end

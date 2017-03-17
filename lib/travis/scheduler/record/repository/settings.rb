@@ -123,7 +123,7 @@ class Repository::Settings < Travis::Settings
     additional_attributes[:repository_id]
   end
 
-  def has_secure_var?
+  def has_secure_vars?
     env_vars.any? { |v| !v.public? }
   end
 end
