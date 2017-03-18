@@ -32,11 +32,7 @@ module Travis
 
           def secure_env_removed?
             !secure_env? &&
-            (job.repository.settings.has_secure_vars? || [:env, :global_env].any? do |key|
-              config.key?(key) &&
-              config[key].respond_to?(:key?) &&
-              config[key].key?(:secure)
-            end)
+            (job.repository.settings.has_secure_vars? || has_secure_vars?(:env) || has_secure_vars?(:global_env))
           end
 
           def ssh_key
@@ -52,6 +48,12 @@ module Travis
 
             def env_var(var)
               { name: var.name, value: var.value.decrypt, public: var.public }
+            end
+
+            def has_secure_vars?(key)
+              config.key?(key) &&
+              config[key].respond_to?(:key?) &&
+              config[key].key?(:secure)
             end
         end
       end
