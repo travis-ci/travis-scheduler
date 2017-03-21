@@ -23,6 +23,7 @@ FactoryGirl.define do
     owner_name { owner.login }
     key        { SslKey.create(public_key: REPO_KEY.public_key, private_key: REPO_KEY.to_pem) }
     users      { [ owner ] }
+    settings   {}
 
     # TODO why is the worker payload interested in these at all?
     last_build_id 1
@@ -39,6 +40,7 @@ FactoryGirl.define do
     repository { Repository.first || FactoryGirl.create(:repository) }
     source     { FactoryGirl.create(:build) }
     commit     { FactoryGirl.create(:commit) }
+    config     {}
     number     '2.1'
     queue      'builds.gce'
     state      :created
