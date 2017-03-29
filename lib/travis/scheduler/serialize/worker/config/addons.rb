@@ -74,25 +74,10 @@ module Travis
             end
 
             def filter(name, config)
-              if safe?(name)
+              if safe?(name) || has_jwt_under?(name)
                 config
-              elsif jwt_aware?(name) && config.respond_to?(:key?) && config.key?(:jwt)
-                config
-              elsif jwt? && jwt_aware?(name)
-                strip_encrypted(config)
               else
                 nil
-              end
-            end
-
-            def strip_encrypted(config)
-              case config
-              when Hash
-                compact(config.map { |key, value| [key, encrypted?(value) ? nil : value] }).to_h
-              when Array
-                config.map { |config| strip_encrypted(config) }
-              else
-                config
               end
             end
 
@@ -110,10 +95,6 @@ module Travis
 
             def has_jwt_under?(name)
               jwt_aware?(name) && config[name.to_sym].respond_to?(:keys) && config[name.to_sym].keys.include?(:jwt)
-            end
-
-            def encrypted?(value)
-              value.is_a?(Hash) && value.keys.any? { |key| key == :secure }
             end
 
             def compact(hash)
