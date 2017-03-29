@@ -82,7 +82,7 @@ module Travis
             end
 
             def safe?(name)
-              SAFE.include?(name.to_sym)
+              SAFE.include?(name)
             end
 
             def jwt?
@@ -90,11 +90,11 @@ module Travis
             end
 
             def jwt_aware?(name)
-              JWT_AWARE.include?(name.to_sym)
+              JWT_AWARE.include?(name)
             end
 
             def has_jwt_under?(name)
-              jwt_aware?(name) && config[name.to_sym].respond_to?(:keys) && config[name.to_sym].keys.include?(:jwt)
+              jwt_aware?(name) && config[name].respond_to?(:keys) && config[name].keys.include?(:jwt)
             end
 
             def compact(hash)
