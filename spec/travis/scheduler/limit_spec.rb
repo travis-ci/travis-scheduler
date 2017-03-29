@@ -16,21 +16,10 @@ describe Travis::Scheduler::Limit::Jobs do
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
   subject { limit.run; limit.selected }
 
-<<<<<<< HEAD
-  def create_jobs(count, owner, state, repo = nil, queue = nil)
-    1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, state: state, queue: queue) }
-||||||| merged common ancestors
-  def create_jobs(count, owner, state, stage = nil)
-    1.upto(count) { FactoryGirl.create(:job, repository: repo, owner: owner, source: build, state: state, stage: stage) }
-=======
-  def create_jobs(count, owner, state, stage = nil)
-    1.upto(count) { FactoryGirl.create(:job, repository: repo, owner: owner, source: build, state: state, stage_number: stage) }
->>>>>>> use travis-migrations/sf-job-stage on Travis CI
+  # TODO change this signature
+  def create_jobs(count, owner, state, repo = nil, queue = nil, stage_number = nil, stage = nil)
+    1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, source: build, state: state, queue: queue, stage_number: stage_number, stage: stage) }
   end
-
-  # def create_jobs(count, owner, state, stage = nil)
-  #   1.upto(count) { FactoryGirl.create(:job, repository: repo, owner: owner, source: build, state: state, stage: stage) }
-  # end
 
   describe 'with a boost limit 2' do
     before { create_jobs(3, owner, :created) }
@@ -182,17 +171,20 @@ describe Travis::Scheduler::Limit::Jobs do
     end
   end
 
-  if ENV['BUILD_STAGES']
-    describe 'stages' do
-      before { ENV['JOB_STAGES'] = 'true' } # TODO remove when shipped
-      before { create_jobs(1, owner, :created, '1.1') }
-      before { create_jobs(1, owner, :created, '1.2') }
-      before { create_jobs(1, owner, :created, '2.1') }
-      before { config.limit.default = 5 }
-      before { subject }
+  describe 'stages' do
+    before { ENV['JOB_STAGES'] = 'true' }
+    after  { ENV['JOB_STAGES'] = nil }
 
-      it { expect(subject.size).to eq 2 }
-      it { expect(report).to include("jobs for build #{build.id} limited at stage: 1") }
-    end
+    let(:one) { FactoryGirl.create(:stage, number: 1) }
+    let(:two) { FactoryGirl.create(:stage, number: 2) }
+
+    before { create_jobs(1, owner, :created, nil, nil, '1.1', one) }
+    before { create_jobs(1, owner, :created, nil, nil, '1.2', one) }
+    before { create_jobs(1, owner, :created, nil, nil, '2.1', two) }
+    before { config.limit.default = 5 }
+    before { subject }
+
+    it { expect(subject.size).to eq 2 }
+    it { expect(report).to include("jobs for build #{build.id} limited at stage: 1 (queueable: 2)") }
   end
 end
