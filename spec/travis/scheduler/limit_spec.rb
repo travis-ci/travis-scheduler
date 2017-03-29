@@ -182,15 +182,17 @@ describe Travis::Scheduler::Limit::Jobs do
     end
   end
 
-  describe 'stages' do
-    before { ENV['JOB_STAGES'] = 'true' } # TODO remove when shipped
-    before { create_jobs(1, owner, :created, '1.1') }
-    before { create_jobs(1, owner, :created, '1.2') }
-    before { create_jobs(1, owner, :created, '2.1') }
-    before { config.limit.default = 5 }
-    before { subject }
+  if ENV['BUILD_STAGES']
+    describe 'stages' do
+      before { ENV['JOB_STAGES'] = 'true' } # TODO remove when shipped
+      before { create_jobs(1, owner, :created, '1.1') }
+      before { create_jobs(1, owner, :created, '1.2') }
+      before { create_jobs(1, owner, :created, '2.1') }
+      before { config.limit.default = 5 }
+      before { subject }
 
-    it { expect(subject.size).to eq 2 }
-    it { expect(report).to include("jobs for build #{build.id} limited at stage: 1") }
+      it { expect(subject.size).to eq 2 }
+      it { expect(report).to include("jobs for build #{build.id} limited at stage: 1") }
+    end
   end
 end
