@@ -140,9 +140,9 @@ describe Travis::Scheduler::Serialize::Worker::Config do
 
     describe 'jwt encrypted env var + sauce_connect addon with jwt underneath' do
       let(:var)    { 'SAUCE_ACCESS_KEY=foo012345678901234565789' }
-      let(:config) { { addons: { sauce_connect: { jwt: encrypt(var) }, jwt: encrypt(var) } } }
+      let(:config) { { addons: { sauce_connect: { username: 'user1', jwt: encrypt(var) }, jwt: encrypt(var) } } }
 
-      it { should eq(addons: { sauce_connect: { jwt: var } , jwt: Array(var) } ) }
+      it { should eq(addons: { sauce_connect: { username: 'user1', jwt: var } , jwt: Array(var) } ) }
     end
   end
 
