@@ -1,5 +1,5 @@
 require 'travis/scheduler/helper/context'
-require 'travis/stages'
+require 'travis/scheduler/model/stages'
 
 module Travis
   module Scheduler

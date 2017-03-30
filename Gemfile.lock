@@ -37,12 +37,6 @@ GIT
       activemodel
       virtus
 
-GIT
-  remote: https://github.com/travis-ci/travis-stages
-  revision: 82f1f9e15f021794af270e9f573aa3c51cbd6d8c
-  specs:
-    travis-stages (0.0.1)
-
 GEM
   remote: https://rubygems.org/
   remote: https://gems.contribsys.com/
@@ -194,11 +188,10 @@ DEPENDENCIES
   travis-metrics (~> 2.0.0.rc3)
   travis-rollout
   travis-settings!
-  travis-stages!
   webmock (~> 1.8.0)
 
 RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.14.3
+   1.14.6
