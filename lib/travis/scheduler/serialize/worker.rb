@@ -63,7 +63,7 @@ module Travis
                 pull_request_head_slug: request.pull_request_head_slug,
               )
             end
-            data
+            data.tap {|x| Travis.logger.info("job_data=#{x}")}
           end
 
           def repository_data
