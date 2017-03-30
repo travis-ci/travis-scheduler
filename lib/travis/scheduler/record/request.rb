@@ -37,7 +37,7 @@ class Request < ActiveRecord::Base
   end
 
   def payload
-    puts "[deprectated] Reading request.payload. Called from #{caller[0]}" unless caller.join =~ /(dirty.rb)/
+    # puts "[deprectated] Reading request.payload. Called from #{caller[0]}" unless caller.join =~ /(dirty.rb)/
     super
   end
 
