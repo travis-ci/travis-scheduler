@@ -33,13 +33,20 @@ class Job < ActiveRecord::Base
     end
   end
 
+  FINISHED_STATES = [:passed, :failed, :errored, :canceled]
+
   self.inheritance_column = :_disabled
 
   belongs_to :repository
   belongs_to :commit
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
+  belongs_to :stage
 
   serialize :config
   serialize :debug_options
+
+  def finished?
+    FINISHED_STATES.include?(state.try(:to_sym))
+  end
 end

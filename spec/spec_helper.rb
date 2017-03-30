@@ -4,6 +4,7 @@ require 'database_cleaner'
 require 'mocha'
 require 'support/factories'
 require 'support/logger'
+require 'support/stages'
 require 'travis/scheduler'
 
 include Mocha::API

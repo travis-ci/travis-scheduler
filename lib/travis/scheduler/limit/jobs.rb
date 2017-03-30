@@ -4,20 +4,22 @@ module Travis
   module Scheduler
     module Limit
       MSGS = {
-        max:      'max jobs for %s by %s: %s',
-        max_plan: 'max jobs for %s by %s: %s (%s)',
-        summary:  '%s: total: %s, running: %s, queueable: %s'
+        max:       'max jobs for %s by %s: %s',
+        max_plan:  'max jobs for %s by %s: %s (%s)',
+        max_stage: 'jobs for %s limited at stage: %s (queueable: %s)',
+        summary:   '%s: total: %s, running: %s, queueable: %s'
       }
 
       class Jobs < Struct.new(:context, :owners)
         require 'travis/scheduler/limit/by_owner'
         require 'travis/scheduler/limit/by_queue'
         require 'travis/scheduler/limit/by_repo'
+        require 'travis/scheduler/limit/by_stage'
         require 'travis/scheduler/limit/state'
 
         include Helper::Context
 
-        LIMITS = [ByOwner, ByRepo, ByQueue]
+        LIMITS = [ByOwner, ByRepo, ByQueue, ByStage]
 
         def run
           check_all

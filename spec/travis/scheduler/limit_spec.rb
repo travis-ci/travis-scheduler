@@ -1,6 +1,7 @@
 describe Travis::Scheduler::Limit::Jobs do
   let(:org)     { FactoryGirl.create(:org, login: 'travis-ci') }
   let(:repo)    { FactoryGirl.create(:repo) }
+  let(:build)   { FactoryGirl.create(:build) }
   let(:owner)   { FactoryGirl.create(:user) }
   let(:owners)  { Travis::Scheduler::Model::Owners.new(data, config) }
   let(:context) { Travis::Scheduler.context }
@@ -15,9 +16,9 @@ describe Travis::Scheduler::Limit::Jobs do
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
   subject { limit.run; limit.selected }
 
-  # TODO refactor signature
-  def create_jobs(count, owner, state, repo = nil, queue = nil)
-    1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, state: state, queue: queue) }
+  # TODO change this signature
+  def create_jobs(count, owner, state, repo = nil, queue = nil, stage_number = nil, stage = nil)
+    1.upto(count) { FactoryGirl.create(:job, repository: repo || self.repo, owner: owner, source: build, state: state, queue: queue, stage_number: stage_number, stage: stage) }
   end
 
   describe 'with a boost limit 2' do
@@ -168,5 +169,22 @@ describe Travis::Scheduler::Limit::Jobs do
       it { expect(report).to include('max jobs for user svenfuchs by plan: 8 (svenfuchs, travis-ci)') }
       it { expect(report).to include('user carla, user svenfuchs, org travis-ci: total: 6, running: 2, queueable: 6') }
     end
+  end
+
+  describe 'stages' do
+    before { ENV['BUILD_STAGES'] = 'true' }
+    after  { ENV['BUILD_STAGES'] = nil }
+
+    let(:one) { FactoryGirl.create(:stage, number: 1) }
+    let(:two) { FactoryGirl.create(:stage, number: 2) }
+
+    before { create_jobs(1, owner, :created, nil, nil, '1.1', one) }
+    before { create_jobs(1, owner, :created, nil, nil, '1.2', one) }
+    before { create_jobs(1, owner, :created, nil, nil, '2.1', two) }
+    before { config.limit.default = 5 }
+    before { subject }
+
+    it { expect(subject.size).to eq 2 }
+    it { expect(report).to include("jobs for build #{build.id} limited at stage: 1 (queueable: 2)") }
   end
 end
