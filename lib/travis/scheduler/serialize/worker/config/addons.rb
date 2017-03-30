@@ -67,7 +67,7 @@ module Travis
               if jwt? && config.keys.any? {|key| jwt_aware?(key)}
                 # jwt key is in the wrong place
                 if config.key?(:sauce_connect)
-                  config[:sauce_connect] = { :jwt => config[:jwt] }
+                  config[:sauce_connect].merge!({ :jwt => config[:jwt] })
                 end
               end
               config.map { |key, value| [key, filter(key, value)] }.to_h
