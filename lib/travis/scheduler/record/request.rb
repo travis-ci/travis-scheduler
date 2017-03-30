@@ -6,38 +6,57 @@ require 'gh'
 
 class Request < ActiveRecord::Base
   belongs_to :commit
+  belongs_to :pull_request
   belongs_to :repository
   belongs_to :owner, polymorphic: true
 
   serialize :payload
 
-  # this method is overly long, but please don't refactor it just to shorten it,
-  # I want it to be as clear as possible as any bug here can lead to security
-  # issues
+  # This check has been put in place in order to address a security issue on
+  # GitHub's side. See https://blog.travis-ci.com/2016-07-07-security-advisory-encrypted-variables.
+  #
+  # The underlying issue has been fixed by GitHub in June 2016 (see
+  # https://github.com/travis-pro/team-teal/issues/1280#issuecomment-250129327),
+  # but we're keeping this check around for the time being, especially for
+  # Enterprise.
   def same_repo_pull_request?
-    payload = Hashr.new(self.payload)
-
-    pull_request = payload.pull_request
-    return false unless pull_request
-
-    head = pull_request.head
-    base = pull_request.base
-    return false if head.nil? or base.nil?
-
-    base_repo = base.repo.try(:full_name)
-    head_repo = head.repo.try(:full_name)
-    return false if base_repo.nil? or base_repo.nil?
-    return false if head.sha.nil? or head.ref.nil?
-
-    # it's not the same repo PR if repo names don't match
-    return false if head_repo != base_repo
-
-    # it may not be same repo PR if ref is a commit
-    return false if head.sha =~ /^#{Regexp.escape(head.ref)}/
-
+    # When we're starting to archive payloads after N months we'll also disallow
+    # restarting builds older than N months. Once we do so we can also return
+    # false if Scheduler.config.enterprise is not true.
+    return false if read_attribute(:payload).nil?
+    # It's not the same repo PR if repo names don't match
+    return false if head_repo != repository.slug
+    # It may not be the same repo if head_ref or head_sha are missing
+    return false if head_ref.nil? or head_sha.nil?
+    # It may not be same repo PR if ref is a commit
+    return false if head_sha =~ /^#{Regexp.escape(head_ref)}/
     true
   rescue => e
     Travis::Scheduler.logger.error "[request:#{id}] Couldn't determine whether pull request is from the same repository: #{e.message}"
     false
   end
+
+  def payload
+    # puts "[deprectated] Reading request.payload. Called from #{caller[0]}" unless caller.join =~ /(dirty.rb)/
+    super
+  end
+
+  private
+
+    def head_repo
+      pull_request ? pull_request.head_repo_slug : pr.head.try(:repo).try(:full_name)
+    end
+
+    def head_ref
+      pull_request ? pull_request.head_ref : pr.head.try(:ref)
+    end
+
+    def head_sha
+      head_commit
+    end
+
+    # TODO remove once we've populated the pull_requests table
+    def pr
+      @pr ||= Hashr.new(self.payload).pull_request || Hashr.new
+    end
 end

@@ -59,6 +59,9 @@ FactoryGirl.define do
     payload 'ref' => 'refs/tags/v1.2.3'
   end
 
+  factory :pull_request do
+  end
+
   factory :commit do
     request         { Request.first || FactoryGirl.create(:request) }
     commit          '62aaef'
