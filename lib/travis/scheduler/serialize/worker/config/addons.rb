@@ -26,9 +26,7 @@ module Travis
 
             JWT_ENV_CHECKS = {
               sauce_connect: {
-                'SAUCE_ACCESS_KEY' => {
-                  minimum_length: 20
-                }
+                'SAUCE_ACCESS_KEY' => 20
               }
             }
 
@@ -46,6 +44,13 @@ module Travis
               # and we want to drop the values of the :jwt addon that does not meet the criteria
               # set forth by JWT_ENV_CHECKS
 
+              config.reject! do |k, v|
+                jwt_aware?(k) && config[k].key?(:jwt) && JWT_ENV_CHECKS[k].any? do |env_var, minimum|
+                  val = config[k][:jwt]
+                  val.gsub(/\A#{env_var}=/, '').length <= minimum
+                end
+              end
+
               jwt_config = Array(config.delete(:jwt))
 
               return config if jwt_config.empty?
@@ -55,7 +60,7 @@ module Travis
                 env_var_name, env_var_value = decrypted_jwt_data.split('=', 2)
 
                 JWT_ENV_CHECKS.any? do |addon, criteria|
-                  criteria.key?(env_var_name) && criteria[env_var_name][:minimum_length] <= env_var_value.length
+                  criteria.key?(env_var_name) && criteria[env_var_name] <= env_var_value.length
                 end
               end
 
