@@ -1,5 +1,5 @@
 require 'travis/scheduler/limit/jobs'
-require 'travis/scheduler/model/owners'
+require 'travis/owners'
 
 module Travis
   module Scheduler
@@ -46,11 +46,11 @@ module Travis
           end
 
           def owners
-            @owners ||= Model::Owners.new(data, config)
+            @owners ||= Owners.group(data, config.to_h)
           end
 
           def exclusive(&block)
-            super(['scheduler.owners', owners.key].join('-'), config, retries: 0, &block)
+            super(['scheduler.owners', owners.key].join('-'), config.to_h, retries: 0, &block)
           end
 
           def jid

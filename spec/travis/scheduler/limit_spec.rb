@@ -3,7 +3,7 @@ describe Travis::Scheduler::Limit::Jobs do
   let(:repo)    { FactoryGirl.create(:repo, owner: owner) }
   let(:build)   { FactoryGirl.create(:build) }
   let(:owner)   { FactoryGirl.create(:user) }
-  let(:owners)  { Travis::Scheduler::Model::Owners.new(data, config) }
+  let(:owners)  { Travis::Owners.group(data, config.to_h) }
   let(:context) { Travis::Scheduler.context }
   let(:redis)   { context.redis }
   let(:config)  { context.config }
@@ -163,7 +163,7 @@ describe Travis::Scheduler::Limit::Jobs do
       it { expect(subject.size).to eq 5 }
       it { expect(subject.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 2 }
       it { expect(report).to include('max jobs for user svenfuchs by plan: 7 (travis-ci)') }
-      it { expect(report).to include('user carla, user svenfuchs, org travis-ci: total: 6, running: 2, queueable: 5') }
+      it { expect(report).to include('user svenfuchs, user carla, org travis-ci: total: 6, running: 2, queueable: 5') }
     end
 
     describe 'with multiple subscriptions' do
@@ -174,7 +174,7 @@ describe Travis::Scheduler::Limit::Jobs do
       it { expect(subject.size).to eq 6 }
       it { expect(subject.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 3 }
       it { expect(report).to include('max jobs for user svenfuchs by plan: 8 (svenfuchs, travis-ci)') }
-      it { expect(report).to include('user carla, user svenfuchs, org travis-ci: total: 6, running: 2, queueable: 6') }
+      it { expect(report).to include('user svenfuchs, user carla, org travis-ci: total: 6, running: 2, queueable: 6') }
     end
   end
 
