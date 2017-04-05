@@ -18,11 +18,9 @@ module Travis
       end
 
       def owners(owner, config)
-        if ENV['DB_OWNER_GROUPS']
-          Db.new(owner).owners
-        else
-          Config.new(owner, config).owners
-        end
+        owners = Config.new(owner, config).owners
+        owners += Db.new(owner).owners if Database.table?('owner_groups')
+        owners.uniq
       end
     end
   end

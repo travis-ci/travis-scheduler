@@ -1,9 +1,9 @@
 describe Travis::Owners do
+  let!(:travis) { FactoryGirl.create(:org, login: 'travis') }
+  let!(:rails)  { FactoryGirl.create(:org, login: 'rails') }
   let!(:anja)   { FactoryGirl.create(:user, login: 'anja')  }
   let!(:carla)  { FactoryGirl.create(:user, login: 'carla') }
   let!(:joe)    { FactoryGirl.create(:user, login: 'joe') }
-  let!(:travis) { FactoryGirl.create(:org, login: 'travis') }
-  let!(:rails)  { FactoryGirl.create(:org, login: 'sinatra') }
 
   let(:plans)   { { five: 5, ten: 10 } }
   let(:config)  { { limit: respond_to?(:limits) ? limits : {}, plans: plans } }
