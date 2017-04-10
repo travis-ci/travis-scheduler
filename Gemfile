@@ -12,6 +12,7 @@ gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings'
 gem 'gh',                 git: 'https://github.com/travis-ci/gh'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 
+gem 'cl'
 gem 'sidekiq-pro', require: 'sidekiq-pro', source: 'https://gems.contribsys.com'
 gem 'jemalloc'
 gem 'redis-namespace'

@@ -8,6 +8,10 @@ module Travis
         ActiveRecord::Base.default_timezone = :utc
         ActiveRecord::Base.logger = logger
       end
+
+      def table?(name)
+        ActiveRecord::Base.connection.tables.include?('owner_groups')
+      end
     end
   end
 end

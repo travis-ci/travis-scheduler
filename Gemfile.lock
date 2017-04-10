@@ -69,6 +69,7 @@ GEM
     builder (3.2.2)
     bunny (2.6.1)
       amq-protocol (>= 2.0.1)
+    cl (0.0.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     concurrent-ruby (1.0.2)
@@ -164,6 +165,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord (~> 4.2.7)
   bunny (~> 2.6.1)
+  cl
   coder!
   concurrent-ruby
   database_cleaner (~> 1.5.1)

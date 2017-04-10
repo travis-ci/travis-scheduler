@@ -2,6 +2,7 @@ ENV['ENV'] = ENV['RAILS_ENV'] = 'test'
 
 require 'database_cleaner'
 require 'mocha'
+require 'support/env'
 require 'support/factories'
 require 'support/logger'
 require 'support/stages'
@@ -16,6 +17,7 @@ DatabaseCleaner.strategy = :transaction
 
 RSpec.configure do |c|
   c.mock_with :mocha
+  c.include Support::Env
   c.include Support::Logger
   # c.backtrace_clean_patterns = []
 
