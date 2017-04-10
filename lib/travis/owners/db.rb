@@ -3,7 +3,7 @@ require 'active_record'
 module Travis
   module Owners
     class Db < Struct.new(:owner)
-      SQL = 'uuid = (SELECT uuid FROM owner_groups WHERE owner_type = ? AND owner_id = ?)'
+      SQL = 'uuid IN (SELECT uuid FROM owner_groups WHERE owner_type = ? AND owner_id = ?)'
 
       def owners
         attrs.any? ? attrs.map { |(type, id)| find(type, id) } : [owner]
