@@ -8,7 +8,7 @@ module Travis
         include Helper::Context
 
         def enqueue?
-          return true unless ENV['BUILD_STAGES'] && job.stage_number
+          return true unless job.stage_number
           !!report if queueable?
         end
 

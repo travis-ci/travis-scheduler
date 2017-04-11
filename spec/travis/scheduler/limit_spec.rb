@@ -179,9 +179,6 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'stages' do
-    before { ENV['BUILD_STAGES'] = 'true' }
-    after  { ENV['BUILD_STAGES'] = nil }
-
     let(:one) { FactoryGirl.create(:stage, number: 1) }
     let(:two) { FactoryGirl.create(:stage, number: 2) }
 
