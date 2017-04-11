@@ -12,6 +12,7 @@ module Travis
 
         MSGS = {
           count:   'You need to pass at least 2 owner logins.',
+          unknown: 'Unknown owners: %s.',
           grouped: 'The following owners already are in an owner group: %s. Please use the `owners add` command.',
           confirm: 'This will group the following owners: %s. Confirm? [y/n]',
           done:    'Done. These owners are now grouped.'
@@ -26,7 +27,11 @@ module Travis
         private
 
           def validate
-            abort MSGS[:count] if owners.size < 2
+            abort MSGS[:count] if args.size < 2
+
+            unknown = args - owners.map(&:login)
+            abort MSGS[:unknown] % unknown.join(', ') if unknown.any?
+
             logins = owners.select(&:owner_group).map(&:login)
             abort MSGS[:grouped] % logins.join(', ') if logins.any?
           end

@@ -3,6 +3,7 @@
 $: << 'lib'
 
 require 'irb'
+require 'bundler/setup'
 require 'travis/scheduler'
 
 Travis::Scheduler.setup

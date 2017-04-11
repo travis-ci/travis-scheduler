@@ -2,6 +2,7 @@
 
 $: << 'lib'
 
+require 'bundler/setup'
 require 'travis/scheduler'
 require 'travis/owners/cli'
 

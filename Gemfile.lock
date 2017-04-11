@@ -145,7 +145,7 @@ GEM
     travis-config (1.0.12)
       hashr (~> 2.0.0)
     travis-lock (0.1.1)
-    travis-metrics (2.0.0.rc8)
+    travis-metrics (2.0.0)
       metriks-librato_metrics (~> 1.0)
     travis-rollout (0.0.1)
     tzinfo (1.2.2)
@@ -187,7 +187,7 @@ DEPENDENCIES
   travis-exceptions!
   travis-lock
   travis-logger!
-  travis-metrics (~> 2.0.0.rc3)
+  travis-metrics (~> 2.0.0)
   travis-rollout
   travis-settings!
   webmock (~> 1.8.0)
