@@ -5,9 +5,9 @@ class Job < ActiveRecord::Base
     }
 
     def queueable
-      jobs = where(state: :created).order(:id).to_a
-      jobs + where(SQL[:queueable]).order(:id).to_a if ENV['USE_QUEUEABLE_JOBS']
-      jobs.uniq
+      jobs = joins(SQL[:queueable]).order(:id)
+      jobs = jobs.where(state: :created).order(:id) if ENV['USE_JOB_STATE']
+      jobs
     end
 
     def running

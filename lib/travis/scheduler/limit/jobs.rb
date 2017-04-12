@@ -22,6 +22,7 @@ module Travis
         LIMITS = [ByOwner, ByRepo, ByQueue, ByStage]
 
         def run
+          unleak_queueables
           check_all
           report summary
         end
@@ -35,6 +36,18 @@ module Travis
         end
 
         private
+
+          def unleak_queueables
+            Queueable.connection.execute <<~sql
+              DELETE FROM queueable_jobs
+              WHERE id IN (
+                SELECT queueable_jobs.id
+                FROM queueable_jobs
+                JOIN jobs ON queueable_jobs.job_id = jobs.id
+                WHERE jobs.state <> 'created'
+              )
+            sql
+          end
 
           def check_all
             queueable.each do |job|
