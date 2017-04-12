@@ -4,13 +4,9 @@ class Job < ActiveRecord::Base
       queueable: 'RIGHT JOIN queueable_jobs on queueable_jobs.job_id = jobs.id'
     }
 
-    def queueable_jobs?
-      Job.connection.tables.include?('queueable_jobs')
-    end
-
     def queueable
       jobs = where(state: :created).order(:id).to_a
-      jobs + joins(SQL[:queueable]).order(:id).to_a if ENV['USE_QUEUEABLE_JOBS'] && queueable_jobs?
+      jobs + where(SQL[:queueable]).order(:id).to_a if ENV['USE_QUEUEABLE_JOBS']
       jobs.uniq
     end
 
@@ -62,11 +58,10 @@ class Job < ActiveRecord::Base
   end
 
   def queueable=(value)
-    return unless Job.queueable_jobs?
     if value
       queueable || create_queueable
     else
-      queueable && queueable.destroy
+      Queueable.where(job_id: id).delete_all
     end
   end
 end
