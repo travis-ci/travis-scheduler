@@ -47,6 +47,8 @@ module Travis
                 WHERE jobs.state <> 'created'
               )
             sql
+          rescue => e
+            puts e.message
           end
 
           def check_all
