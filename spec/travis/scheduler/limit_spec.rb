@@ -11,6 +11,8 @@ describe Travis::Scheduler::Limit::Jobs do
   let(:limit)   { described_class.new(context, owners) }
   let(:report)  { limit.reports }
 
+  env USE_QUEUEABLE_JOBS: true
+
   before  { config.limit.trial = nil }
   before  { config.limit.default = 1 }
   before  { config.plans = { one: 1, seven: 7, ten: 10 } }
