@@ -23,7 +23,7 @@ module Travis
         LIMITS = [ByOwner, ByRepo, ByQueue, ByStage]
 
         def run
-          unleak_queueables if ENV['USE_QUEUEABLE_JOBS']
+          unleak_queueables if ENV['UNLEAK_QUEUEABLE_JOBS']
           check_all
           report summary
         end
