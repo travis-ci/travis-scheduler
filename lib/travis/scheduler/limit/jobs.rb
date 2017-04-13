@@ -1,4 +1,5 @@
 require 'travis/scheduler/helper/context'
+require 'travis/scheduler/helper/metrics'
 
 module Travis
   module Scheduler
@@ -17,12 +18,12 @@ module Travis
         require 'travis/scheduler/limit/by_stage'
         require 'travis/scheduler/limit/state'
 
-        include Helper::Context
+        include Helper::Context, Helper::Metrics
 
         LIMITS = [ByOwner, ByRepo, ByQueue, ByStage]
 
         def run
-          # unleak_queueables
+          unleak_queueables if ENV['UNLEAK_QUEUEABLE_JOBS']
           check_all
           report summary
         end
@@ -44,12 +45,13 @@ module Travis
                 SELECT queueable_jobs.id
                 FROM queueable_jobs
                 JOIN jobs ON queueable_jobs.job_id = jobs.id
-                WHERE jobs.state <> 'created'
+                WHERE jobs.state <> 'created' AND #{Job.owned_by(owners.all).to_sql}
               )
             sql
           rescue => e
             puts e.message
           end
+          time :unleak_queueables, key: 'scheduler.unleak_queueables'
 
           def check_all
             queueable.each do |job|
@@ -93,6 +95,7 @@ module Travis
           def queueable
             @queueable ||= Job.by_owners(owners.all).queueable.to_a
           end
+          time :queueable, key: 'scheduler.queueable_jobs'
 
           def state
             @state ||= State.new(owners, config)
