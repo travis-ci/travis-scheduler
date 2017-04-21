@@ -91,6 +91,18 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
   end
 
+  describe 'with a default limit 5 and a repo keychain/config limit 2' do
+    before { config.limit.default = 5 }
+    before { config.limit.by_repo = { repo.slug => 2 } }
+    before { create_jobs(3) }
+    before { repo.settings.update_attributes!(maximum_number_of_builds: 2) }
+    before { subject }
+
+    it { expect(subject.size).to eq 2 }
+    it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_config: 2') }
+    it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 2') }
+  end
+
   describe 'with a default limit 5 and a repo settings limit 2' do
     before { config.limit.default = 5 }
     before { create_jobs(3) }
@@ -192,5 +204,37 @@ describe Travis::Scheduler::Limit::Jobs do
 
     it { expect(subject.size).to eq 2 }
     it { expect(report).to include("jobs for build #{build.id} limited at stage: 1 (queueable: 2)") }
+  end
+
+  describe 'stages with a a repo config limit 1' do
+    let(:one) { FactoryGirl.create(:stage, number: 1) }
+    let(:two) { FactoryGirl.create(:stage, number: 2) }
+
+    before { create_jobs(1, owner: owner, state: :created, stage: one, stage_number: '1.1') }
+    before { create_jobs(1, owner: owner, state: :created, stage: one, stage_number: '1.2') }
+    before { create_jobs(1, owner: owner, state: :created, stage: two, stage_number: '2.1') }
+    before { config.limit.default = 5 }
+    before { config.limit.by_repo = { repo.slug => 1 } }
+    before { subject }
+
+    it { expect(subject.size).to eq 1 }
+    it { expect(report).to include("jobs for build #{build.id} limited at stage: 1 (queueable: 2)") }
+    it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_config: 1') }
+  end
+
+  describe 'stages with a a repo settings limit 5' do
+    let(:one) { FactoryGirl.create(:stage, number: 1) }
+    let(:two) { FactoryGirl.create(:stage, number: 2) }
+
+    before { create_jobs(1, owner: owner, state: :created, stage: one, stage_number: '1.1') }
+    before { create_jobs(1, owner: owner, state: :created, stage: one, stage_number: '1.2') }
+    before { create_jobs(1, owner: owner, state: :created, stage: two, stage_number: '2.1') }
+    before { config.limit.default = 5 }
+    before { repo.settings.update_attributes!(maximum_number_of_builds: 1) }
+    before { subject }
+
+    it { expect(subject.size).to eq 1 }
+    it { expect(report).to include("jobs for build #{build.id} limited at stage: 1 (queueable: 2)") }
+    it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 1') }
   end
 end

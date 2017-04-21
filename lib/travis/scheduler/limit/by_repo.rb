@@ -8,7 +8,13 @@ module Travis
         include Helper::Context
 
         def enqueue?
-          unlimited? || by_settings
+          # return false unless by_config
+          # return false if max_by_setting && !by_setting
+          # p [max_by_setting, by_setting]
+          # unlimited? || by_setting
+          return false if limited_by_config?
+          return false if limited_by_setting?
+          true
         end
 
         def reports
@@ -17,13 +23,15 @@ module Travis
 
         private
 
-          def unlimited?
-            max == 0
+          def limited_by_config?
+            result = max_by_config > 0 && current >= max_by_config
+            report :repo_config, max_by_config if result
+            result
           end
 
-          def by_settings
-            result = current < max
-            report :repo_settings, max unless result
+          def limited_by_setting?
+            result = max_by_setting > 0 && current >= max_by_setting
+            report :repo_settings, max_by_setting if result
             result
           end
 
@@ -31,8 +39,12 @@ module Travis
             state.running_by_repo(repo.id) + selected.select { |j| j.repository_id == repo.id }.size
           end
 
-          def max
+          def max_by_setting
             repo.settings.maximum_number_of_builds.to_i
+          end
+
+          def max_by_config
+            config[:limit][:by_repo][repo.slug].to_i
           end
 
           def repo

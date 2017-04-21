@@ -10,6 +10,10 @@ module Travis
         def enqueue?
           return true unless job.stage_number
           !!report if queueable?
+          # return true unless job.stage_number
+          # throw :result, :limited unless queueable?
+          # report
+          # true
         end
 
         def reports

@@ -73,11 +73,14 @@ module Travis
           end
 
           def enqueue?(job)
-            limits_for(job).map do |limit|
-              result = limit.enqueue?
+            a = limits_for(job).map do |limit|
+              result = catch(:result) { limit.enqueue? }
               report *limit.reports
+              throw :result, result if result == :limited
               result
-            end.inject(&:&)
+            end
+            # p a
+            a.inject(&:&)
           end
 
           def limits_for(job)

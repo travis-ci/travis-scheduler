@@ -10,7 +10,7 @@ module Travis
              enterprise: false,
              github:     { api_url: 'https://api.github.com', source_host: 'github.com' },
              interval:   2,
-             limit:      { default: 5, by_owner: {}, delegate: {} },
+             limit:      { default: 5, by_owner: {}, by_repo: {}, delegate: {} },
              lock:       { strategy: :redis, ttl: 150 },
              logger:     { time_format: false, process_id: false, thread_id: false },
              log_level:  :info,
