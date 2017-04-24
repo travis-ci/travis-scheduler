@@ -53,6 +53,10 @@ module Travis
           end
           time :unleak_queueables, key: 'scheduler.unleak_queueables'
 
+          # We run each queueable job through a series of limits and select it
+          # only if all limits have allowed the job through by returning true.
+          # I.e. if any limit returns false then the given job will not be
+          # selected for queueing.
           def check_all
             queueable.each do |job|
               case check(job)
