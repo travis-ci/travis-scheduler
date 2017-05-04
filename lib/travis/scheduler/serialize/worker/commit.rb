@@ -7,10 +7,18 @@ module Travis
         class Commit < Struct.new(:record)
           extend Forwardable
 
-          def_delegators :record, :id, :commit, :message, :branch, :ref, :compare_url
+          def_delegators :record, :id, :commit, :message, :ref, :compare_url
+
+          def branch
+            record.branch unless tag?
+          end
 
           def tag
             ref.to_s =~ %r(refs/tags/(.*?)$) && $1
+          end
+
+          def tag?
+            ref.to_s =~ %r(refs/tags/(.*?)$)
           end
 
           def pull_request?
