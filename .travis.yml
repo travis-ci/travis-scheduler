@@ -1,15 +1,17 @@
 dist: trusty
 sudo: false
+dist: trusty
 
-language: ruby
-rvm: 2.3.1
+rvm: 2.4.1
+
+cache: bundler
 
 services:
   - redis
   - rabbitmq
+
 addons:
   postgresql: 9.3
-cache: bundler
 
 env:
   matrix:
