@@ -6,10 +6,10 @@ describe Travis::Stages do
 
   describe 'scenario 1' do
     # 1.1 \
-    # 1.2 - 2.1 - 3.1
+    # 1.2 - 2.1 - 3.1 - 4.1 - 5.1 - 6.1 - 7.1 - 8.1 - 9.1 - 10.1
     # 1.3 /
 
-    let(:keys)  { ['1.1', '1.2', '1.3', '2.1', '3.1'] }
+    let(:keys)  { ['1.1', '1.2', '1.3', '2.1', '3.1', '4.1', '5.1', '6.1', '7.1', '8.1', '9.1', '10.1'] }
 
     describe 'structure' do
       let :structure do
@@ -23,6 +23,20 @@ describe Travis::Stages do
               Job key=2.1 state=created
             Stage key=3
               Job key=3.1 state=created
+            Stage key=4
+              Job key=4.1 state=created
+            Stage key=5
+              Job key=5.1 state=created
+            Stage key=6
+              Job key=6.1 state=created
+            Stage key=7
+              Job key=7.1 state=created
+            Stage key=8
+              Job key=8.1 state=created
+            Stage key=9
+              Job key=9.1 state=created
+            Stage key=10
+              Job key=10.1 state=created
         str
       end
 
