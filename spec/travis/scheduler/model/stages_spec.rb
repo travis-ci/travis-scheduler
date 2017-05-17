@@ -15,6 +15,8 @@ describe Travis::Stages do
       let :structure do
         <<-str.gsub(/ {10}/, '').chomp
           Root
+            Stage key=9
+              Job key=9.1 state=created
             Stage key=1
               Job key=1.1 state=created
               Job key=1.2 state=created
@@ -33,8 +35,6 @@ describe Travis::Stages do
               Job key=7.1 state=created
             Stage key=8
               Job key=8.1 state=created
-            Stage key=9
-              Job key=9.1 state=created
             Stage key=10
               Job key=10.1 state=created
         str
