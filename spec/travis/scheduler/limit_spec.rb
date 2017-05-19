@@ -183,14 +183,24 @@ describe Travis::Scheduler::Limit::Jobs do
   describe 'stages' do
     let(:one) { FactoryGirl.create(:stage, number: 1) }
     let(:two) { FactoryGirl.create(:stage, number: 2) }
+    let(:three) { FactoryGirl.create(:stage, number: 3) }
 
     before { create_jobs(1, owner: owner, state: :created, stage: one, stage_number: '1.1') }
     before { create_jobs(1, owner: owner, state: :created, stage: one, stage_number: '1.2') }
     before { create_jobs(1, owner: owner, state: :created, stage: two, stage_number: '2.1') }
+    before { create_jobs(1, owner: owner, state: :created, stage: three, stage_number: '10.1') }
     before { config.limit.default = 5 }
-    before { subject }
 
-    it { expect(subject.size).to eq 2 }
-    it { expect(report).to include("jobs for build #{build.id} limited at stage: 1 (queueable: 2)") }
+    describe 'queueing' do
+      before { subject }
+      it { expect(subject.size).to eq 2 }
+      it { expect(report).to include("jobs for build #{build.id} limited at stage: 1 (queueable: 2)") }
+    end
+
+    describe 'ordering' do
+      before { one.jobs.update_all(state: :passed) }
+      before { Queueable.where(job_id: one.jobs.pluck(:id)).delete_all }
+      it { expect(subject.first.stage_number).to eq '2.1' }
+    end
   end
 end
