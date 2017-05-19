@@ -32,8 +32,8 @@ module Travis
           def jobs
             @jobs ||= begin
               # TODO would it make sense to cache these on `state`?
-              scope = Job.where(source_id: job.source_id).order(:stage_number)
-              scope.map { |job| attrs(job) }
+              jobs = Job.where(source_id: job.source_id)
+              sort(jobs).map { |job| attrs(job) }
             end
           end
 
@@ -43,6 +43,11 @@ module Travis
               stage: job.stage_number,
               state: job.finished? ? :finished : :created
             }
+          end
+
+          def sort(jobs)
+            num = ->(job) { job.stage_number.split('.').map(&:to_i) }
+            jobs.sort { |lft, rgt| num.(lft) <=> num.(rgt) }
           end
 
           def stages
