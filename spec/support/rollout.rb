@@ -12,7 +12,7 @@ module Support
     def disable_rollout(name, owner)
       ENV['ENV'] = 'test'
       ENV['ROLLOUT'] = nil
-      context.redis.del  "#{name}.rollout.enabled"
+      context.redis.del "#{name}.rollout.enabled"
       context.redis.del "#{name}.rollout.owners"
     end
   end

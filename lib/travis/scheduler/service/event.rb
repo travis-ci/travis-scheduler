@@ -17,13 +17,9 @@ module Travis
         }
 
         def run
-          if ENV['ENV'] == 'test' || ENV['ROLLOUT'].nil? || rollout?(obj.owner)
-            info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
-            meter
-            inline :enqueue_owners, attrs
-          else
-            debug MSGS[:ignore] % [obj.owner.login, obj.owner_type, obj.owner.id]
-          end
+          info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
+          meter
+          inline :enqueue_owners, attrs
         rescue Lock::Redis::LockError => e
           info MSGS[:drop] % [e.key, event, type, data[:id]]
         end

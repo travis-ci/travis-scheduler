@@ -49,7 +49,7 @@ module Travis
           end
 
           def rollout?
-            Rollout.matches?({ uid: owner.id, owner: owner.login }, redis: redis)
+            Rollout.matches?(:job_board, uid: owner.id, owner: owner.login, redis: redis)
           end
 
           def worker_payload
