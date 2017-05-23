@@ -30,6 +30,13 @@ GIT
     travis-logger (0.0.1)
 
 GIT
+  remote: https://github.com/travis-ci/travis-rollout
+  revision: 643477fb44ea35d483ed24cc89ced459719c6e6c
+  ref: sf-refactor
+  specs:
+    travis-rollout (0.0.1)
+
+GIT
   remote: https://github.com/travis-ci/travis-settings
   revision: d510e63b6c6f059cccae141c265e7a0c7236d1fd
   specs:
@@ -148,7 +155,6 @@ GEM
     travis-lock (0.1.1)
     travis-metrics (2.0.0)
       metriks-librato_metrics (~> 1.0)
-    travis-rollout (0.0.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     virtus (1.0.5)
@@ -190,7 +196,7 @@ DEPENDENCIES
   travis-lock
   travis-logger!
   travis-metrics (~> 2.0.0)
-  travis-rollout
+  travis-rollout!
   travis-settings!
   webmock
 

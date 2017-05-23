@@ -8,8 +8,10 @@ module Travis
   # Travis::Features contains methods to handle feature flags.
   module Features
     class << self
-      methods = (Rollout.public_instance_methods(false) - [:active?, "active?"]) << {:to => :rollout}
+      methods = (Rollout.public_instance_methods(false) - [:active?, "active?", :redis]) << {:to => :rollout}
       delegate(*methods)
+
+      attr_reader :redis
 
       def setup(config)
         @redis = RedisPool.new(config[:redis].to_h)
