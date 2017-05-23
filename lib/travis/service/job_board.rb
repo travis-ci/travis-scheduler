@@ -43,7 +43,8 @@ module Travis
         def http
           Faraday.new(url: host, headers: headers, ssl: ssl_options) do |c|
             # c.response :logger
-            c.request  :basic_auth, *auth.split(':')
+            # c.request  :basic_auth, *auth.split(':')
+            c.request  :token_auth, auth
             c.request  :retry
             c.response :raise_error
             c.adapter  :net_http
