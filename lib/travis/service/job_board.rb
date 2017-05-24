@@ -4,7 +4,6 @@ require 'json'
 module Travis
   module Service
     class JobBoard < Struct.new(:job_id, :data, :config, :logger)
-      # TODO move to config
       PATH = '/jobs/add'
 
       MSGS = {
