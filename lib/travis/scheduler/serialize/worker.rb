@@ -51,13 +51,14 @@ module Travis
               pull_request: build.pull_request? ? build.pull_request_number : false,
               state: job.state.to_s,
               secure_env_enabled: job.secure_env?,
+              secure_env_removed: job.secure_env_removed?,
               debug_options: job.debug_options || {},
               queued_at: format_date(job.queued_at),
               allow_failure: job.allow_failure,
             }
             if build.pull_request?
               data = data.merge(
-                pull_request_head_branch: request.pull_request_head_branch,
+                pull_request_head_branch: request.pull_request_head_ref,
                 pull_request_head_sha: request.pull_request_head_sha,
                 pull_request_head_slug: request.pull_request_head_slug,
               )

@@ -78,7 +78,7 @@ class Travis::EncryptedColumn
   end
 
   def use_prefix?
-    options.has_key?(:use_prefix) ? options[:use_prefix] : true
+    options.key?(:use_prefix) ? options[:use_prefix] : true
   end
 
   def create_aes(mode = :encrypt, key, iv)

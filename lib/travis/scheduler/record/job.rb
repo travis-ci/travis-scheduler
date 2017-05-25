@@ -1,7 +1,13 @@
 class Job < ActiveRecord::Base
   class << self
+    SQL = {
+      queueable: 'RIGHT JOIN queueable_jobs on queueable_jobs.job_id = jobs.id'
+    }
+
     def queueable
-      where(state: :created).order(:id)
+      jobs = where(state: :created).order(:id)
+      jobs = jobs.joins(SQL[:queueable]).order(:id) if ENV['USE_QUEUEABLE_JOBS']
+      jobs
     end
 
     def running
@@ -14,6 +20,10 @@ class Job < ActiveRecord::Base
 
     def by_owners(owners)
       where(owned_by(owners))
+    end
+
+    def by_queue(queue)
+      where(queue: queue)
     end
 
     def owned_by(owners)
@@ -29,13 +39,29 @@ class Job < ActiveRecord::Base
     end
   end
 
+  FINISHED_STATES = [:passed, :failed, :errored, :canceled]
+
   self.inheritance_column = :_disabled
 
   belongs_to :repository
   belongs_to :commit
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
+  belongs_to :stage
+  has_one :queueable
 
   serialize :config
   serialize :debug_options
+
+  def finished?
+    FINISHED_STATES.include?(state.try(:to_sym))
+  end
+
+  def queueable=(value)
+    if value
+      queueable || create_queueable
+    else
+      Queueable.where(job_id: id).delete_all
+    end
+  end
 end

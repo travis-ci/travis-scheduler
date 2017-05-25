@@ -13,17 +13,18 @@ module Travis
         }
 
         def run
-          transaction do
-            info MSGS[:queueing] % [job.id, repo.slug]
-            set_queued
-            notify
-          end
+          info MSGS[:queueing] % [job.id, repo.slug]
+          set_queued
+          notify
         end
 
         private
 
           def set_queued
-            job.update_attributes!(state: :queued, queued_at: Time.now.utc)
+            transaction do
+              job.update_attributes!(state: :queued, queued_at: Time.now.utc)
+              job.queueable = false
+            end
           end
 
           def notify

@@ -1,4 +1,4 @@
-describe Travis::Scheduler::Model::Subscriptions do
+describe Travis::Owners::Subscriptions do
   let!(:travis)  { FactoryGirl.create(:org,  login: 'travis') }
   let!(:sinatra) { FactoryGirl.create(:org,  login: 'sinatra') }
 
@@ -6,10 +6,9 @@ describe Travis::Scheduler::Model::Subscriptions do
   let(:limits)   { {} }
   let(:attrs)    { { owner_type: 'Organization', owner_id: travis.id } }
   let(:config)   { { limit: limits, plans: plans } }
-  let(:owners)   { Travis::Scheduler::Model::Owners.new(attrs, config) }
+  let(:owners)   { Travis::Owners.group(attrs, config) }
 
   subject { described_class.new(owners, plans).max_jobs }
-
 
   describe 'a single org with a five jobs plan' do
     before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five) }

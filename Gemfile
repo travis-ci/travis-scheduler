@@ -2,16 +2,17 @@ source 'https://rubygems.org'
 
 ruby '2.3.1'
 
-gem 'travis-config',      '~> 1.0.6'
-gem 'travis-metrics',     '~> 2.0.0.rc3'
+gem 'travis-config',      '~> 1.1.0'
+gem 'travis-metrics',     '~> 2.0.0'
 gem 'travis-lock'
-gem 'travis-rollout'
+gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout', ref: 'sf-refactor'
 gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions'
 gem 'travis-logger',      git: 'https://github.com/travis-ci/travis-logger'
 gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings'
 gem 'gh',                 git: 'https://github.com/travis-ci/gh'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 
+gem 'cl'
 gem 'sidekiq-pro', require: 'sidekiq-pro', source: 'https://gems.contribsys.com'
 gem 'jemalloc'
 gem 'redis-namespace'
@@ -31,5 +32,5 @@ group :test do
   gem 'factory_girl',     '~> 4.7.0'
   gem 'mocha',            '~> 0.10.0'
   gem 'rspec'
-  gem 'webmock',          '~> 1.8.0'
+  gem 'webmock'
 end

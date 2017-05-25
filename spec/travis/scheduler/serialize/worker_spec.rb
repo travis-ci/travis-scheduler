@@ -7,7 +7,7 @@ describe Travis::Scheduler::Serialize::Worker do
 
   let(:features)  { Travis::Features }
   let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }, queued_at: Time.parse('2016-01-01T10:30:00Z'), allow_failure: allow_failure) }
-  let(:request)   { FactoryGirl.create(:request, event_type: event, payload: payload) }
+  let(:request)   { FactoryGirl.create(:request, repository: repo, event_type: event, payload: payload) }
   let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
   let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
   let(:repo)      { FactoryGirl.create(:repo, default_branch: 'branch') }
@@ -60,6 +60,7 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request: false,
           state: 'queued',
           secure_env_enabled: true,
+          secure_env_removed: false,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
           allow_failure: allow_failure
@@ -122,6 +123,7 @@ describe Travis::Scheduler::Serialize::Worker do
             pull_request: false,
             state: 'queued',
             secure_env_enabled: true,
+            secure_env_removed: false,
             debug_options: {},
             queued_at: '2016-01-01T10:30:00Z',
             allow_failure: false,
@@ -182,12 +184,10 @@ describe Travis::Scheduler::Serialize::Worker do
     let(:event)     { 'pull_request' }
     let(:ref)       { 'refs/pull/180/merge' }
     let(:pr_number) { 180 }
-    let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '12345', 'repo' => {'full_name' => 'travis-ci/gem-release'} } } } }
+    let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '62aaef', 'repo' => {'full_name' => 'travis-ci/gem-release'} } } } }
+    let(:pull_request) { PullRequest.create(head_ref: 'head_branch', head_repo_slug: 'travis-ci/gem-release') }
 
-    before :each do
-      request.stubs(:base_commit).returns('0cd9ff')
-      request.stubs(:head_commit).returns('62aaef')
-    end
+    before { request.update_attributes(pull_request: pull_request, base_commit: '0cd9ff', head_commit: '62aaef') }
 
     it 'data' do
       expect(data).to eq(
@@ -213,10 +213,11 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request: 180,
           state: 'queued',
           secure_env_enabled: false,
+          secure_env_removed: true,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',
-          pull_request_head_sha: '12345',
+          pull_request_head_sha: '62aaef',
           pull_request_head_slug: 'travis-ci/gem-release',
           allow_failure: allow_failure
         },

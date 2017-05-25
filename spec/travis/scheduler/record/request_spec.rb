@@ -1,36 +1,24 @@
 describe Request do
-  let(:repo)    { FactoryGirl.create(:repository, owner_name: 'travis-ci', name: 'travis-ci') }
-  let(:commit)  { Commit.new(commit: '12345678') }
-  let(:request) { Request.new(repository: repo, commit: commit) }
+  let(:repo)         { FactoryGirl.build(:repository, owner_name: 'travis-ci', name: 'travis-ci') }
+  let(:commit)       { FactoryGirl.build(:commit, commit: '12345678') }
+  let(:pull_request) { FactoryGirl.build(:pull_request, head_ref: head_ref, head_repo_slug: head_repo) }
+  let(:request)      { FactoryGirl.build(:request, repository: repo, commit: commit, pull_request: pull_request) }
+  let(:head_repo)    { 'travis-ci/travis-core' }
+  let(:head_ref)     { 'branch-1' }
 
   describe 'same_repo_pull_request?' do
-    it 'returns false if the ref is a sha' do
-      request.payload = {
-        'pull_request' => {
-          'base' => { 'repo' => { 'full_name' => 'travis-ci/travis-core' } },
-          'head' => { 'repo' => { 'full_name' => 'travis-ci/travis-core' },
-                      'ref' => 'abc123', 'sha' => 'abc123bde266593ee3a9d32d376430437a6fc392' }
-        }
-      }
-
-      expect(request.same_repo_pull_request?).to eq(false)
+    describe 'returns false if the ref is a sha' do
+      let(:head_ref) { 'abc123' }
+      it { expect(request.same_repo_pull_request?).to eq(false) }
     end
 
-    it 'returns false if the base and head repos do not match' do
-      request.payload = {
-        'pull_request' => {
-          'base' => { 'repo' => { 'full_name' => 'travis-ci/travis-core' } },
-          'head' => { 'repo' => { 'full_name' => 'evilmonkey/travis-core' } }
-        }
-      }
-
-      expect(request.same_repo_pull_request?).to eq(false)
+    describe 'returns false if the base and head repos do not match' do
+      let(:head_repo) { 'evilmonkey-ci/travis-core' }
+      it { expect(request.same_repo_pull_request?).to eq(false) }
     end
 
-    it 'returns false if repo data is not available' do
-      request.payload = {}
-
-      expect(request.same_repo_pull_request?).to eq(false)
+    describe 'returns false if repo data is not available' do
+      it { expect(request.same_repo_pull_request?).to eq(false) }
     end
   end
 end

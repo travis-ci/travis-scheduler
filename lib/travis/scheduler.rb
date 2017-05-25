@@ -1,9 +1,9 @@
 require 'redis'
-require 'travis'
 require 'travis/amqp'
 require 'travis/exceptions'
 require 'travis/logger'
 require 'travis/metrics'
+require 'travis/owners'
 require 'travis/queue'
 require 'travis/scheduler/config'
 require 'travis/scheduler/record'
@@ -12,6 +12,7 @@ require 'travis/scheduler/service'
 require 'travis/scheduler/support/features'
 require 'travis/scheduler/support/sidekiq'
 require 'travis/scheduler/worker'
+require 'travis/service'
 require 'travis/support/database'
 
 Travis::Exceptions::Queue = ::Queue # TODO fix in travis-exceptions

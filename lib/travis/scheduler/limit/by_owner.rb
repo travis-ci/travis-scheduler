@@ -5,7 +5,7 @@ require 'travis/scheduler/model/trial'
 module Travis
   module Scheduler
     module Limit
-      class ByOwner < Struct.new(:context, :owners, :job, :queued, :state, :config)
+      class ByOwner < Struct.new(:context, :owners, :job, :selected, :state, :config)
         include Helper::Context
 
         KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
@@ -21,7 +21,7 @@ module Travis
         private
 
           def current
-            state.running_by_owners + queued
+            state.running_by_owners + selected.size
           end
 
           def max

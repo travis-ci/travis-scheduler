@@ -26,7 +26,7 @@ module Travis
 
               def remove_encrypted_env(env)
                 env.reject do |var|
-                  var.is_a?(Hash) && var.has_key?(:secure)
+                  var.is_a?(Hash) && var.key?(:secure)
                 end
               end
 

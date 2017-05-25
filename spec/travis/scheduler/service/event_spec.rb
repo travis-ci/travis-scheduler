@@ -3,13 +3,14 @@ describe Travis::Scheduler::Service::Event do
   let(:repo)    { FactoryGirl.create(:repo) }
   let(:owner)   { FactoryGirl.create(:user) }
   let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
-  let(:job)     { FactoryGirl.create(:job, state: :created) }
+  let(:job)     { FactoryGirl.create(:job, state: :created, config: config.to_h) }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { id: build.id, jid: '1234' } }
   let(:event)   { 'build:created' }
   let(:service) { described_class.new(Travis::Scheduler.context, event, data) }
 
   context do
+    before { Travis::JobBoard.stubs(:post) }
     before { config.limit.delegate = { owner.login => org.login } }
     before { config.limit.default = 1 }
     before { service.run }

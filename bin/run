@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+$: << 'lib'
+
+require 'bundler/setup'
+require 'travis/scheduler'
+require 'travis/owners/cli'
+
+Travis::Scheduler.setup
+
+Cl.run(*ARGV)

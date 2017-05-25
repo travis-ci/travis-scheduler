@@ -8,13 +8,16 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:data)    { { owner_type: 'User', owner_id: owner.id, jid: '1234' } }
   let(:service) { described_class.new(Travis::Scheduler.context, data) }
 
+  before { Travis::JobBoard.stubs(:post) }
+
   context do
-    before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, state: :created, queue: 'builds.gce') } }
+    before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, state: :created, queue: 'builds.gce', config: {}) } }
     before { config.limit.delegate = { owner.login => org.login } }
     before { config.limit.default = 1 }
     before { service.run }
 
-    it { expect(Job.order(:id).pluck(:state)).to eq %w[queued created] }
+    it { expect(Job.order(:id).map(&:state)).to eq %w[queued created] }
+    it { expect(Job.order(:id).map { |job| !!job.queueable }).to eq [false, true] }
 
     it { expect(log).to include "I 1234 Locking scheduler.owners-svenfuchs:travis-ci with: redis, ttl: 150s" }
     it { expect(log).to include "I 1234 Evaluating jobs for owner group: user svenfuchs, org travis-ci" }
