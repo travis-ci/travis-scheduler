@@ -9,6 +9,7 @@ module Travis
               apt_packages
               apt_sources
               browserstack
+              chrome
               firefox
               hostname
               hosts
