@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -ev
-app_name="schduler"
+app_name="scheduler"
 local_image="travisscheduler_$app_name" # Docker Compose removes dashes and expects the name to end with the build app name
 quay_image=quay.io/travisci/travis-scheduler;
 
