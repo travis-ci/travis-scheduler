@@ -6,14 +6,14 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/gh
-  revision: 30d522ebde91c24fa7e6b40a1b38107d74934b28
+  revision: 3ae2d5330600f745294f8016a6862414be0b682f
   specs:
-    gh (0.14.0)
-      addressable
+    gh (0.15.1)
+      addressable (~> 2.4.0)
       backports
       faraday (~> 0.8)
       multi_json (~> 1.0)
-      net-http-persistent (>= 2.7)
+      net-http-persistent (~> 2.9)
       net-http-pipeline
 
 GIT
@@ -54,8 +54,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.5.0)
-      public_suffix (~> 2.0, >= 2.0.2)
+    addressable (2.4.0)
     amq-protocol (2.0.1)
     arel (6.0.3)
     atomic (1.1.99)
@@ -65,7 +64,7 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
-    backports (3.6.8)
+    backports (3.8.0)
     builder (3.2.2)
     bunny (2.6.1)
       amq-protocol (>= 2.0.1)
@@ -102,11 +101,9 @@ GEM
       metaclass (~> 0.0.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
-    net-http-persistent (3.0.0)
-      connection_pool (~> 2.2)
+    net-http-persistent (2.9.4)
     net-http-pipeline (1.0.1)
     pg (0.19.0)
-    public_suffix (2.0.4)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
