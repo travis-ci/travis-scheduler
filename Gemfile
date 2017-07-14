@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.3.1'
+ruby '2.4.1'
 
 gem 'travis-config',      '~> 1.1.0'
 gem 'travis-metrics',     '~> 2.0.0'
