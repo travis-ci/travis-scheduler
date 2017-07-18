@@ -17,6 +17,7 @@ module Travis
              metrics:    { reporter: 'librato' },
              plans:      { },
              queue:      { default: 'builds.gce', redirect: {} },
+             queues:     [ queue: 'name', os: 'os', dist: 'dist', group: 'group', sudo: false, osx_image: 'osx_image', language: 'language', owner: 'owner', slug: 'slug'],
              redis:      { url: 'redis://localhost:6379' },
              sentry:     { },
              sidekiq:    { namespace: 'sidekiq', pool_size: 3, log_level: :warn },
