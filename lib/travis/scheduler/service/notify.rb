@@ -45,7 +45,7 @@ module Travis
           end
 
           def notify_live
-            Live.push(live_payload, event: 'job:queued')
+            Live.push(live_payload, live_params)
           end
 
           def rollout?
@@ -61,6 +61,20 @@ module Travis
             Serialize::Live.new(job).data
           end
           time :live_payload
+
+          def live_params
+            params = { event: 'job:queued' }
+            uid = "#{job.repository.owner_id}-#{job.repository.owner_type[0]}"
+            if Rollout.matches?('user-channel', redis: redis, uid: uid)
+              params[:user_ids] = user_ids
+            end
+            params
+          end
+          time :live_params
+
+          def user_ids
+            job.repository.permissions.pluck(:user_id)
+          end
 
           def owner
             job.owner
