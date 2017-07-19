@@ -144,6 +144,19 @@ describe Travis::Scheduler::Service::Notify do
     service.run
   end
 
+  context 'when user channel is enabled' do
+    before do
+      context.redis.set('user-channel.rollout.enabled', '1')
+      uid = "#{job.repository.owner_id}-#{job.repository.owner_type[0]}"
+      context.redis.sadd('user-channel.rollout.uids', uid)
+    end
+
+    it 'publishes to live' do
+      live.expects(:push).with(instance_of(Hash), event: 'job:queued', user_ids: job.repository.permissions.pluck(:user_id))
+      service.run
+    end
+  end
+
   describe 'sets the queue' do
     let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx'} }
     let(:job)    { FactoryGirl.create(:job, state: :queued, config: config, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z')) }
