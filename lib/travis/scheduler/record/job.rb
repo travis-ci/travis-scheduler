@@ -64,4 +64,8 @@ class Job < ActiveRecord::Base
       Queueable.where(job_id: id).delete_all
     end
   end
+
+  def public?
+    !private?
+  end
 end
