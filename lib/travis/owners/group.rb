@@ -1,6 +1,12 @@
 module Travis
   module Owners
     class Group < Struct.new(:all, :config)
+      include Enumerable
+
+      def each(&block)
+        all.each(&block)
+      end
+
       def key
         logins.join(':')
       end
@@ -19,6 +25,10 @@ module Travis
 
       def subscribed_owners
         subscriptions.subscribers
+      end
+
+      def merge_mode?
+        any? { |owner| Features.owner_active?(:merge_mode, owner) }
       end
 
       def ==(other)

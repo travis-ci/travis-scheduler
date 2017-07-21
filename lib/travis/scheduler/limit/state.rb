@@ -14,7 +14,11 @@ module Travis
         end
 
         def running_by_owners
-          @count[:owners] ||= Job.by_owners(owners.all).running.count
+          @count[:owners] ||= running_jobs_by_owners.count
+        end
+
+        def running_by_owners_public
+          @count[:public] ||= running_jobs_by_owners.where(private: false).count
         end
 
         def running_by_repo(id)
@@ -28,6 +32,12 @@ module Travis
         def boost_for(login)
           @boosts[login] ||= Scheduler.redis.get(BOOST % login).to_i
         end
+
+        private
+
+          def running_jobs_by_owners
+            @running_jobs_by_owners ||= Job.by_owners(owners.all).running
+          end
       end
     end
   end
