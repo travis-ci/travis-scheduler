@@ -2,7 +2,7 @@ describe Travis::Scheduler::Limit::Jobs do
   let(:org)     { FactoryGirl.create(:org, login: 'travis-ci') }
   let(:repo)    { FactoryGirl.create(:repo, owner: owner) }
   let(:build)   { FactoryGirl.create(:build) }
-  let(:owner)   { FactoryGirl.create(:user) }
+  let(:owner)   { FactoryGirl.create(:user, login: 'svenfuchs') }
   let(:owners)  { Travis::Owners.group(data, config.to_h) }
   let(:context) { Travis::Scheduler.context }
   let(:redis)   { context.redis }
@@ -205,10 +205,7 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'The Merge mode' do
-    let(:features) { Travis::Features }
-
-    before { features.activate_owner(:merge_mode, owner) }
-    after  { features.deactivate_owner(:merge_mode, owner) }
+    env ROLLOUT: 'merge', ROLLOUT_MERGE_OWNERS: 'svenfuchs'
 
     before { config.limit.public  = 3 } # we allow up to 3 extra public jobs
     before { config.limit.default = 1 } # we allow 1 public or private job by default
