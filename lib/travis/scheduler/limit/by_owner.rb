@@ -85,7 +85,7 @@ module Travis
           end
 
           def merge_mode?
-            owners.merge_mode?
+            owners.any? { |owner| Rollout.matches?(:merge, owner: owner.login, redis: context.redis) }
           end
 
           def trial

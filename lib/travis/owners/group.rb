@@ -27,10 +27,6 @@ module Travis
         subscriptions.subscribers
       end
 
-      def merge_mode?
-        any? { |owner| Features.owner_active?(:merge_mode, owner) }
-      end
-
       def ==(other)
         key == other.key
       end
