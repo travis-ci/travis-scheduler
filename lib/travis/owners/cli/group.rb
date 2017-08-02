@@ -1,8 +1,7 @@
 module Travis
   module Owners
     module Cli
-      class Group < Struct.new(:args, :opts)
-        include Cl::Cmd
+      class Group < Cl::Cmd
 
         register 'owners:group'
 

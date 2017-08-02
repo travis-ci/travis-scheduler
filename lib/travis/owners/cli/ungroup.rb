@@ -1,8 +1,7 @@
 module Travis
   module Owners
     module Cli
-      class Ungroup < Struct.new(:args, :opts)
-        include Cl::Cmd
+      class Ungroup < Cl::Cmd
 
         register 'owners:ungroup'
 

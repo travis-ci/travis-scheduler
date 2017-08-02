@@ -76,7 +76,7 @@ GEM
     builder (3.2.2)
     bunny (2.6.1)
       amq-protocol (>= 2.0.1)
-    cl (0.0.2)
+    cl (0.0.4)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     concurrent-ruby (1.0.2)
