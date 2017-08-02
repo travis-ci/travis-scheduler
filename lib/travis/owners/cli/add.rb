@@ -50,7 +50,7 @@ module Travis
           end
 
           def owners
-            @owners ||= find_owners(args)
+            @owners_ ||= find_owners(logins)
           end
 
           def uuid
@@ -59,6 +59,10 @@ module Travis
 
           def target
             @target ||= find_owners(opts[:to]).first
+          end
+
+          def logins
+            args
           end
 
           def find_owners(logins)
