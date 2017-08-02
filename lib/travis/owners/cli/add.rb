@@ -1,8 +1,7 @@
 module Travis
   module Owners
     module Cli
-      class Add < Struct.new(:args, :opts)
-        include Cl::Cmd
+      class Add < Cl::Cmd
 
         register 'owners:add'
 
@@ -10,7 +9,7 @@ module Travis
 
         args :owners
 
-        on '-t', '--to TO', 'An owner in an existing group' do |value|
+        opt '-t', '--to TO', 'An owner in an existing group' do |value|
           opts[:to] = value
         end
 
