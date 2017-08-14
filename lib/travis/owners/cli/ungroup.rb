@@ -1,8 +1,7 @@
 module Travis
   module Owners
     module Cli
-      class Ungroup < Struct.new(:args, :opts)
-        include Cl::Cmd
+      class Ungroup < Cl::Cmd
 
         register 'owners:ungroup'
 
@@ -12,9 +11,10 @@ module Travis
 
         MSGS = {
           count:   'You need to pass exactly 1 owner.',
+          missing: 'Cannot find owner(s): %s.',
           grouped: 'The given owner is not in an owner group: %s.',
           confirm: 'This will ungroup all of the following owners: %s. Confirm? [y/n]',
-          done:    'Done. These owners are now grouped.'
+          done:    'Done. These owners are now ungrouped.'
         }
 
         def run
@@ -26,7 +26,8 @@ module Travis
         private
 
           def validate
-            abort MSGS[:count] if args.size != 1
+            abort MSGS[:count] if logins.size != 1
+            abort MSGS[:missing] % logins.join(', ') unless owner
             abort MSGS[:grouped] % owner.login unless owner.owner_group
           end
 
@@ -54,7 +55,11 @@ module Travis
           end
 
           def owner
-            @owner ||= find_owners(args).first
+            @owner_ ||= find_owners(logins).first
+          end
+
+          def logins
+            args
           end
 
           def find_owners(logins)

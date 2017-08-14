@@ -2,7 +2,7 @@ describe Travis::Scheduler::Limit::Jobs do
   let(:org)     { FactoryGirl.create(:org, login: 'travis-ci') }
   let(:repo)    { FactoryGirl.create(:repo, owner: owner) }
   let(:build)   { FactoryGirl.create(:build) }
-  let(:owner)   { FactoryGirl.create(:user) }
+  let(:owner)   { FactoryGirl.create(:user, login: 'svenfuchs') }
   let(:owners)  { Travis::Owners.group(data, config.to_h) }
   let(:context) { Travis::Scheduler.context }
   let(:redis)   { context.redis }
@@ -15,17 +15,17 @@ describe Travis::Scheduler::Limit::Jobs do
 
   before  { config.limit.trial = nil }
   before  { config.limit.default = 1 }
-  before  { config.plans = { one: 1, seven: 7, ten: 10 } }
+  before  { config.plans = { one: 1, two: 2, seven: 7, ten: 10 } }
   subject { limit.run; limit.selected }
 
   def create_jobs(count, attrs = {})
-    # owner, state, queueable = nil, repo = nil, queue = nil, stage_number = nil, stage = nil
     defaults = {
       repository: repo,
       owner: owner,
       source: build,
       state: :created,
-      queueable: true
+      queueable: true,
+      private: false
     }
     1.upto(count) { FactoryGirl.create(:job, defaults.merge(attrs)) }
   end
@@ -201,6 +201,82 @@ describe Travis::Scheduler::Limit::Jobs do
       before { one.jobs.update_all(state: :passed) }
       before { Queueable.where(job_id: one.jobs.pluck(:id)).delete_all }
       it { expect(subject.first.stage_number).to eq '2.1' }
+    end
+  end
+
+  describe 'The Merge mode' do
+    env ROLLOUT: 'merge', ROLLOUT_MERGE_OWNERS: 'svenfuchs'
+
+    before { config.limit.public  = 3 } # we allow up to 3 extra public jobs
+    before { config.limit.default = 1 } # we allow 1 public or private job by default
+
+    describe 'no running jobs, 2 public, 2 private, and 2 public jobs waiting, no subscription' do
+      before { create_jobs(2, private: false) }
+      before { create_jobs(2, private: true) }
+      before { create_jobs(2, private: false) }
+
+      it { expect(subject.size).to eq 4 }
+      it { expect(subject.map(&:public?)).to eq [true, true, false, true] }
+    end
+
+    describe 'no running jobs, 2 public and 4 private jobs waiting, no subscription' do
+      before { create_jobs(2, private: false) }
+      before { create_jobs(4, private: true) }
+
+      it { expect(subject.size).to eq 3 }
+      it { expect(subject.map(&:public?)).to eq [true, true, false] }
+    end
+
+    describe 'no running jobs, 4 public and 4 private jobs waiting, no subscription' do
+      before { create_jobs(4, private: false) }
+      before { create_jobs(4, private: true) }
+
+      it { expect(subject.size).to eq 4 }
+      it { expect(subject.map(&:public?)).to eq [true, true, true, true] }
+    end
+
+    describe 'no running jobs, 4 private and 4 public jobs waiting, no subscription' do
+      before { create_jobs(4, private: true) }
+      before { create_jobs(4, private: false) }
+
+      it { expect(subject.size).to eq 4 }
+      it { expect(subject.map(&:public?)).to eq [false, true, true, true] }
+    end
+
+    describe 'no running jobs, 4 private and 4 public jobs waiting, two jobs subscription' do
+      before { FactoryGirl.create(:subscription, selected_plan: :two, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
+      before { create_jobs(4, private: true) }
+      before { create_jobs(4, private: false) }
+
+      it { expect(subject.size).to eq 5 }
+      it { expect(subject.map(&:public?)).to eq [false, false, true, true, true] }
+    end
+
+    describe '2 running public jobs, 2 public and 2 private jobs waiting, no subscription' do
+      before { create_jobs(2, private: false, state: :started) }
+      before { create_jobs(2, private: false) }
+      before { create_jobs(2, private: true) }
+
+      it { expect(subject.size).to eq 2 }
+      it { expect(subject.map(&:public?)).to eq [true, true] }
+    end
+
+    describe '1 running private job, 2 public and 2 private jobs waiting, no subscription' do
+      before { create_jobs(1, private: true, state: :started) }
+      before { create_jobs(2, private: false) }
+      before { create_jobs(2, private: true) }
+
+      it { expect(subject.size).to eq 2 }
+      it { expect(subject.map(&:public?)).to eq [true, true] }
+    end
+
+    describe '1 running private job, 2 private and 2 public jobs waiting, no subscription' do
+      before { create_jobs(1, private: true, state: :started) }
+      before { create_jobs(2, private: true) }
+      before { create_jobs(2, private: false) }
+
+      it { expect(subject.size).to eq 2 }
+      it { expect(subject.map(&:public?)).to eq [true, true] }
     end
   end
 end

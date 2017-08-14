@@ -1,6 +1,12 @@
 module Travis
   module Owners
     class Group < Struct.new(:all, :config)
+      include Enumerable
+
+      def each(&block)
+        all.each(&block)
+      end
+
       def key
         logins.join(':')
       end

@@ -1,14 +1,13 @@
 module Travis
   module Owners
     module Cli
-      class Group < Struct.new(:args, :opts)
-        include Cl::Cmd
+      class Group < Cl::Cmd
 
         register 'owners:group'
 
         purpose 'Group owners into a new owner group'
 
-        args :owners
+        arg :owners, type: :array
 
         MSGS = {
           count:   'You need to pass at least 2 owner logins.',
@@ -52,7 +51,11 @@ module Travis
           end
 
           def owners
-            @owners ||= User.where(login: args) + Organization.where(login: args)
+            @owners_ ||= User.where(login: logins) + Organization.where(login: logins)
+          end
+
+          def logins
+            args
           end
       end
     end
