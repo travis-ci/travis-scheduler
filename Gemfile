@@ -8,7 +8,7 @@ gem 'travis-lock'
 gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout', ref: 'sf-refactor'
 gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions'
 gem 'travis-logger',      git: 'https://github.com/travis-ci/travis-logger'
-gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings', ref: 'sf-ruby-2.4.1'
+gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings'
 gem 'gh',                 git: 'https://github.com/travis-ci/gh'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 

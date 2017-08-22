@@ -38,8 +38,7 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/travis-settings
-  revision: 7427a9d9738a0e6efe184bc2356b1d5e7704ba60
-  ref: sf-ruby-2.4.1
+  revision: 0f477ddbcf852e1551d459fdda8fe2786e376495
   specs:
     travis-settings (0.0.1)
       activemodel
@@ -199,4 +198,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.15.3
+   1.15.4
