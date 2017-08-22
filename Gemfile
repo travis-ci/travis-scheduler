@@ -9,7 +9,7 @@ gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout', re
 gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions'
 gem 'travis-logger',      git: 'https://github.com/travis-ci/travis-logger'
 gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings', ref: 'sf-ruby-2.4.1'
-gem 'gh',                 git: 'https://github.com/travis-ci/gh'
+gem 'gh',                 git: 'https://github.com/travis-ci/gh', branch: 'igor-update-faraday'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 
 gem 'cl'
@@ -25,6 +25,8 @@ gem 'rollout'
 gem 'redlock'
 gem 'multi_json',         '~> 1.11'
 gem 'rack', '1.6.4'
+
+gem 'libhoney', git: 'https://github.com/travis-ci/libhoney-rb', branch: 'igor-faraday'
 
 group :test do
   gem 'rake'

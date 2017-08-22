@@ -6,15 +6,25 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/gh
-  revision: 38fb339510ff9ae67cb08c6df7698f4c393f5a44
+  revision: 5b65206298ad1fdfb9d627a0845b62366f765909
+  branch: igor-update-faraday
   specs:
     gh (0.15.1)
       addressable (~> 2.4)
       backports
-      faraday (~> 0.8)
+      faraday (~> 0.9)
       multi_json (~> 1.0)
-      net-http-persistent (~> 2.9)
-      net-http-pipeline
+      net-http-persistent (~> 3.0)
+
+GIT
+  remote: https://github.com/travis-ci/libhoney-rb
+  revision: bc6159ab0017c266cb8e18030856fb892eec0818
+  branch: igor-faraday
+  specs:
+    libhoney (1.0.4)
+      faraday (~> 0.12)
+      faraday_middleware (~> 0.12)
+      net-http-persistent (~> 3.0)
 
 GIT
   remote: https://github.com/travis-ci/travis-exceptions
@@ -92,6 +102,8 @@ GEM
       activesupport (>= 3.0.0)
     faraday (0.13.1)
       multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.12.2)
+      faraday (>= 0.7.4, < 1.0)
     hashdiff (0.3.4)
     hashr (2.0.1)
     hitimes (1.2.4)
@@ -110,8 +122,8 @@ GEM
       metaclass (~> 0.0.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
-    net-http-persistent (2.9.4)
-    net-http-pipeline (1.0.1)
+    net-http-persistent (3.0.0)
+      connection_pool (~> 2.2)
     pg (0.19.0)
     public_suffix (2.0.5)
     rack (1.6.4)
@@ -178,6 +190,7 @@ DEPENDENCIES
   factory_girl (~> 4.7.0)
   gh!
   jemalloc
+  libhoney!
   mocha (~> 0.10.0)
   multi_json (~> 1.11)
   pg
@@ -199,4 +212,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.15.3
+   1.15.4
