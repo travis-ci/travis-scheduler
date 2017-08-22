@@ -41,7 +41,7 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/travis-rollout
-  revision: 643477fb44ea35d483ed24cc89ced459719c6e6c
+  revision: 71cc9102dff01f95c281f99183e54b6695faa7ec
   ref: sf-refactor
   specs:
     travis-rollout (0.0.1)
@@ -134,7 +134,7 @@ GEM
       redis (~> 3.0, >= 3.0.4)
     redlock (0.2.0)
       redis (~> 3, >= 3.0.0)
-    rollout (1.1.0)
+    rollout (2.4.3)
     rspec (3.6.0)
       rspec-core (~> 3.6.0)
       rspec-expectations (~> 3.6.0)
