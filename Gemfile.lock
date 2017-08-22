@@ -28,20 +28,20 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/travis-exceptions
-  revision: 71b11939f1f3b86d1e2fd94f3b9b8f78af290e12
+  revision: ab236981f810b820bc3ebfaf33f317bbaa9b3465
   specs:
     travis-exceptions (0.0.2)
       sentry-raven
 
 GIT
   remote: https://github.com/travis-ci/travis-logger
-  revision: 765046a4746617a70395fe2200e8a91dc416f1b3
+  revision: b589e0ca0e9f1a5d6cd8536ff7288d21d36c7560
   specs:
     travis-logger (0.0.1)
 
 GIT
   remote: https://github.com/travis-ci/travis-rollout
-  revision: 643477fb44ea35d483ed24cc89ced459719c6e6c
+  revision: 71cc9102dff01f95c281f99183e54b6695faa7ec
   ref: sf-refactor
   specs:
     travis-rollout (0.0.1)
@@ -73,7 +73,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
-    amq-protocol (2.0.1)
+    amq-protocol (2.2.0)
     arel (6.0.4)
     atomic (1.1.99)
     avl_tree (1.2.1)
@@ -84,8 +84,8 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     backports (3.8.0)
     builder (3.2.3)
-    bunny (2.6.1)
-      amq-protocol (>= 2.0.1)
+    bunny (2.6.6)
+      amq-protocol (>= 2.1.0)
     cl (0.0.4)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
@@ -96,7 +96,7 @@ GEM
     database_cleaner (1.5.3)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
-    diff-lcs (1.2.5)
+    diff-lcs (1.3)
     equalizer (0.0.11)
     factory_girl (4.7.0)
       activesupport (>= 3.0.0)
@@ -104,14 +104,14 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
-    hashdiff (0.3.4)
+    hashdiff (0.3.5)
     hashr (2.0.1)
-    hitimes (1.2.4)
+    hitimes (1.2.6)
     i18n (0.8.6)
     ice_nine (0.11.2)
     jemalloc (1.0.1)
     metaclass (0.0.4)
-    metriks (0.9.9.7)
+    metriks (0.9.9.8)
       atomic (~> 1.0)
       avl_tree (~> 1.2.0)
       hitimes (~> 1.1)
@@ -124,40 +124,40 @@ GEM
     multipart-post (2.0.0)
     net-http-persistent (3.0.0)
       connection_pool (~> 2.2)
-    pg (0.19.0)
+    pg (0.21.0)
     public_suffix (2.0.5)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
-    rake (11.3.0)
+    rake (12.0.0)
     redis (3.3.3)
-    redis-namespace (1.5.2)
+    redis-namespace (1.5.3)
       redis (~> 3.0, >= 3.0.4)
-    redlock (0.1.8)
+    redlock (0.2.0)
       redis (~> 3, >= 3.0.0)
-    rollout (1.1.0)
-    rspec (3.5.0)
-      rspec-core (~> 3.5.0)
-      rspec-expectations (~> 3.5.0)
-      rspec-mocks (~> 3.5.0)
-    rspec-core (3.5.4)
-      rspec-support (~> 3.5.0)
-    rspec-expectations (3.5.0)
+    rollout (2.4.3)
+    rspec (3.6.0)
+      rspec-core (~> 3.6.0)
+      rspec-expectations (~> 3.6.0)
+      rspec-mocks (~> 3.6.0)
+    rspec-core (3.6.0)
+      rspec-support (~> 3.6.0)
+    rspec-expectations (3.6.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.5.0)
-    rspec-mocks (3.5.0)
+      rspec-support (~> 3.6.0)
+    rspec-mocks (3.6.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.5.0)
-    rspec-support (3.5.0)
+      rspec-support (~> 3.6.0)
+    rspec-support (3.6.0)
     safe_yaml (1.0.4)
     sentry-raven (2.6.3)
       faraday (>= 0.7.6, < 1.0)
-    sidekiq (4.2.6)
+    sidekiq (5.0.4)
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (>= 1.5.0)
-      redis (~> 3.2, >= 3.2.1)
-    sidekiq-pro (3.4.0)
+      redis (~> 3.3, >= 3.3.3)
+    sidekiq-pro (3.5.2)
       sidekiq (>= 4.1.5)
     thread_safe (0.3.6)
     travis-config (1.1.3)
