@@ -2,7 +2,7 @@ require 'sidekiq'
 require 'travis/exceptions/sidekiq'
 require 'travis/metrics/sidekiq'
 require 'travis/honeycomb'
-require 'travis/scheduler/suppert/sidekiq/honeycomb'
+require 'travis/scheduler/support/sidekiq/honeycomb'
 
 module Travis
   module Scheduler
