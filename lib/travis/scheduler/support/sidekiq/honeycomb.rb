@@ -58,8 +58,6 @@ module Travis
             exception_message:       e&.message,
             exception_cause_class:   e&.cause&.class&.name,
             exception_cause_message: e&.cause&.message,
-
-            dyno: ENV['DYNO'],
           })
 
           # remove nil and blank values

@@ -102,9 +102,17 @@ module Travis
     end
 
     class Context
+      class << self
+        attr_accessor :permanent
+
+        def add_permanent(field, value)
+          @permanent ||= {}
+          @permanent[field] = value
+        end
+      end
+
       def initialize
         @data = {}
-        @permanent = {}
       end
 
       def clear
@@ -115,12 +123,8 @@ module Travis
         @data[field] = value
       end
 
-      def add_permanent(field, value)
-        @permanent[field] = value
-      end
-
       def data
-        @permanent.merge(@data)
+        (self.class.permanent || {}).merge(@data)
       end
     end
 

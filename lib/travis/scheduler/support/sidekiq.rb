@@ -9,8 +9,9 @@ module Travis
     module Sidekiq
       class << self
         def setup(config, logger)
+          Travis::Honeycomb::Context.add_permanent('app', 'gatekeeper')
+          Travis::Honeycomb::Context.add_permanent('dyno', ENV['DYNO'])
           Travis::Honeycomb.setup
-          Travis::Honeycomb.context.add_permanent('app', 'scheduler')
 
           ::Sidekiq.configure_server do |c|
             c.redis = {
