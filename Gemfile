@@ -26,7 +26,7 @@ gem 'redlock'
 gem 'multi_json',         '~> 1.11'
 gem 'rack', '1.6.4'
 
-gem 'libhoney', git: 'https://github.com/travis-ci/libhoney-rb', branch: 'igor-faraday'
+gem 'libhoney', git: 'https://github.com/travis-ci/libhoney-rb', branch: 'igor-faraday-net-http'
 
 group :test do
   gem 'rake'

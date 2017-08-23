@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/libhoney-rb
-  revision: bc6159ab0017c266cb8e18030856fb892eec0818
-  branch: igor-faraday
+  revision: 9ea760b24b46899bf60eeb2c8f913bfcc98ea053
+  branch: igor-faraday-net-http
   specs:
     libhoney (1.0.4)
       faraday (~> 0.12)
