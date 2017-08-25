@@ -35,6 +35,11 @@ module Travis
         all.map { |owner| [owner.is_a?(User) ? 'user' : 'org', owner.login].join(' ') }.join(', ')
       end
 
+      def public_api?(redis)
+        return @public_api if instance_variable_defined?(:@public_api)
+        @public_api = all.any? { |owner| Features.owner_active?(:public_api, owner) }
+      end
+
       private
 
         def subscriptions
