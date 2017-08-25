@@ -12,7 +12,6 @@ module Travis
       }
 
       class Jobs < Struct.new(:context, :owners)
-        require 'travis/scheduler/limit/by_public'
         require 'travis/scheduler/limit/by_owner'
         require 'travis/scheduler/limit/by_queue'
         require 'travis/scheduler/limit/by_repo'
