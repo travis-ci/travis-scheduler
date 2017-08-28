@@ -205,7 +205,7 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'The Merge mode' do
-    feature :public_api, owner: 'svenfuchs'
+    feature :public_mode, owner: 'svenfuchs'
 
     before { config.limit.public  = 3 } # we allow up to 3 extra public jobs
     before { config.limit.default = 1 } # we allow 1 public or private job by default

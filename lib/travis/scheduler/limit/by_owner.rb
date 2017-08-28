@@ -11,7 +11,7 @@ module Travis
         KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
 
         def enqueue?
-          unlimited || current < max || !public_api? && throw(:result, :limited)
+          unlimited || current < max || !public_mode? && throw(:result, :limited)
         end
 
         def reports
@@ -68,12 +68,12 @@ module Travis
           end
 
           def with_public(max)
-            max = max + config[:limit][:public].to_i if max.to_i > 0 && job.public? && public_api?
+            max = max + config[:limit][:public].to_i if max.to_i > 0 && job.public? && public_mode?
             max
           end
 
           def without_public(count)
-            count = count - running_and_selected_public_jobs_upto_config_limit if !job.public? && public_api?
+            count = count - running_and_selected_public_jobs_upto_config_limit if !job.public? && public_mode?
             count
           end
 
@@ -84,8 +84,8 @@ module Travis
             count
           end
 
-          def public_api?
-            owners.public_api?(context.redis)
+          def public_mode?
+            owners.public_mode?(context.redis)
           end
 
           def trial
