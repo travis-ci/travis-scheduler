@@ -63,12 +63,7 @@ module Travis
           time :live_payload
 
           def live_params
-            params = { event: 'job:queued' }
-            uid = "#{job.repository.owner_id}-#{job.repository.owner_type[0]}"
-            if Rollout.matches?('user-channel', redis: redis, uid: uid)
-              params[:user_ids] = user_ids
-            end
-            params
+            { event: 'job:queued', user_ids: user_ids }
           end
           time :live_params
 
