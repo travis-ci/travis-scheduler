@@ -1,7 +1,10 @@
+require 'travis/queue/force_precise_sudo_required'
+
 module Travis
   class Queue
     class Docker < Struct.new(:repo, :job, :config)
       def apply?
+        return false if force_precise_sudo_required?
         return specified if specified?
         default
       end
@@ -35,6 +38,10 @@ module Travis
 
         def owner
           repo.owner
+        end
+
+        def force_precise_sudo_required?
+          ForcePreciseSudoRequired.new(repo, job[:dist]).apply?
         end
     end
   end

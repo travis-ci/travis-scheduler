@@ -40,7 +40,10 @@ describe Travis::Queue do
   end
 
   describe 'by default, with a docker cutoff' do
-    before { context.config.docker_default_queue_cutoff = '2015-01-01' }
+    before do
+      context.config.docker_default_queue_cutoff = '2015-01-01'
+      Travis::Queue::Docker.any_instance.stubs(:force_precise_sudo_required?).returns(false)
+    end
     let(:config) { { language: 'php', os: 'linux', group: 'stable', dist: 'precise' } }
     it { expect(queue).to eq 'builds.docker' }
   end
