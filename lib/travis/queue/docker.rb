@@ -4,7 +4,7 @@ module Travis
   class Queue
     class Docker < Struct.new(:repo, :job, :config)
       def apply?
-        return false if force_precise_sudo_required?
+        return 'required' if force_precise_sudo_required?
         return specified if specified?
         default
       end
