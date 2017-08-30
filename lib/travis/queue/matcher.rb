@@ -36,7 +36,7 @@ module Travis
         end
 
         def sudo
-          not Docker.new(repo, job.config, config).apply?
+          Sudo.new(repo, job.config, config).value
         end
 
         def dist

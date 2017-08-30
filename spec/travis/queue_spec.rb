@@ -11,13 +11,19 @@ describe Travis::Queue do
   let(:job)        { FactoryGirl.build(:job, config: config, repository: repo) }
   let(:queue)      { described_class.new(job, context.config, logger).select }
 
+  let(:force_precise_sudo_required?) { false }
+
   before do
+    Travis::Scheduler.logger.stubs(:info)
+    context.config.queue.default = 'builds.defaulty'
     context.config.queues = [
       { queue: 'builds.rails', slug: 'rails/rails' },
       { queue: 'builds.mac_osx', os: 'osx' },
-      { queue: 'builds.docker', sudo: false },
+      { queue: 'builds.docker', sudo: false, dist: 'precise' },
+      { queue: 'builds.ec2', sudo: false, dist: 'trusty' },
       { queue: 'builds.gce', services: %w(docker) },
-      { queue: 'builds.gce', dist: 'trusty' },
+      { queue: 'builds.gce', dist: 'trusty', sudo: 'required' },
+      { queue: 'builds.gce', dist: 'precise', sudo: 'required' },
       { queue: 'builds.cloudfoundry', owner: 'cloudfoundry' },
       { queue: 'builds.clojure', language: 'clojure' },
       { queue: 'builds.erlang', language: 'erlang' },
@@ -26,6 +32,10 @@ describe Travis::Queue do
       { queue: 'builds.new-foo', language: 'foo', percentage: percent },
       { queue: 'builds.old-foo', language: 'foo' }
     ]
+    Travis::Queue::Sudo
+      .any_instance
+      .stubs(:force_precise_sudo_required?)
+      .returns(force_precise_sudo_required?)
   end
 
   after do
@@ -36,13 +46,12 @@ describe Travis::Queue do
 
   describe 'by default' do
     let(:slug) { 'travis-ci/travis-ci' }
-    it { expect(queue).to eq 'builds.gce' }
+    it { expect(queue).to eq 'builds.defaulty' }
   end
 
   describe 'by default, with a docker cutoff' do
     before do
       context.config.docker_default_queue_cutoff = '2015-01-01'
-      Travis::Queue::Docker.any_instance.stubs(:force_precise_sudo_required?).returns(false)
     end
     let(:config) { { language: 'php', os: 'linux', group: 'stable', dist: 'precise' } }
     it { expect(queue).to eq 'builds.docker' }
@@ -77,7 +86,7 @@ describe Travis::Queue do
 
     describe 'on org' do
       describe 'returns the default queue for educational repositories, too' do
-        it { expect(queue).to eq 'builds.gce' }
+        it { expect(queue).to eq 'builds.defaulty' }
       end
 
       describe 'returns the queue matching configuration for educational repository' do
@@ -91,7 +100,7 @@ describe Travis::Queue do
       after  { context.config.host = 'travis-ci.org' }
 
       describe 'returns the default queue by default for educational repositories' do
-        it { expect(queue).to eq 'builds.gce' }
+        it { expect(queue).to eq 'builds.defaulty' }
       end
 
       describe 'returns the queue matching configuration for educational repository' do
@@ -127,12 +136,12 @@ describe Travis::Queue do
 
   describe 'by job config sudo: false' do
     describe 'by sudo' do
-      let(:config) { { sudo: false } }
+      let(:config) { { sudo: false, dist: 'precise' } }
       it { expect(queue).to eq 'builds.docker' }
     end
 
     describe 'by sudo (trumps language)' do
-      let(:config) { { language: 'clojure', sudo: false } }
+      let(:config) { { language: 'clojure', sudo: false, dist: 'precise' } }
       it { expect(queue).to eq 'builds.docker' }
     end
   end
@@ -145,7 +154,7 @@ describe Travis::Queue do
 
     describe 'dist: unknown' do
       let(:config) { { dist: 'unknown' } }
-      it { expect(queue).to eq 'builds.gce' }
+      it { expect(queue).to eq 'builds.defaulty' }
     end
   end
 
@@ -180,13 +189,13 @@ describe Travis::Queue do
     after  { context.config.docker_default_queue_cutoff = nil }
 
     describe 'sudo: nil' do
-      let(:config) { {} }
+      let(:config) { { sudo: nil, dist: 'precise'} }
 
       describe 'when the account is educational' do
         before { owner.stubs(:education?).returns(true) }
 
         describe 'when sudo is detected' do
-          let(:config) { { script: 'sudo echo whatever' } }
+          before { config[:script] = 'sudo echo whatever' }
 
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
@@ -202,7 +211,7 @@ describe Travis::Queue do
         describe 'when sudo is not detected' do
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
+            it { expect(queue).to eq 'builds.docker' }
           end
 
           describe 'when the repo created_at is after cutoff' do
@@ -214,7 +223,7 @@ describe Travis::Queue do
 
       describe 'when the account is not educational' do
         describe 'when sudo is detected' do
-          let(:config) { { script: 'sudo echo whatever' } }
+          before { config[:script] = 'sudo echo whatever' }
 
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
@@ -230,7 +239,7 @@ describe Travis::Queue do
         describe 'when sudo is not detected' do
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
+            it { expect(queue).to eq 'builds.docker' }
           end
 
           describe 'when the repo created_at is after cutoff' do
@@ -242,13 +251,13 @@ describe Travis::Queue do
     end
 
     describe 'sudo: false' do
-      let(:config) { { sudo: false } }
+      let(:config) { { sudo: false, dist: 'precise' } }
 
       describe 'when the account is educational' do
         before { owner.stubs(:education?).returns(true) }
 
         describe 'when sudo is detected' do
-          let(:config) { { script: 'sudo echo whatever' } }
+          before { config[:script] = 'sudo echo whatever' }
 
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
@@ -262,6 +271,8 @@ describe Travis::Queue do
         end
 
         describe 'when sudo is not detected' do
+          before { config[:script] = 'echo whatever' }
+
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
             it { expect(queue).to eq 'builds.docker' }
@@ -276,7 +287,7 @@ describe Travis::Queue do
 
       describe 'when the account is not educational' do
         describe 'when sudo is detected' do
-          let(:config) { { script: 'sudo echo whatever' } }
+          before { config[:script] = 'sudo echo whatever' }
 
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
@@ -290,6 +301,8 @@ describe Travis::Queue do
         end
 
         describe 'when sudo is not detected' do
+          before { config[:script] = 'echo whatever' }
+
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
             it { expect(queue).to eq 'builds.docker' }
@@ -305,13 +318,13 @@ describe Travis::Queue do
 
     [true, 'required'].each do |sudo|
       describe "sudo: #{sudo}" do
-        let(:config) { { sudo: sudo } }
+        let(:config) { { sudo: sudo, dist: 'trusty' } }
 
         describe 'when the account is educational' do
           before { owner.stubs(:education?).returns(true) }
 
           describe 'when sudo is detected' do
-            let(:config) { { script: 'sudo echo whatever' } }
+            before { config[:script] = 'sudo echo whatever' }
 
             describe 'when the repo created_at is before cutoff' do
               let(:created_at) { recently - 7.days }
@@ -339,7 +352,7 @@ describe Travis::Queue do
 
         describe 'when the account is not educational' do
           describe 'when sudo is detected' do
-            let(:config) { { script: 'sudo echo whatever' } }
+            before { config[:script] = 'sudo echo whatever' }
 
             describe 'when the repo created_at is before cutoff' do
               let(:created_at) { recently - 7.days }
@@ -363,6 +376,12 @@ describe Travis::Queue do
               it { expect(queue).to eq 'builds.gce' }
             end
           end
+        end
+
+        context 'when the repository is forced to sudo: required' do
+          let(:config) { { sudo: false, dist: 'precise' } }
+          let(:force_precise_sudo_required?) { true }
+          it { expect(queue).to eq 'builds.gce' }
         end
       end
     end
@@ -376,13 +395,13 @@ describe Travis::Queue do
     after  { context.config.docker_default_queue_cutoff = nil }
 
     describe 'sudo: nil' do
-      let(:config) { {} }
+      let(:config) { { sudo: nil, dist: 'precise' } }
 
       describe 'when the account is educational' do
         before { owner.stubs(:education?).returns(true) }
 
         describe 'when sudo is detected' do
-          let(:config) { { script: 'sudo echo whatever' } }
+          before { config[:script] = 'sudo echo whatever' }
 
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
@@ -398,7 +417,7 @@ describe Travis::Queue do
         describe 'when sudo is not detected' do
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
+            it { expect(queue).to eq 'builds.docker' }
           end
 
           describe 'when the repo created_at is after cutoff' do
@@ -410,7 +429,7 @@ describe Travis::Queue do
 
       describe 'when the account is not educational' do
         describe 'when sudo is detected' do
-          let(:config) { { script: 'sudo echo whatever' } }
+          before { config[:script] = 'sudo echo whatever' }
 
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
@@ -426,7 +445,7 @@ describe Travis::Queue do
         describe 'when sudo is not detected' do
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
+            it { expect(queue).to eq 'builds.docker' }
           end
 
           describe 'when the repo created_at is after cutoff' do
@@ -438,13 +457,13 @@ describe Travis::Queue do
     end
 
     describe 'sudo: false' do
-      let(:config) { { sudo: false } }
+      let(:config) { { sudo: false, dist: 'trusty' } }
 
       describe 'when the account is educational' do
         before { owner.stubs(:education?).returns(true) }
 
         describe 'when sudo is detected' do
-          let(:config) { { script: 'sudo echo whatever' } }
+          before { config[:script] = 'sudo echo whatever' }
 
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
@@ -460,19 +479,19 @@ describe Travis::Queue do
         describe 'when sudo is not detected' do
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.docker' }
+            it { expect(queue).to eq 'builds.ec2' }
           end
 
           describe 'when the repo created_at is after cutoff' do
             let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.docker' }
+            it { expect(queue).to eq 'builds.ec2' }
           end
         end
       end
 
       describe 'when the account is not educational' do
         describe 'when sudo is detected' do
-          let(:config) { { script: 'sudo echo whatever' } }
+          before { config[:script] = 'sudo echo whatever' }
 
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
@@ -488,12 +507,12 @@ describe Travis::Queue do
         describe 'when sudo is not detected' do
           describe 'when the repo created_at is before cutoff' do
             let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.docker' }
+            it { expect(queue).to eq 'builds.ec2' }
           end
 
           describe 'when the repo created_at is after cutoff' do
             let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.docker' }
+            it { expect(queue).to eq 'builds.ec2' }
           end
         end
       end
@@ -501,13 +520,13 @@ describe Travis::Queue do
 
     [true, 'required'].each do |sudo|
       describe "sudo: #{sudo}" do
-        let(:config) { { sudo: sudo } }
+        let(:config) { { sudo: sudo, dist: 'trusty' } }
 
         describe 'when the account is educational' do
           before { owner.stubs(:education?).returns(true) }
 
           describe 'when sudo is detected' do
-            let(:config) { { script: 'sudo echo whatever' } }
+            before { config[:script] = 'sudo echo whatever' }
 
             describe 'when the repo created_at is before cutoff' do
               let(:created_at) { recently - 7.days }
@@ -535,7 +554,7 @@ describe Travis::Queue do
 
         describe 'when the account is not educational' do
           describe 'when sudo is detected' do
-            let(:config) { { script: 'sudo echo whatever' } }
+            before { config[:script] = 'sudo echo whatever' }
 
             describe 'when the repo created_at is before cutoff' do
               let(:created_at) { recently - 7.days }
