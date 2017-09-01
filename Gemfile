@@ -9,7 +9,7 @@ gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout', re
 gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions'
 gem 'travis-logger',      git: 'https://github.com/travis-ci/travis-logger'
 gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings'
-gem 'gh',                 git: 'https://github.com/travis-ci/gh', branch: 'igor-update-faraday'
+gem 'gh',                 git: 'https://github.com/travis-ci/gh', branch: 'igor-rm-http-net-persistent'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 
 gem 'cl'

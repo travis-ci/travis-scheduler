@@ -15,15 +15,15 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/gh
-  revision: 5b65206298ad1fdfb9d627a0845b62366f765909
-  branch: igor-update-faraday
+  revision: d745ba813d2b3495e8b47dab5f7eaab62a44b9a2
+  branch: igor-rm-http-net-persistent
   specs:
     gh (0.15.1)
       addressable (~> 2.4)
       backports
-      faraday (~> 0.9)
+      faraday (~> 0.8)
       multi_json (~> 1.0)
-      net-http-persistent (~> 3.0)
+      net-http-pipeline
 
 GIT
   remote: https://github.com/travis-ci/travis-exceptions
@@ -69,8 +69,8 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.5.2)
-      public_suffix (>= 2.0.2, < 4.0)
+    addressable (2.5.1)
+      public_suffix (~> 2.0, >= 2.0.2)
     amq-protocol (2.0.1)
     arel (6.0.4)
     atomic (1.1.99)
@@ -122,8 +122,9 @@ GEM
     multipart-post (2.0.0)
     net-http-persistent (3.0.0)
       connection_pool (~> 2.2)
+    net-http-pipeline (1.0.1)
     pg (0.19.0)
-    public_suffix (3.0.0)
+    public_suffix (2.0.5)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
