@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/honeycombio/libhoney-rb
+  revision: b786e96d0da7cc05eca5652da62239c4108f82a3
+  specs:
+    libhoney (1.2.0)
+      faraday (~> 0.12)
+      faraday_middleware (~> 0.12)
+      net-http-persistent (~> 3.0)
+
+GIT
   remote: https://github.com/rkh/coder
   revision: 44b0cf89b98caecc654dd1a724a448e17ef7aa6c
   specs:
@@ -14,16 +23,6 @@ GIT
       backports
       faraday (~> 0.9)
       multi_json (~> 1.0)
-      net-http-persistent (~> 3.0)
-
-GIT
-  remote: https://github.com/travis-ci/libhoney-rb
-  revision: 9ea760b24b46899bf60eeb2c8f913bfcc98ea053
-  branch: igor-faraday-net-http
-  specs:
-    libhoney (1.0.4)
-      faraday (~> 0.12)
-      faraday_middleware (~> 0.12)
       net-http-persistent (~> 3.0)
 
 GIT
@@ -70,8 +69,8 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.5.1)
-      public_suffix (~> 2.0, >= 2.0.2)
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
     amq-protocol (2.0.1)
     arel (6.0.4)
     atomic (1.1.99)
@@ -124,7 +123,7 @@ GEM
     net-http-persistent (3.0.0)
       connection_pool (~> 2.2)
     pg (0.19.0)
-    public_suffix (2.0.5)
+    public_suffix (3.0.0)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
