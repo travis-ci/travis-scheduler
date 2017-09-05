@@ -1,11 +1,10 @@
 GIT
   remote: https://github.com/honeycombio/libhoney-rb
-  revision: b786e96d0da7cc05eca5652da62239c4108f82a3
+  revision: 0a8bb228b4590a295d6e209419404c1931e4d7c5
+  tag: v1.0.4
   specs:
-    libhoney (1.2.0)
-      faraday (~> 0.12)
-      faraday_middleware (~> 0.12)
-      net-http-persistent (~> 3.0)
+    libhoney (1.0.4)
+      http (~> 2.0)
 
 GIT
   remote: https://github.com/rkh/coder
@@ -95,16 +94,25 @@ GEM
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
+    domain_name (0.5.20170404)
+      unf (>= 0.0.5, < 1.0.0)
     equalizer (0.0.11)
     factory_girl (4.7.0)
       activesupport (>= 3.0.0)
     faraday (0.13.1)
       multipart-post (>= 1.2, < 3)
-    faraday_middleware (0.12.2)
-      faraday (>= 0.7.4, < 1.0)
     hashdiff (0.3.4)
     hashr (2.0.1)
     hitimes (1.2.4)
+    http (2.2.2)
+      addressable (~> 2.3)
+      http-cookie (~> 1.0)
+      http-form_data (~> 1.0.1)
+      http_parser.rb (~> 0.6.0)
+    http-cookie (1.0.3)
+      domain_name (~> 0.5)
+    http-form_data (1.0.3)
+    http_parser.rb (0.6.0)
     i18n (0.8.6)
     ice_nine (0.11.2)
     jemalloc (1.0.1)
@@ -120,8 +128,6 @@ GEM
       metaclass (~> 0.0.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
-    net-http-persistent (3.0.0)
-      connection_pool (~> 2.2)
     net-http-pipeline (1.0.1)
     pg (0.19.0)
     public_suffix (2.0.5)
@@ -166,6 +172,9 @@ GEM
       metriks-librato_metrics (~> 1.0)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.4)
     virtus (1.0.5)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
