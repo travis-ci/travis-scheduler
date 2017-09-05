@@ -20,8 +20,8 @@ module Travis
   end
 end
 
-require 'travis/queue/docker'
+require 'travis/queue/sudo'
 require 'travis/queue/matcher'
 require 'travis/queue/queues'
-require 'travis/queue/sudo'
+require 'travis/queue/sudo_detector'
 
