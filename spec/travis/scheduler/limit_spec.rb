@@ -148,6 +148,21 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('user svenfuchs: total: 14, running: 0, queueable: 5') }
   end
 
+  describe 'with a by_queue limit and jobs created for a different queue' do
+    before { create_jobs(9, queue: 'builds.docker') }
+    before { create_jobs(1, queue: 'builds.osx') }
+    before { config.limit.default = 5 }
+    before { ENV['BY_QUEUE_LIMIT'] = "#{owner.login}=2" }
+    before { ENV['BY_QUEUE_NAME'] = 'builds.osx' }
+    after  { ENV.delete('BY_QUEUE_LIMIT') }
+    after  { ENV.delete('BY_QUEUE_NAME') }
+    before { subject }
+
+    it { expect(subject.size).to eq 5 }
+    it { expect(report).to include('max jobs for user svenfuchs by default: 5') }
+    it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 5') }
+  end
+
   describe 'delegated accounts' do
     let(:carla) { FactoryGirl.create(:user, login: 'carla') }
 
