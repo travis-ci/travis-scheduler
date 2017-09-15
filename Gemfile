@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.4.1' if ENV['DYNO']
+ruby '2.4.2' if ENV['DYNO']
 
 gem 'travis-config',      '~> 1.1.3'
 gem 'travis-metrics',     '~> 2.0.0'

@@ -2,7 +2,7 @@ dist: trusty
 sudo: false
 dist: trusty
 
-rvm: 2.4.1
+rvm: 2.4.2
 
 cache: bundler
 
