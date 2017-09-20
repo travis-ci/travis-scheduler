@@ -8,7 +8,6 @@ module Travis
         include Helper::Context
 
         def enqueue?
-          return true unless enabled?
           return true unless queue == ENV['BY_QUEUE_NAME']
           result = current < max
           report(max) if result
@@ -21,16 +20,12 @@ module Travis
 
         private
 
-          def enabled?
-            config[owners.key]
-          end
-
           def current
             state.running_by_queue(job.queue) + selected.select { |j| j.queue == queue }.size
           end
 
           def max
-            config[owners.key].to_i
+            config.fetch(owners.key, default).to_i
           end
 
           def queue
@@ -44,6 +39,10 @@ module Travis
           def report(value)
             reports << MSGS[:max] % [owners.to_s, "queue #{job.queue}", value]
             value
+          end
+
+          def default
+            ENV.fetch('BY_QUEUE_DEFAULT', 2).to_i
           end
 
           # TODO make this a repo setting at some point?
