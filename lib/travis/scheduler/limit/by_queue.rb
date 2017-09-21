@@ -8,6 +8,7 @@ module Travis
         include Helper::Context
 
         def enqueue?
+          return true unless enabled?
           return true unless queue == ENV['BY_QUEUE_NAME']
           result = current < max
           report(max) if result
@@ -19,6 +20,10 @@ module Travis
         end
 
         private
+
+          def enabled?
+            config[owners.key] || ENV['BY_QUEUE_DEFAULT']
+          end
 
           def current
             state.running_by_queue(job.queue) + selected.select { |j| j.queue == queue }.size
@@ -42,7 +47,7 @@ module Travis
           end
 
           def default
-            ENV.fetch('BY_QUEUE_DEFAULT', 2).to_i
+            ENV['BY_QUEUE_DEFAULT'].to_i
           end
 
           # TODO make this a repo setting at some point?
