@@ -25,7 +25,7 @@ module Travis
             cache_settings: cache_settings,
           }
           value[:oauth_token] = github_oauth_token if Travis.config.prefer_https?
-          value
+          value.tap {|x| Travis.logger.info("job_data=#{x}")}
         end
 
         private

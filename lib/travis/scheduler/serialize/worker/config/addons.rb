@@ -65,32 +65,25 @@ module Travis
 
             private
             def filtered
+              if jwt? && config.keys.any? {|key| jwt_aware?(key)}
+                # jwt key is in the wrong place
+                if config.key?(:sauce_connect)
+                  config[:sauce_connect].merge!({ :jwt => config[:jwt] })
+                end
+              end
               config.map { |key, value| [key, filter(key, value)] }.to_h
             end
 
             def filter(name, config)
-              if safe?(name)
+              if safe?(name) || has_jwt_under?(name)
                 config
-              elsif jwt? && jwt_aware?(name)
-                strip_encrypted(config)
               else
                 nil
               end
             end
 
-            def strip_encrypted(config)
-              case config
-              when Hash
-                compact(config.map { |key, value| [key, encrypted?(value) ? nil : value] }).to_h
-              when Array
-                config.map { |config| strip_encrypted(config) }
-              else
-                config
-              end
-            end
-
             def safe?(name)
-              SAFE.include?(name.to_sym)
+              SAFE.include?(name)
             end
 
             def jwt?
@@ -98,11 +91,11 @@ module Travis
             end
 
             def jwt_aware?(name)
-              JWT_AWARE.include?(name.to_sym)
+              JWT_AWARE.include?(name)
             end
 
-            def encrypted?(value)
-              value.is_a?(Hash) && value.keys.any? { |key| key == :secure }
+            def has_jwt_under?(name)
+              jwt_aware?(name) && config[name].respond_to?(:keys) && config[name].keys.include?(:jwt)
             end
 
             def compact(hash)
