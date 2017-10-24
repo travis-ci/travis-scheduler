@@ -15,18 +15,18 @@ describe Travis::Owners do
     end
 
     describe 'with a subscription on the delegatee' do
-      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
+      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten, concurrency: 10) }
       it { expect(owners.max_jobs).to eq 10 }
     end
 
     describe 'with a subscription on the delegate' do
-      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :ten) }
+      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :ten, concurrency: 10) }
       it { expect(owners.max_jobs).to eq 10 }
     end
 
     describe 'with a subscription on both the delegatee and delegate' do
-      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
-      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five) }
+      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten, concurrency: 10) }
+      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five, concurrency: 5) }
       it { expect(owners.max_jobs).to eq 15 }
     end
   end
@@ -37,18 +37,18 @@ describe Travis::Owners do
     end
 
     describe 'with a subscription on the delegatee' do
-      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
+      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten, concurrency: 10) }
       it { expect(owners.subscribed_owners).to eq %w(anja) }
     end
 
     describe 'with a subscription on the delegate' do
-      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :ten) }
+      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :ten, concurrency: 10) }
       it { expect(owners.subscribed_owners).to eq %w(travis) }
     end
 
     describe 'with a subscription on both the delegatee and delegate' do
-      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
-      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five) }
+      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten, concurrency: 10) }
+      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five, concurrency: 5) }
       it { expect(owners.subscribed_owners).to eq %w(anja travis) }
     end
   end
