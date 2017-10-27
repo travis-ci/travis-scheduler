@@ -38,6 +38,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 2 }
     it { expect(report).to include('max jobs for user svenfuchs by boost: 2') }
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 2') }
+    it { expect(report).to include('jobs waiting for svenfuchs: svenfuchs/gem-release=1') }
   end
 
   describe 'with a subscription limit 1' do
