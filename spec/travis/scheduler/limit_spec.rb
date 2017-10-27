@@ -260,7 +260,7 @@ describe Travis::Scheduler::Limit::Jobs do
     describe 'queueing' do
       before { subject }
       it { expect(subject.size).to eq 2 }
-      it { expect(report).to include("jobs for build #{build.id} limited at stage: 1 (queueable: 2)") }
+      it { expect(report).to include("jobs for build id=#{build.id} repo=#{repo.slug} limited at stage: 1 (queueable: 2)") }
     end
 
     describe 'ordering' do

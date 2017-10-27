@@ -4,16 +4,12 @@ require 'travis/scheduler/model/stages'
 module Travis
   module Scheduler
     module Limit
-      class ByStage < Struct.new(:context, :owners, :job, :queued, :state, :config)
+      class ByStage < Struct.new(:context, :reports, :owners, :job, :queued, :state, :config)
         include Helper::Context
 
         def enqueue?
           return true unless job.stage_number
           !!report if queueable?
-        end
-
-        def reports
-          @reports ||= []
         end
 
         private
@@ -55,7 +51,7 @@ module Travis
           end
 
           def report
-            reports << MSGS[:max_stage] % ["build #{job.source_id}", job.stage.number, queueable.size]
+            reports << MSGS[:max_stage] % ["build id=#{job.source_id} repo=#{job.repository.slug}", job.stage.number, queueable.size]
           end
       end
     end

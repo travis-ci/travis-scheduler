@@ -17,7 +17,7 @@ module Travis
         }
 
         def run
-          info MSGS[:receive] % [event, type, obj.id, repo.owner_name]
+          info MSGS[:receive] % [event, type, obj.id, repo.slug]
           meter
           inline :enqueue_owners, attrs
         rescue Lock::Redis::LockError => e

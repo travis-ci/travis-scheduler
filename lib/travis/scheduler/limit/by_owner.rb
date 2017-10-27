@@ -5,17 +5,13 @@ require 'travis/scheduler/model/trial'
 module Travis
   module Scheduler
     module Limit
-      class ByOwner < Struct.new(:context, :owners, :job, :selected, :state, :config)
+      class ByOwner < Struct.new(:context, :reports, :owners, :job, :selected, :state, :config)
         include Helper::Context
 
         KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
 
         def enqueue?
           unlimited || current < max || !public_mode? && throw(:result, :limited)
-        end
-
-        def reports
-          @reports ||= []
         end
 
         private

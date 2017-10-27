@@ -79,13 +79,13 @@ module Travis
           def enqueue?(job)
             limits_for(job).map do |limit|
               result = limit.enqueue?
-              report *limit.reports
+              # report *limit.reports
               result
             end.inject(&:&)
           end
 
           def limits_for(job)
-            LIMITS.map { |limit| limit.new(context, owners, job, selected, state, config) }
+            LIMITS.map { |limit| limit.new(context, reports, owners, job, selected, state, config) }
           end
 
           def summary
