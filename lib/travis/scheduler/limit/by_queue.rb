@@ -4,7 +4,7 @@ require 'travis/scheduler/helper/logging'
 module Travis
   module Scheduler
     module Limit
-      class ByQueue < Struct.new(:context, :owners, :job, :selected, :state, :_)
+      class ByQueue < Struct.new(:context, :reports, :owners, :job, :selected, :state, :_)
         include Helper::Context
 
         def enqueue?
@@ -13,10 +13,6 @@ module Travis
           result = current < max
           report(max) if result
           result
-        end
-
-        def reports
-          @reports ||= []
         end
 
         private
