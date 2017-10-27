@@ -22,6 +22,8 @@ WebMock.disable_net_connect!
 
 RSpec.configure do |c|
   c.mock_with :mocha
+
+  c.include FactoryGirl::Syntax::Methods
   c.include Support::Env
   c.include Support::Features
   c.include Support::Logger

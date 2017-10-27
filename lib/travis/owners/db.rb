@@ -9,6 +9,10 @@ module Travis
         attrs.any? ? attrs.map { |(type, id)| find(type, id) } : [owner]
       end
 
+      def uuid
+        OwnerGroup.where(owner: owner).pluck(:uuid).first
+      end
+
       private
 
         def find(type, id)

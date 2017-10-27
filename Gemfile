@@ -9,6 +9,8 @@ gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout', re
 gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions'
 gem 'travis-logger',      git: 'https://github.com/travis-ci/travis-logger'
 gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings'
+gem 'travis-encrypt',     git: 'https://github.com/travis-ci/travis-encrypt'
+gem 'settings',           git: 'https://github.com/travis-ci/settings'
 gem 'gh',                 git: 'https://github.com/travis-ci/gh'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 

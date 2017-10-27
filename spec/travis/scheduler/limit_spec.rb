@@ -1,8 +1,8 @@
 describe Travis::Scheduler::Limit::Jobs do
-  let(:org)     { FactoryGirl.create(:org, login: 'travis-ci') }
-  let(:repo)    { FactoryGirl.create(:repo, owner: owner) }
-  let(:build)   { FactoryGirl.create(:build) }
-  let!(:owner)  { FactoryGirl.create(:user, login: 'svenfuchs') }
+  let(:org)     { create(:org, login: 'travis-ci') }
+  let(:repo)    { create(:repo, owner: owner) }
+  let(:build)   { create(:build) }
+  let!(:owner)  { create(:user, login: 'svenfuchs') }
   let(:owners)  { Travis::Owners.group(data, config.to_h) }
   let(:context) { Travis::Scheduler.context }
   let(:redis)   { context.redis }
@@ -27,7 +27,7 @@ describe Travis::Scheduler::Limit::Jobs do
       queueable: true,
       private: false
     }
-    1.upto(count) { FactoryGirl.create(:job, defaults.merge(attrs)) }
+    1.upto(count) { create(:job, defaults.merge(attrs)) }
   end
 
   describe 'with a boost limit 2' do
@@ -43,7 +43,7 @@ describe Travis::Scheduler::Limit::Jobs do
 
   describe 'with a subscription limit 1' do
     before { create_jobs(3) }
-    before { FactoryGirl.create(:subscription, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id, selected_plan: :one) }
+    before { create(:subscription, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id, selected_plan: :one) }
     before { subject }
 
     it { expect(subject.size).to eq 1 }
@@ -107,7 +107,7 @@ describe Travis::Scheduler::Limit::Jobs do
     before { config.limit.default = 1 }
     before { create_jobs(7, state: :created) }
     before { create_jobs(3, state: :started) }
-    before { FactoryGirl.create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
+    before { create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
     before { repo.settings.update_attributes!(maximum_number_of_builds: 5) }
     before { subject }
 
@@ -117,7 +117,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('user svenfuchs: total: 7, running: 3, queueable: 2') }
   end
 
-  describe 'with no by_queue config being given (enterprise)' do
+  describe 'with no by_queue config being given' do
     before { create_jobs(9, queue: 'builds.osx') }
     before { create_jobs(1, queue: 'builds.docker') }
     before { config.limit.default = 99 }
@@ -127,96 +127,126 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 10') }
   end
 
-  describe 'with a default by_queue limit of 2 (org)' do
+  describe 'by_queue using env vars' do
     env BY_QUEUE_NAME: 'builds.osx'
-    env BY_QUEUE_DEFAULT: 2
 
-    before { create_jobs(9, queue: 'builds.osx') }
-    before { create_jobs(1, queue: 'builds.docker') }
-    before { config.limit.default = 99 }
-    before { subject }
+    # there needs to be a record in the owner_groups table, so we have an uuid
+    before { create(:owner_group, owner: owner, uuid: SecureRandom.uuid) }
 
-    it { expect(subject.size).to eq 3 }
-    it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
-    it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+    describe 'with a default by_queue limit of 2' do
+      before { create_jobs(9, queue: 'builds.osx') }
+      before { create_jobs(1, queue: 'builds.docker') }
+      before { config.limit.default = 99 }
+      before { subject }
+
+      it { expect(subject.size).to eq 3 }
+      xit { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
+      xit { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+    end
+
+    describe 'with a default by_queue limit of 2' do
+      env BY_QUEUE_DEFAULT: 2
+
+      before { create_jobs(9, queue: 'builds.osx') }
+      before { create_jobs(1, queue: 'builds.docker') }
+      before { config.limit.default = 99 }
+      before { subject }
+
+      it { expect(subject.size).to eq 3 }
+      it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
+      it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+    end
+
+    describe 'with a by_queue limit of 2 for the owner' do
+      env BY_QUEUE_LIMIT: -> { "#{owner.login}=2" }
+
+      before { create_jobs(9, queue: 'builds.osx') }
+      before { create_jobs(1, queue: 'builds.docker') }
+      before { config.limit.default = 99 }
+      before { subject }
+
+      it { expect(subject.size).to eq 3 }
+      it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
+      it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+    end
+
+    describe 'with a by_queue limit of 2 for the owner and a repo limit of 3 on another repo' do
+      let(:other) { create(:repo, github_id: 2) }
+
+      env BY_QUEUE_LIMIT: -> { "#{owner.login}=2" }
+
+      before { create_jobs(9, repository: repo, queue: 'builds.osx') }
+      before { create_jobs(5, repository: other, queue: 'builds.docker') }
+      before { config.limit.default = 99 }
+      before { other.settings.update_attributes!(maximum_number_of_builds: 3) }
+      before { subject }
+
+      it { expect(subject.size).to eq 5 }
+      it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
+      it { expect(report).to include('user svenfuchs: total: 14, running: 0, queueable: 5') }
+    end
+
+    describe 'with a by_queue limit for the owner and jobs created for a different queue' do
+      env BY_QUEUE_LIMIT: -> { "#{owner.login}=2" }
+
+      before { create_jobs(1, queue: 'builds.osx') }
+      before { create_jobs(9, queue: 'builds.docker') }
+      before { config.limit.default = 5 }
+      before { subject }
+
+      it { expect(subject.size).to eq 5 }
+      it { expect(report).to include('max jobs for user svenfuchs by default: 5') }
+      it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 5') }
+    end
   end
 
-  describe 'with a queue name set, but now default or owner config given (com)' do
+  describe 'by_queue using settings' do
+    let(:settings) { Travis::Scheduler::Model::Settings.new(owners) }
+    before { settings[:by_queue_enabled].enable }
     env BY_QUEUE_NAME: 'builds.osx'
 
-    before { create_jobs(9, queue: 'builds.osx') }
-    before { create_jobs(1, queue: 'builds.docker') }
-    before { config.limit.default = 99 }
-    before { ENV['BY_QUEUE_NAME'] = 'builds.osx' }
-    after  { ENV.delete('BY_QUEUE_NAME') }
-    before { subject }
+    describe 'with a by_queue limit of 2 for the owner' do
+      before { create_jobs(9, queue: 'builds.osx') }
+      before { create_jobs(1, queue: 'builds.docker') }
+      before { config.limit.default = 99 }
+      before { settings[:by_queue].set(2) }
+      before { subject }
 
-    it { expect(subject.size).to eq 10 }
-    it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 10') }
-  end
+      it { expect(subject.size).to eq 3 }
+      it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
+      it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+    end
 
-  describe 'with a by_queue limit of 2 for the owner' do
-    env BY_QUEUE_NAME: 'builds.osx'
-    env BY_QUEUE_LIMIT: 'svenfuchs=2'
+    describe 'with a by_queue limit of 2 for the owner and a repo limit of 3 on another repo' do
+      let(:other) { create(:repo, github_id: 2) }
 
-    before { create_jobs(9, queue: 'builds.osx') }
-    before { create_jobs(1, queue: 'builds.docker') }
-    before { config.limit.default = 99 }
-    before { subject }
+      before { create_jobs(9, repository: repo, queue: 'builds.osx') }
+      before { create_jobs(5, repository: other, queue: 'builds.docker') }
+      before { config.limit.default = 99 }
+      before { other.settings.update_attributes!(maximum_number_of_builds: 3) }
+      before { settings[:by_queue].set(2) }
+      before { subject }
 
-    it { expect(subject.size).to eq 3 }
-    it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
-    it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
-  end
+      it { expect(subject.size).to eq 5 }
+      it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
+      it { expect(report).to include('user svenfuchs: total: 14, running: 0, queueable: 5') }
+    end
 
-  describe 'with a by_queue limit of 2 for the owner, and a default given' do
-    env BY_QUEUE_NAME: 'builds.osx'
-    env BY_QUEUE_LIMIT: 'svenfuchs=2'
-    env BY_QUEUE_DEFAULT: 2
+    describe 'with a by_queue limit for the owner and jobs created for a different queue' do
+      before { create_jobs(1, queue: 'builds.osx') }
+      before { create_jobs(9, queue: 'builds.docker') }
+      before { config.limit.default = 5 }
+      before { settings[:by_queue].set(2) }
+      before { subject }
 
-    before { create_jobs(9, queue: 'builds.osx') }
-    before { create_jobs(1, queue: 'builds.docker') }
-    before { config.limit.default = 99 }
-    before { subject }
-
-    it { expect(subject.size).to eq 3 }
-    it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
-    it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
-  end
-
-  describe 'with a by_queue limit of 2 for the owner and a repo limit of 3 on another repo' do
-    env BY_QUEUE_NAME: 'builds.osx'
-    env BY_QUEUE_LIMIT: 'svenfuchs=2'
-    env BY_QUEUE_DEFAULT: 2
-
-    let(:other) { FactoryGirl.create(:repo, github_id: 2) }
-    before { create_jobs(9, repository: repo, queue: 'builds.osx') }
-    before { create_jobs(5, repository: other, queue: 'builds.docker') }
-    before { config.limit.default = 99 }
-    before { other.settings.update_attributes!(maximum_number_of_builds: 3) }
-    before { subject }
-
-    it { expect(subject.size).to eq 5 }
-    it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
-    it { expect(report).to include('user svenfuchs: total: 14, running: 0, queueable: 5') }
-  end
-
-  describe 'with a by_queue limit for the owner and jobs created for a different queue' do
-    env BY_QUEUE_NAME: 'builds.osx'
-    env BY_QUEUE_LIMIT: 'svenfuchs=2'
-
-    before { create_jobs(9, queue: 'builds.docker') }
-    before { create_jobs(1, queue: 'builds.osx') }
-    before { config.limit.default = 5 }
-    before { subject }
-
-    it { expect(subject.size).to eq 5 }
-    it { expect(report).to include('max jobs for user svenfuchs by default: 5') }
-    it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 5') }
+      it { expect(subject.size).to eq 5 }
+      it { expect(report).to include('max jobs for user svenfuchs by default: 5') }
+      it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 5') }
+    end
   end
 
   describe 'delegated accounts' do
-    let(:carla) { FactoryGirl.create(:user, login: 'carla') }
+    let(:carla) { create(:user, login: 'carla') }
 
     before { create_jobs(3, owner: owner, state: :created, queueable: true) }
     before { create_jobs(3, owner: org,   state: :created, queueable: true) }
@@ -226,7 +256,7 @@ describe Travis::Scheduler::Limit::Jobs do
     before { config.limit.delegate = { owner.login => org.login, carla.login => org.login } }
 
     describe 'with one subscription' do
-      before { FactoryGirl.create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: org.class.name, owner_id: org.id) }
+      before { create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: org.class.name, owner_id: org.id) }
       before { subject }
 
       it { expect(subject.size).to eq 5 }
@@ -236,8 +266,8 @@ describe Travis::Scheduler::Limit::Jobs do
     end
 
     describe 'with multiple subscriptions' do
-      before { FactoryGirl.create(:subscription, selected_plan: :one, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
-      before { FactoryGirl.create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: org.class.name, owner_id: org.id) }
+      before { create(:subscription, selected_plan: :one, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
+      before { create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: org.class.name, owner_id: org.id) }
       before { subject }
 
       it { expect(subject.size).to eq 6 }
@@ -248,9 +278,9 @@ describe Travis::Scheduler::Limit::Jobs do
   end
 
   describe 'stages' do
-    let(:one) { FactoryGirl.create(:stage, number: 1) }
-    let(:two) { FactoryGirl.create(:stage, number: 2) }
-    let(:three) { FactoryGirl.create(:stage, number: 3) }
+    let(:one) { create(:stage, number: 1) }
+    let(:two) { create(:stage, number: 2) }
+    let(:three) { create(:stage, number: 3) }
 
     before { create_jobs(1, owner: owner, state: :created, stage: one, stage_number: '1.1') }
     before { create_jobs(1, owner: owner, state: :created, stage: one, stage_number: '1.2') }
@@ -311,7 +341,7 @@ describe Travis::Scheduler::Limit::Jobs do
     end
 
     describe 'no running jobs, 4 private and 4 public jobs waiting, two jobs subscription' do
-      before { FactoryGirl.create(:subscription, selected_plan: :two, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
+      before { create(:subscription, selected_plan: :two, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
       before { create_jobs(4, private: true) }
       before { create_jobs(4, private: false) }
 

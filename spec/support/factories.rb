@@ -1,4 +1,5 @@
 require 'factory_girl'
+require 'settings'
 
 FactoryGirl.define do
   REPO_KEY = OpenSSL::PKey::RSA.generate(4096)
@@ -11,6 +12,8 @@ FactoryGirl.define do
   factory :org, :class => 'Organization' do
     login 'travis-ci'
   end
+
+  factory :owner_group
 
   factory :subscription do
     valid_to Time.now + 24 * 3600
@@ -75,5 +78,7 @@ FactoryGirl.define do
     author_name     'Sven Fuchs'
     author_email    'me@svenfuchs.com'
   end
+
+  factory :setting, class: Settings::Record::Setting
 end
 

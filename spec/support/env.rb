@@ -12,7 +12,8 @@ module Support
     end
 
     def define_env(vars)
-      vars.each { |key, value| ENV[key.to_s] = value.to_s }
+      resolve = ->(v) { v.is_a?(Proc) ? instance_exec(&v) : v }
+      vars.each { |key, value| ENV[key.to_s] = resolve.(value).to_s }
     end
 
     def undefine_env(vars)
