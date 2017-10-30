@@ -17,6 +17,18 @@ GIT
       net-http-pipeline
 
 GIT
+  remote: https://github.com/travis-ci/settings
+  revision: b590df5c1f6d2e9f75e8b84cd8540e8b046318ce
+  specs:
+    settings (0.0.1)
+
+GIT
+  remote: https://github.com/travis-ci/travis-encrypt
+  revision: b91fac2529202dcc4f638146efa88ce08c9f2432
+  specs:
+    travis-encrypt (0.0.5)
+
+GIT
   remote: https://github.com/travis-ci/travis-exceptions
   revision: ab236981f810b820bc3ebfaf33f317bbaa9b3465
   specs:
@@ -187,8 +199,10 @@ DEPENDENCIES
   rollout
   rspec
   sentry-raven
+  settings!
   sidekiq-pro!
   travis-config (~> 1.1.3)
+  travis-encrypt!
   travis-exceptions!
   travis-lock
   travis-logger!

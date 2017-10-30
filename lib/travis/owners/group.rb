@@ -1,3 +1,5 @@
+require 'travis/owners/record'
+
 module Travis
   module Owners
     class Group < Struct.new(:all, :config)
@@ -11,8 +13,12 @@ module Travis
         logins.join(':')
       end
 
+      def id
+        db.uuid
+      end
+
       def logins
-        all.map(&:login)
+        all.map(&:login).sort
       end
 
       def max_jobs
@@ -44,6 +50,10 @@ module Travis
 
         def subscriptions
           @subscriptions ||= Subscriptions.new(self, plans)
+        end
+
+        def db
+          Db.new(all.first)
         end
 
         def plans

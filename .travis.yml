@@ -8,7 +8,6 @@ cache: bundler
 
 services:
   - redis
-  - rabbitmq
 
 addons:
   postgresql: 9.3

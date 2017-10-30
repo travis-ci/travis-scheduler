@@ -1,5 +1,6 @@
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/logging'
+require 'travis/scheduler/model/settings'
 
 module Travis
   module Scheduler
@@ -8,7 +9,6 @@ module Travis
         include Helper::Context
 
         def enqueue?
-          return true unless enabled?
           return true unless queue == ENV['BY_QUEUE_NAME']
           result = current < max
           report(max) if result
@@ -17,8 +17,8 @@ module Travis
 
         private
 
-          def enabled?
-            config[owners.key] || ENV['BY_QUEUE_DEFAULT']
+          def queue
+            job.queue ||= Queue.new(job, context.config, nil).select
           end
 
           def current
@@ -26,29 +26,37 @@ module Travis
           end
 
           def max
-            config.fetch(owners.key, default).to_i
+            by_config || by_setting || default
           end
 
-          def queue
-            job.queue ||= Queue.new(job, context.config, nil).select
+          def by_config
+            config[owners.key].to_i if config.key?(owners.key)
+          end
+
+          def by_setting
+            # p settings[:by_queue_enabled].enabled?
+            settings[:by_queue_enabled].enabled? && settings[:by_queue].value
           end
 
           def repo
             job.repository
           end
 
+          def default
+            ENV.fetch('BY_QUEUE_DEFAULT', 2).to_i
+          end
+
+          def config
+            @config ||= ENV['BY_QUEUE_LIMIT'].to_s.split(',').map { |pair| pair.split('=') }.to_h
+          end
+
+          def settings
+            @settings ||= Model::Settings.new(owners)
+          end
+
           def report(value)
             reports << MSGS[:max] % [owners.to_s, "queue #{job.queue}", value]
             value
-          end
-
-          def default
-            ENV['BY_QUEUE_DEFAULT'].to_i
-          end
-
-          # TODO make this a repo setting at some point?
-          def config
-            @config ||= ENV['BY_QUEUE_LIMIT'].to_s.split(',').map { |pair| pair.split('=') }.to_h
           end
       end
     end
