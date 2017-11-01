@@ -9,7 +9,7 @@ gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout', re
 gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions'
 gem 'travis-logger',      git: 'https://github.com/travis-ci/travis-logger'
 gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings'
-gem 'gh',                 git: 'https://github.com/travis-ci/gh', branch: 'igor-rm-http-net-persistent'
+gem 'gh',                 git: 'https://github.com/travis-ci/gh'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 
 gem 'cl'
@@ -26,7 +26,7 @@ gem 'redlock'
 gem 'multi_json',         '~> 1.11'
 gem 'rack', '1.6.4'
 
-gem 'libhoney', git: 'https://github.com/honeycombio/libhoney-rb', tag: 'v1.0.4'
+gem 'libhoney'
 
 group :test do
   gem 'rake'

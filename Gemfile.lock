@@ -1,12 +1,4 @@
 GIT
-  remote: https://github.com/honeycombio/libhoney-rb
-  revision: 0a8bb228b4590a295d6e209419404c1931e4d7c5
-  tag: v1.0.4
-  specs:
-    libhoney (1.0.4)
-      http (~> 2.0)
-
-GIT
   remote: https://github.com/rkh/coder
   revision: 44b0cf89b98caecc654dd1a724a448e17ef7aa6c
   specs:
@@ -14,14 +6,14 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/gh
-  revision: d745ba813d2b3495e8b47dab5f7eaab62a44b9a2
-  branch: igor-rm-http-net-persistent
+  revision: 38fb339510ff9ae67cb08c6df7698f4c393f5a44
   specs:
     gh (0.15.1)
       addressable (~> 2.4)
       backports
       faraday (~> 0.8)
       multi_json (~> 1.0)
+      net-http-persistent (~> 2.9)
       net-http-pipeline
 
 GIT
@@ -79,7 +71,7 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
-    backports (3.8.0)
+    backports (3.10.3)
     builder (3.2.3)
     bunny (2.6.1)
       amq-protocol (>= 2.0.1)
@@ -116,6 +108,8 @@ GEM
     i18n (0.8.6)
     ice_nine (0.11.2)
     jemalloc (1.0.1)
+    libhoney (1.3.2)
+      http (~> 2.0)
     metaclass (0.0.4)
     metriks (0.9.9.7)
       atomic (~> 1.0)
@@ -128,6 +122,7 @@ GEM
       metaclass (~> 0.0.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
+    net-http-persistent (2.9.4)
     net-http-pipeline (1.0.1)
     pg (0.19.0)
     public_suffix (2.0.5)
@@ -198,7 +193,7 @@ DEPENDENCIES
   factory_girl (~> 4.7.0)
   gh!
   jemalloc
-  libhoney!
+  libhoney
   mocha (~> 0.10.0)
   multi_json (~> 1.11)
   pg
