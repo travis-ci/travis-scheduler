@@ -48,9 +48,8 @@ module Travis
           end
 
           event = event.merge({
-            job:      job,
-            queue:    queue,
-            job_args: job_args,
+            sidekiq_job:  job,
+            sidekiq_args: job_args,
 
             job_duration_ms:  request_time * 1000,
 
