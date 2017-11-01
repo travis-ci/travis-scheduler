@@ -14,6 +14,8 @@ module Travis
 
         def run
           info MSGS[:queueing] % [job.id, repo.slug]
+          Travis::Honeycomb.context.add('job_id', job.id)
+          Travis::Honeycomb.context.add('repo_slug', repo.slug)
           set_queued
           notify
         end
