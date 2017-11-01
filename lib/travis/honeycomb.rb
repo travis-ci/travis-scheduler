@@ -11,6 +11,7 @@ module Travis
       end
 
       def setup
+        honey_setup
         sidekiq_setup
         rpc_setup
       end
@@ -24,6 +25,17 @@ module Travis
         context.clear
         sidekiq.clear
         rpc.clear
+      end
+
+      def honey
+        @honey ||= Libhoney::Client.new
+      end
+
+      def honey_setup
+        return unless sidekiq.enabled? || rpc.enabled?
+
+        # initialize shared client
+        honey
       end
 
       # env vars used to configure sidekiq client:
@@ -136,9 +148,11 @@ module Travis
       def send(event)
         return unless enabled? && should_sample?
 
-        ev = honey.event
+        ev = Honeycomb.honey.event
         ev.add(event)
         ev.sample_rate = sample_rate
+        ev.writekey = env('WRITEKEY')
+        ev.dataset = env('DATASET')
         ev.send_presampled
       end
 
@@ -189,14 +203,6 @@ module Travis
 
       private def default_sample_rate
         @default_sample_rate ||= env('SAMPLE_RATE')&.to_i || 1
-      end
-
-      private def honey
-        @honey ||= Libhoney::Client.new(
-          writekey: env('WRITEKEY'),
-          dataset: env('DATASET'),
-          max_concurrent_batches: 1,
-        )
       end
 
       private def env(name)
