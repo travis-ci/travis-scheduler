@@ -1,12 +1,18 @@
 require 'sidekiq'
 require 'travis/exceptions/sidekiq'
 require 'travis/metrics/sidekiq'
+require 'travis/honeycomb'
+require 'travis/scheduler/support/sidekiq/honeycomb'
 
 module Travis
   module Scheduler
     module Sidekiq
       class << self
         def setup(config, logger)
+          Travis::Honeycomb::Context.add_permanent('app', 'scheduler')
+          Travis::Honeycomb::Context.add_permanent('dyno', ENV['DYNO'])
+          Travis::Honeycomb.setup
+
           ::Sidekiq.configure_server do |c|
             c.redis = {
               url: config.redis.url,
@@ -20,6 +26,7 @@ module Travis
             c.server_middleware do |chain|
               chain.add Exceptions::Sidekiq, config.env, logger if config.sentry.dsn
               chain.add Metrics::Sidekiq
+              chain.add Sidekiq::Honeycomb
             end
 
             c.logger.level = ::Logger::const_get(config.sidekiq.log_level.upcase.to_s)

@@ -17,6 +17,7 @@ module Travis
 
         def run
           info MSGS[:schedule] % [owners.to_s]
+          Travis::Honeycomb.context.add('owner_group', owners.key)
           collect
           report
           enqueue

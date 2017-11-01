@@ -31,6 +31,8 @@ module Travis
 
           def notify_workers
             info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
+            Travis::Honeycomb.context.add('job_id', job.id)
+            Travis::Honeycomb.context.add('queue', job.queue)
             rollout? ? notify_job_board : notify_rabbitmq
           end
 

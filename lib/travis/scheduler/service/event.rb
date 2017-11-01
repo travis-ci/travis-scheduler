@@ -18,10 +18,12 @@ module Travis
 
         def run
           info MSGS[:receive] % [event, type, obj.id, repo.slug]
+          Travis::Honeycomb.context.add('repo_slug', repo.slug)
           meter
           inline :enqueue_owners, attrs
         rescue Lock::Redis::LockError => e
           info MSGS[:drop] % [e.key, event, type, data[:id]]
+          Travis::Honeycomb.context.add('dropped', true)
         end
 
         private

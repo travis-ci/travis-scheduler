@@ -28,6 +28,7 @@ module Travis
           check_all
           report summary
           report stats if waiting.any?
+          honeycomb
         end
 
         def reports
@@ -94,6 +95,15 @@ module Travis
             jobs = waiting.group_by(&:repository)
             stats = jobs.map { |repo, jobs| [repo.slug, jobs.size].join('=') }
             MSGS[:stats] % [owners.key, stats.join(', ')]
+          end
+
+          def honeycomb
+            Travis::Honeycomb.context.add('scheduler.stats', {
+              total: queueable.size,
+              running: state.running_by_owners,
+              queueable: selected.size,
+              waiting: waiting.size,
+            })
           end
 
           def report(*reports)

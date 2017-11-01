@@ -26,6 +26,8 @@ gem 'redlock'
 gem 'multi_json',         '~> 1.11'
 gem 'rack', '1.6.4'
 
+gem 'libhoney'
+
 group :test do
   gem 'rake'
   gem 'database_cleaner', '~> 1.5.1'
