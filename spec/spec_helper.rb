@@ -26,6 +26,7 @@ RSpec.configure do |c|
   c.include Support::Features
   c.include Support::Logger
   c.include Support::Rollout
+  c.include FactoryGirl::Syntax::Methods
   # c.backtrace_clean_patterns = []
 
   # TODO for webmock request expectation
@@ -37,6 +38,7 @@ RSpec.configure do |c|
     Travis::Scheduler.instance_variable_set(:@context, nil)
     Travis::Scheduler.instance_variable_set(:@config, nil) # TODO remove once everything uses context
     Travis::Scheduler.redis.flushall
+    Travis::Amqp::Publisher.any_instance.stubs(:publish)
   end
 
   c.after do

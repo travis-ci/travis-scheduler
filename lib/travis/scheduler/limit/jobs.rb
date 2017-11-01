@@ -8,7 +8,8 @@ module Travis
         max:       'max jobs for %s by %s: %s',
         max_plan:  'max jobs for %s by %s: %s (%s)',
         max_stage: 'jobs for %s limited at stage: %s (queueable: %s)',
-        summary:   '%s: total: %s, running: %s, queueable: %s'
+        summary:   '%s: total: %s, running: %s, queueable: %s',
+        stats:     'jobs waiting for %s: %s'
       }
 
       class Jobs < Struct.new(:context, :owners)
@@ -26,6 +27,7 @@ module Travis
           unleak_queueables if ENV['UNLEAK_QUEUEABLE_JOBS']
           check_all
           report summary
+          report stats if waiting.any?
         end
 
         def reports
@@ -77,23 +79,29 @@ module Travis
           end
 
           def enqueue?(job)
-            limits_for(job).map do |limit|
-              result = limit.enqueue?
-              report *limit.reports
-              result
-            end.inject(&:&)
+            limits_for(job).map(&:enqueue?).inject(&:&)
           end
 
           def limits_for(job)
-            LIMITS.map { |limit| limit.new(context, owners, job, selected, state, config) }
+            LIMITS.map { |limit| limit.new(context, reports, owners, job, selected, state, config) }
           end
 
           def summary
             MSGS[:summary] % [owners.to_s, queueable.size, state.running_by_owners, selected.size]
           end
 
+          def stats
+            jobs = waiting.group_by(&:repository)
+            stats = jobs.map { |repo, jobs| [repo.slug, jobs.size].join('=') }
+            MSGS[:stats] % [owners.key, stats.join(', ')]
+          end
+
           def report(*reports)
             self.reports.concat(reports).uniq!
+          end
+
+          def waiting
+            queueable - selected
           end
 
           def queueable
