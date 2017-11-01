@@ -47,11 +47,14 @@ module Travis
             job.delete('args')
           end
 
+          queue_time = Time.now - Time.at(job['enqueued_at'])
+
           event = event.merge({
             sidekiq_job:  job,
             sidekiq_args: job_args,
 
             sidekiq_job_duration_ms: request_time * 1000,
+            sidekiq_job_queue_ms:    queue_time * 1000,
 
             exception_class:         e&.class&.name,
             exception_message:       e&.message,
