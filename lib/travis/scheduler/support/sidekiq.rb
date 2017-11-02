@@ -11,7 +11,7 @@ module Travis
         def setup(config, logger)
           Travis::Honeycomb::Context.add_permanent('app', 'scheduler')
           Travis::Honeycomb::Context.add_permanent('dyno', ENV['DYNO'])
-          Travis::Honeycomb::Context.add_permanent('site', ENV['SITE'])
+          Travis::Honeycomb::Context.add_permanent('site', ENV['TRAVIS_SITE'])
           Travis::Honeycomb.setup
 
           ::Sidekiq.configure_server do |c|
