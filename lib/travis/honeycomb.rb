@@ -80,7 +80,6 @@ module Travis
               event: name,
               duration_ms: ((finish - start) * 1000).to_i,
               id: id,
-              dyno: ENV['DYNO'],
             )
 
             rpc.send(event)
@@ -97,7 +96,6 @@ module Travis
               event: name,
               duration_ms: ((finish - start) * 1000).to_i,
               id: id,
-              dyno: ENV['DYNO'],
               method: env[:method],
               url: env[:url].to_s,
               host: env[:url].host,
