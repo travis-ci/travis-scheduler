@@ -4,7 +4,7 @@ require 'travis/honeycomb'
 require 'active_support/core_ext/object/deep_dup'
 
 module Travis
-  module Scheduler
+  module Gatekeeper
     module Sidekiq
       class Honeycomb
         def call(worker, job, queue)
@@ -15,6 +15,8 @@ module Travis
             return
           end
 
+          queue_time = Time.now - Time.at(job['enqueued_at'])
+
           request_started_at = Time.now
           begin
             yield
@@ -22,23 +24,26 @@ module Travis
             request_ended_at = Time.now
             request_time = request_ended_at - request_started_at
 
-            honeycomb(worker, job, queue, request_time)
+            honeycomb(worker, job, queue, request_time, queue_time)
           rescue => e
             request_ended_at = Time.now
             request_time = request_ended_at - request_started_at
 
-            honeycomb(worker, job, queue, request_time, e)
+            honeycomb(worker, job, queue, request_time, queue_time, e)
 
             raise
           end
         end
 
-        private def honeycomb(worker, job, queue, request_time, e = nil)
+        private def honeycomb(worker, job, queue, request_time, queue_time, e = nil)
           event = {}
 
           event = event.merge(Travis::Honeycomb.context.data)
 
           job = job.deep_dup
+          job.dig('args', 0)&.delete('credentials')
+          job.dig('args', 0)&.delete('payload')
+          job.dig('args', 0)&.delete('data')
 
           job_args = nil
           if job['args'].kind_of?(Array)
@@ -46,8 +51,6 @@ module Travis
             job_args = (0..job['args'].length-1).map(&:to_s).to_a.zip(job['args']).to_h
             job.delete('args')
           end
-
-          queue_time = Time.now - Time.at(job['enqueued_at'])
 
           event = event.merge({
             sidekiq_job:  job,
