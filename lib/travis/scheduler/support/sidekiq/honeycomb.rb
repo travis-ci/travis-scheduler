@@ -41,9 +41,6 @@ module Travis
           event = event.merge(Travis::Honeycomb.context.data)
 
           job = job.deep_dup
-          job.dig('args', 0)&.delete('credentials')
-          job.dig('args', 0)&.delete('payload')
-          job.dig('args', 0)&.delete('data')
 
           job_args = nil
           if job['args'].kind_of?(Array)
