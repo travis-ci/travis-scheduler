@@ -47,6 +47,9 @@ module Travis
           end
 
           def notify_live
+            # we need to always make sure that the data is fresh, because Active
+            # Record doesn't always refresh the updated_at column
+            job.reload
             Live.push(live_payload, live_params)
           end
 
