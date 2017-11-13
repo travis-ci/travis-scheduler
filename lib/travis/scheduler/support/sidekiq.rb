@@ -33,7 +33,7 @@ module Travis
             c.logger.level = ::Logger::const_get(config.sidekiq.log_level.upcase.to_s)
 
             if pro?
-              c.reliable_fetch!
+              c.super_fetch!
               c.reliable_scheduler!
             end
           end
