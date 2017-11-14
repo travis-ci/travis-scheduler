@@ -14,7 +14,8 @@ module Travis
             state:              job.state.to_s,
             queue:              job.queue,
             allow_failure:      job.allow_failure,
-            commit:             commit_data
+            commit:             commit_data,
+            updated_at:         format_date_with_ms(job.updated_at)
           }
         end
 
@@ -45,6 +46,10 @@ module Travis
 
           def format_date(date)
             date && date.strftime('%Y-%m-%dT%H:%M:%SZ')
+          end
+
+          def format_date_with_ms(date)
+            date && date.strftime('%Y-%m-%dT%H:%M:%S.%3NZ')
           end
       end
     end
