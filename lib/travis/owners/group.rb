@@ -8,11 +8,11 @@ module Travis
       end
 
       def key
-        logins.join(':')
+        @key ||= logins.join(':')
       end
 
       def logins
-        all.map(&:login)
+        @login ||= all.map(&:login).sort
       end
 
       def max_jobs
