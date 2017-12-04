@@ -25,7 +25,7 @@ class Request < ActiveRecord::Base
     # false if Scheduler.config.enterprise is not true.
     return false if read_attribute(:payload).nil?
     # It's not the same repo PR if repo names don't match
-    return false if head_repo != repository.slug
+    return false if head_repo_github_id != repository.github_id
     # It may not be the same repo if head_ref or head_sha are missing
     return false if head_ref.nil? or head_sha.nil?
     # It may not be same repo PR if ref is a commit
@@ -43,8 +43,8 @@ class Request < ActiveRecord::Base
 
   private
 
-    def head_repo
-      pull_request ? pull_request.head_repo_slug : pr.head.try(:repo).try(:full_name)
+    def head_repo_github_id
+      pull_request ? pull_request.head_repo_github_id : pr.head.try(:repo).try(:id)
     end
 
     def head_ref
