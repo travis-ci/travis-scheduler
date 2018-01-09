@@ -57,6 +57,11 @@ describe Travis::Queue do
     it { expect(queue).to eq 'builds.docker' }
   end
 
+  describe 'with a chrome addon and sudo: false' do
+    let(:config) { { language: 'node_js', sudo: false, addons: { chrome: 'stable' } } }
+    it { expect(queue).to eq 'builds.gce' }
+  end
+
   describe 'by app config' do
     describe 'by repo slug' do
       let(:slug) { 'rails/rails' }

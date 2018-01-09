@@ -6,6 +6,7 @@ module Travis
       def value
         return 'required' if force_precise_sudo_required?
         return 'required' if sudo_used?
+        return 'required' if chrome_used?
         return specified if specified?
         default
       end
@@ -30,6 +31,10 @@ module Travis
 
         def sudo_used?
           SudoDetector.new(job_config).detect?
+        end
+
+        def chrome_used?
+          job_config.key?(:addons) && job_config[:addons][:chrome].present?
         end
 
         def repo_created_after_cutoff?
