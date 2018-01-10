@@ -21,6 +21,7 @@ describe Travis::Queue do
       { queue: 'builds.mac_osx', os: 'osx' },
       { queue: 'builds.docker', sudo: false, dist: 'precise' },
       { queue: 'builds.ec2', sudo: false, dist: 'trusty' },
+      { queue: 'builds.gce', addons: %w(chrome) },
       { queue: 'builds.gce', services: %w(docker) },
       { queue: 'builds.gce', dist: 'trusty', sudo: 'required' },
       { queue: 'builds.gce', dist: 'precise', sudo: 'required' },
@@ -55,6 +56,11 @@ describe Travis::Queue do
     end
     let(:config) { { language: 'php', os: 'linux', group: 'stable', dist: 'precise' } }
     it { expect(queue).to eq 'builds.docker' }
+  end
+
+  describe 'with a chrome addon and sudo: false' do
+    let(:config) { { language: 'node_js', sudo: false, addons: { chrome: 'stable' } } }
+    it { expect(queue).to eq 'builds.gce' }
   end
 
   describe 'by app config' do

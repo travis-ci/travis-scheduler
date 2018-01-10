@@ -2,7 +2,7 @@ module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
       KEYS = %i(slug owner os language sudo dist group osx_image percentage
-        services)
+        addons services)
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
@@ -55,6 +55,10 @@ module Travis
           ->(percent) { rand(100) < percent }
         end
 
+        def addons
+          ->(addons) { Array(job.config[:addons] && job.config[:addons].keys.map(&:to_s) & addons).any? }
+        end
+
         def services
           ->(services) { (Array(job.config[:services]) & services).any? }
         end
@@ -65,7 +69,7 @@ module Travis
 
         def check_unknown_matchers(used)
           unknown = used - KEYS
-          logger.warn MSGS[:unknown_matchers] % [name, unknown, repo.slug] if logger && unknown.any?
+          logger.warn MSGS[:unknown_matchers] % [used.join(', '), unknown, repo.slug] if logger && unknown.any?
         end
     end
   end
