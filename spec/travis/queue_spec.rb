@@ -21,6 +21,7 @@ describe Travis::Queue do
       { queue: 'builds.mac_osx', os: 'osx' },
       { queue: 'builds.docker', sudo: false, dist: 'precise' },
       { queue: 'builds.ec2', sudo: false, dist: 'trusty' },
+      { queue: 'builds.gce', addons: %w(chrome) },
       { queue: 'builds.gce', services: %w(docker) },
       { queue: 'builds.gce', dist: 'trusty', sudo: 'required' },
       { queue: 'builds.gce', dist: 'precise', sudo: 'required' },
