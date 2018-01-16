@@ -3,14 +3,18 @@ source 'https://rubygems.org'
 ruby '2.4.2' if ENV['DYNO']
 
 gem 'travis-config',      '~> 1.1.3'
-gem 'travis-metrics',     '~> 2.0.0'
 gem 'travis-lock'
+gem 'travis-metrics',     git: 'https://github.com/travis-ci/travis-metrics'
 gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout', ref: 'sf-refactor'
 gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions'
 gem 'travis-logger',      git: 'https://github.com/travis-ci/travis-logger'
 gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings'
 gem 'gh',                 git: 'https://github.com/travis-ci/gh'
 gem 'coder',              git: 'https://github.com/rkh/coder'
+
+gem 'metriks',                 git: 'https://github.com/travis-ci/metriks', ref: 'igor-hdr-histogram'
+gem 'metriks-librato_metrics', git: 'https://github.com/travis-ci/metriks-librato_metrics', ref: 'igor-hdr-histogram'
+
 
 gem 'cl'
 gem 'sidekiq-pro', require: 'sidekiq-pro', source: 'https://gems.contribsys.com'
