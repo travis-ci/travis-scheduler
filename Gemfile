@@ -15,7 +15,6 @@ gem 'coder',              git: 'https://github.com/rkh/coder'
 gem 'metriks',                 git: 'https://github.com/travis-ci/metriks', ref: 'igor-hdr-histogram'
 gem 'metriks-librato_metrics', git: 'https://github.com/travis-ci/metriks-librato_metrics', ref: 'igor-hdr-histogram'
 
-
 gem 'cl'
 gem 'sidekiq-pro', require: 'sidekiq-pro', source: 'https://gems.contribsys.com'
 gem 'jemalloc'
