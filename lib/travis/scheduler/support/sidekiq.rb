@@ -3,6 +3,7 @@ require 'travis/exceptions/sidekiq'
 require 'travis/metrics/sidekiq'
 require 'travis/honeycomb'
 require 'travis/scheduler/support/sidekiq/honeycomb'
+require 'travis/gatekeeper/support/sidekiq/marginalia'
 
 module Travis
   module Scheduler
@@ -28,6 +29,7 @@ module Travis
               chain.add Exceptions::Sidekiq, config.env, logger if config.sentry.dsn
               chain.add Metrics::Sidekiq
               chain.add Sidekiq::Honeycomb
+              chain.add Sidekiq::Marginalia, app: 'scheduler'
             end
 
             c.logger.level = ::Logger::const_get(config.sidekiq.log_level.upcase.to_s)

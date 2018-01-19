@@ -14,6 +14,7 @@ require 'travis/scheduler/support/sidekiq'
 require 'travis/scheduler/worker'
 require 'travis/service'
 require 'travis/support/database'
+require 'travis/marginalia'
 
 Travis::Exceptions::Queue = ::Queue # TODO fix in travis-exceptions
 
@@ -31,6 +32,10 @@ module Travis
         @metrics = Metrics.setup(config.metrics, logger)
         Sidekiq.setup(config, logger)
         Features.setup(config)
+
+        if ENV['QUERY_COMMENTS_ENABLED'] == 'true'
+          Travis::Marginalia.setup
+        end
       end
 
       def context
