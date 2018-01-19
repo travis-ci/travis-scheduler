@@ -3,7 +3,7 @@ require 'travis/exceptions/sidekiq'
 require 'travis/metrics/sidekiq'
 require 'travis/honeycomb'
 require 'travis/scheduler/support/sidekiq/honeycomb'
-require 'travis/gatekeeper/support/sidekiq/marginalia'
+require 'travis/scheduler/support/sidekiq/marginalia'
 
 module Travis
   module Scheduler
