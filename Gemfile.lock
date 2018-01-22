@@ -17,6 +17,13 @@ GIT
       net-http-pipeline
 
 GIT
+  remote: https://github.com/travis-ci/marginalia
+  revision: 1733a09de1dd8a4e9b6d92cee7413eacb38f0db1
+  specs:
+    marginalia (1.5.0)
+      activerecord (>= 2.3)
+
+GIT
   remote: https://github.com/travis-ci/metriks
   revision: 9b5a34fecebecc741417b25e43c340394aa6cc5e
   ref: igor-hdr-histogram
@@ -213,6 +220,7 @@ DEPENDENCIES
   gh!
   jemalloc
   libhoney
+  marginalia!
   metriks!
   metriks-librato_metrics!
   mocha (~> 0.10.0)
