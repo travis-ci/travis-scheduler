@@ -12,8 +12,8 @@ gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings'
 gem 'gh',                 git: 'https://github.com/travis-ci/gh'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 
-gem 'metriks',                 git: 'https://github.com/travis-ci/metriks', ref: 'igor-hdr-histogram'
-gem 'metriks-librato_metrics', git: 'https://github.com/travis-ci/metriks-librato_metrics', ref: 'igor-hdr-histogram'
+gem 'metriks',                 git: 'https://github.com/travis-ci/metriks'
+gem 'metriks-librato_metrics', git: 'https://github.com/travis-ci/metriks-librato_metrics'
 
 gem 'marginalia', git: 'https://github.com/travis-ci/marginalia'
 
