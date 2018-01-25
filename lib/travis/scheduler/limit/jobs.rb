@@ -99,10 +99,10 @@ module Travis
 
           def honeycomb
             Travis::Honeycomb.context.add('scheduler.stats', {
-              total: queueable.size,
               running: state.running_by_owners,
-              queueable: selected.size,
+              enqueued: selected.size,
               waiting: waiting.size,
+              concurrent: selected.size + state.running_by_owners,
             })
           end
 
