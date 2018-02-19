@@ -9,7 +9,8 @@ module Travis
 
         def enqueue?
           return true unless job.stage_number
-          !!report if queueable?
+          return !!report if queueable?
+          return false
         end
 
         private
