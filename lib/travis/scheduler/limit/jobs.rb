@@ -103,10 +103,10 @@ module Travis
               running: state.running_by_owners,
               enqueued: selected.size,
               waiting: waiting.size,
-              waiting_by_owner: wait_counts[ByOwner]
-              waiting_by_queue: wait_counts[ByQueue]
-              waiting_by_repo: wait_counts[ByRepo]
-              waiting_by_stage: wait_counts[ByStage]
+              waiting_by_owner: wait_counts[ByOwner],
+              waiting_by_queue: wait_counts[ByQueue],
+              waiting_by_repo: wait_counts[ByRepo],
+              waiting_by_stage: wait_counts[ByStage],
               concurrent: selected.size + state.running_by_owners,
             })
           end
