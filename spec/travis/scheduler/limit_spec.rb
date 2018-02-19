@@ -10,6 +10,7 @@ describe Travis::Scheduler::Limit::Jobs do
   let(:data)    { { owner_type: 'User', owner_id: owner.id } }
   let(:limit)   { described_class.new(context, owners) }
   let(:report)  { limit.reports }
+  let(:wait_count) {limit.send(:waiting_by_type)}
 
   env USE_QUEUEABLE_JOBS: true
 
@@ -39,6 +40,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('max jobs for user svenfuchs by boost: 2') }
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 2') }
     it { expect(report).to include('jobs waiting for svenfuchs: svenfuchs/gem-release=1') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 1}
   end
 
   describe 'with a subscription limit 1' do
@@ -49,6 +51,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 1 }
     it { expect(report).to include('max jobs for user svenfuchs by plan: 1 (svenfuchs)') }
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 2}
   end
 
   describe 'with a custom config limit unlimited' do
@@ -59,6 +62,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 3 }
     it { expect(report).to include('max jobs for user svenfuchs by unlimited: true') }
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 3') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 0}
   end
 
   describe 'with a custom config limit 1' do
@@ -69,6 +73,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 1 }
     it { expect(report).to include('max jobs for user svenfuchs by config: 1') }
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 2}
   end
 
   describe 'with a trial' do
@@ -80,6 +85,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 2 }
     it { expect(report).to include('max jobs for user svenfuchs by trial: 2') }
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 2') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 1}
   end
 
   describe 'with a default limit 1' do
@@ -90,6 +96,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 1 }
     it { expect(report).to include('max jobs for user svenfuchs by default: 1') }
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 1') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 2}
   end
 
   describe 'with a default limit 5 and a repo settings limit 2' do
@@ -101,6 +108,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 2 }
     it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 2') }
     it { expect(report).to include('user svenfuchs: total: 3, running: 0, queueable: 2') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByRepo]).to eq 1}
   end
 
   describe 'with a default limit 1 and a repo settings limit 5' do
@@ -115,6 +123,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(report).to include('max jobs for user svenfuchs by plan: 7 (svenfuchs)') }
     it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 5') }
     it { expect(report).to include('user svenfuchs: total: 7, running: 3, queueable: 2') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByRepo]).to eq 5}
   end
 
   describe 'with no by_queue config being given (enterprise)' do
@@ -125,6 +134,7 @@ describe Travis::Scheduler::Limit::Jobs do
 
     it { expect(subject.size).to eq 10 }
     it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 10') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByQueue]).to eq 0}
   end
 
   describe 'with a default by_queue limit of 2 (org)' do
@@ -139,9 +149,10 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 3 }
     it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
     it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByQueue]).to eq 7}
   end
 
-  describe 'with a queue name set, but now default or owner config given (com)' do
+  describe 'with a queue name set, but no default or owner config given (com)' do
     env BY_QUEUE_NAME: 'builds.osx'
 
     before { create_jobs(9, queue: 'builds.osx') }
@@ -153,6 +164,7 @@ describe Travis::Scheduler::Limit::Jobs do
 
     it { expect(subject.size).to eq 10 }
     it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 10') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByQueue]).to eq 0}
   end
 
   describe 'with a by_queue limit of 2 for the owner' do
@@ -167,6 +179,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 3 }
     it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
     it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByQueue]).to eq 7}
   end
 
   describe 'with a by_queue limit of 2 for the owner, and a default given' do
@@ -182,6 +195,7 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 3 }
     it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
     it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 3') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByQueue]).to eq 7}
   end
 
   describe 'with a by_queue limit of 2 for the owner and a repo limit of 3 on another repo' do
@@ -199,6 +213,8 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 5 }
     it { expect(report).to include('max jobs for user svenfuchs by queue builds.osx: 2') }
     it { expect(report).to include('user svenfuchs: total: 14, running: 0, queueable: 5') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByQueue]).to eq 7}
+    it { expect(wait_count[Travis::Scheduler::Limit::ByRepo]).to eq 2}
   end
 
   describe 'with a by_queue limit for the owner and jobs created for a different queue' do
@@ -213,6 +229,8 @@ describe Travis::Scheduler::Limit::Jobs do
     it { expect(subject.size).to eq 5 }
     it { expect(report).to include('max jobs for user svenfuchs by default: 5') }
     it { expect(report).to include('user svenfuchs: total: 10, running: 0, queueable: 5') }
+    it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 5}
+    it { expect(wait_count[Travis::Scheduler::Limit::ByQueue]).to eq 0}
   end
 
   describe 'delegated accounts' do
@@ -233,6 +251,7 @@ describe Travis::Scheduler::Limit::Jobs do
       it { expect(subject.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 2 }
       it { expect(report).to include('max jobs for user svenfuchs by plan: 7 (travis-ci)') }
       it { expect(report).to include('user svenfuchs, user carla, org travis-ci: total: 6, running: 2, queueable: 5') }
+      it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 1}
     end
 
     describe 'with multiple subscriptions' do
@@ -244,6 +263,7 @@ describe Travis::Scheduler::Limit::Jobs do
       it { expect(subject.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 3 }
       it { expect(report).to include('max jobs for user svenfuchs by plan: 8 (svenfuchs, travis-ci)') }
       it { expect(report).to include('user svenfuchs, user carla, org travis-ci: total: 6, running: 2, queueable: 6') }
+      it { expect(wait_count[Travis::Scheduler::Limit::ByOwner]).to eq 0}
     end
   end
 
@@ -262,6 +282,7 @@ describe Travis::Scheduler::Limit::Jobs do
       before { subject }
       it { expect(subject.size).to eq 2 }
       it { expect(report).to include("jobs for build id=#{build.id} repo=#{repo.slug} limited at stage: 1 (queueable: 2)") }
+      it { expect(wait_count[Travis::Scheduler::Limit::ByStage]).to eq 2}
     end
 
     describe 'ordering' do
