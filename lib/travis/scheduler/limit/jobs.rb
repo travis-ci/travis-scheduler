@@ -98,10 +98,15 @@ module Travis
           end
 
           def honeycomb
+            wait_counts = waiting_by_type
             Travis::Honeycomb.context.add('scheduler.stats', {
               running: state.running_by_owners,
               enqueued: selected.size,
               waiting: waiting.size,
+              waiting_by_owner: wait_counts[ByOwner]
+              waiting_by_queue: wait_counts[ByQueue]
+              waiting_by_repo: wait_counts[ByRepo]
+              waiting_by_stage: wait_counts[ByStage]
               concurrent: selected.size + state.running_by_owners,
             })
           end
@@ -112,6 +117,20 @@ module Travis
 
           def waiting
             queueable - selected
+          end
+
+          def waiting_by_type
+            wait_counts = Hash[LIMITS.collect { |v| [v, 0] } ]
+            waiting.each do |job|
+              limits_for(job).each do |limit|
+                is_waiting = catch(:result) { limit.enqueue? }
+                case is_waiting
+                  when :limited, false
+                    wait_counts[limit.class] += 1
+                end
+              end
+            end
+            return wait_counts
           end
 
           def queueable
