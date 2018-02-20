@@ -11,7 +11,7 @@ module Travis
         KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
 
         def enqueue?
-          unlimited || current < max || !public_mode? && throw(:result, :limited)
+          unlimited || current < max
         end
 
         private

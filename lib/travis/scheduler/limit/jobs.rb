@@ -62,10 +62,7 @@ module Travis
           # selected for queueing.
           def check_all
             queueable.each do |job|
-              case check(job)
-              when :limited
-                break
-              when true
+              if enqueue?(job)
                 selected << job
               end
             end
@@ -73,10 +70,6 @@ module Travis
 
           def set_queue(job)
             inline :set_queue, job
-          end
-
-          def check(job)
-            catch(:result) { enqueue?(job) }
           end
 
           def enqueue?(job)
