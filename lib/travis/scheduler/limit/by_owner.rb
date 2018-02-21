@@ -11,7 +11,11 @@ module Travis
         KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
 
         def enqueue?
-          unlimited || current < max
+          if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
+            unlimited || current < max
+          else
+            unlimited || current < max || !public_mode? && throw(:result,   :limited)
+          end
         end
 
         private
@@ -74,7 +78,12 @@ module Travis
           end
 
           def running_and_selected_public_jobs_upto_config_limit
-            count = state.running_by_owners_public + selected.select(&:public?).size
+            if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
+              count = state.running_by_owners_public + selected.select(&:public?).size
+            else
+              count = Job.by_owners(owners.all).running.where(private: false).count
+              count = count + selected.select(&:public?).size
+            end
             count = [count, config[:limit][:public].to_i].min if config[:limit][:public]
             count
           end

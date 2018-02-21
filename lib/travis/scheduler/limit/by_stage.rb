@@ -19,11 +19,24 @@ module Travis
           end
 
           def queueable
-            @queueable ||= Stages.build(state.jobs_by_source(job.source_id)).startable
+            if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
+              stage_jobs = state.jobs_by_source(job.source_id)
+            else 
+              stage_jobs = jobs
+            end
+            @queueable ||= Stages.build(stage_jobs).startable
           end
 
           ATTRS = [:id, :state, :stage_number]
           KEYS  = [:id, :state, :stage]
+
+          def jobs
+            @jobs ||= begin
+              # TODO would it make sense to cache these on `state`?
+              jobs = Job.where(source_id: job.source_id)
+              sort(jobs).map { |job| attrs(job) }
+            end
+          end
 
           def attrs(job)
             {
@@ -33,8 +46,17 @@ module Travis
             }
           end
 
+          def sort(jobs)
+            num = ->(job) { job.stage_number.split('.').map(&:to_i) }
+            jobs.sort { |lft, rgt| num.(lft) <=> num.(rgt) }
+          end
+
           def stages
-            state.jobs.map { |job| job[:stage] }
+            if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
+              state.jobs.map { |job| job[:stage] }
+            else
+              jobs.map { |job| job[:stage] }
+            end
           end
 
           def report

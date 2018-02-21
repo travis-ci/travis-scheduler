@@ -62,7 +62,10 @@ module Travis
           # selected for queueing.
           def check_all
             queueable.each do |job|
-              if enqueue?(job)
+              case check(job)
+              when :limited
+                break
+              when true
                 selected << job
               end
             end
@@ -70,6 +73,10 @@ module Travis
 
           def set_queue(job)
             inline :set_queue, job
+          end
+
+          def check(job)
+            catch(:result) { enqueue?(job) }
           end
 
           def enqueue?(job)
@@ -108,7 +115,11 @@ module Travis
           end
 
           def queueable
-            @queueable ||= Job.includes(:repository).by_owners(owners.all).queueable.to_a
+            if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
+             @queueable ||= Job.includes(:repository).by_owners(owners.all).queueable.to_a
+            else
+              @queueable ||= Job.by_owners(owners.all).queueable.to_a
+            end
           end
           time :queueable, key: 'scheduler.queueable_jobs'
 
