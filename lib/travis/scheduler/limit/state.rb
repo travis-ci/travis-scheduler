@@ -25,7 +25,7 @@ module Travis
         def jobs_by_source(source_id)
           @jobs[source_id] ||= begin
             result = Job.where(source_id: source_id)
-            result.sort.map { |job| attrs(job) }
+            sort(result).map { |job| attrs(job) }
           end
         end
 
@@ -53,6 +53,11 @@ module Travis
 
           def running_jobs_by_owners
             @running_jobs_by_owners ||= Job.by_owners(owners.all).running
+          end
+
+          def sort(jobs)
+            num = ->(job) { job.stage_number.split('.').map(&:to_i) }
+            jobs.sort { |lft, rgt| num.(lft) <=> num.(rgt) }
           end
       end
     end

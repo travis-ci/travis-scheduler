@@ -33,11 +33,6 @@ module Travis
             }
           end
 
-          def sort(jobs)
-            num = ->(job) { job.stage_number.split('.').map(&:to_i) }
-            jobs.sort { |lft, rgt| num.(lft) <=> num.(rgt) }
-          end
-
           def stages
             state.jobs.map { |job| job[:stage] }
           end
