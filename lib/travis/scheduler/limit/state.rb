@@ -11,6 +11,22 @@ module Travis
           @config = config
           @count  = { repo: {}, queue: {} }
           @boosts = {}
+          @jobs = {}
+        end
+
+        def attrs(job)
+          {
+            id:    job.id,
+            stage: job.stage_number,
+            state: job.finished? ? :finished : :created
+          }
+        end
+
+        def jobs_by_source(source_id)
+          @jobs[source_id] ||= begin
+            result = Job.where(source_id: source_id)
+            result.sort.map { |job| attrs(job) }
+          end
         end
 
         def running_by_owners

@@ -19,19 +19,11 @@ module Travis
           end
 
           def queueable
-            @queueable ||= Stages.build(jobs).startable
+            @queueable ||= Stages.build(state.jobs_by_source(job.source_id)).startable
           end
 
           ATTRS = [:id, :state, :stage_number]
           KEYS  = [:id, :state, :stage]
-
-          def jobs
-            @jobs ||= begin
-              # TODO would it make sense to cache these on `state`?
-              jobs = Job.where(source_id: job.source_id)
-              sort(jobs).map { |job| attrs(job) }
-            end
-          end
 
           def attrs(job)
             {
@@ -47,7 +39,7 @@ module Travis
           end
 
           def stages
-            jobs.map { |job| job[:stage] }
+            state.jobs.map { |job| job[:stage] }
           end
 
           def report
