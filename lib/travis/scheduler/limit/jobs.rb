@@ -108,7 +108,7 @@ module Travis
           end
 
           def queueable
-            @queueable ||= Job.by_owners(owners.all).queueable.to_a
+            @queueable ||= Job.includes(:repository).by_owners(owners.all).queueable.to_a
           end
           time :queueable, key: 'scheduler.queueable_jobs'
 
