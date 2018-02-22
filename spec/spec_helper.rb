@@ -17,6 +17,7 @@ Travis::Scheduler.setup
 
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :transaction
+sql_count = Hash.new 0
 
 WebMock.disable_net_connect!
 
@@ -32,6 +33,13 @@ RSpec.configure do |c|
   # TODO for webmock request expectation
   c.raise_errors_for_deprecations!
 
+  c.before(:suite) do
+    ActiveSupport::Notifications.subscribe 'sql.active_record' do |*args|
+      event = ActiveSupport::Notifications::Event.new *args
+      sql_count[event.payload[:name]] +=1
+    end
+  end
+
   c.before do
     DatabaseCleaner.start
     Time.now.utc.tap { |now| Time.stubs(:now).returns(now) }
@@ -44,4 +52,11 @@ RSpec.configure do |c|
   c.after do
     DatabaseCleaner.clean
   end
+
+  c.after(:suite) do
+    puts
+    puts "Number of SQL queries performed:"
+    puts JSON.pretty_generate(sql_count)
+  end
+
 end
