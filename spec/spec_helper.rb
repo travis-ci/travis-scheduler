@@ -33,10 +33,13 @@ RSpec.configure do |c|
   # TODO for webmock request expectation
   c.raise_errors_for_deprecations!
 
-  c.before(:suite) do
-    ActiveSupport::Notifications.subscribe 'sql.active_record' do |*args|
-      event = ActiveSupport::Notifications::Event.new *args
-      sql_count[event.payload[:name]] +=1
+
+  if ENV['SHOW_QUERIES']
+    c.before(:suite) do
+      ActiveSupport::Notifications.subscribe 'sql.active_record' do |*args|
+        event = ActiveSupport::Notifications::Event.new *args
+        sql_count[event.payload[:name]] +=1
+     end
     end
   end
 
@@ -53,10 +56,11 @@ RSpec.configure do |c|
     DatabaseCleaner.clean
   end
 
-  c.after(:suite) do
-    puts
-    puts "Number of SQL queries performed:"
-    puts JSON.pretty_generate(sql_count)
+  if ENV['SHOW_QUERIES']
+    c.after(:suite) do
+      puts "\nNumber of SQL queries performed:"
+      puts JSON.pretty_generate(sql_count)
+    end
   end
 
 end
