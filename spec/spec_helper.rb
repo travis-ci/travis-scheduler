@@ -17,7 +17,6 @@ Travis::Scheduler.setup
 
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :transaction
-sql_count = Hash.new 0
 
 WebMock.disable_net_connect!
 
@@ -35,6 +34,8 @@ RSpec.configure do |c|
 
 
   if ENV['SHOW_QUERIES']
+    sql_count = {}
+    sql_count.default = 0
     c.before(:suite) do
       ActiveSupport::Notifications.subscribe 'sql.active_record' do |*args|
         event = ActiveSupport::Notifications::Event.new *args
