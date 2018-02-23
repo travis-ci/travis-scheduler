@@ -22,9 +22,11 @@ module Travis
         include Helper::Context, Helper::Metrics
 
         LIMITS = [ByOwner, ByRepo, ByQueue, ByStage]
+        attr_reader :waiting_by_owner
 
         def run
           unleak_queueables if ENV['UNLEAK_QUEUEABLE_JOBS']
+          @waiting_by_owner = 0
           check_all
           report summary
           report stats if waiting.any?
@@ -62,11 +64,10 @@ module Travis
           # selected for queueing.
           def check_all
             queueable.each do |job|
-              case check(job)
-              when :limited
-                break
-              when true
+              if enqueue?(job)
                 selected << job
+              elsif ENV['MAX_WAIT_CONCURRENCY'] && waiting_by_owner >= ENV['MAX_WAIT_CONCURRENCY']
+                break
               end
             end
           end
@@ -75,12 +76,12 @@ module Travis
             inline :set_queue, job
           end
 
-          def check(job)
-            catch(:result) { enqueue?(job) }
-          end
-
           def enqueue?(job)
-            limits_for(job).map(&:enqueue?).inject(&:&)
+            limits = limits_for(job).map(&:enqueue?)
+            if !limits[0] && limits.slice(1,limits.length).inject(&:&)
+              @waiting_by_owner += 1
+            end
+            limits.inject(&:&)
           end
 
           def limits_for(job)
@@ -115,7 +116,7 @@ module Travis
           end
 
           def queueable
-            @queueable ||= Job.by_owners(owners.all).queueable.to_a
+            @queueable ||= Job.includes(:repository).by_owners(owners.all).queueable.to_a
           end
           time :queueable, key: 'scheduler.queueable_jobs'
 

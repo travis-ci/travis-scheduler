@@ -11,7 +11,7 @@ module Travis
         KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
 
         def enqueue?
-          unlimited || current < max || !public_mode? && throw(:result, :limited)
+          unlimited || current < max
         end
 
         private
@@ -74,8 +74,7 @@ module Travis
           end
 
           def running_and_selected_public_jobs_upto_config_limit
-            count = Job.by_owners(owners.all).running.where(private: false).count
-            count = count + selected.select(&:public?).size
+            count = state.running_by_owners_public + selected.select(&:public?).size
             count = [count, config[:limit][:public].to_i].min if config[:limit][:public]
             count
           end
