@@ -19,7 +19,12 @@ module Travis
           end
 
           def queueable
-            @queueable ||= Stages.build(jobs).startable
+            if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
+              stage_jobs = state.jobs_by_source(job.source_id)
+            else 
+              stage_jobs = jobs
+            end
+            @queueable ||= Stages.build(stage_jobs).startable
           end
 
           ATTRS = [:id, :state, :stage_number]
@@ -47,7 +52,11 @@ module Travis
           end
 
           def stages
-            jobs.map { |job| job[:stage] }
+            if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
+              state.jobs.map { |job| job[:stage] }
+            else
+              jobs.map { |job| job[:stage] }
+            end
           end
 
           def report
