@@ -25,7 +25,12 @@ module Travis
 
         def run
           unleak_queueables if ENV['UNLEAK_QUEUEABLE_JOBS']
-          check_all
+          if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
+            @waiting_by_owner = 0
+            check_all_test
+          else
+            check_all
+          end
           report summary
           report stats if waiting.any?
           honeycomb
@@ -71,6 +76,16 @@ module Travis
             end
           end
 
+          def check_all_test
+            queueable.each do |job|
+              if enqueue_test?(job)
+                selected << job
+              elsif ENV['MAX_WAIT_CONCURRENCY'] && @waiting_by_owner >= ENV['MAX_WAIT_CONCURRENCY'].to_i
+                break
+              end
+            end
+          end
+
           def set_queue(job)
             inline :set_queue, job
           end
@@ -81,6 +96,14 @@ module Travis
 
           def enqueue?(job)
             limits_for(job).map(&:enqueue?).inject(&:&)
+          end
+
+          def enqueue_test?(job)
+            limits = limits_for(job).map(&:enqueue?)
+            if !limits[0] && limits.slice(1,limits.length).inject(&:&)
+              @waiting_by_owner += 1
+            end
+            limits.inject(&:&)
           end
 
           def limits_for(job)
@@ -115,11 +138,7 @@ module Travis
           end
 
           def queueable
-            if ENV['QUERY_OPTS_ENABLED_FOR_DYNOS']&.split(' ')&.include?(ENV['DYNO'])
-             @queueable ||= Job.includes(:repository).by_owners(owners.all).queueable.to_a
-            else
-              @queueable ||= Job.by_owners(owners.all).queueable.to_a
-            end
+            @queueable ||= Job.by_owners(owners.all).queueable.to_a
           end
           time :queueable, key: 'scheduler.queueable_jobs'
 
