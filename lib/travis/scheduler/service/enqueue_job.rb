@@ -16,7 +16,7 @@ module Travis
           info MSGS[:queueing] % [job.id, repo.slug]
           Travis::Honeycomb.context.add('job_id', job.id)
           Travis::Honeycomb.context.add('repo_slug', repo.slug)
-          Travis::Honeycomb.context.add('job_waiting_ms', (Time.now - Time.at(job['created_at'])) * 1000)
+          Travis::Honeycomb.context.add('job_waiting_ms', (Time.now - Time.at(job['updated_at'])) * 1000)
           set_queued
           notify
         end
