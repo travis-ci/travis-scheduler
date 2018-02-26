@@ -22,9 +22,11 @@ module Travis
         include Helper::Context, Helper::Metrics
 
         LIMITS = [ByOwner, ByRepo, ByQueue, ByStage]
+        attr_reader :waiting_by_owner
 
         def run
           unleak_queueables if ENV['UNLEAK_QUEUEABLE_JOBS']
+          @waiting_by_owner = 0
           check_all
           report summary
           report stats if waiting.any?
@@ -61,9 +63,12 @@ module Travis
           # I.e. if any limit returns false then the given job will not be
           # selected for queueing.
           def check_all
-            queueable.each do |job|
+            queueable.each_with_index do |job, index|
               case check(job)
               when :limited
+                # The rest of the jobs will definitely be waiting for 
+                # concurrency, regardless of other limits that might apply
+                @waiting_by_owner += queueable.length - index
                 break
               when true
                 selected << job
@@ -80,7 +85,11 @@ module Travis
           end
 
           def enqueue?(job)
-            limits_for(job).map(&:enqueue?).inject(&:&)
+            limits = limits_for(job).map(&:enqueue?)
+            if !limits[0]
+              @waiting_by_owner += 1
+            end
+            limits.inject(&:&)
           end
 
           def limits_for(job)
@@ -102,6 +111,7 @@ module Travis
               running: state.running_by_owners,
               enqueued: selected.size,
               waiting: waiting.size,
+              waiting_for_concurrency: @waiting_by_owner,
               concurrent: selected.size + state.running_by_owners,
             })
           end
