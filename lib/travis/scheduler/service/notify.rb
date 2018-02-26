@@ -33,7 +33,6 @@ module Travis
             info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
             Travis::Honeycomb.context.add('job_id', job.id)
             Travis::Honeycomb.context.add('queue', job.queue)
-            Travis::Honeycomb.context.add('job_waiting_ms', (Time.now - Time.at(job['created_at'])) * 1000)
             rollout? ? notify_job_board : notify_rabbitmq
           end
 
