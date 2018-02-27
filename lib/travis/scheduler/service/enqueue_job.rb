@@ -16,6 +16,13 @@ module Travis
           info MSGS[:queueing] % [job.id, repo.slug]
           Travis::Honeycomb.context.add('job_id', job.id)
           Travis::Honeycomb.context.add('repo_slug', repo.slug)
+          if job['received_at']
+            # job is restarted, so we can't use the 'created_at' time
+            start_time = job['updated_at']
+          else
+            start_time= job['created_at']
+          end
+          Travis::Honeycomb.context.add('job_waiting_s', Time.now - Time.at(start_time))
           set_queued
           notify
         end
