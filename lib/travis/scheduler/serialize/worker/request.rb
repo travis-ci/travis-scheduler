@@ -21,6 +21,10 @@ module Travis
             pull_request ? pull_request.head_repo_slug : pull_request_head_repo['full_name']
           end
 
+          def pull_request_title
+            pull_request ? pull_request.head_repo_title : pull_request_head_repo['title']
+          end
+
           private
 
             # TODO remove once we've backfilled the pull_requests table
