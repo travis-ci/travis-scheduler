@@ -22,7 +22,7 @@ module Travis
           end
 
           def pull_request_title
-            pull_request ? pull_request.head_repo_title : pull_request_head_repo['title']
+            pull_request ? pull_request.title : pull_request_head['title']
           end
 
           private
