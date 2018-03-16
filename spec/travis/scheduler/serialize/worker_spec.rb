@@ -63,7 +63,8 @@ describe Travis::Scheduler::Serialize::Worker do
           secure_env_removed: false,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
-          allow_failure: allow_failure
+          allow_failure: allow_failure,
+          stage_name: nil,
         },
         source: {
           id: build.id,
@@ -127,6 +128,7 @@ describe Travis::Scheduler::Serialize::Worker do
             debug_options: {},
             queued_at: '2016-01-01T10:30:00Z',
             allow_failure: false,
+            stage_name: nil
           },
           source: {
             id: build.id,
@@ -219,7 +221,8 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request_head_branch: 'head_branch',
           pull_request_head_sha: '62aaef',
           pull_request_head_slug: 'travis-ci/gem-release',
-          allow_failure: allow_failure
+          allow_failure: allow_failure,
+          stage_name: nil,
         },
         source: {
           id: build.id,
