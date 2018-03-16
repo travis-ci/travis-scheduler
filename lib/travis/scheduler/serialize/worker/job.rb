@@ -9,7 +9,8 @@ module Travis
           extend Forwardable
 
           def_delegators :job, :id, :repository, :source, :config, :commit,
-            :number, :queue, :state, :debug_options, :queued_at, :allow_failure
+            :number, :queue, :state, :debug_options, :queued_at, :allow_failure,
+            :stage
           def_delegators :source, :request
 
           def env_vars
@@ -42,10 +43,6 @@ module Travis
           def decrypted_config
             secure = Travis::SecureConfig.new(repository.key)
             Config.decrypt(config, secure, full_addons: secure_env?, secure_env: secure_env?)
-          end
-          
-          def stage
-            job.stage
           end
 
           private
