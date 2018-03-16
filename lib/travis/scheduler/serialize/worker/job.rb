@@ -43,6 +43,10 @@ module Travis
             secure = Travis::SecureConfig.new(repository.key)
             Config.decrypt(config, secure, full_addons: secure_env?, secure_env: secure_env?)
           end
+          
+          def stage
+            job.stage
+          end
 
           private
 
