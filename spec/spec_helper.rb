@@ -1,4 +1,5 @@
 ENV['ENV'] = ENV['RAILS_ENV'] = 'test'
+ENV.delete('DATABASE_URL')
 
 require 'database_cleaner'
 require 'mocha'
