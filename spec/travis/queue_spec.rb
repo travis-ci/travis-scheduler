@@ -8,7 +8,7 @@ describe Travis::Queue do
 
   let(:owner)      { FactoryGirl.build(:user, login: slug.split('/').first) }
   let(:repo)       { FactoryGirl.build(:repo, owner: owner, owner_name: owner.login, name: slug.split('/').last, created_at: created_at) }
-  let(:job)        { FactoryGirl.build(:job, config: config, repository: repo) }
+  let(:job)        { FactoryGirl.build(:job, config: JobConfig.new(config: config), repository: repo) }
   let(:queue)      { described_class.new(job, context.config, logger).select }
 
   let(:force_precise_sudo_required?) { false }
