@@ -23,7 +23,6 @@ class Request < ActiveRecord::Base
     # When we're starting to archive payloads after N months we'll also disallow
     # restarting builds older than N months. Once we do so we can also return
     # false if Scheduler.config.enterprise is not true.
-    return false if read_attribute(:payload).nil?
     # It's not the same repo PR if repo names don't match
     return false if head_repo_github_id != repository.github_id
     # It may not be the same repo if head_ref or head_sha are missing
