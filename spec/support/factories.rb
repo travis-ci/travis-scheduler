@@ -57,7 +57,6 @@ FactoryGirl.define do
 
   factory :request do
     event_type 'push'
-    payload 'ref' => 'refs/tags/v1.2.3'
   end
 
   factory :pull_request do
