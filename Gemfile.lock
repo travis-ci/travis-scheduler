@@ -154,7 +154,7 @@ GEM
     pg (0.21.0)
     public_suffix (2.0.5)
     rack (1.6.4)
-    rack-protection (1.5.3)
+    rack-protection (2.0.1)
       rack
     rake (11.3.0)
     redis (3.3.3)
