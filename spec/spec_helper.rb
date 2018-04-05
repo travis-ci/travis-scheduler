@@ -1,6 +1,7 @@
 ENV['ENV'] = ENV['RAILS_ENV'] = 'test'
 ENV.delete('DATABASE_URL')
 
+require 'travis/scheduler'
 require 'database_cleaner'
 require 'mocha'
 require 'support/env'
@@ -8,9 +9,9 @@ require 'support/features'
 require 'webmock/rspec'
 require 'support/factories'
 require 'support/logger'
+require 'support/record'
 require 'support/stages'
 require 'support/rollout'
-require 'travis/scheduler'
 
 include Mocha::API
 
