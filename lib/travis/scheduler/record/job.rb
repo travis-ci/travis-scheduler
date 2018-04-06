@@ -1,4 +1,8 @@
-require 'travis/scheduler/record/job_config'
+class JobConfig < ActiveRecord::Base
+  def config=(config)
+    super rescue nil
+  end
+end
 
 class Job < ActiveRecord::Base
   class << self
@@ -73,6 +77,7 @@ class Job < ActiveRecord::Base
   end
 
   def config
-    super&.config || read_attribute(:config) || {}
+    config = super&.config || read_attribute(:config) || {}
+    config.deep_symbolize_keys!
   end
 end
