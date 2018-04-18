@@ -63,8 +63,7 @@ describe Travis::Scheduler::Serialize::Worker do
           secure_env_removed: false,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
-          allow_failure: allow_failure,
-          stage_name: nil,
+          allow_failure: allow_failure
         },
         source: {
           id: build.id,
