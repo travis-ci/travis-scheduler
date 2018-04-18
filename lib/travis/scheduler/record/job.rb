@@ -1,3 +1,9 @@
+class JobConfig < ActiveRecord::Base
+  def config=(config)
+    super rescue nil
+  end
+end
+
 class Job < ActiveRecord::Base
   class << self
     SQL = {
@@ -48,6 +54,7 @@ class Job < ActiveRecord::Base
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
   belongs_to :stage
+  belongs_to :config, foreign_key: :config_id, class_name: JobConfig
   has_one :queueable
 
   serialize :config
@@ -67,5 +74,10 @@ class Job < ActiveRecord::Base
 
   def public?
     !private?
+  end
+
+  def config
+    config = super&.config || read_attribute(:config) || {}
+    config.deep_symbolize_keys!
   end
 end
