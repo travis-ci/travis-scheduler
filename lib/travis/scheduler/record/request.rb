@@ -23,7 +23,8 @@ class Request < ActiveRecord::Base
     # When we're starting to archive payloads after N months we'll also disallow
     # restarting builds older than N months. Once we do so we can also return
     # false if Scheduler.config.enterprise is not true.
-    return false if read_attribute(:payload).nil?
+
+    return false unless pull_request
     # It's not the same repo PR if repo names don't match
     return false if head_repo_github_id != repository.github_id
     # It may not be the same repo if head_ref or head_sha are missing
@@ -37,26 +38,20 @@ class Request < ActiveRecord::Base
   end
 
   def payload
-    # puts "[deprectated] Reading request.payload. Called from #{caller[0]}" unless caller.join =~ /(dirty.rb)/
-    super
+    fail "[deprectated] Reading request.payload."
   end
 
   private
 
     def head_repo_github_id
-      pull_request ? pull_request.head_repo_github_id : pr.head.try(:repo).try(:id)
+      pull_request && pull_request.head_repo_github_id
     end
 
     def head_ref
-      pull_request ? pull_request.head_ref : pr.head.try(:ref)
+      pull_request && pull_request.head_ref
     end
 
     def head_sha
       head_commit
-    end
-
-    # TODO remove once we've populated the pull_requests table
-    def pr
-      @pr ||= Hashr.new(self.payload).pull_request || Hashr.new
     end
 end
