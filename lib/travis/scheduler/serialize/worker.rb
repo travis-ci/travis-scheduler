@@ -11,7 +11,7 @@ module Travis
         require 'travis/scheduler/serialize/worker/ssh_key'
 
         def data
-          value = {
+          data = {
             type: :test,
             vm_type: repo.vm_type,
             queue: job.queue,
@@ -24,8 +24,8 @@ module Travis
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
           }
-          value[:oauth_token] = github_oauth_token if Travis.config.prefer_https?
-          value
+          data[:oauth_token] = github_oauth_token if Travis.config.prefer_https?
+          data
         end
 
         private
@@ -68,7 +68,7 @@ module Travis
           end
 
           def repository_data
-            {
+            data = {
               id: repo.id,
               github_id: repo.github_id,
               slug: repo.slug,
@@ -84,6 +84,8 @@ module Travis
               default_branch: repo.default_branch,
               description: repo.description
             }
+            data[:installation_id] = repo.installation&.github_id if repo.managed_by_app?
+            data
           end
 
           def job
@@ -123,9 +125,9 @@ module Travis
           end
 
           def github_oauth_token
-            candidates = job.repository.users.where("github_oauth_token IS NOT NULL").
-                    order("updated_at DESC")
-            admin = candidates.first
+            scope = job.repository.users
+            scope = scope.where("github_oauth_token IS NOT NULL").order("updated_at DESC")
+            admin = scope.first
             admin && admin.github_oauth_token
           end
       end

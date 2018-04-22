@@ -9,6 +9,14 @@ class Repository < ActiveRecord::Base
     @slug ||= [owner_name, name].join('/')
   end
 
+  def managed_by_app?
+    !!managed_by_installation_at
+  end
+
+  def installation
+    @installation ||= Installation.where(owner_id: owner_id, owner_type: owner_type, removed_by_id: nil).first
+  end
+
   def settings
     @settings ||= Repository::Settings.load(super, repository_id: id).tap do |s|
       s.on_save do

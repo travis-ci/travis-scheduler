@@ -10,7 +10,8 @@ module Travis
           def_delegators :repo, :id, :github_id, :slug,
             :last_build_id, :last_build_number, :last_build_started_at,
             :last_build_finished_at, :last_build_duration, :last_build_state,
-            :default_branch, :description, :key, :settings, :private?
+            :default_branch, :description, :key, :settings, :private?,
+            :managed_by_app?, :installation
 
           def vm_type
             Features.active?(:premium_vms, repo) ? :premium : :default
@@ -25,7 +26,8 @@ module Travis
           end
 
           def source_url
-            ((private? || force_private?) && !Travis.config.prefer_https) ? source_git_url : source_http_url
+            return source_http_url if Travis.config.prefer_https || managed_by_app?
+            (repo.private? || force_private?) ? source_git_url : source_http_url
           end
 
           private

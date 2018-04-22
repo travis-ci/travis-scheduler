@@ -35,6 +35,8 @@ FactoryGirl.define do
     description 'description'
   end
 
+  factory :installation
+
   factory :job do
     owner      { User.first || FactoryGirl.create(:user) }
     repository { Repository.first || FactoryGirl.create(:repository) }
