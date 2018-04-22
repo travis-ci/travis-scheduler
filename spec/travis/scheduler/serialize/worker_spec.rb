@@ -95,69 +95,26 @@ describe Travis::Scheduler::Serialize::Worker do
       )
     end
 
-    context 'when prefer_https is set' do
+    context 'when prefer_https is set and the repo is private' do
       before { Travis.config.prefer_https = true }
       after  { Travis.config.prefer_https = false }
+      before { repo.update_attributes!(private: true) }
 
-      it 'contains the expected data' do
-        expect(data.except('job', 'build', 'repository')).to eq(
-          type: :test,
-          vm_type: :default,
-          queue: 'builds.gce',
-          config: {
-            rvm: '1.8.7',
-            gemfile: 'Gemfile.rails'
-          },
-          env_vars: [
-            { name: 'FOO', value: 'foo', public: false },
-            { name: 'BAR', value: 'bar', public: true }
-          ],
-          job: {
-            id: job.id,
-            number: '2.1',
-            commit: '62aaef',
-            commit_range: '0cd9ff...62aaef',
-            commit_message: 'message',
-            branch: 'master',
-            ref: nil,
-            tag: 'v1.2.3',
-            pull_request: false,
-            state: 'queued',
-            secure_env_enabled: true,
-            secure_env_removed: false,
-            debug_options: {},
-            queued_at: '2016-01-01T10:30:00Z',
-            allow_failure: false,
-            stage_name: nil
-          },
-          source: {
-            id: build.id,
-            number: '2',
-            event_type: 'push'
-          },
-          repository: {
-            id: repo.id,
-            github_id: 549743,
-            slug: 'svenfuchs/gem-release',
-            source_url: 'https://github.com/svenfuchs/gem-release.git',
-            api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
-            last_build_id: 1,
-            last_build_started_at: '2016-01-01T10:00:00Z',
-            last_build_finished_at: '2016-01-01T11:00:00Z',
-            last_build_number: '2',
-            last_build_duration: 60,
-            last_build_state: 'passed',
-            default_branch: 'branch',
-            description: 'description',
-          },
-          ssh_key: nil,
-          timeouts: {
-            hard_limit: 180 * 60, # worker handles timeouts in seconds
-            log_silence: 20 * 60
-          },
-          cache_settings: s3,
-          oauth_token: 'token'
-        )
+      it 'sets the repo source_url to an http url' do
+        expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
+      end
+    end
+
+    context 'when the repo is managed by the github app and the repo is private' do
+      let!(:installation) { FactoryGirl.create(:installation, github_id: rand(1000), owner_id: repo.owner_id, owner_type: repo.owner_type) }
+      before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
+
+      it 'sets the repo source_url to an http url' do
+        expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
+      end
+
+      it 'includes the installation token' do
+        expect(data[:repository][:installation_id]).to eq installation.github_id
       end
     end
   end
