@@ -68,9 +68,10 @@ module Travis
           end
 
           def repository_data
-            data = {
+            compact(
               id: repo.id,
               github_id: repo.github_id,
+              installation_id: repo.installation_id,
               slug: repo.slug,
               source_url: repo.source_url,
               api_url: repo.api_url,
@@ -83,9 +84,7 @@ module Travis
               last_build_state: repo.last_build_state.to_s,
               default_branch: repo.default_branch,
               description: repo.description
-            }
-            data[:installation_id] = repo.installation&.github_id if repo.managed_by_app?
-            data
+            )
           end
 
           def job
@@ -129,6 +128,10 @@ module Travis
             scope = scope.where("github_oauth_token IS NOT NULL").order("updated_at DESC")
             admin = scope.first
             admin && admin.github_oauth_token
+          end
+
+          def compact(hash)
+            hash.reject { |_, value| value.nil? }
           end
       end
     end
