@@ -107,14 +107,29 @@ describe Travis::Scheduler::Serialize::Worker do
 
     context 'when the repo is managed by the github app and the repo is private' do
       let!(:installation) { FactoryGirl.create(:installation, github_id: rand(1000), owner_id: repo.owner_id, owner_type: repo.owner_type) }
-      before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
 
-      it 'sets the repo source_url to an http url' do
-        expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
+      describe 'on a private repo' do
+        before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
+
+        it 'sets the repo source_url to an http url' do
+          expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
+        end
+
+        it 'includes the installation id' do
+          expect(data[:repository][:installation_id]).to eq installation.github_id
+        end
       end
 
-      it 'includes the installation token' do
-        expect(data[:repository][:installation_id]).to eq installation.github_id
+      describe 'on a public repo' do
+        before { repo.update_attributes!(private: false, managed_by_installation_at: Time.now) }
+
+        it 'sets the repo source_url to an http url' do
+          expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
+        end
+
+        it 'does not include the installation id' do
+          expect(data[:repository][:installation_id]).to be nil
+        end
       end
     end
   end
