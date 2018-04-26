@@ -1,5 +1,11 @@
 require 'factory_girl'
 
+Job.class_eval do
+  def public=(value)
+    self.private = !value
+  end
+end
+
 FactoryGirl.define do
   REPO_KEY = OpenSSL::PKey::RSA.generate(4096)
 
