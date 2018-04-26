@@ -11,7 +11,7 @@ module Travis
         KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
 
         def enqueue?
-          unlimited || current < max || !public_mode? && throw(:result, :limited)
+          unlimited || current < max || !com? && throw(:result, :limited)
         end
 
         private
@@ -64,12 +64,12 @@ module Travis
           end
 
           def with_public(max)
-            max = max + config[:limit][:public].to_i if max.to_i > 0 && job.public? && public_mode?
+            max = max + config[:limit][:public].to_i if max.to_i > 0 && job.public? && com?
             max
           end
 
           def without_public(count)
-            count = count - running_and_selected_public_jobs_upto_config_limit if !job.public? && public_mode?
+            count = count - running_and_selected_public_jobs_upto_config_limit if !job.public? && com?
             count
           end
 
@@ -79,8 +79,8 @@ module Travis
             count
           end
 
-          def public_mode?
-            owners.public_mode?(context.redis)
+          def com?
+            config.site == 'com'
           end
 
           def trial

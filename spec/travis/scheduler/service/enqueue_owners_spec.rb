@@ -11,7 +11,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   before { Travis::JobBoard.stubs(:post) }
 
   context do
-    before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, state: :created, queue: 'builds.gce', config: {}) } }
+    before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, private: true, state: :created, queue: 'builds.gce', config: {}) } }
     before { config.limit.delegate = { owner.login => org.login } }
     before { config.limit.default = 1 }
     before { service.run }
