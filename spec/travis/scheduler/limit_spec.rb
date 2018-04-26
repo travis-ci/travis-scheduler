@@ -44,7 +44,7 @@ describe Travis::Scheduler::Limit::Jobs do
 
   describe 'with a subscription limit 1' do
     before { create_jobs(3) }
-    before { FactoryGirl.create(:subscription, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id, selected_plan: :one) }
+    before { FactoryGirl.create(:subscription, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id, selected_plan: :one, concurrency: 1) }
     before { subject }
 
     it { expect(subject.size).to eq 1 }
@@ -114,7 +114,7 @@ describe Travis::Scheduler::Limit::Jobs do
     before { config.limit.default = 1 }
     before { create_jobs(7, state: :created) }
     before { create_jobs(3, state: :started) }
-    before { FactoryGirl.create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
+    before { FactoryGirl.create(:subscription, selected_plan: :seven, concurrency: 7, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
     before { repo.settings.update_attributes!(maximum_number_of_builds: 5) }
     before { subject }
 
@@ -235,7 +235,7 @@ describe Travis::Scheduler::Limit::Jobs do
     before { config.limit.delegate = { owner.login => org.login, carla.login => org.login } }
 
     describe 'with one subscription' do
-      before { FactoryGirl.create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: org.class.name, owner_id: org.id) }
+      before { FactoryGirl.create(:subscription, selected_plan: :seven, concurrency: 7, valid_to: Time.now.utc, owner_type: org.class.name, owner_id: org.id) }
       before { subject }
 
       it { expect(subject.size).to eq 5 }
@@ -246,8 +246,8 @@ describe Travis::Scheduler::Limit::Jobs do
     end
 
     describe 'with multiple subscriptions' do
-      before { FactoryGirl.create(:subscription, selected_plan: :one, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
-      before { FactoryGirl.create(:subscription, selected_plan: :seven, valid_to: Time.now.utc, owner_type: org.class.name, owner_id: org.id) }
+      before { FactoryGirl.create(:subscription, selected_plan: :one, concurrency: 1, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
+      before { FactoryGirl.create(:subscription, selected_plan: :seven, concurrency: 7, valid_to: Time.now.utc, owner_type: org.class.name, owner_id: org.id) }
       before { subject }
 
       it { expect(subject.size).to eq 6 }
@@ -321,7 +321,7 @@ describe Travis::Scheduler::Limit::Jobs do
     end
 
     describe 'no running jobs, 4 private and 4 public jobs waiting, two jobs subscription' do
-      before { FactoryGirl.create(:subscription, selected_plan: :two, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
+      before { FactoryGirl.create(:subscription, selected_plan: :two, concurrency: 2, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id) }
       before { create_jobs(4, private: true) }
       before { create_jobs(4, private: false) }
 

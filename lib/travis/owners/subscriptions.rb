@@ -6,7 +6,7 @@ module Travis
       end
 
       def max_jobs
-        @max_jobs ||= plan_limits.inject(&:+).to_i
+        @max_jobs ||= concurrencies.inject(&:+).to_i
       end
 
       def subscribers
@@ -15,16 +15,8 @@ module Travis
 
       private
 
-        def plan_limits
-          plans.map { |plan| plan_limit(plan) }.compact
-        end
-
-        def plan_limit(plan)
-          config[plan.to_sym]
-        end
-
-        def plans
-          subscriptions.map(&:selected_plan).compact
+        def concurrencies
+          subscriptions.map(&:concurrency).compact
         end
 
         def subscriptions
