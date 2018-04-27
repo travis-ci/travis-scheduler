@@ -12,4 +12,14 @@ class User < ActiveRecord::Base
   def subscribed?
     subscription.present? and subscription.active?
   end
+
+  def active_trial?
+    redis.get("trial:#{login}").to_i > 0
+  end
+
+  private
+
+  def redis
+    Travis::Scheduler.context.redis
+  end
 end
