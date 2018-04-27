@@ -15,6 +15,7 @@ require 'travis/scheduler/worker'
 require 'travis/service'
 require 'travis/support/database'
 require 'marginalia'
+require 'pry'
 
 Travis::Exceptions::Queue = ::Queue # TODO fix in travis-exceptions
 

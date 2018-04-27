@@ -33,6 +33,10 @@ gem 'rack', '1.6.4'
 
 gem 'libhoney'
 
+group :development, :test do
+  gem 'pry'
+end
+
 group :test do
   gem 'rake'
   gem 'database_cleaner', '~> 1.5.1'
