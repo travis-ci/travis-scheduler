@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
   end
 
   def subscribed?
-    subscription.present? and subscription.active?
+    subscription.present? && subscription.active?
   end
 
   def active_trial?
