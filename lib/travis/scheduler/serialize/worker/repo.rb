@@ -18,7 +18,7 @@ module Travis
           end
 
           def timeouts
-            { hard_limit: worker_timeout, log_silence: timeout(:log_silence) }
+            { hard_limit: hard_limit_timeout, log_silence: timeout(:log_silence) }
           end
 
           def api_url
@@ -40,7 +40,7 @@ module Travis
             #   owner for a default value, which might change depending on their
             #   current paid/unpaid status.
             #
-            def worker_timeout
+            def hard_limit_timeout
               timeout(:hard_limit) || repo.owner.default_worker_timeout
             end
 
