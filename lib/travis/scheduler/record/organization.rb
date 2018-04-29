@@ -14,8 +14,8 @@ class Organization < ActiveRecord::Base
   end
 
   def default_worker_timeout
-    # When the user is a paid user ("subscribed") or has an active trial, they
-    #   are granted a different default timeout on their jobs.
+    # When the organization is a paid account ("subscribed") or has an active
+    #   trial, they are granted a different default timeout on their jobs.
     #
     # Note that currently (27/4/18) we are NOT providing different timeouts, but
     #   we plan to sometime in the following weeks/months.
