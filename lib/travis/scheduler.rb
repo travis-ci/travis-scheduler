@@ -15,7 +15,8 @@ require 'travis/scheduler/worker'
 require 'travis/service'
 require 'travis/support/database'
 require 'marginalia'
-require 'pry'
+
+require 'pry' unless ['production', 'staging'].include? ENV['ENV']
 
 Travis::Exceptions::Queue = ::Queue # TODO fix in travis-exceptions
 
