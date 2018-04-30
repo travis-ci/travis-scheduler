@@ -18,7 +18,7 @@ module Travis
           end
 
           def timeouts
-            { hard_limit: timeout(:hard_limit), log_silence: timeout(:log_silence) }
+            { hard_limit: hard_limit_timeout, log_silence: timeout(:log_silence) }
           end
 
           def api_url
@@ -36,12 +36,21 @@ module Travis
 
           private
 
+            # If the repo does not have a custom timeout, look to the repo's
+            #   owner for a default value, which might change depending on their
+            #   current paid/unpaid status.
+            #
+            def hard_limit_timeout
+              timeout(:hard_limit) || repo.owner.default_worker_timeout
+            end
+
             def env_var(var)
               { name: var.name, value: var.value.decrypt, public: var.public }
             end
 
             def timeout(type)
               return unless timeout = repo.settings.send(:"timeout_#{type}")
+
               timeout = Integer(timeout)
               timeout * 60 # worker handles timeouts in seconds
             end
