@@ -20,7 +20,7 @@ module Travis
             job: job_data,
             source: build_data,
             repository: repository_data,
-            ssh_key: ssh_key,
+            ssh_key: ssh_key.data,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
           }
@@ -73,7 +73,7 @@ module Travis
               github_id: repo.github_id,
               installation_id: repo.installation_id,
               slug: repo.slug,
-              source_url: repo.source_url,
+              source_url: source_url,
               api_url: repo.api_url,
               # TODO how come the worker needs all these?
               last_build_id: repo.last_build_id,
@@ -85,6 +85,12 @@ module Travis
               default_branch: repo.default_branch,
               description: repo.description
             )
+          end
+
+          def source_url
+            # TODO move these things to Build
+            return repo.source_git_url if repo.private? && ssh_key.custom?
+            repo.source_url
           end
 
           def job
@@ -108,7 +114,7 @@ module Travis
           end
 
           def ssh_key
-            SshKey.new(repo, job, config).data
+            @ssh_key ||= SshKey.new(repo, job, config)
           end
 
           def cache_settings

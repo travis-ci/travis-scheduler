@@ -30,6 +30,10 @@ module Travis
             (repo.private? || force_private?) ? source_git_url : source_http_url
           end
 
+          def source_git_url
+            "git@#{source_host}:#{slug}.git"
+          end
+
           def installation_id
             repo.installation&.github_id if repo.managed_by_app? && repo.private
           end
@@ -61,10 +65,6 @@ module Travis
 
             def source_http_url
               "https://#{source_host}/#{slug}.git"
-            end
-
-            def source_git_url
-              "git@#{source_host}:#{slug}.git"
             end
 
             def source_host

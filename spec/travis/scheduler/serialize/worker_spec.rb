@@ -108,6 +108,19 @@ describe Travis::Scheduler::Serialize::Worker do
     context 'when the repo is managed by the github app and the repo is private' do
       let!(:installation) { FactoryGirl.create(:installation, github_id: rand(1000), owner_id: repo.owner_id, owner_type: repo.owner_type) }
 
+      describe 'on a private repo with a custom ssh key' do
+        before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
+        before { repo.settings.ssh_key = { value: 'settings key' } }
+
+        it 'sets the repo source_url to an ssh git url' do
+          expect(data[:repository][:source_url]).to eq 'git@github.com:svenfuchs/gem-release.git'
+        end
+
+        it 'includes the installation id' do
+          expect(data[:repository][:installation_id]).to eq installation.github_id
+        end
+      end
+
       describe 'on a private repo' do
         before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
 
