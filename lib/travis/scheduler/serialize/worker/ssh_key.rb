@@ -15,6 +15,10 @@ module Travis
             end
           end
 
+          def custom?
+            data && data[:source] != :default_repository_key
+          end
+
           private
 
             def public?
