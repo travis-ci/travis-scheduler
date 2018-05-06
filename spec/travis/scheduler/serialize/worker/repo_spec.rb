@@ -8,8 +8,8 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
 
   let(:config) { { github: {} } }
 
-  let(:unpaid_timeout) { 3600 }
-  let(:paid_timeout)   { 7200 }
+  let(:unpaid_timeout) { User::DEFAULT_SPONSORED_TIMEOUT }
+  let(:paid_timeout)   { User::DEFAULT_SUBSCRIBED_TIMEOUT }
 
   subject { described_class.new(repo, config) }
 
