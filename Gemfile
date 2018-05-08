@@ -39,7 +39,7 @@ end
 
 group :test do
   gem 'rake'
-  gem 'database_cleaner', '~> 1.5.1'
+  gem 'database_cleaner', '~> 1.7'
   gem 'factory_girl',     '~> 4.7.0'
   gem 'mocha',            '~> 0.10.0'
   gem 'rspec'
