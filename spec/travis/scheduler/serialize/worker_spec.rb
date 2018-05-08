@@ -74,8 +74,10 @@ describe Travis::Scheduler::Serialize::Worker do
         repository: {
           id: repo.id,
           github_id: 549743,
+          private: false,
           slug: 'svenfuchs/gem-release',
           source_url: 'https://github.com/svenfuchs/gem-release.git',
+          source_host: 'github.com',
           api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
           last_build_id: 1,
           last_build_started_at: '2016-01-01T10:00:00Z',
@@ -91,7 +93,9 @@ describe Travis::Scheduler::Serialize::Worker do
           hard_limit: 180 * 60, # worker handles timeouts in seconds
           log_silence: 20 * 60
         },
-        cache_settings: s3
+        cache_settings: s3,
+        prefer_https: false,
+        enterprise: false
       )
     end
 
@@ -217,8 +221,10 @@ describe Travis::Scheduler::Serialize::Worker do
         repository: {
           id: repo.id,
           github_id: 549743,
+          private: false,
           slug: 'svenfuchs/gem-release',
           source_url: 'https://github.com/svenfuchs/gem-release.git',
+          source_host: 'github.com',
           api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
           last_build_id: 1,
           last_build_started_at: '2016-01-01T10:00:00Z',
@@ -234,7 +240,9 @@ describe Travis::Scheduler::Serialize::Worker do
           hard_limit: 180 * 60, # worker handles timeouts in seconds
           log_silence: 20 * 60
         },
-        cache_settings: s3
+        cache_settings: s3,
+        prefer_https: false,
+        enterprise: false
       )
     end
 

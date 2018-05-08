@@ -48,13 +48,8 @@ module Travis
               timeout(:hard_limit) || repo.owner.default_worker_timeout
             end
 
-            def env_var(var)
-              { name: var.name, value: var.value.decrypt, public: var.public }
-            end
-
             def timeout(type)
               return unless timeout = repo.settings.send(:"timeout_#{type}")
-
               timeout = Integer(timeout)
               timeout * 60 # worker handles timeouts in seconds
             end

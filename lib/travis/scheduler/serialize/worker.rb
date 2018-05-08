@@ -23,8 +23,10 @@ module Travis
             ssh_key: ssh_key.data,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
+            enterprise: !!config[:enterprise],
+            prefer_https: !!config[:prefer_https]
           }
-          data[:oauth_token] = github_oauth_token if Travis.config.prefer_https?
+          data[:oauth_token] = github_oauth_token if config[:prefer_https]
           data
         end
 
@@ -72,8 +74,10 @@ module Travis
               id: repo.id,
               github_id: repo.github_id,
               installation_id: repo.installation_id,
+              private: repo.private?,
               slug: repo.slug,
               source_url: source_url,
+              source_host: source_host,
               api_url: repo.api_url,
               # TODO how come the worker needs all these?
               last_build_id: repo.last_build_id,
@@ -115,6 +119,10 @@ module Travis
 
           def ssh_key
             @ssh_key ||= SshKey.new(repo, job, config)
+          end
+
+          def source_host
+            config[:github][:source_host] || 'github.com'
           end
 
           def cache_settings
