@@ -13,7 +13,6 @@ module Travis
               firefox
               hostname
               hosts
-              jwt
               mariadb
               postgresql
               rethinkdb
@@ -33,13 +32,6 @@ module Travis
               normalize_addons
               filter_addons    if config[:addons] && !full_addons?
               compact(config)
-            end
-
-            def jwt_sanitize
-              if config && config.fetch(:addons,{}).key?(:jwt)
-                config[:addons] = Addons.new(config[:addons]).jwt_sanitize
-              end
-              config
             end
 
             private
