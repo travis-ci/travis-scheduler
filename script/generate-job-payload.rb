@@ -23,5 +23,8 @@ Travis::Scheduler.setup
 id = Integer(ARGV[0])
 job = Job.find(id)
 config = Travis::Scheduler::Config.load
+
 payload = Travis::Scheduler::Serialize::Worker.new(job, config).data
+payload.delete(:cache_settings)
+
 puts JSON.generate(payload)
