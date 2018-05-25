@@ -66,6 +66,7 @@ describe Travis::Scheduler::Serialize::Worker do
           allow_failure: allow_failure,
           stage_name: nil,
         },
+        host: 'https://travis-ci.com',
         source: {
           id: build.id,
           number: '2',
@@ -213,6 +214,7 @@ describe Travis::Scheduler::Serialize::Worker do
           allow_failure: allow_failure,
           stage_name: nil,
         },
+        host: 'https://travis-ci.com',
         source: {
           id: build.id,
           number: '2',

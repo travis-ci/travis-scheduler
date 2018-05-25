@@ -18,6 +18,7 @@ module Travis
             config: job.decrypted_config,
             env_vars: job.env_vars,
             job: job_data,
+            host: Travis::Scheduler.config.host,
             source: build_data,
             repository: repository_data,
             ssh_key: ssh_key.data,
