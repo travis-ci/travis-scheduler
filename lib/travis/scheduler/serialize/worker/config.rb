@@ -15,7 +15,6 @@ module Travis
               config = deep_dup(config)
               config = Normalize.new(config, options).apply
               config = Decrypt.new(config, decryptor, options).apply
-              config = Normalize.new(config, options).jwt_sanitize
               config
             end
           end
