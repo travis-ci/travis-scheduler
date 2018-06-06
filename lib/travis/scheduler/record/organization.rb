@@ -19,6 +19,10 @@ class Organization < ActiveRecord::Base
     subscription.present? && subscription.active?
   end
 
+  def educational?
+    !!Travis::Features.owner_active?(:educational_org, self)
+  end
+
   def active_trial?
     redis.get("trial:#{login}").to_i > 0
   end
