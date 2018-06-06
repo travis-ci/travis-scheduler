@@ -75,7 +75,7 @@ describe User do
       end
     end
 
-    context "#subscribed?, #active_trial?, #educational == false" do
+    context "#subscribed?, #active_trial?, #educational? == false" do
       before do
         user.stubs(:subscribed?).returns(false)
         user.stubs(:active_trial?).returns(false)
