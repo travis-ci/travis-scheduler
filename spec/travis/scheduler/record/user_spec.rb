@@ -55,6 +55,16 @@ describe User do
       end
     end
 
+    context "educational? == true" do
+      before do
+        user.stubs(:educational?).returns(true)
+      end
+
+      it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
+        expect(user.default_worker_timeout).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
+      end
+    end
+
     context "active_trial? == true" do
       before do
         user.stubs(:active_trial?).returns(true)
@@ -65,10 +75,11 @@ describe User do
       end
     end
 
-    context "subscribed? == false && active_trial? == false" do
+    context "#subscribed?, #active_trial?, #educational == false" do
       before do
         user.stubs(:subscribed?).returns(false)
         user.stubs(:active_trial?).returns(false)
+        user.stubs(:educational?).returns(false)
       end
 
       it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
