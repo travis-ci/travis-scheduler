@@ -35,7 +35,7 @@ class Organization < ActiveRecord::Base
     #   those enforced by workers themselves, but we plan to sometime in the
     #   following weeks/months.
     #
-    if subscribed? || active_trial?
+    if subscribed? || active_trial? || educational?
       DEFAULT_SUBSCRIBED_TIMEOUT
     else
       DEFAULT_SPONSORED_TIMEOUT

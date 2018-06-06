@@ -65,10 +65,21 @@ describe Organization do
       end
     end
 
-    context "subscribed? == false && active_trial? == false" do
+    context "subscribed? == true" do
+      before do
+        org.stubs(:educational?).returns(true)
+      end
+
+      it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
+        expect(org.default_worker_timeout).to eq Organization::DEFAULT_SUBSCRIBED_TIMEOUT
+      end
+    end
+
+    context "#subscribed?, #active_trial?, #educational? == false" do
       before do
         org.stubs(:subscribed?).returns(false)
         org.stubs(:active_trial?).returns(false)
+        org.stubs(:educational?).returns(false)
       end
 
       it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
