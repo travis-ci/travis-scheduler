@@ -27,6 +27,10 @@ class User < ActiveRecord::Base
     redis.get("trial:#{login}").to_i > 0
   end
 
+  def educational?
+    !!education
+  end
+
   def default_worker_timeout
     # When the user is a paid user ("subscribed") or has an active trial, they
     #   are granted a different default timeout on their jobs.

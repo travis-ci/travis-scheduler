@@ -12,6 +12,38 @@ describe User do
     end
   end
 
+  describe "#educational?" do
+    context "education = true" do
+      before do
+        user.education = true
+      end
+
+      it "returns true" do
+        expect(user.educational?).to be_truthy
+      end
+    end
+
+    context "education = false" do
+      before do
+        user.education = false
+      end
+
+      it "returns true" do
+        expect(user.educational?).to be_falsey
+      end
+    end
+
+    context "education = nil" do
+      before do
+        user.education = nil
+      end
+
+      it "returns true" do
+        expect(user.educational?).to be_falsey
+      end
+    end
+  end
+
   describe "#default_worker_timeout" do
     context "subscribed? == true" do
       before do
