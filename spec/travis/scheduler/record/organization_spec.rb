@@ -12,6 +12,38 @@ describe Organization do
     end
   end
 
+  describe "#educational?" do
+    context "education = true" do
+      before do
+        Travis::Features.stubs(:owner_active?).returns(true)
+      end
+
+      it "returns true" do
+        expect(org.educational?).to be_truthy
+      end
+    end
+
+    context "education = false" do
+      before do
+        Travis::Features.stubs(:owner_active?).returns(false)
+      end
+
+      it "returns true" do
+        expect(org.educational?).to be_falsey
+      end
+    end
+
+    context "education = nil" do
+      before do
+        Travis::Features.stubs(:owner_active?).returns(nil)
+      end
+
+      it "returns true" do
+        expect(org.educational?).to be_falsey
+      end
+    end
+  end
+
   describe "#default_worker_timeout" do
     context "subscribed? == true" do
       before do
@@ -33,10 +65,21 @@ describe Organization do
       end
     end
 
-    context "subscribed? == false && active_trial? == false" do
+    context "subscribed? == true" do
+      before do
+        org.stubs(:educational?).returns(true)
+      end
+
+      it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
+        expect(org.default_worker_timeout).to eq Organization::DEFAULT_SUBSCRIBED_TIMEOUT
+      end
+    end
+
+    context "#subscribed?, #active_trial?, #educational? == false" do
       before do
         org.stubs(:subscribed?).returns(false)
         org.stubs(:active_trial?).returns(false)
+        org.stubs(:educational?).returns(false)
       end
 
       it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
