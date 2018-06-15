@@ -42,6 +42,10 @@ class Organization < ActiveRecord::Base
     end
   end
 
+  def uid
+    "org:#{id}"
+  end
+
   private
 
   def redis

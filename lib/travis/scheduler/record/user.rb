@@ -46,6 +46,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def uid
+    "user:#{id}"
+  end
+
   private
 
   def redis

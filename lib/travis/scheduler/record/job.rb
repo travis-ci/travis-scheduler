@@ -20,6 +20,14 @@ class Job < ActiveRecord::Base
       where(state: [:queued, :received, :started]).order('jobs.id')
     end
 
+    def private
+      where(private: true)
+    end
+
+    def public
+      where('jobs.private IS NULL OR jobs.private = ?', false)
+    end
+
     def by_repo(id)
       where(repository_id: id)
     end

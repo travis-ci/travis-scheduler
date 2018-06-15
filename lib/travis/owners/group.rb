@@ -15,9 +15,10 @@ module Travis
         @login ||= all.map(&:login).sort
       end
 
-      def max_jobs
-        subscriptions.max_jobs
+      def paid_capacity
+        subscriptions.capacity
       end
+      alias max_jobs paid_capacity
 
       def subscribed?
         subscriptions.active?
@@ -25,6 +26,10 @@ module Travis
 
       def subscribed_owners
         subscriptions.subscribers
+      end
+
+      def educational?
+        all.any?(&:educational?)
       end
 
       def ==(other)
