@@ -5,9 +5,10 @@ module Travis
         subscriptions.any?
       end
 
-      def max_jobs
-        @max_jobs ||= plan_limits.inject(&:+).to_i
+      def capacity
+        @capacity ||= plan_limits.inject(&:+).to_i
       end
+      alias max_jobs capacity
 
       def subscribers
         @subscribers ||= subscriptions.map(&:owner).map(&:login)
