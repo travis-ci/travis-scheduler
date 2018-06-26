@@ -1,4 +1,5 @@
 require 'travis/scheduler/helper/context'
+require 'travis/scheduler/helper/honeycomb'
 require 'travis/scheduler/helper/locking'
 require 'travis/scheduler/helper/logging'
 require 'travis/scheduler/helper/metrics'
