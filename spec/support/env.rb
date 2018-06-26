@@ -12,11 +12,11 @@ module Support
     end
 
     def define_env(vars)
-      vars.each { |key, value| ENV[key.to_s] = value.to_s }
+      vars.each { |key, value| ENV[key.to_s.upcase] = value.to_s }
     end
 
     def undefine_env(vars)
-      vars.each { |key, _| ENV.delete(key.to_s) }
+      vars.each { |key, _| ENV.delete(key.to_s.upcase) }
     end
   end
 end

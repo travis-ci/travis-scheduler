@@ -62,8 +62,7 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/travis-rollout
-  revision: 643477fb44ea35d483ed24cc89ced459719c6e6c
-  ref: sf-refactor
+  revision: ac0184411b3618dd5e5706db8fe7676a107c7b07
   specs:
     travis-rollout (0.0.1)
 
