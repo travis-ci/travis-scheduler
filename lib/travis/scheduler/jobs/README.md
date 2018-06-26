@@ -3,7 +3,7 @@ Terminology:
 * `running` - jobs in the state `queued`, `received`, or `started`
 * `queueable` - jobs in the state `created`
 * `selected` - queueable jobs that are being selected to be queued based on concurrency limits
-* `waiting` - queueable jobs that can not been selected to be queued
+* `waiting` - queueable jobs that have not been selected to be queued
 
 Classes:
 
