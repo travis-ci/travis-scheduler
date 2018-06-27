@@ -16,7 +16,11 @@ module Travis
         }
 
         def to_a
-          capacities + limits + by_repo + [totals]
+          capacities + limits + by_repo + [totals.to_s]
+        end
+
+        def waiting_for_concurrency
+          totals.waiting_for_concurrency
         end
 
         private
@@ -34,7 +38,7 @@ module Travis
           end
 
           def totals
-            Reports::Totals.new(owners, state, reports).to_s
+            @totals ||= Reports::Totals.new(owners, state, reports)
           end
 
           def data_for(type)

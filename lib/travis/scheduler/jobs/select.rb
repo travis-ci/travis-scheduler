@@ -16,7 +16,7 @@ module Travis
         end
 
         def reports
-          Report.new(owners, state, limits.reports + capacities.reports).to_a
+          report.to_a
         end
 
         private
@@ -44,12 +44,16 @@ module Travis
             @state ||= State.new(context, owners)
           end
 
+          def report
+            @report ||= Report.new(owners, state, limits.reports + capacities.reports)
+          end
+
           def honeycomb
             Travis::Honeycomb.context.add('scheduler.stats',
               running: state.count_running,
               enqueued: selected.size,
               waiting: state.count_queueable - selected.size,
-              # waiting_for_concurrency: @waiting_by_owner,
+              waiting_for_concurrency: report.waiting_for_concurrency,
               concurrent: state.count_running + selected.size
             )
           end
