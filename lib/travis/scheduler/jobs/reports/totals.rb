@@ -1,14 +1,22 @@
+require 'travis/scheduler/helper/memoize'
+
 module Travis
   module Scheduler
     module Jobs
       module Reports
         class Totals < Struct.new(:owners, :state, :reports)
+          include Helper::Memoize
+
           MSGS = {
-            totals: '%s: queueable=%s running=%s selected=%s waiting=%s'
+            totals: '%s: queueable=%s running=%s selected=%s total_waiting=%s waiting_for_concurrency=%s'
           }
 
           def to_s
-            msg :totals, owners.to_s, queueable, running, selected, waiting
+            msg :totals, owners.to_s, queueable, running, selected, total_waiting, waiting_for_concurrency
+          end
+
+          def waiting_for_concurrency
+            total_waiting - limited
           end
 
           private
@@ -21,16 +29,25 @@ module Travis
               state.count_running
             end
 
-            def selected
-              @selected ||= capacities.select { |data| data[:status] == :accept }.size
+            def total_waiting
+              queueable - selected
             end
 
-            def waiting
-              queueable - selected
+            def selected
+              capacities.select { |data| data[:status] == :accept }.size
+            end
+            memoize :selected
+
+            def limited
+              limits.select { |data| data[:status] == :reject }.size
             end
 
             def capacities
               reports.select { |data| data[:type] == :capacity }
+            end
+
+            def limits
+              reports.select { |data| data[:type] == :limit }
             end
 
             def msg(type, *args)
