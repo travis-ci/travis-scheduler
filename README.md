@@ -29,30 +29,26 @@ only queue 2 more jobs in order to respect the limit of 5.
 The log output for each of these evaluation rounds looks like this:
 
 ```
-one-org: total: 5, running: 8, max: 20, queueable: 5
-another-org: total: 20, running: 2, max: 2, queueable: 0
+user sven public capacity: total=3 running=1 selected=2
+user sven boost capacity: total=2 running=0 selected=2
+repo sven/repo: queueable=5 running=1 selected=4 waiting=1
+user sven: queueable=5 running=1 selected=4 total_waiting=1 waiting_for_concurrency=1
 ```
 
 The terminology used here can be confusing. The terms mean:
 
-* `total` is the number of jobs waiting in the `created` state
-* `running` is the number of jobs already running, so the number of jobs that
-   have state `queued`, `received`, or `started`
-* `max` is the concurrency limit for the given owner, i.e. the maximum number
-   of jobs
-* `queueable` is the result of the evaluation: how many jobs can be queued up,
-   i.e. "sent to the workers", at this moment
+* `total` - number of concurrent jobs, provided by public capacity, plan, boost, etc.
+* `running` - number of jobs currently running, i.e. in the state `queued`, `received`, or `started`
+* `queueable` - number of jobs in the state `created`
+* `selected` - number of queueable jobs that are being selected to be queued based on concurrency limits
+* `total_waiting` - total number of queueable jobs that have not been selected to be queued
+* `waiting_for_concurrency` - number of queueable jobs that have not been selected, and have not been found to be limited by repo settings, queue, or stages
 
-In the example log output above, on the first line the owner `one-org` has a
-concurrency limit of 20. It has 5 jobs waiting to be queued ("total"), and
-already has 8 jobs running at this moment. Therefore the scheduler can queue up
-5 more jobs for the workers to pick them up and execute them. (And, if someone
-on this org would have pushed 12 more jobs in this moment, it could queue up
-all 12 of them, too.)
-
-On the second line the owner `another-org` has a concurrency limit of 2, 20
-jobs waiting ("total"), and 2 already running. Therefore the scheduler can not
-queue up any more jobs (`queueable: 0`) at this moment.
+In the example log output above, the owner has a capacity of 3 concurrent jobs
+provided by `public` capacity (line 1), and 2 jobs provided by `boost` capacity
+(line 2). The job selection finds 5 jobs to be queueable (i.e. in the state
+`created`), and 1 job to be running. As the total capacity is 5 jobs it can
+select 4 jobs to be queued for the workers, leaving 1 job waiting.
 
 ## Contributing
 
