@@ -23,6 +23,10 @@ class Organization < ActiveRecord::Base
     !!Travis::Features.owner_active?(:educational_org, self)
   end
 
+  def paid?
+    subscribed? || active_trial?
+  end
+
   def active_trial?
     redis.get("trial:#{login}").to_i > 0
   end
@@ -35,7 +39,7 @@ class Organization < ActiveRecord::Base
     #   those enforced by workers themselves, but we plan to sometime in the
     #   following weeks/months.
     #
-    if subscribed? || active_trial? || educational?
+    if paid? || educational?
       DEFAULT_SUBSCRIBED_TIMEOUT
     else
       DEFAULT_SPONSORED_TIMEOUT

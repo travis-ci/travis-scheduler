@@ -184,6 +184,16 @@ describe Travis::Queue do
     end
   end
 
+  describe 'pooled' do
+    env TRAVIS_SITE: 'com',
+        POOL_QUEUES: 'gce',
+        POOL_SUFFIX: 'foo'
+
+    let(:config) { { dist: 'trusty' } }
+
+    it { expect(queue).to eq 'builds.gce-foo' }
+  end
+
   describe 'on .org' do
     before { context.config.docker_default_queue_cutoff = recently.to_s }
     after  { context.config.docker_default_queue_cutoff = nil }
