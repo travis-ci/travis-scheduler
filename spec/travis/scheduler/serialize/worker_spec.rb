@@ -13,7 +13,7 @@ describe Travis::Scheduler::Serialize::Worker do
   let(:repo)      { FactoryGirl.create(:repo, default_branch: 'branch') }
   let(:owner)     { repo.owner }
   let(:data)      { described_class.new(job, config).data }
-  let(:config)    { { cache_settings: { 'builds.gce' => s3 }, github: { source_host: 'github.com', api_url: 'https://api.github.com' } } }
+  let(:config)    { { cache_settings: { 'builds.gce' => s3 }, github: { source_host: 'github.com', api_url: 'https://api.github.com' }, repo_vm_configs: [] } }
   let(:s3)        { { access_key_id: 'ACCESS_KEY_ID', secret_access_key: 'SECRET_ACCESS_KEY', bucket_name: 'bucket' } }
   let(:event)     { 'push' }
   let(:ref)       { 'refs/tags/v1.2.3' }
@@ -163,6 +163,11 @@ describe Travis::Scheduler::Serialize::Worker do
       after  { features.deactivate_owner(:premium_vms, owner) }
       it { expect(data[:vm_type]).to eq(:premium) }
     end
+  end
+
+  describe 'vm_config' do
+    before { config[:repo_vm_configs] = [{repo: 'svenfuchs/gem-release', bloop: :floop}] }
+    it { expect(data[:vm_config]).to eq(repo: 'svenfuchs/gem-release', bloop: :floop) }
   end
 
   describe 'with debug options' do
