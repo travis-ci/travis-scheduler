@@ -39,6 +39,7 @@ describe Travis::Scheduler::Serialize::Worker do
       expect(data).to eq(
         type: :test,
         vm_type: :default,
+        vm_config: {},
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
@@ -189,6 +190,7 @@ describe Travis::Scheduler::Serialize::Worker do
       expect(data).to eq(
         type: :test,
         vm_type: :default,
+        vm_config: {},
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
