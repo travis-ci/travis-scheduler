@@ -18,7 +18,7 @@ module Travis
           end
 
           def vm_config
-            repo_vm_configs.find { |c| c[:repo] == slug } || {}
+            vm_configs[slug] || {}
           end
 
           def timeouts
@@ -70,8 +70,8 @@ module Travis
               config[:github][:source_host] || 'github.com'
             end
 
-            def repo_vm_configs
-              config[:repo_vm_configs] || {}
+            def vm_configs
+              config[:vm_configs] || {}
             end
         end
       end
