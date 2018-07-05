@@ -5,8 +5,6 @@ module Travis
         @queues ||= Regexp.new(ENV['POOL_QUEUES'].gsub(',', '|'))
       end
 
-      QUEUES = %r(gce|ec2|macstadium)
-
       def to_s
         active? && sponsored? ? "#{queue}-#{suffix}" : queue
       end
@@ -14,7 +12,7 @@ module Travis
       private
 
         def active?
-          ENV['TRAVIS_SITE'] == 'com' && ENV['POOL_QUEUES']
+          ENV['TRAVIS_SITE'] == 'com' && ENV['POOL_QUEUES'] && ENV['POOL_SUFFIX']
         end
 
         def suffix
