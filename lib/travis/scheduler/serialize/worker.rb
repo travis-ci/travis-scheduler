@@ -13,6 +13,7 @@ module Travis
         def data
           data = {
             type: :test,
+            vm_config: repo.vm_config,
             vm_type: repo.vm_type,
             queue: job.queue,
             config: job.decrypted_config,
