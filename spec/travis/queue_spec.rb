@@ -1,5 +1,3 @@
-include SpecHelper
-
 describe Travis::Queue do
   let(:context)    { Travis::Scheduler.context }
   let(:recently)   { 7.days.ago }
@@ -204,33 +202,33 @@ describe Travis::Queue do
   end
 
   [
-    qc(queue: 'builds.docker', config: { dist: 'precise' }),
-    qc(queue: 'builds.docker', config: { dist: 'precise' }, education: true),
-    qc(queue: 'builds.ec2', config: { dist: 'trusty' }),
-    qc(queue: 'builds.ec2', config: { dist: 'trusty' }, education: true),
-    qc(queue: 'builds.ec2', config: { dist: 'xenial' }),
-    qc(queue: 'builds.ec2', config: { dist: 'xenial' }, education: true),
-    qc(queue: 'builds.gce', config: { dist: 'precise' }, created_at: SpecHelper::NOWISH - 30.days),
-    qc(queue: 'builds.gce', config: { dist: 'precise' }, force_linux_sudo_required: true),
-    qc(queue: 'builds.gce', config: { dist: 'precise', sudo: false }, force_linux_sudo_required: true),
-    qc(queue: 'builds.gce', config: { dist: 'precise' }, force_precise_sudo_required: true),
-    qc(queue: 'builds.gce', config: { dist: 'precise', sudo: false }, force_precise_sudo_required: true),
-    qc(queue: 'builds.gce', config: { dist: 'precise', script: 'sudo huh' }),
-    qc(queue: 'builds.gce', config: { dist: 'precise', sudo: 'required' }),
-    qc(queue: 'builds.gce', config: { dist: 'precise', sudo: true }),
-    qc(queue: 'builds.gce', config: { dist: 'trusty' }, created_at: SpecHelper::NOWISH - 30.days),
-    qc(queue: 'builds.gce', config: { dist: 'trusty' }, force_linux_sudo_required: true),
-    qc(queue: 'builds.gce', config: { dist: 'trusty', sudo: false }, force_linux_sudo_required: true),
-    qc(queue: 'builds.gce', config: { dist: 'trusty', script: 'sudo huh' }),
-    qc(queue: 'builds.gce', config: { dist: 'trusty', sudo: 'required' }),
-    qc(queue: 'builds.gce', config: { dist: 'trusty', sudo: true }),
-    qc(queue: 'builds.gce', config: { dist: 'xenial' }, created_at: SpecHelper::NOWISH - 30.days),
-    qc(queue: 'builds.gce', config: { dist: 'xenial' }, force_linux_sudo_required: true),
-    qc(queue: 'builds.gce', config: { dist: 'xenial', sudo: false }, force_linux_sudo_required: true),
-    qc(queue: 'builds.gce', config: { dist: 'xenial', script: 'sudo huh' }),
-    qc(queue: 'builds.gce', config: { dist: 'xenial', sudo: 'required' }),
-    qc(queue: 'builds.gce', config: { dist: 'xenial', sudo: true }),
-  ].each do |c|
+    { queue: 'builds.docker', config: { dist: 'precise' } },
+    { queue: 'builds.docker', config: { dist: 'precise' }, education: true },
+    { queue: 'builds.ec2', config: { dist: 'trusty' } },
+    { queue: 'builds.ec2', config: { dist: 'trusty' }, education: true },
+    { queue: 'builds.ec2', config: { dist: 'xenial' } },
+    { queue: 'builds.ec2', config: { dist: 'xenial' }, education: true },
+    { queue: 'builds.gce', config: { dist: 'precise' }, created_at: NOWISH - 30.days },
+    { queue: 'builds.gce', config: { dist: 'precise' }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'precise', sudo: false }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'precise' }, force_precise_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'precise', sudo: false }, force_precise_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'precise', script: 'sudo huh' } },
+    { queue: 'builds.gce', config: { dist: 'precise', sudo: 'required' } },
+    { queue: 'builds.gce', config: { dist: 'precise', sudo: true } },
+    { queue: 'builds.gce', config: { dist: 'trusty' }, created_at: NOWISH - 30.days },
+    { queue: 'builds.gce', config: { dist: 'trusty' }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'trusty', sudo: false }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'trusty', script: 'sudo huh' } },
+    { queue: 'builds.gce', config: { dist: 'trusty', sudo: 'required' } },
+    { queue: 'builds.gce', config: { dist: 'trusty', sudo: true } },
+    { queue: 'builds.gce', config: { dist: 'xenial' }, created_at: NOWISH - 30.days },
+    { queue: 'builds.gce', config: { dist: 'xenial' }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'xenial', sudo: false }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'xenial', script: 'sudo huh' } },
+    { queue: 'builds.gce', config: { dist: 'xenial', sudo: 'required' } },
+    { queue: 'builds.gce', config: { dist: 'xenial', sudo: true } },
+  ].map { |qc| Support::Queues::QueueCase.new(qc) }.each do |c|
     describe c.to_s do
       before do
         context.config.docker_default_queue_cutoff = c.cutoff
