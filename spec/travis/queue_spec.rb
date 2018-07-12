@@ -12,6 +12,7 @@ describe Travis::Queue do
   let(:queue)      { described_class.new(job, context.config, logger).select }
 
   let(:force_precise_sudo_required?) { false }
+  let(:force_linux_sudo_required?) { false }
 
   before do
     Travis::Scheduler.logger.stubs(:info)
@@ -21,9 +22,11 @@ describe Travis::Queue do
       { queue: 'builds.mac_osx', os: 'osx' },
       { queue: 'builds.docker', sudo: false, dist: 'precise' },
       { queue: 'builds.ec2', sudo: false, dist: 'trusty' },
+      { queue: 'builds.ec2', sudo: false, dist: 'xenial' },
       { queue: 'builds.gce', services: %w(docker) },
       { queue: 'builds.gce', dist: 'trusty', sudo: 'required' },
       { queue: 'builds.gce', dist: 'precise', sudo: 'required' },
+      { queue: 'builds.gce', dist: 'xenial', sudo: 'required' },
       { queue: 'builds.cloudfoundry', owner: 'cloudfoundry' },
       { queue: 'builds.clojure', language: 'clojure' },
       { queue: 'builds.erlang', language: 'erlang' },
@@ -36,6 +39,10 @@ describe Travis::Queue do
       .any_instance
       .stubs(:force_precise_sudo_required?)
       .returns(force_precise_sudo_required?)
+    Travis::Queue::Sudo
+      .any_instance
+      .stubs(:force_linux_sudo_required?)
+      .returns(force_linux_sudo_required?)
   end
 
   after do
@@ -194,402 +201,52 @@ describe Travis::Queue do
     it { expect(queue).to eq 'builds.gce-foo' }
   end
 
-  describe 'on .org' do
-    before { context.config.docker_default_queue_cutoff = recently.to_s }
-    after  { context.config.docker_default_queue_cutoff = nil }
-
-    describe 'sudo: nil' do
-      let(:config) { { sudo: nil, dist: 'precise'} }
-
-      describe 'when the account is educational' do
-        before { owner.stubs(:education?).returns(true) }
-
-        describe 'when sudo is detected' do
-          before { config[:script] = 'sudo echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-        end
-
-        describe 'when sudo is not detected' do
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-        end
+  [
+    { queue: 'builds.docker', config: { dist: 'precise' } },
+    { queue: 'builds.docker', config: { dist: 'precise' }, education: true },
+    { queue: 'builds.ec2', config: { dist: 'trusty' } },
+    { queue: 'builds.ec2', config: { dist: 'trusty' }, education: true },
+    { queue: 'builds.ec2', config: { dist: 'xenial' } },
+    { queue: 'builds.ec2', config: { dist: 'xenial' }, education: true },
+    { queue: 'builds.gce', config: { dist: 'precise' }, created_at: NOWISH - 30.days },
+    { queue: 'builds.gce', config: { dist: 'precise' }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'precise', sudo: false }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'precise' }, force_precise_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'precise', sudo: false }, force_precise_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'precise', script: 'sudo huh' } },
+    { queue: 'builds.gce', config: { dist: 'precise', sudo: 'required' } },
+    { queue: 'builds.gce', config: { dist: 'precise', sudo: true } },
+    { queue: 'builds.gce', config: { dist: 'trusty' }, created_at: NOWISH - 30.days },
+    { queue: 'builds.gce', config: { dist: 'trusty' }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'trusty', sudo: false }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'trusty', script: 'sudo huh' } },
+    { queue: 'builds.gce', config: { dist: 'trusty', sudo: 'required' } },
+    { queue: 'builds.gce', config: { dist: 'trusty', sudo: true } },
+    { queue: 'builds.gce', config: { dist: 'xenial' }, created_at: NOWISH - 30.days },
+    { queue: 'builds.gce', config: { dist: 'xenial' }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'xenial', sudo: false }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'xenial', script: 'sudo huh' } },
+    { queue: 'builds.gce', config: { dist: 'xenial', sudo: 'required' } },
+    { queue: 'builds.gce', config: { dist: 'xenial', sudo: true } },
+  ].map { |qc| Support::Queues::QueueCase.new(qc) }.each do |c|
+    describe c.to_s do
+      before do
+        context.config.docker_default_queue_cutoff = c.cutoff
+        context.config.host = c.host
+        owner.stubs(:education?).returns(c.education?)
       end
 
-      describe 'when the account is not educational' do
-        describe 'when sudo is detected' do
-          before { config[:script] = 'sudo echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-        end
-
-        describe 'when sudo is not detected' do
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-        end
-      end
-    end
-
-    describe 'sudo: false' do
-      let(:config) { { sudo: false, dist: 'precise' } }
-
-      describe 'when the account is educational' do
-        before { owner.stubs(:education?).returns(true) }
-
-        describe 'when sudo is detected' do
-          before { config[:script] = 'sudo echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-        end
-
-        describe 'when sudo is not detected' do
-          before { config[:script] = 'echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-        end
+      after do
+        context.config.docker_default_queue_cutoff = nil
+        context.config.host = 'travis-ci.org'
       end
 
-      describe 'when the account is not educational' do
-        describe 'when sudo is detected' do
-          before { config[:script] = 'sudo echo whatever' }
+      let(:config) { c.config }
+      let(:created_at) { c.created_at }
+      let(:force_precise_sudo_required?) { c.force_precise_sudo_required? }
+      let(:force_linux_sudo_required?) { c.force_linux_sudo_required? }
 
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-        end
-
-        describe 'when sudo is not detected' do
-          before { config[:script] = 'echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-        end
-      end
-    end
-
-    [true, 'required'].each do |sudo|
-      describe "sudo: #{sudo}" do
-        let(:config) { { sudo: sudo, dist: 'trusty' } }
-
-        describe 'when the account is educational' do
-          before { owner.stubs(:education?).returns(true) }
-
-          describe 'when sudo is detected' do
-            before { config[:script] = 'sudo echo whatever' }
-
-            describe 'when the repo created_at is before cutoff' do
-              let(:created_at) { recently - 7.days }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-
-            describe 'when the repo created_at is after cutoff' do
-              let(:created_at) { Time.now }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-          end
-
-          describe 'when sudo is not detected' do
-            describe 'when the repo created_at is before cutoff' do
-              let(:created_at) { recently - 7.days }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-
-            describe 'when the repo created_at is after cutoff' do
-              let(:created_at) { Time.now }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-          end
-        end
-
-        describe 'when the account is not educational' do
-          describe 'when sudo is detected' do
-            before { config[:script] = 'sudo echo whatever' }
-
-            describe 'when the repo created_at is before cutoff' do
-              let(:created_at) { recently - 7.days }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-
-            describe 'when the repo created_at is after cutoff' do
-              let(:created_at) { Time.now }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-          end
-
-          describe 'when sudo is not detected' do
-            describe 'when the repo created_at is before cutoff' do
-              let(:created_at) { recently - 7.days }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-
-            describe 'when the repo created_at is after cutoff' do
-              let(:created_at) { Time.now }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-          end
-        end
-
-        context 'when the repository is forced to sudo: required' do
-          let(:config) { { sudo: false, dist: 'precise' } }
-          let(:force_precise_sudo_required?) { true }
-          it { expect(queue).to eq 'builds.gce' }
-        end
-      end
-    end
-  end
-
-  describe 'on .com' do
-    before { context.config.host = 'travis-ci.com' }
-    after  { context.config.host = 'travis-ci.org' }
-
-    before { context.config.docker_default_queue_cutoff = recently.to_s }
-    after  { context.config.docker_default_queue_cutoff = nil }
-
-    describe 'sudo: nil' do
-      let(:config) { { sudo: nil, dist: 'precise' } }
-
-      describe 'when the account is educational' do
-        before { owner.stubs(:education?).returns(true) }
-
-        describe 'when sudo is detected' do
-          before { config[:script] = 'sudo echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-        end
-
-        describe 'when sudo is not detected' do
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-        end
-      end
-
-      describe 'when the account is not educational' do
-        describe 'when sudo is detected' do
-          before { config[:script] = 'sudo echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-        end
-
-        describe 'when sudo is not detected' do
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.docker' }
-          end
-        end
-      end
-    end
-
-    describe 'sudo: false' do
-      let(:config) { { sudo: false, dist: 'trusty' } }
-
-      describe 'when the account is educational' do
-        before { owner.stubs(:education?).returns(true) }
-
-        describe 'when sudo is detected' do
-          before { config[:script] = 'sudo echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-        end
-
-        describe 'when sudo is not detected' do
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.ec2' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.ec2' }
-          end
-        end
-      end
-
-      describe 'when the account is not educational' do
-        describe 'when sudo is detected' do
-          before { config[:script] = 'sudo echo whatever' }
-
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.gce' }
-          end
-        end
-
-        describe 'when sudo is not detected' do
-          describe 'when the repo created_at is before cutoff' do
-            let(:created_at) { recently - 7.days }
-            it { expect(queue).to eq 'builds.ec2' }
-          end
-
-          describe 'when the repo created_at is after cutoff' do
-            let(:created_at) { Time.now }
-            it { expect(queue).to eq 'builds.ec2' }
-          end
-        end
-      end
-    end
-
-    [true, 'required'].each do |sudo|
-      describe "sudo: #{sudo}" do
-        let(:config) { { sudo: sudo, dist: 'trusty' } }
-
-        describe 'when the account is educational' do
-          before { owner.stubs(:education?).returns(true) }
-
-          describe 'when sudo is detected' do
-            before { config[:script] = 'sudo echo whatever' }
-
-            describe 'when the repo created_at is before cutoff' do
-              let(:created_at) { recently - 7.days }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-
-            describe 'when the repo created_at is after cutoff' do
-              let(:created_at) { Time.now }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-          end
-
-          describe 'when sudo is not detected' do
-            describe 'when the repo created_at is before cutoff' do
-              let(:created_at) { recently - 7.days }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-
-            describe 'when the repo created_at is after cutoff' do
-              let(:created_at) { Time.now }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-          end
-        end
-
-        describe 'when the account is not educational' do
-          describe 'when sudo is detected' do
-            before { config[:script] = 'sudo echo whatever' }
-
-            describe 'when the repo created_at is before cutoff' do
-              let(:created_at) { recently - 7.days }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-
-            describe 'when the repo created_at is after cutoff' do
-              let(:created_at) { Time.now }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-          end
-
-          describe 'when sudo is not detected' do
-            describe 'when the repo created_at is before cutoff' do
-              let(:created_at) { recently - 7.days }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-
-            describe 'when the repo created_at is after cutoff' do
-              let(:created_at) { Time.now }
-              it { expect(queue).to eq 'builds.gce' }
-            end
-          end
-        end
-      end
+      it { expect(queue).to eq(c.queue) }
     end
   end
 end

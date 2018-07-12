@@ -1,3 +1,4 @@
+require 'travis/queue/force_linux_sudo_required'
 require 'travis/queue/force_precise_sudo_required'
 
 module Travis
@@ -5,8 +6,9 @@ module Travis
     class Sudo < Struct.new(:repo, :job_config, :config)
       def value
         return 'required' if force_precise_sudo_required?
-        return 'required' if sudo_used?
+        return 'required' if force_linux_sudo_required?
         return specified if specified?
+        return 'required' if sudo_used?
         default
       end
 
@@ -39,6 +41,10 @@ module Travis
         def docker_default_cutoff
           date = config[:docker_default_queue_cutoff]
           date ? Time.parse(date) : Time.now.utc
+        end
+
+        def force_linux_sudo_required?
+          ForceLinuxSudoRequired.new(repo.owner).apply?
         end
 
         def force_precise_sudo_required?
