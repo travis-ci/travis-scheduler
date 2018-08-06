@@ -17,10 +17,6 @@ module Travis
             Features.active?(:premium_vms, repo) ? :premium : :default
           end
 
-          def vm_config
-            vm_configs[slug] || {}
-          end
-
           def timeouts
             { hard_limit: hard_limit_timeout, log_silence: timeout(:log_silence) }
           end
@@ -68,10 +64,6 @@ module Travis
 
             def source_host
               config[:github][:source_host] || 'github.com'
-            end
-
-            def vm_configs
-              config[:vm_configs] || {}
             end
         end
       end

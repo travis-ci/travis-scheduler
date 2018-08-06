@@ -167,8 +167,22 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   describe 'vm_config' do
-    before { config[:vm_configs] = { 'svenfuchs/gem-release' => { bloop: :floop } } }
-    it { expect(data[:vm_config]).to eq(bloop: :floop) }
+    before { config[:vm_configs] = { gpu: { gpu_count: 1 } } }
+
+    describe 'with the feature flag not enabled' do
+      it { expect(data[:vm_config]).to eq({}) }
+    end
+
+    describe 'with the feature flag enabled, but no resources config given' do
+      before { Travis::Features.activate_repository(:vm_config, repo) }
+      it { expect(data[:vm_config]).to eq({}) }
+    end
+
+    describe 'with the feature flag enabled, and resources config given' do
+      before { Travis::Features.activate_repository(:vm_config, repo) }
+      before { job.config[:resources] = { gpu: true } }
+      it { expect(data[:vm_config]).to eq gpu_count: 1 }
+    end
   end
 
   describe 'with debug options' do

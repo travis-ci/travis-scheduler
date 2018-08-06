@@ -13,7 +13,7 @@ module Travis
         def data
           data = {
             type: :test,
-            vm_config: repo.vm_config,
+            vm_config: job.vm_config,
             vm_type: repo.vm_type,
             queue: job.queue,
             config: job.decrypted_config,
@@ -99,7 +99,7 @@ module Travis
           end
 
           def job
-            @job ||= Job.new(super)
+            @job ||= Job.new(super, config)
           end
 
           def repo
