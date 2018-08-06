@@ -8,7 +8,7 @@ describe Travis::Queue do
 
   let(:owner)      { FactoryGirl.build(:user, login: slug.split('/').first) }
   let(:repo)       { FactoryGirl.build(:repo, owner: owner, owner_name: owner.login, name: slug.split('/').last, created_at: created_at) }
-  let(:job)        { FactoryGirl.build(:job, config: config, repository: repo) }
+  let(:job)        { FactoryGirl.build(:job, config: config, owner: owner, repository: repo) }
   let(:queue)      { described_class.new(job, context.config, logger).select }
 
   let(:force_precise_sudo_required?) { false }
@@ -16,7 +16,7 @@ describe Travis::Queue do
 
   before do
     Travis::Scheduler.logger.stubs(:info)
-    context.config.queue.default = 'builds.defaulty'
+    context.config.queue.default = 'builds.default'
     context.config.queues = [
       { queue: 'builds.rails', slug: 'rails/rails' },
       { queue: 'builds.mac_osx', os: 'osx' },
@@ -27,6 +27,7 @@ describe Travis::Queue do
       { queue: 'builds.gce', dist: 'trusty', sudo: 'required' },
       { queue: 'builds.gce', dist: 'precise', sudo: 'required' },
       { queue: 'builds.gce', dist: 'xenial', sudo: 'required' },
+      { queue: 'builds.gce', resources: { gpu: true } },
       { queue: 'builds.cloudfoundry', owner: 'cloudfoundry' },
       { queue: 'builds.clojure', language: 'clojure' },
       { queue: 'builds.erlang', language: 'erlang' },
@@ -53,7 +54,7 @@ describe Travis::Queue do
 
   describe 'by default' do
     let(:slug) { 'travis-ci/travis-ci' }
-    it { expect(queue).to eq 'builds.defaulty' }
+    it { expect(queue).to eq 'builds.default' }
   end
 
   describe 'by default, with a docker cutoff' do
@@ -93,7 +94,7 @@ describe Travis::Queue do
 
     describe 'on org' do
       describe 'returns the default queue for educational repositories, too' do
-        it { expect(queue).to eq 'builds.defaulty' }
+        it { expect(queue).to eq 'builds.default' }
       end
 
       describe 'returns the queue matching configuration for educational repository' do
@@ -107,7 +108,7 @@ describe Travis::Queue do
       after  { context.config.host = 'travis-ci.org' }
 
       describe 'returns the default queue by default for educational repositories' do
-        it { expect(queue).to eq 'builds.defaulty' }
+        it { expect(queue).to eq 'builds.default' }
       end
 
       describe 'returns the queue matching configuration for educational repository' do
@@ -161,7 +162,7 @@ describe Travis::Queue do
 
     describe 'dist: unknown' do
       let(:config) { { dist: 'unknown' } }
-      it { expect(queue).to eq 'builds.defaulty' }
+      it { expect(queue).to eq 'builds.default' }
     end
   end
 
@@ -189,6 +190,12 @@ describe Travis::Queue do
       let(:config)  { { language: 'foo' } }
       it { expect(queue).to eq 'builds.new-foo' }
     end
+  end
+
+  describe 'resources.gpu: true routes to gce' do
+    let(:config) { { resources: { gpu: true } } }
+    before { Travis::Features.activate_repository(:vm_config, repo) }
+    it { expect(queue).to eq 'builds.gce' }
   end
 
   describe 'pooled' do
