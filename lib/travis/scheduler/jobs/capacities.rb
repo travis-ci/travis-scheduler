@@ -13,39 +13,52 @@ module Travis
       class Capacities < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        NAMES = %w(public boost plan config trial education)
+        NAMES = %i(public boost plan config trial education)
 
         def accept(job)
-          all.any? { |capacity| capacity.accept?(job) }
+          public.accept?(job) || other.try(:accept?, job)
         end
 
         def reports
-          all.map(&:reports).flatten
+          active.map(&:reports).flatten
         end
 
         def accepted
-          all.map(&:accepted).inject(&:+)
+          active.map(&:accepted).inject(&:+)
         end
 
         def exhausted?
-          all.all?(&:exhausted?)
+          active.all?(&:exhausted?)
         end
         memoize :exhausted
 
         private
 
+          def active
+            [public, other].compact
+          end
+
+          def public
+            all.first
+          end
+
+          def other
+            all[1..-1].detect { |capacity| capacity.applicable? }
+          end
+
+          # as only one out of boost, plan, config etc is supposed to be used
+          # if applicable we wouldn't have to build and reduce them all.
           def all
-            @all ||= build.tap { |all| reduce(all) }
+            @all ||= reduce(NAMES.map { |name| build(name) })
           end
 
           def reduce(all)
             all.inject(state.running) { |jobs, capacity| capacity.reduce(jobs) }
+            all
           end
 
-          def build
-            NAMES.map do |name|
-              Capacity.const_get(name.camelize).new(context, owners, self)
-            end
+          def build(name)
+            Capacity.const_get(name.to_s.camelize).new(context, owners, self)
           end
       end
     end

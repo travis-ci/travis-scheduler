@@ -5,6 +5,10 @@ module Travis
     module Jobs
       module Capacity
         class Trial < Base
+          def applicable?
+            trial.active?
+          end
+
           def accept?(job)
             trial.active? && super
           end
