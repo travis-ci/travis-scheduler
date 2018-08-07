@@ -7,6 +7,10 @@ module Travis
         class Education < Base
           include Helper::Memoize
 
+          def applicable?
+            educational?
+          end
+
           def accept?(job)
             super if educational?
           end

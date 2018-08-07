@@ -5,6 +5,10 @@ module Travis
     module Jobs
       module Capacity
         class Boost < Base
+          def applicable?
+            boost.exists?
+          end
+
           def report(status, job)
             super.merge(max: max)
           end
@@ -16,7 +20,7 @@ module Travis
             end
 
             def boost
-              Model::Boost.new(owners, context.redis)
+              @boost ||= Model::Boost.new(owners, context.redis)
             end
         end
       end

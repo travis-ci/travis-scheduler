@@ -3,6 +3,10 @@ module Travis
     module Jobs
       module Capacity
         class Plan < Base
+          def applicable?
+            owners.subscribed?
+          end
+
           def report(status, job)
             super.merge(max: max)
           end

@@ -3,6 +3,10 @@ module Travis
     module Jobs
       module Capacity
         class Public < Base
+          def applicable?
+            true
+          end
+
           def reduce(jobs)
             rest = super(jobs.select(&:public?))
             rest + jobs.select(&:private?)
