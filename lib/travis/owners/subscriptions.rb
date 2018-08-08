@@ -1,6 +1,10 @@
 module Travis
   module Owners
-    class Subscriptions < Struct.new(:owners, :config)
+    class Subscriptions < Struct.new(:owners, :config, :logger)
+      MSGS = {
+        missing_plan: '[missing_plan] Plan missing from application config: %s (%s)'
+      }
+
       def active?
         subscriptions.any?
       end
@@ -21,7 +25,11 @@ module Travis
         end
 
         def plan_limit(plan)
-          config[plan.to_sym]
+          config[plan.to_sym].tap { |limit| missing_plan(plan) unless limit }
+        end
+
+        def missing_plan(plan)
+          logger.warn MSGS[:missing_plan] % [plan, owners.to_s]
         end
 
         def plans

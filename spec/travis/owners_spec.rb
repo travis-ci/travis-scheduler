@@ -7,7 +7,7 @@ describe Travis::Owners do
 
   let(:plans)   { { five: 5, ten: 10 } }
   let(:config)  { { limit: respond_to?(:limits) ? limits : {}, plans: plans } }
-  let(:owners)  { described_class.group(anja, config) }
+  let(:owners)  { described_class.group(anja, config, logger) }
 
   shared_examples_for 'max_jobs' do
     describe 'with no subscription' do
@@ -103,5 +103,11 @@ describe Travis::Owners do
       let(:other) { described_class.group(carla, config) }
       it { expect(owners == other).to eq false }
     end
+  end
+
+  describe 'with a missing/unknown plan' do
+    before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :unknown) }
+    before { owners.paid_capacity }
+    it { expect(log).to include 'W [missing_plan] Plan missing from application config: unknown (user anja)' }
   end
 end

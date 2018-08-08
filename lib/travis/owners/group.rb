@@ -1,6 +1,6 @@
 module Travis
   module Owners
-    class Group < Struct.new(:all, :config)
+    class Group < Struct.new(:all, :config, :logger)
       include Enumerable
 
       def each(&block)
@@ -48,7 +48,7 @@ module Travis
       private
 
         def subscriptions
-          @subscriptions ||= Subscriptions.new(self, plans)
+          @subscriptions ||= Subscriptions.new(self, plans, logger)
         end
 
         def plans

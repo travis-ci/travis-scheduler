@@ -8,9 +8,9 @@ require 'travis/owners/subscriptions'
 module Travis
   module Owners
     class << self
-      def group(owner, config)
+      def group(owner, config, logger = nil)
         owner = find(owner) if owner.is_a?(Hash)
-        Group.new(owners(owner, config), config)
+        Group.new(owners(owner, config), config, logger)
       end
 
       def find(owner)
