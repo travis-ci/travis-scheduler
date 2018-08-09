@@ -53,7 +53,9 @@ module Travis
           end
 
           def reduce(all)
-            all.inject(state.running) { |jobs, capacity| capacity.reduce(jobs) }
+            all.inject(state.running) do |jobs, capacity|
+              capacity.applicable? ? capacity.reduce(jobs) : jobs
+            end
             all
           end
 

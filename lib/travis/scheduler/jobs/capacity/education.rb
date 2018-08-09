@@ -22,7 +22,7 @@ module Travis
           private
 
             def max
-              @max ||= config[:limit][:educational] || 0
+              @max ||= config[:limit][:education] || 0
             end
 
             def educational?

@@ -172,7 +172,7 @@ describe Travis::Scheduler::Jobs::Select do
   end
 
   describe 'with an educational status, allowing 2 educational jobs' do
-    before { config[:limit][:educational] = 2 }
+    before { config[:limit][:education] = 2 }
     before { user.update_attributes!(education: true) }
 
     describe 'with private jobs only' do
