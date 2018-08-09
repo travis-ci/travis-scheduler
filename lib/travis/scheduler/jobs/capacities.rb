@@ -13,7 +13,7 @@ module Travis
       class Capacities < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        NAMES = %i(public boost plan config trial education)
+        NAMES = %i(public boost plan config education trial)
 
         def accept(job)
           public.accept?(job) || other.try(:accept?, job)
