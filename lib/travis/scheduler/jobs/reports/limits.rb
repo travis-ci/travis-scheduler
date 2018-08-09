@@ -34,7 +34,7 @@ module Travis
             def report_stages(data)
               map_repos(data) do |slug, data|
                 map_builds(data) do |build_id, data|
-                  msg :stages, slug, build_id, selected(data), rejected(data)
+                  msg :stages, slug, build_id, rejected(data), selected(data)
                 end
               end
             end
