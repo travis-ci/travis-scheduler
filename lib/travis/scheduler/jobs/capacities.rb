@@ -13,10 +13,16 @@ module Travis
       class Capacities < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        NAMES = %i(public boost plan config education trial)
+        ANY = %i(boost plan config education trial)
+
+        # TODO warn if no applicable :any capacity can be found
+        def initialize(*)
+          super
+          reduce(public, any)
+        end
 
         def accept(job)
-          public.accept?(job) || other.try(:accept?, job)
+          public.accept?(job) || any.try(:accept?, job)
         end
 
         def reports
@@ -35,28 +41,21 @@ module Travis
         private
 
           def active
-            [public, other].compact
+            [public, any].compact
           end
 
           def public
-            all.first
+            @public ||= build(:public)
           end
 
-          def other
-            all[1..-1].detect { |capacity| capacity.applicable? }
+          def any
+            @any ||= ANY.map { |name| build(name) }.detect(&:applicable?)
           end
 
-          # as only one out of boost, plan, config etc is supposed to be used
-          # if applicable we wouldn't have to build and reduce them all.
-          def all
-            @all ||= reduce(NAMES.map { |name| build(name) })
-          end
-
-          def reduce(all)
+          def reduce(*all)
             all.inject(state.running) do |jobs, capacity|
               capacity.applicable? ? capacity.reduce(jobs) : jobs
             end
-            all
           end
 
           def build(name)
