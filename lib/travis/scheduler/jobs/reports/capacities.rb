@@ -6,7 +6,7 @@ module Travis
       module Reports
         class Capacities < Struct.new(:owners, :reports)
           MSGS = {
-            report: '%s %s capacity: total=%s running=%s selected=%s',
+            report: '%s %s capacity: running=%s max=%s selected=%s',
           }
 
           def to_a
@@ -20,7 +20,7 @@ module Travis
             end
 
             def report(name, data)
-              msg :report, data[0][:owner], name, data[0][:max], data[0][:reduced], selected(data)
+              msg :report, data[0][:owner], name, data[0][:reduced], data[0][:max], selected(data)
             end
 
             def selected(data)

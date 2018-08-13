@@ -28,6 +28,7 @@ module Travis
         def reports
           active.map(&:reports).flatten
         end
+        memoize :reports
 
         def accepted
           active.map(&:accepted).inject(&:+)
@@ -37,6 +38,10 @@ module Travis
           active.all?(&:exhausted?)
         end
         memoize :exhausted
+
+        def to_s
+          "#{owners.to_s} capacities: #{active.map(&:to_s).join(', ')}"
+        end
 
         private
 

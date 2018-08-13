@@ -37,6 +37,10 @@ module Travis
             @rejected ||= []
           end
 
+          def to_s
+            "#{self.class.name.split('::').last.downcase} max=#{max}"
+          end
+
           private
 
             def reduced

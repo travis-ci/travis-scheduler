@@ -16,7 +16,7 @@ module Travis
         end
 
         def reports
-          report.to_a
+          [capacities.to_s] + report.to_a
         end
 
         private

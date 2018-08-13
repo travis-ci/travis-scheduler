@@ -1,3 +1,4 @@
+require 'travis/scheduler/helper/memoize'
 require 'travis/scheduler/jobs/limit/base'
 require 'travis/scheduler/jobs/limit/queue'
 require 'travis/scheduler/jobs/limit/repo'
@@ -7,6 +8,8 @@ module Travis
   module Scheduler
     module Jobs
       class Limits < Struct.new(:context, :owners, :state)
+        include Helper::Memoize
+
         NAMES = %w(repo queue stages)
 
         def accept(job)
@@ -16,6 +19,7 @@ module Travis
         def reports
           all.map(&:reports).flatten
         end
+        memoize :reports
 
         private
 
