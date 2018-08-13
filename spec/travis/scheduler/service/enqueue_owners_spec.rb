@@ -39,7 +39,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
 
     it { expect(log).to include "I 1234 Locking scheduler.owners-svenfuchs:travis-ci with: redis, ttl: 150s" }
     it { expect(log).to include "I 1234 Evaluating jobs for owner group: user svenfuchs, org travis-ci" }
-    it { expect(log).to include 'I 1234 user svenfuchs, org travis-ci config capacity: total=1 running=0 selected=1' }
+    it { expect(log).to include 'I 1234 user svenfuchs, org travis-ci config capacity: running=0 max=1 selected=1' }
     it { expect(log).to include 'I 1234 repo svenfuchs/gem-release: queueable=2 running=0 selected=1 waiting=1' }
     it { expect(log).to include 'I 1234 user svenfuchs, org travis-ci: queueable=2 running=0 selected=1 total_waiting=1 waiting_for_concurrency=1' }
     it { expect(log).to include "I 1234 enqueueing job #{job.id} (svenfuchs/gem-release)" }
