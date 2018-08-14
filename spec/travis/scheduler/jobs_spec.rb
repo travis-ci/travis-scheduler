@@ -118,7 +118,7 @@ describe Travis::Scheduler::Jobs::Select do
 
   describe 'with a trial' do
     before { config[:limit][:trial] = 2 }
-    before { context.redis.set("trial:#{user.login}", 5) }
+    before { FactoryGirl.create(:trial, owner: user, status: :started) }
 
     describe 'with private jobs only' do
       before { create_jobs(1, private: true, state: :started) }

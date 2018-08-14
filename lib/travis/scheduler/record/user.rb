@@ -2,6 +2,8 @@ require 'active_record'
 require 'travis/support/encrypted_column'
 
 class User < ActiveRecord::Base
+  has_one :trial, as: :owner
+
   serialize :github_oauth_token, Travis::EncryptedColumn.new
 
   # These default timeouts, for Users and Organzations, are for limiting workers
