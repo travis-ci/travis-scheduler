@@ -1,4 +1,5 @@
 class Organization < ActiveRecord::Base
+  has_one :trial, as: :owner
 
   # These default timeouts, for Users and Organzations, are for limiting workers
   #   from living forever, and should not be adjusted without checking with

@@ -1,16 +1,16 @@
-require 'travis/scheduler/model/trial'
-
 module Travis
   module Scheduler
     module Jobs
       module Capacity
         class Trial < Base
+          include Helper::Memoize
+
           def applicable?
-            trial.active?
+            active?
           end
 
           def accept?(job)
-            trial.active? && super
+            active? && super
           end
 
           def report(status, job)
@@ -23,9 +23,10 @@ module Travis
               config[:limit][:trial].to_i
             end
 
-            def trial
-              @trial ||= Model::Trial.new(owners, context.redis)
+            def active?
+              owners.any? { |owner| owner.trial.try(:active?) }
             end
+            memoize :active?
         end
       end
     end
