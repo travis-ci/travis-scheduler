@@ -27,7 +27,7 @@ module Travis
         end
 
         def delegate
-          config[login.to_sym]
+          config[login.try(:to_sym)]
         end
 
         def delegatees(*logins)
