@@ -12,7 +12,7 @@ module Travis
       end
 
       def logins
-        @login ||= all.map(&:login).sort
+        @logins ||= all.map(&:login).compact.sort
       end
 
       def paid_capacity
