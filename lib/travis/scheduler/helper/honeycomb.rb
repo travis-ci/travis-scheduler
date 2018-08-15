@@ -1,3 +1,5 @@
+require 'travis/honeycomb'
+
 module Travis
   module Scheduler
     module Helper

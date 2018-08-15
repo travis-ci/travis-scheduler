@@ -16,7 +16,7 @@ module Travis
           end
 
           def metrics
-            data.map { |data| [metrics_key(data[:name]), data[:selected]] }
+            data.map { |data| ["capacities.#{data[:name]}", data[:selected]] }.to_h
           end
 
           private
@@ -46,10 +46,6 @@ module Travis
 
             def selected(data)
               data.select { |data| data[:status] == :accept }
-            end
-
-            def metrics_key(name)
-              "jobs.capacities.#{name}.count"
             end
 
             def msg(name, args)
