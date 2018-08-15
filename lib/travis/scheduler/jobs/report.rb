@@ -1,3 +1,4 @@
+require 'travis/scheduler/helper/memoize'
 require 'travis/scheduler/jobs/reports/by_repo'
 require 'travis/scheduler/jobs/reports/capacities'
 require 'travis/scheduler/jobs/reports/limits'
@@ -7,6 +8,8 @@ module Travis
   module Scheduler
     module Jobs
       class Report < Struct.new(:owners, :state, :reports)
+        include Helper::Memoize
+
         MSGS = {
           default: '%s capacity for %s: total=%s running=%s accepted=%s',
           queue:   'limited by queue %s for %s: max=%s rejected=%s accepted=%s',
@@ -15,8 +18,12 @@ module Travis
           summary: '%s: queueable=%s running=%s accepted=%s waiting=%s'
         }
 
-        def to_a
-          capacities + limits + by_repo + [totals.to_s]
+        def msgs
+          capacities.msgs + limits.msgs + by_repo.msgs + [totals.msg]
+        end
+
+        def metrics
+          capacities.metrics
         end
 
         def waiting_for_concurrency
@@ -26,20 +33,22 @@ module Travis
         private
 
           def capacities
-            Reports::Capacities.new(owners, data_for(:capacity)).to_a
+            Reports::Capacities.new(owners, data_for(:capacity))
           end
+          memoize :capacities
 
           def limits
-            Reports::Limits.new(owners, data_for(:limit)).to_a
+            Reports::Limits.new(owners, data_for(:limit))
           end
 
           def by_repo
-            Reports::ByRepo.new(owners, state, reports).to_s
+            Reports::ByRepo.new(owners, state, reports)
           end
 
           def totals
-            @totals ||= Reports::Totals.new(owners, state, reports)
+            Reports::Totals.new(owners, state, reports)
           end
+          memoize :totals
 
           def data_for(type)
             reports.select { |report| report[:type] == type }

@@ -39,7 +39,7 @@ module Travis
         end
         memoize :exhausted
 
-        def to_s
+        def msg
           "#{owners.to_s} capacities: #{active.map(&:to_s).join(', ')}"
         end
 

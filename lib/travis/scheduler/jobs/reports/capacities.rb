@@ -5,29 +5,54 @@ module Travis
     module Jobs
       module Reports
         class Capacities < Struct.new(:owners, :reports)
+          include Helper::Memoize
+
           MSGS = {
-            report: '%s %s capacity: running=%s max=%s selected=%s',
+            report: '%{owner} %{name} capacity: running=%{reduced} max=%{max} selected=%{selected}',
           }
 
-          def to_a
-            by_name.map { |name, data| report(name, data) }
+          def msgs
+            data.map { |data| msg :report, data }
+          end
+
+          def metrics
+            data.map { |data| [metrics_key(data[:name]), data[:selected]] }
           end
 
           private
+
+            def report(data)
+              msg :report, data[:owner], data[:name], data[:reduced], data[:max], data[:selected]
+            end
+
+            def data
+              by_name.map { |name, rows| map(name, rows) }
+            end
+            memoize :data
 
             def by_name
               reports.group_by { |row| row[:name] }
             end
 
-            def report(name, data)
-              msg :report, data[0][:owner], name, data[0][:reduced], data[0][:max], selected(data)
+            def map(name, rows)
+              {
+                name: name,
+                owner: rows[0][:owner],
+                max: rows[0][:max],
+                reduced: rows[0][:reduced],
+                selected: selected(rows).size
+              }
             end
 
             def selected(data)
-              data.select { |data| data[:status] == :accept }.size
+              data.select { |data| data[:status] == :accept }
             end
 
-            def msg(name, *args)
+            def metrics_key(name)
+              "jobs.capacities.#{name}.count"
+            end
+
+            def msg(name, args)
               MSGS[name] % args
             end
         end

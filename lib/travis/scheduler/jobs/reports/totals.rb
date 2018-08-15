@@ -11,8 +11,8 @@ module Travis
             totals: '%s: queueable=%s running=%s selected=%s total_waiting=%s waiting_for_concurrency=%s'
           }
 
-          def to_s
-            msg :totals, owners.to_s, queueable, running, selected, total_waiting, waiting_for_concurrency
+          def msg
+            MSGS[:totals] % [owners.to_s, queueable, running, selected, total_waiting, waiting_for_concurrency]
           end
 
           def waiting_for_concurrency
@@ -48,10 +48,6 @@ module Travis
 
             def limits
               reports.select { |data| data[:type] == :limit }
-            end
-
-            def msg(type, *args)
-              MSGS[type] % args
             end
         end
       end
