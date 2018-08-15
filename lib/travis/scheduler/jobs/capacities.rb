@@ -13,7 +13,7 @@ module Travis
       class Capacities < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        ANY = %i(boost plan config education trial)
+        ANY = %i(boost config plan education trial)
 
         # TODO warn if no applicable :any capacity can be found
         def initialize(*)
