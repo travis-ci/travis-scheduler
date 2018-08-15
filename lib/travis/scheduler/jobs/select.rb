@@ -1,4 +1,6 @@
-require 'travis/honeycomb'
+require 'travis/scheduler/helper/context'
+require 'travis/scheduler/helper/honeycomb'
+require 'travis/scheduler/helper/metrics'
 require 'travis/scheduler/jobs/report'
 require 'travis/scheduler/jobs/state'
 
@@ -6,7 +8,7 @@ module Travis
   module Scheduler
     module Jobs
       class Select < Struct.new(:context, :owners)
-        include Helper::Context, Helper::Metrics
+        include Helper::Context, Helper::Honeycomb, Helper::Metrics
 
         def run
           select
@@ -52,17 +54,19 @@ module Travis
           end
 
           def meter
-            report.metrics.each { |key, value| gauge(key, value) }
+            report.metrics.each do |key, value|
+              gauge("jobs.#{key}.count", value)
+            end
           end
 
           def honeycomb
-            Travis::Honeycomb.context.add('scheduler.stats',
+            super('scheduler.stats' => report.metrics.merge(
               running: state.count_running,
               enqueued: selected.size,
               waiting: state.count_queueable - selected.size,
               waiting_for_concurrency: report.waiting_for_concurrency,
               concurrent: state.count_running + selected.size
-            )
+            ))
           end
       end
     end

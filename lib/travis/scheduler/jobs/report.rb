@@ -25,6 +25,7 @@ module Travis
         def metrics
           capacities.metrics
         end
+        memoize :metrics
 
         def waiting_for_concurrency
           totals.waiting_for_concurrency
