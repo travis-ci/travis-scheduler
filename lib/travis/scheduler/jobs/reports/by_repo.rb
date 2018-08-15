@@ -35,8 +35,8 @@ module Travis
               end
           end
 
-          def to_s
-            repos.map { |repo| Repo.new(repo, state, reports_for(repo)).to_s }.flatten
+          def msgs
+            repos.map { |repo| Repo.new(repo, state, reports_for(repo)).to_s }
           end
 
           def repos

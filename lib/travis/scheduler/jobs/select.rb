@@ -6,8 +6,11 @@ module Travis
   module Scheduler
     module Jobs
       class Select < Struct.new(:context, :owners)
+        include Helper::Context, Helper::Metrics
+
         def run
           select
+          meter
           honeycomb
         end
 
@@ -16,7 +19,7 @@ module Travis
         end
 
         def reports
-          [capacities.to_s] + report.to_a
+          [capacities.msg] + report.msgs
         end
 
         private
@@ -46,6 +49,10 @@ module Travis
 
           def report
             @report ||= Report.new(owners, state, limits.reports + capacities.reports)
+          end
+
+          def meter
+            report.metrics.each { |key, value| gauge(key, value) }
           end
 
           def honeycomb

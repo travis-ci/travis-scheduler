@@ -11,7 +11,7 @@ module Travis
             stages: 'repo %s limited by stage on build_id=%s: rejected=%s selected=%s',
           }
 
-          def to_a
+          def msgs
             by_name.map { |name, data| report(name, data) }.flatten
           end
 
