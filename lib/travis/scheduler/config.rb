@@ -31,6 +31,10 @@ module Travis
         # TODO fix keychain?
         super.to_h.merge(librato: librato.to_h.merge(source: librato_source), graphite: graphite)
       end
+
+      def com?
+        site == 'com'
+      end
     end
   end
 end

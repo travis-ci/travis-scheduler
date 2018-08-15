@@ -8,7 +8,7 @@ module Travis
           include Helper::Memoize
 
           def applicable?
-            educational?
+            com? && educational?
           end
 
           def accept?(job)
@@ -29,6 +29,10 @@ module Travis
               owners.educational?
             end
             memoize :educational?
+
+            def com?
+              config.com?
+            end
         end
       end
     end

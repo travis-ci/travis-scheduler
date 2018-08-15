@@ -6,7 +6,7 @@ module Travis
           include Helper::Memoize
 
           def applicable?
-            active?
+            com? && active?
           end
 
           def accept?(job)
@@ -27,6 +27,10 @@ module Travis
               owners.any? { |owner| owner.trial.try(:active?) }
             end
             memoize :active?
+
+            def com?
+              config.com?
+            end
         end
       end
     end
