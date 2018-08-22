@@ -27,6 +27,7 @@ module Travis
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https]
           }
+          data[:trace] = true if job.trace?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
           data
         end

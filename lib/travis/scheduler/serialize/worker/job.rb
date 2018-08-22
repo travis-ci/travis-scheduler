@@ -51,6 +51,11 @@ module Travis
             vm_config? && vm_configs[:gpu] ? vm_configs[:gpu].to_h : {}
           end
 
+          def trace?
+            return true if job.config[:trace]
+            Rollout.matches?(:trace, uid: repository.owner.uid, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
+          end
+
           private
 
             def env_var(var)
