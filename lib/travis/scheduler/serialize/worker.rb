@@ -25,7 +25,8 @@ module Travis
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
             enterprise: !!config[:enterprise],
-            prefer_https: !!config[:prefer_https]
+            prefer_https: !!config[:prefer_https],
+            trace: job.trace?
           }
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
           data

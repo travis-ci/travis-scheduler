@@ -51,6 +51,10 @@ module Travis
             vm_config? && vm_configs[:gpu] ? vm_configs[:gpu].to_h : {}
           end
 
+          def trace?
+            Features.active?(:trace, repository) || job.config[:trace]
+          end
+
           private
 
             def env_var(var)
