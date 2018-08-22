@@ -52,7 +52,8 @@ module Travis
           end
 
           def trace?
-            Features.active?(:trace, repository) || job.config[:trace]
+            return true if job.config[:trace]
+            Rollout.matches?(:trace, uid: owner.uid, owner: owner.login, repo: repository.slug, Scheduler.redis)
           end
 
           private
