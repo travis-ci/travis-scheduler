@@ -53,7 +53,7 @@ module Travis
 
           def trace?
             return true if job.config[:trace]
-            Rollout.matches?(:trace, uid: owner.uid, owner: owner.login, repo: repository.slug, redis: Scheduler.redis)
+            Rollout.matches?(:trace, uid: repository.owner.uid, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
 
           private
