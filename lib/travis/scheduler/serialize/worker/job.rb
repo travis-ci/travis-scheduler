@@ -69,7 +69,7 @@ module Travis
             end
 
             def vm_config?
-              Features.active?(:vm_config, repository) && job.config.dig(:resources, :gpu)
+              Features.active?(:resources_gpu, repository) && job.config.dig(:resources, :gpu)
             end
 
             def vm_configs

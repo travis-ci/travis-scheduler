@@ -174,12 +174,12 @@ describe Travis::Scheduler::Serialize::Worker do
     end
 
     describe 'with the feature flag enabled, but no resources config given' do
-      before { Travis::Features.activate_repository(:vm_config, repo) }
+      before { Travis::Features.activate_repository(:resources_gpu, repo) }
       it { expect(data[:vm_config]).to eq({}) }
     end
 
     describe 'with the feature flag enabled, and resources config given' do
-      before { Travis::Features.activate_repository(:vm_config, repo) }
+      before { Travis::Features.activate_repository(:resources_gpu, repo) }
       before { job.config[:resources] = { gpu: true } }
       it { expect(data[:vm_config]).to eq gpu_count: 1 }
     end
