@@ -7,6 +7,8 @@ require 'travis/owners/subscriptions'
 
 module Travis
   module Owners
+    ArgumentError = Class.new(::ArgumentError)
+
     class << self
       def group(owner, config, logger = nil)
         owner = find(owner) if owner.is_a?(Hash)
@@ -14,6 +16,7 @@ module Travis
       end
 
       def find(owner)
+        raise ArgumentError, 'Invalid owner data: %p' % owner unless owner[:owner_type]
         Kernel.const_get(owner[:owner_type]).find(owner[:owner_id])
       end
 

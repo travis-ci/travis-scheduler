@@ -64,6 +64,8 @@ module Travis
 
           def exclusive(&block)
             super(['scheduler.owners', owners.key].join('-'), config.to_h, retries: 0, &block)
+          rescue Owners::ArgumentError => e
+            error e.message
           end
 
           def jid

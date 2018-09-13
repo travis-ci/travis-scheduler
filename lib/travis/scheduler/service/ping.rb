@@ -30,7 +30,8 @@ module Travis
               scope = scope.where('created_at <= ?', Time.now - interval)
               scope = scope.distinct
               scope = scope.select(:owner_type, :owner_id)
-              scope.map { |job| [job.owner_id, job.owner_type] }.uniq
+              scope = scope.map { |job| [job.owner_id, job.owner_type] }.uniq
+              scope - [[0, nil]]
             end
           end
 
