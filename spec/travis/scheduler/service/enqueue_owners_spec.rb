@@ -45,5 +45,11 @@ describe Travis::Scheduler::Service::EnqueueOwners do
     it { expect(log).to include "I 1234 enqueueing job #{job.id} (svenfuchs/gem-release)" }
     it { expect(log).to include "I 1234 Publishing worker payload for job=#{job.id} queue=builds.gce" }
   end
+
+  describe 'with invalid owner data' do
+    let(:data) { { owner_type: nil, owner_id: 0 } }
+    before { service.run }
+    it { expect(log).to include 'E Invalid owner data: {:owner_type=>nil, :owner_id=>0}' }
+  end
 end
 
