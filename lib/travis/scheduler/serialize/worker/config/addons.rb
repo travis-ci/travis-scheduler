@@ -11,6 +11,7 @@ module Travis
               browserstack
               chrome
               firefox
+              homebrew
               hostname
               hosts
               jwt
