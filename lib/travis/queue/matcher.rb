@@ -2,7 +2,7 @@ module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
       KEYS = %i(slug owner os language sudo dist group osx_image percentage
-        services)
+        resources services)
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
@@ -10,12 +10,13 @@ module Travis
 
       def matches?(attrs)
         check_unknown_matchers(attrs.keys)
-        matchers_for(attrs).all? { |key, value| value === attrs[key] }
+        matches = matches_for(attrs)
+        matches.any? && matches.all? { |key, value| value === attrs[key] }
       end
 
       private
 
-        def matchers_for(attrs)
+        def matches_for(attrs)
           (KEYS & attrs.keys).map { |key| [key, send(key)] }.to_h
         end
 
@@ -63,9 +64,17 @@ module Travis
           job.repository
         end
 
+        def resources
+          resources_enabled? && job.config[:resources] || {}
+        end
+
+        def resources_enabled?
+          Travis::Features.active?(:vm_config, repo)
+        end
+
         def check_unknown_matchers(used)
           unknown = used - KEYS
-          logger.warn MSGS[:unknown_matchers] % [name, unknown, repo.slug] if logger && unknown.any?
+          logger.warn MSGS[:unknown_matchers] % [used, unknown, repo.slug] if logger && unknown.any?
         end
     end
   end

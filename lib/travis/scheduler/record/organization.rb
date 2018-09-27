@@ -1,4 +1,5 @@
 class Organization < ActiveRecord::Base
+  has_one :trial, as: :owner
 
   # These default timeouts, for Users and Organzations, are for limiting workers
   #   from living forever, and should not be adjusted without checking with
@@ -19,6 +20,14 @@ class Organization < ActiveRecord::Base
     subscription.present? && subscription.active?
   end
 
+  def educational?
+    !!Travis::Features.owner_active?(:educational_org, self)
+  end
+
+  def paid?
+    subscribed? || active_trial?
+  end
+
   def active_trial?
     redis.get("trial:#{login}").to_i > 0
   end
@@ -31,11 +40,15 @@ class Organization < ActiveRecord::Base
     #   those enforced by workers themselves, but we plan to sometime in the
     #   following weeks/months.
     #
-    if subscribed? || active_trial?
+    if paid? || educational?
       DEFAULT_SUBSCRIBED_TIMEOUT
     else
       DEFAULT_SPONSORED_TIMEOUT
     end
+  end
+
+  def uid
+    "org:#{id}"
   end
 
   private

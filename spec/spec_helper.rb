@@ -1,6 +1,8 @@
 ENV['ENV'] = ENV['RAILS_ENV'] = 'test'
 ENV.delete('DATABASE_URL')
 
+NOWISH = Time.now
+
 require 'travis/scheduler'
 require 'database_cleaner'
 require 'mocha'
@@ -13,6 +15,7 @@ require 'support/logger'
 require 'support/record'
 require 'support/stages'
 require 'support/rollout'
+require 'support/queues'
 
 include Mocha::API
 
@@ -66,5 +69,4 @@ RSpec.configure do |c|
       puts JSON.pretty_generate(sql_count)
     end
   end
-
 end

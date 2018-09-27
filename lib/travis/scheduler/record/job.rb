@@ -20,6 +20,14 @@ class Job < ActiveRecord::Base
       where(state: [:queued, :received, :started]).order('jobs.id')
     end
 
+    def private
+      where(private: true)
+    end
+
+    def public
+      where('jobs.private IS NULL OR jobs.private = ?', false)
+    end
+
     def by_repo(id)
       where(repository_id: id)
     end
@@ -77,7 +85,7 @@ class Job < ActiveRecord::Base
   end
 
   def config
-    config = super&.config || read_attribute(:config) || {}
+    config = super&.config || has_attribute?(:config) && read_attribute(:config) || {}
     config.deep_symbolize_keys!
   end
 end

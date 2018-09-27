@@ -22,6 +22,8 @@ FactoryGirl.define do
     valid_to Time.now + 24 * 3600
   end
 
+  factory :trial
+
   factory :repository, aliases: [:repo] do
     name       'gem-release'
     github_id  549743

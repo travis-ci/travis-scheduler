@@ -13,6 +13,7 @@ module Travis
         def data
           data = {
             type: :test,
+            vm_config: job.vm_config,
             vm_type: repo.vm_type,
             queue: job.queue,
             config: job.decrypted_config,
@@ -27,6 +28,7 @@ module Travis
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https]
           }
+          data[:trace] = true if job.trace?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
           data
         end
@@ -99,7 +101,7 @@ module Travis
           end
 
           def job
-            @job ||= Job.new(super)
+            @job ||= Job.new(super, config)
           end
 
           def repo

@@ -11,7 +11,7 @@ module Travis
              github:     { api_url: 'https://api.github.com', source_host: 'github.com' },
              host:       'https://travis-ci.com',
              interval:   2,
-             limit:      { public: 5, default: 5, by_owner: {}, delegate: {} },
+             limit:      { public: 5, education: 1, default: 5, by_owner: {}, delegate: {} },
              lock:       { strategy: :redis, ttl: 150 },
              logger:     { time_format: false, process_id: false, thread_id: false },
              log_level:  :info,
@@ -31,6 +31,10 @@ module Travis
       def metrics
         # TODO fix keychain?
         super.to_h.merge(librato: librato.to_h.merge(source: librato_source), graphite: graphite)
+      end
+
+      def com?
+        site == 'com'
       end
     end
   end

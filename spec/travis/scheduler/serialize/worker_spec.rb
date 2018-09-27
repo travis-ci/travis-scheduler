@@ -13,7 +13,7 @@ describe Travis::Scheduler::Serialize::Worker do
   let(:repo)      { FactoryGirl.create(:repo, default_branch: 'branch') }
   let(:owner)     { repo.owner }
   let(:data)      { described_class.new(job, config).data }
-  let(:config)    { { cache_settings: { 'builds.gce' => s3 }, github: { source_host: 'github.com', api_url: 'https://api.github.com' } } }
+  let(:config)    { { cache_settings: { 'builds.gce' => s3 }, github: { source_host: 'github.com', api_url: 'https://api.github.com' }, vm_configs: {} } }
   let(:s3)        { { access_key_id: 'ACCESS_KEY_ID', secret_access_key: 'SECRET_ACCESS_KEY', bucket_name: 'bucket' } }
   let(:event)     { 'push' }
   let(:ref)       { 'refs/tags/v1.2.3' }
@@ -39,6 +39,7 @@ describe Travis::Scheduler::Serialize::Worker do
       expect(data).to eq(
         type: :test,
         vm_type: :default,
+        vm_config: {},
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
@@ -166,6 +167,25 @@ describe Travis::Scheduler::Serialize::Worker do
     end
   end
 
+  describe 'vm_config' do
+    before { config[:vm_configs] = { gpu: { gpu_count: 1 } } }
+
+    describe 'with the feature flag not enabled' do
+      it { expect(data[:vm_config]).to eq({}) }
+    end
+
+    describe 'with the feature flag enabled, but no resources config given' do
+      before { Travis::Features.activate_repository(:resources_gpu, repo) }
+      it { expect(data[:vm_config]).to eq({}) }
+    end
+
+    describe 'with the feature flag enabled, and resources config given' do
+      before { Travis::Features.activate_repository(:resources_gpu, repo) }
+      before { job.config[:resources] = { gpu: true } }
+      it { expect(data[:vm_config]).to eq gpu_count: 1 }
+    end
+  end
+
   describe 'with debug options' do
     let(:debug_options) { { "stage" => "before_install", "previous_state" => "failed", "created_by" => "svenfuchs", "quiet" => "false" } }
     before { job.stubs(:debug_options).returns(debug_options) }
@@ -185,6 +205,7 @@ describe Travis::Scheduler::Serialize::Worker do
       expect(data).to eq(
         type: :test,
         vm_type: :default,
+        vm_config: {},
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',

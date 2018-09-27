@@ -10,7 +10,7 @@ module Travis
       private
 
         def queues
-          @queues ||= Array(config).compact.map do |attrs|
+          Array(config).compact.map do |attrs|
             Queue.new(attrs[:queue], attrs.reject { |key, _| key == :queue })
           end
         end
