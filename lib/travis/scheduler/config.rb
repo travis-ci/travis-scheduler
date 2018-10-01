@@ -25,8 +25,9 @@ module Travis
              ping:       { interval: 5 * 60 },
              site:       ENV['TRAVIS_SITE'] || 'org',
              ssl:        { },
+             sudo:       { default: 'required' },
              job_board:  { url: ENV['JOB_BOARD_URL'] || 'https://job-board.travis-ci.org', auth: ENV['JOB_BOARD_AUTH'] || 'user:pass' },
-             rollout:    { force_precise_sudo_required_percentage: 0.05, force_linux_sudo_required_percentage: 0.05 }
+             rollout:    { linux_sudo_required_percentage: 0.05 }
 
       def metrics
         # TODO fix keychain?

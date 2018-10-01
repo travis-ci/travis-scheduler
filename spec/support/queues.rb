@@ -1,33 +1,25 @@
 module Support
   module Queues
     class QueueCase
-      def initialize(cutoff: NOWISH.to_s, host: 'travis-ci.org', config: {},
+      def initialize(host: 'travis-ci.org', config: {},
                      desc: 'uh???', queue: 'notset', education: false,
-                     created_at: NOWISH + 7.days, force_precise_sudo_required: false,
-                     force_linux_sudo_required: false)
-        @cutoff = cutoff
+                     linux_sudo_required: false)
         @host = host
         @config = config
         @desc = desc
         @queue = queue
         @education = education
-        @created_at = created_at
-        @force_precise_sudo_required = force_precise_sudo_required
-        @force_linux_sudo_required = force_linux_sudo_required
+        @linux_sudo_required = linux_sudo_required
       end
 
-      attr_reader :created_at, :config, :cutoff, :desc, :host, :queue
+      attr_reader :config, :desc, :host, :queue
 
       def education?
         @education
       end
 
-      def force_precise_sudo_required?
-        @force_precise_sudo_required
-      end
-
-      def force_linux_sudo_required?
-        @force_linux_sudo_required
+      def linux_sudo_required?
+        @linux_sudo_required
       end
 
       def to_s
@@ -36,13 +28,7 @@ module Support
         a << 'educational' if education?
         a << "sudo=#{config[:sudo]}" if config.key?(:sudo)
         a << "dist=#{config[:dist]}" if config.key?(:dist)
-        if force_precise_sudo_required?
-          a << "forced sudo required because of dist: precise"
-        end
-        a << "forced sudo required on linux" if force_linux_sudo_required?
-        a << 'and created'
-        a << (created_at < Time.parse(cutoff) ? "before" : "after")
-        a << 'cutoff'
+        a << "sudo required on linux" if linux_sudo_required?
         a.join(' ')
       end
     end

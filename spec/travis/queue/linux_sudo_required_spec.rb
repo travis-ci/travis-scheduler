@@ -1,4 +1,4 @@
-describe Travis::Queue::ForceLinuxSudoRequired do
+describe Travis::Queue::LinuxSudoRequired do
   let(:config) { {} }
   let(:owner) { FactoryGirl.build(:user, login: 'cabbagen') }
   let(:repo) { FactoryGirl.build(:repo, owner: owner) }

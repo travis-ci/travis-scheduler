@@ -1,11 +1,11 @@
 module Travis
   class Queue
-    class ForceLinuxSudoRequired < Struct.new(:repo, :owner)
+    class LinuxSudoRequired < Struct.new(:repo, :owner)
       def apply?
         return true if Travis::Features.enabled_for_all?(:linux_sudo_required) ||
                        Travis::Features.active?(:linux_sudo_required, repo) ||
                        Travis::Features.owner_active?(:linux_sudo_required, owner)
-        decision = decide_force_linux_sudo_required
+        decision = decide_linux_sudo_required
         if decision[:chosen?]
           Travis::Scheduler.logger.info(
             "selected sudo: required why=#{decision[:reason]} slug=#{repo.slug}"
@@ -17,17 +17,17 @@ module Travis
 
       private
 
-        def decide_force_linux_sudo_required
+        def decide_linux_sudo_required
           return { chosen?: true, reason: :first_job } if first_job?
           {
-            chosen?: rand <= rollout_force_linux_sudo_required_percentage,
+            chosen?: rand <= rollout_linux_sudo_required_percentage,
             reason: :random
           }
         end
 
-        def rollout_force_linux_sudo_required_percentage
+        def rollout_linux_sudo_required_percentage
           Float(
-            Travis::Scheduler.config.rollout.force_linux_sudo_required_percentage
+            Travis::Scheduler.config.rollout.linux_sudo_required_percentage
           )
         end
 
