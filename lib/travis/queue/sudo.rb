@@ -40,7 +40,7 @@ module Travis
         end
 
         def force_linux_sudo_required?
-          ForceLinuxSudoRequired.new(repo.owner).apply?
+          ForceLinuxSudoRequired.new(repo, repo.owner).apply?
         end
 
         def force_precise_sudo_required?

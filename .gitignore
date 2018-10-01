@@ -12,3 +12,4 @@ tmp
 .env
 NOTES.md
 .envrc
+/db/
