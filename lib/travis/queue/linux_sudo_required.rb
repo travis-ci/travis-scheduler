@@ -2,6 +2,7 @@ module Travis
   class Queue
     class LinuxSudoRequired < Struct.new(:repo, :owner)
       def apply?
+        return false if Travis::Features.disabled_for_all?(:linux_sudo_required)
         return true if Travis::Features.enabled_for_all?(:linux_sudo_required) ||
                        Travis::Features.active?(:linux_sudo_required, repo) ||
                        Travis::Features.owner_active?(:linux_sudo_required, owner)

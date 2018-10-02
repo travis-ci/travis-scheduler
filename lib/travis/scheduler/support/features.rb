@@ -96,6 +96,10 @@ module Travis
       redis.get(enabled_for_all_key(feature)) == '1'
     end
 
+    def disabled_for_all?(feature)
+      redis.get(enabled_for_all_key(feature)) == '0'
+    end
+
     def enable_for_all(feature)
       redis.set(enabled_for_all_key(feature), 1)
     end
