@@ -33,15 +33,11 @@ module Travis
         end
 
         def has_common?(a,b)
-          intersection = []
-          Array(a).each do |a_el|
-            Array(b).each do |b_el|
-              if a_el == b_el
-                intersection << a_el
-              end
+          Array(a).any? do |a_el|
+            Array(b).any? do |b_el|
+              a_el == b_el
             end
           end
-          ! intersection.empty?
         end
     end
   end
