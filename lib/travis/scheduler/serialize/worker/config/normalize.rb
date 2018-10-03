@@ -20,6 +20,10 @@ module Travis
               ssh_known_hosts
             ).freeze
 
+            JWT_AWARE = %i(
+              sauce_connect
+            )
+
             attr_reader :config, :options
 
             def initialize(config, options)
@@ -36,7 +40,7 @@ module Travis
             end
 
             def jwt_sanitize
-              if config && config.fetch(:addons,{}).key?(:jwt)
+              if config && (config.fetch(:addons,{}).key?(:jwt) || JWT_AWARE.any? { |addon| config.fetch(:addons, {}).key?(addon) })
                 config[:addons] = Addons.new(config[:addons]).jwt_sanitize
               end
               config

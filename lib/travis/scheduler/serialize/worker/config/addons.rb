@@ -28,9 +28,7 @@ module Travis
 
             JWT_ENV_CHECKS = {
               sauce_connect: {
-                'SAUCE_ACCESS_KEY' => {
-                  minimum_length: 20
-                }
+                'SAUCE_ACCESS_KEY' => 20
               }
             }
 
@@ -48,6 +46,13 @@ module Travis
               # and we want to drop the values of the :jwt addon that does not meet the criteria
               # set forth by JWT_ENV_CHECKS
 
+              config.reject! do |k, v|
+                jwt_aware?(k) && config[k].key?(:jwt) && JWT_ENV_CHECKS[k].any? do |env_var, minimum|
+                  val = config[k][:jwt]
+                  val.gsub(/\A#{env_var}=/, '').length <= minimum
+                end
+              end
+
               jwt_config = Array(config.delete(:jwt))
 
               return config if jwt_config.empty?
@@ -57,7 +62,7 @@ module Travis
                 env_var_name, env_var_value = decrypted_jwt_data.split('=', 2)
 
                 JWT_ENV_CHECKS.any? do |addon, criteria|
-                  criteria.key?(env_var_name) && criteria[env_var_name][:minimum_length] <= env_var_value.length
+                  criteria.key?(env_var_name) && criteria[env_var_name] <= env_var_value.length
                 end
               end
 
@@ -66,32 +71,25 @@ module Travis
 
             private
             def filtered
+              if jwt? && config.keys.any? {|key| jwt_aware?(key)}
+                # jwt key is in the wrong place
+                if config.key?(:sauce_connect)
+                  config[:sauce_connect].merge!({ :jwt => config[:jwt] })
+                end
+              end
               config.map { |key, value| [key, filter(key, value)] }.to_h
             end
 
             def filter(name, config)
-              if safe?(name)
+              if safe?(name) || has_jwt_under?(name)
                 config
-              elsif jwt? && jwt_aware?(name)
-                strip_encrypted(config)
               else
                 nil
               end
             end
 
-            def strip_encrypted(config)
-              case config
-              when Hash
-                compact(config.map { |key, value| [key, encrypted?(value) ? nil : value] }).to_h
-              when Array
-                config.map { |config| strip_encrypted(config) }
-              else
-                config
-              end
-            end
-
             def safe?(name)
-              SAFE.include?(name.to_sym)
+              SAFE.include?(name)
             end
 
             def jwt?
@@ -99,11 +97,11 @@ module Travis
             end
 
             def jwt_aware?(name)
-              JWT_AWARE.include?(name.to_sym)
+              JWT_AWARE.include?(name)
             end
 
-            def encrypted?(value)
-              value.is_a?(Hash) && value.keys.any? { |key| key == :secure }
+            def has_jwt_under?(name)
+              jwt_aware?(name) && config[name].respond_to?(:keys) && config[name].keys.include?(:jwt)
             end
 
             def compact(hash)
