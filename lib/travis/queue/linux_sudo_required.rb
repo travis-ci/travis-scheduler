@@ -3,9 +3,7 @@ module Travis
     class LinuxSudoRequired < Struct.new(:repo, :owner)
       def apply?
         return false if Travis::Features.disabled_for_all?(:linux_sudo_required)
-        return true if Travis::Features.enabled_for_all?(:linux_sudo_required) ||
-                       Travis::Features.active?(:linux_sudo_required, repo) ||
-                       Travis::Features.owner_active?(:linux_sudo_required, owner)
+        return true if Travis::Features.enabled_for_all?(:linux_sudo_required)
         decision = decide_linux_sudo_required
         if decision[:chosen?]
           Travis::Scheduler.logger.info(
@@ -20,6 +18,8 @@ module Travis
 
         def decide_linux_sudo_required
           return { chosen?: true, reason: :first_job } if first_job?
+          return { chosen?: true, reason: :repo_active } if Travis::Features.active?(:linux_sudo_required, repo)
+          return { chosen?: true, reason: :owner_active } if Travis::Features.owner_active?(:linux_sudo_required, owner)
           {
             chosen?: rand <= rollout_linux_sudo_required_percentage,
             reason: :random
