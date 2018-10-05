@@ -4,6 +4,7 @@ module Travis
       def apply?
         return false if Travis::Features.disabled_for_all?(:linux_sudo_required)
         return true if Travis::Features.enabled_for_all?(:linux_sudo_required)
+
         decision = decide_linux_sudo_required
         if decision[:chosen?]
           Travis::Scheduler.logger.info(
@@ -11,7 +12,8 @@ module Travis
           )
           Travis::Features.activate_repository(:linux_sudo_required, repo) if decision[:set_active?]
         end
-        Travis::Features.active?(:linux_sudo_required, repo)
+        
+        decision[:chosen?]
       end
 
       private
