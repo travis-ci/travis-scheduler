@@ -4,6 +4,7 @@ describe Travis::Queue::LinuxSudoRequired do
   let(:repo) { FactoryGirl.build(:repo, owner: owner) }
   let(:enabled_for_all?) { false }
   let(:active?) { false }
+  let(:owner_active?) { false }
 
   subject { described_class.new(repo, owner) }
 
@@ -13,9 +14,13 @@ describe Travis::Queue::LinuxSudoRequired do
       .with(:linux_sudo_required)
       .returns(enabled_for_all?)
     Travis::Features
+      .stubs(:active?)
+      .with(:linux_sudo_required, repo)
+      .returns(active?)
+    Travis::Features
       .stubs(:owner_active?)
       .with(:linux_sudo_required, owner)
-      .returns(active?)
+      .returns(owner_active?)
     Travis::Scheduler.logger.stubs(:info)
   end
 
@@ -27,16 +32,16 @@ describe Travis::Queue::LinuxSudoRequired do
     end
   end
 
-  context 'when owner is active' do
-    let(:owner_active?) { true }
+  context 'when repo is active' do
+    let(:active?) { true }
 
     it 'applies' do
       expect(subject.apply?).to be true
     end
   end
 
-  context 'when repo is active' do
-    let(:active?) { true }
+  context 'when owner is active' do
+    let(:owner_active?) { true }
 
     it 'applies' do
       expect(subject.apply?).to be true
@@ -52,6 +57,7 @@ describe Travis::Queue::LinuxSudoRequired do
   end
 
   context 'when random' do
+    let(:first_job?) { false }
     let(:rollout_linux_sudo_required_percentage) { 1 }
 
     it 'applies' do
