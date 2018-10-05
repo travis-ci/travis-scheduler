@@ -46,18 +46,18 @@ describe Travis::Queue::LinuxSudoRequired do
   end
 
   context 'when first_job' do
-    let(:first_job?) { true }
 
     it 'applies' do
+      subject.stubs(:first_job?).returns(true)
       expect(subject.apply?).to be true
     end
   end
 
   context 'when random' do
-    let(:first_job?) { false }
-    let(:rollout_linux_sudo_required_percentage) { 1 }
 
     it 'applies' do
+      subject.stubs(:first_job?).returns(false)
+      subject.stubs(:rollout_linux_sudo_required_percentage).returns(1)
       expect(subject.apply?).to be true
     end
   end

@@ -12,7 +12,7 @@ module Travis
           )
           Travis::Features.activate_repository(:linux_sudo_required, repo) if decision[:set_active?]
         end
-        
+
         decision[:chosen?]
       end
 
