@@ -28,7 +28,31 @@ describe Travis::Queue::LinuxSudoRequired do
   end
 
   context 'when owner is active' do
+    let(:owner_active?) { true }
+
+    it 'applies' do
+      expect(subject.apply?).to be true
+    end
+  end
+
+  context 'when repo is active' do
     let(:active?) { true }
+
+    it 'applies' do
+      expect(subject.apply?).to be true
+    end
+  end
+
+  context 'when first_job' do
+    let(:first_job?) { true }
+
+    it 'applies' do
+      expect(subject.apply?).to be true
+    end
+  end
+
+  context 'when random' do
+    let(:rollout_linux_sudo_required_percentage) { 1 }
 
     it 'applies' do
       expect(subject.apply?).to be true
