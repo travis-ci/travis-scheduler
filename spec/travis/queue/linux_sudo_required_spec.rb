@@ -2,9 +2,6 @@ describe Travis::Queue::LinuxSudoRequired do
   let(:config) { {} }
   let(:owner) { FactoryGirl.build(:user, login: 'cabbagen') }
   let(:repo) { FactoryGirl.build(:repo, owner: owner) }
-  let(:enabled_for_all?) { false }
-  let(:active?) { false }
-  let(:owner_active?) { false }
 
   subject { described_class.new(repo, owner) }
 
