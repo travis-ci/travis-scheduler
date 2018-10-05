@@ -17,9 +17,9 @@ module Travis
       private
 
         def decide_linux_sudo_required
-          return { chosen?: true, reason: :first_job , set_active?: true } if first_job?
           return { chosen?: true, reason: :repo_active, set_active?: false } if Travis::Features.active?(:linux_sudo_required, repo)
           return { chosen?: true, reason: :owner_active, set_active?: false } if Travis::Features.owner_active?(:linux_sudo_required, owner)
+          return { chosen?: true, reason: :first_job , set_active?: true } if first_job?
           {
             chosen?: rand <= rollout_linux_sudo_required_percentage,
             reason: :random,
