@@ -56,6 +56,10 @@ module Travis
             Rollout.matches?(:trace, uid: repository.owner.uid, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
 
+          def warmer?
+            Rollout.matches?(:warmer, uid: repository.owner.uid, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
+          end
+
           private
 
             def env_var(var)
