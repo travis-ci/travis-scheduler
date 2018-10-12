@@ -52,12 +52,11 @@ module Travis
           end
 
           def trace?
-            return true if job.config[:trace]
-            Rollout.matches?(:trace, uid: repository.owner.uid, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
+            Rollout.matches?(:trace, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
 
           def warmer?
-            Rollout.matches?(:warmer, uid: repository.owner.uid, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
+            Rollout.matches?(:warmer, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
 
           private
