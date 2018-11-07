@@ -17,6 +17,7 @@ module Travis
               mariadb
               postgresql
               rethinkdb
+              snaps
               ssh_known_hosts
             ).freeze
 
