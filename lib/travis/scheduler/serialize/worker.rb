@@ -62,6 +62,7 @@ module Travis
               queued_at: format_date(job.queued_at),
               allow_failure: job.allow_failure,
               stage_name: job.stage&.name,
+              name: job.name,
             }
             if build.pull_request?
               data = data.merge(
