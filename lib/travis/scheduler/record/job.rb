@@ -68,4 +68,13 @@ class Job < ActiveRecord::Base
   def public?
     !private?
   end
+
+  def config
+    config = super&.config || has_attribute?(:config) && read_attribute(:config) || {}
+    config.deep_symbolize_keys!
+  end
+
+  def name
+    config[:name]
+  end
 end

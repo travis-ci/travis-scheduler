@@ -55,6 +55,7 @@ module Travis
               debug_options: job.debug_options || {},
               queued_at: format_date(job.queued_at),
               allow_failure: job.allow_failure,
+              name: job.name,
             }
             if build.pull_request?
               data = data.merge(

@@ -9,7 +9,7 @@ module Travis
           extend Forwardable
 
           def_delegators :job, :id, :repository, :source, :config, :commit,
-            :number, :queue, :state, :debug_options, :queued_at, :allow_failure
+            :number, :queue, :state, :debug_options, :queued_at, :allow_failure, :name
           def_delegators :source, :request
 
           def env_vars
