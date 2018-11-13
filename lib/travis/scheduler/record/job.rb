@@ -88,4 +88,8 @@ class Job < ActiveRecord::Base
     config = super&.config || has_attribute?(:config) && read_attribute(:config) || {}
     config.deep_symbolize_keys!
   end
+
+  def name
+    config[:name]
+  end
 end
