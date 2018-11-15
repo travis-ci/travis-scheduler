@@ -11,21 +11,27 @@ module Travis
         require 'travis/scheduler/serialize/worker/ssh_key'
 
         def data
-          value = {
+          data = {
             type: :test,
+            vm_config: job.vm_config,
             vm_type: repo.vm_type,
             queue: job.queue,
             config: job.decrypted_config,
             env_vars: job.env_vars,
             job: job_data,
+            host: Travis::Scheduler.config.host,
             source: build_data,
             repository: repository_data,
-            ssh_key: ssh_key,
+            ssh_key: ssh_key.data,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
+            enterprise: !!config[:enterprise],
+            prefer_https: !!config[:prefer_https]
           }
-          value[:oauth_token] = github_oauth_token if Travis.config.prefer_https?
-          value
+          data[:trace]  = true if job.trace?
+          data[:warmer] = true if job.warmer?
+          data[:oauth_token] = github_oauth_token if config[:prefer_https]
+          data
         end
 
         private
@@ -55,6 +61,8 @@ module Travis
               debug_options: job.debug_options || {},
               queued_at: format_date(job.queued_at),
               allow_failure: job.allow_failure,
+              stage_name: job.stage&.name,
+              name: job.name,
             }
             if build.pull_request?
               data = data.merge(
@@ -68,11 +76,14 @@ module Travis
           end
 
           def repository_data
-            {
+            compact(
               id: repo.id,
               github_id: repo.github_id,
+              installation_id: repo.installation_id,
+              private: repo.private?,
               slug: repo.slug,
-              source_url: repo.source_url,
+              source_url: source_url,
+              source_host: source_host,
               api_url: repo.api_url,
               # TODO how come the worker needs all these?
               last_build_id: repo.last_build_id,
@@ -83,11 +94,17 @@ module Travis
               last_build_state: repo.last_build_state.to_s,
               default_branch: repo.default_branch,
               description: repo.description
-            }
+            )
+          end
+
+          def source_url
+            # TODO move these things to Build
+            return repo.source_git_url if repo.private? && ssh_key.custom?
+            repo.source_url
           end
 
           def job
-            @job ||= Job.new(super)
+            @job ||= Job.new(super, config)
           end
 
           def repo
@@ -107,7 +124,11 @@ module Travis
           end
 
           def ssh_key
-            SshKey.new(repo, job, config).data
+            @ssh_key ||= SshKey.new(repo, job, config)
+          end
+
+          def source_host
+            config[:github][:source_host] || 'github.com'
           end
 
           def cache_settings
@@ -123,10 +144,14 @@ module Travis
           end
 
           def github_oauth_token
-            candidates = job.repository.users.where("github_oauth_token IS NOT NULL").
-                    order("updated_at DESC")
-            admin = candidates.first
+            scope = job.repository.users
+            scope = scope.where("github_oauth_token IS NOT NULL").order("updated_at DESC")
+            admin = scope.first
             admin && admin.github_oauth_token
+          end
+
+          def compact(hash)
+            hash.reject { |_, value| value.nil? }
           end
       end
     end

@@ -1,3 +1,4 @@
+require 'travis/rollout'
 require 'travis/scheduler/limit/jobs'
 require 'travis/owners'
 
@@ -6,7 +7,7 @@ module Travis
     module Service
       class EnqueueOwners < Struct.new(:context, :data)
         include Registry, Helper::Context, Helper::Locking, Helper::Logging,
-          Helper::Metrics, Helper::Runner, Helper::With
+          Helper::Memoize, Helper::Metrics, Helper::Runner, Helper::With
         extend Forwardable
 
         register :service, :enqueue_owners
@@ -43,7 +44,18 @@ module Travis
           time :enqueue
 
           def limit
-            @limit ||= Limit::Jobs.new(context, owners)
+            if jobs?
+              Jobs::Select.new(context, owners)
+            else
+              Limit::Jobs.new(context, owners)
+            end
+          end
+          memoize :limit
+
+          def jobs?
+            owners.any? do |owner|
+              Rollout.matches?(:jobs, uid: owner.uid, owner: owner.login)
+            end
           end
 
           def owners
@@ -52,6 +64,8 @@ module Travis
 
           def exclusive(&block)
             super(['scheduler.owners', owners.key].join('-'), config.to_h, retries: 0, &block)
+          rescue Owners::ArgumentError => e
+            error e.message
           end
 
           def jid

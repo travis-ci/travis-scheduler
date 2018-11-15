@@ -10,14 +10,15 @@ module Travis
           def_delegators :repo, :id, :github_id, :slug,
             :last_build_id, :last_build_number, :last_build_started_at,
             :last_build_finished_at, :last_build_duration, :last_build_state,
-            :default_branch, :description, :key, :settings, :private?
+            :default_branch, :description, :key, :settings, :private?,
+            :managed_by_app?, :installation
 
           def vm_type
             Features.active?(:premium_vms, repo) ? :premium : :default
           end
 
           def timeouts
-            { hard_limit: timeout(:hard_limit), log_silence: timeout(:log_silence) }
+            { hard_limit: hard_limit_timeout, log_silence: timeout(:log_silence) }
           end
 
           def api_url
@@ -25,13 +26,26 @@ module Travis
           end
 
           def source_url
-            ((private? || force_private?) && !Travis.config.prefer_https) ? source_git_url : source_http_url
+            return source_http_url if Travis.config.prefer_https || managed_by_app?
+            (repo.private? || force_private?) ? source_git_url : source_http_url
+          end
+
+          def source_git_url
+            "git@#{source_host}:#{slug}.git"
+          end
+
+          def installation_id
+            repo.installation&.github_id if repo.managed_by_app? && repo.private
           end
 
           private
 
-            def env_var(var)
-              { name: var.name, value: var.value.decrypt, public: var.public }
+            # If the repo does not have a custom timeout, look to the repo's
+            #   owner for a default value, which might change depending on their
+            #   current paid/unpaid status.
+            #
+            def hard_limit_timeout
+              timeout(:hard_limit) || repo.owner.default_worker_timeout
             end
 
             def timeout(type)
@@ -46,10 +60,6 @@ module Travis
 
             def source_http_url
               "https://#{source_host}/#{slug}.git"
-            end
-
-            def source_git_url
-              "git@#{source_host}:#{slug}.git"
             end
 
             def source_host

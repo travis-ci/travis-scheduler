@@ -1,6 +1,6 @@
 module Travis
   module Owners
-    class Group < Struct.new(:all, :config)
+    class Group < Struct.new(:all, :config, :logger)
       include Enumerable
 
       def each(&block)
@@ -12,12 +12,13 @@ module Travis
       end
 
       def logins
-        @login ||= all.map(&:login).sort
+        @logins ||= all.map(&:login).compact.sort
       end
 
-      def max_jobs
-        subscriptions.max_jobs
+      def paid_capacity
+        subscriptions.capacity
       end
+      alias max_jobs paid_capacity
 
       def subscribed?
         subscriptions.active?
@@ -25,6 +26,10 @@ module Travis
 
       def subscribed_owners
         subscriptions.subscribers
+      end
+
+      def educational?
+        all.any?(&:educational?)
       end
 
       def ==(other)
@@ -43,7 +48,7 @@ module Travis
       private
 
         def subscriptions
-          @subscriptions ||= Subscriptions.new(self, plans)
+          @subscriptions ||= Subscriptions.new(self, plans, logger)
         end
 
         def plans
