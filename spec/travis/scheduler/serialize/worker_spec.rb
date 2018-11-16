@@ -99,14 +99,11 @@ describe Travis::Scheduler::Serialize::Worker do
           log_silence: 20 * 60
         },
         cache_settings: s3,
-<<<<<<< HEAD
         meta: {
           state_update_count: 1
-        }
-=======
+        },
         prefer_https: false,
         enterprise: false
->>>>>>> origin/master
       )
     end
 
@@ -115,7 +112,6 @@ describe Travis::Scheduler::Serialize::Worker do
       after  { Travis.config.prefer_https = false }
       before { repo.update_attributes!(private: true) }
 
-<<<<<<< HEAD
       it 'contains the expected data' do
         expect(data.except('job', 'build', 'repository')).to eq(
           meta: {
@@ -177,7 +173,8 @@ describe Travis::Scheduler::Serialize::Worker do
           cache_settings: s3,
           oauth_token: 'token'
         )
-=======
+      end
+
       it 'sets the repo source_url to an http url' do
         expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
       end
@@ -339,14 +336,11 @@ describe Travis::Scheduler::Serialize::Worker do
           log_silence: 20 * 60
         },
         cache_settings: s3,
-<<<<<<< HEAD
         meta: {
           state_update_count: 1
-        }
-=======
+        },
         prefer_https: false,
         enterprise: false
->>>>>>> origin/master
       )
     end
 
