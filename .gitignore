@@ -11,3 +11,5 @@ tmp
 /coverage
 .env
 NOTES.md
+.envrc
+/db/

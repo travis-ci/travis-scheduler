@@ -8,7 +8,8 @@ module Travis
         max:       'max jobs for %s by %s: %s',
         max_plan:  'max jobs for %s by %s: %s (%s)',
         max_stage: 'jobs for %s limited at stage: %s (queueable: %s)',
-        summary:   '%s: total: %s, running: %s, queueable: %s'
+        summary:   '%s: total: %s, running: %s, queueable: %s',
+        stats:     'jobs waiting for %s: %s'
       }
 
       class Jobs < Struct.new(:context, :owners)
@@ -21,11 +22,15 @@ module Travis
         include Helper::Context, Helper::Metrics
 
         LIMITS = [ByOwner, ByRepo, ByQueue, ByStage]
+        attr_reader :waiting_by_owner
 
         def run
           unleak_queueables if ENV['UNLEAK_QUEUEABLE_JOBS']
+          @waiting_by_owner = 0
           check_all
           report summary
+          report stats if waiting.any?
+          honeycomb
         end
 
         def reports
@@ -58,9 +63,12 @@ module Travis
           # I.e. if any limit returns false then the given job will not be
           # selected for queueing.
           def check_all
-            queueable.each do |job|
+            queueable.each_with_index do |job, index|
               case check(job)
               when :limited
+                # The rest of the jobs will definitely be waiting for 
+                # concurrency, regardless of other limits that might apply
+                @waiting_by_owner += queueable.length - index
                 break
               when true
                 selected << job
@@ -77,23 +85,43 @@ module Travis
           end
 
           def enqueue?(job)
-            limits_for(job).map do |limit|
-              result = limit.enqueue?
-              report *limit.reports
-              result
-            end.inject(&:&)
+            limits = limits_for(job).map(&:enqueue?)
+            if !limits[0]
+              @waiting_by_owner += 1
+            end
+            limits.inject(&:&)
           end
 
           def limits_for(job)
-            LIMITS.map { |limit| limit.new(context, owners, job, selected, state, config) }
+            LIMITS.map { |limit| limit.new(context, reports, owners, job, selected, state, config) }
           end
 
           def summary
             MSGS[:summary] % [owners.to_s, queueable.size, state.running_by_owners, selected.size]
           end
 
+          def stats
+            jobs = waiting.group_by(&:repository)
+            stats = jobs.map { |repo, jobs| [repo.slug, jobs.size].join('=') }
+            MSGS[:stats] % [owners.key, stats.join(', ')]
+          end
+
+          def honeycomb
+            Travis::Honeycomb.context.add('scheduler.stats', {
+              running: state.running_by_owners,
+              enqueued: selected.size,
+              waiting: waiting.size,
+              waiting_for_concurrency: @waiting_by_owner,
+              concurrent: selected.size + state.running_by_owners,
+            })
+          end
+
           def report(*reports)
             self.reports.concat(reports).uniq!
+          end
+
+          def waiting
+            queueable - selected
           end
 
           def queueable

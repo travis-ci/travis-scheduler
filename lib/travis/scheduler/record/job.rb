@@ -1,3 +1,9 @@
+class JobConfig < ActiveRecord::Base
+  def config=(config)
+    super rescue nil
+  end
+end
+
 class Job < ActiveRecord::Base
   class << self
     SQL = {
@@ -12,6 +18,14 @@ class Job < ActiveRecord::Base
 
     def running
       where(state: [:queued, :received, :started]).order('jobs.id')
+    end
+
+    def private
+      where(private: true)
+    end
+
+    def public
+      where('jobs.private IS NULL OR jobs.private = ?', false)
     end
 
     def by_repo(id)
@@ -48,6 +62,7 @@ class Job < ActiveRecord::Base
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
   belongs_to :stage
+  belongs_to :config, foreign_key: :config_id, class_name: JobConfig
   has_one :queueable
 
   serialize :config
@@ -63,5 +78,18 @@ class Job < ActiveRecord::Base
     else
       Queueable.where(job_id: id).delete_all
     end
+  end
+
+  def public?
+    !private?
+  end
+
+  def config
+    config = super&.config || has_attribute?(:config) && read_attribute(:config) || {}
+    config.deep_symbolize_keys!
+  end
+
+  def name
+    config[:name]
   end
 end

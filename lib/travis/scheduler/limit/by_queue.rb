@@ -4,7 +4,7 @@ require 'travis/scheduler/helper/logging'
 module Travis
   module Scheduler
     module Limit
-      class ByQueue < Struct.new(:context, :owners, :job, :selected, :state, :_)
+      class ByQueue < Struct.new(:context, :reports, :owners, :job, :selected, :state, :_)
         include Helper::Context
 
         def enqueue?
@@ -15,14 +15,10 @@ module Travis
           result
         end
 
-        def reports
-          @reports ||= []
-        end
-
         private
 
           def enabled?
-            config[owners.key]
+            config[owners.key] || ENV['BY_QUEUE_DEFAULT']
           end
 
           def current
@@ -30,7 +26,7 @@ module Travis
           end
 
           def max
-            config[owners.key].to_i
+            config.fetch(owners.key, default).to_i
           end
 
           def queue
@@ -44,6 +40,10 @@ module Travis
           def report(value)
             reports << MSGS[:max] % [owners.to_s, "queue #{job.queue}", value]
             value
+          end
+
+          def default
+            ENV['BY_QUEUE_DEFAULT'].to_i
           end
 
           # TODO make this a repo setting at some point?

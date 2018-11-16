@@ -19,6 +19,7 @@ describe Travis::Scheduler::Serialize::Live do
       queue:              'builds.gce',
       commit_id:          commit.id,
       allow_failure:      false,
+      updated_at:         job.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
       commit: {
         id:               commit.id,
         sha:              '62aaef',

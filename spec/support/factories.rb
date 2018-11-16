@@ -1,5 +1,11 @@
 require 'factory_girl'
 
+Job.class_eval do
+  def public=(value)
+    self.private = !value
+  end
+end
+
 FactoryGirl.define do
   REPO_KEY = OpenSSL::PKey::RSA.generate(4096)
 
@@ -15,6 +21,8 @@ FactoryGirl.define do
   factory :subscription do
     valid_to Time.now + 24 * 3600
   end
+
+  factory :trial
 
   factory :repository, aliases: [:repo] do
     name       'gem-release'
@@ -34,6 +42,8 @@ FactoryGirl.define do
     last_build_state :passed
     description 'description'
   end
+
+  factory :installation
 
   factory :job do
     owner      { User.first || FactoryGirl.create(:user) }
@@ -57,7 +67,6 @@ FactoryGirl.define do
 
   factory :request do
     event_type 'push'
-    payload 'ref' => 'refs/tags/v1.2.3'
   end
 
   factory :pull_request do

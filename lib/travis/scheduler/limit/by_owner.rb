@@ -5,23 +5,19 @@ require 'travis/scheduler/model/trial'
 module Travis
   module Scheduler
     module Limit
-      class ByOwner < Struct.new(:context, :owners, :job, :selected, :state, :config)
+      class ByOwner < Struct.new(:context, :reports, :owners, :job, :selected, :state, :config)
         include Helper::Context
 
         KEYS = [:by_boost, :by_config, :by_plan, :by_trial, :default]
 
         def enqueue?
-          unlimited || current < max || throw(:result, :limited)
-        end
-
-        def reports
-          @reports ||= []
+          unlimited || current < max || !com? && throw(:result, :limited)
         end
 
         private
 
           def current
-            state.running_by_owners + selected.size
+            without_public(state.running_by_owners + selected.size)
           end
 
           def max
@@ -44,7 +40,7 @@ module Travis
           end
 
           def by_plan
-            owners.max_jobs
+            with_public(owners.max_jobs)
           end
 
           def by_trial
@@ -56,15 +52,35 @@ module Travis
           end
 
           def config_for(login)
-            config[:limit][:by_owner][login].to_i
+            with_public(config[:limit][:by_owner][login].to_i)
           end
 
           def max_trial
-            config[:limit][:trial]
+            with_public(config[:limit][:trial])
           end
 
           def default
-            config[:limit][:default] || 5
+            with_public(config[:limit][:default] || 5)
+          end
+
+          def with_public(max)
+            max = max + config[:limit][:public].to_i if max.to_i > 0 && job.public? && com?
+            max
+          end
+
+          def without_public(count)
+            count = count - running_and_selected_public_jobs_upto_config_limit if !job.public? && com?
+            count
+          end
+
+          def running_and_selected_public_jobs_upto_config_limit
+            count = state.running_by_owners_public + selected.select(&:public?).size
+            count = [count, config[:limit][:public].to_i].min if config[:limit][:public]
+            count
+          end
+
+          def com?
+            config.site == 'com'
           end
 
           def trial

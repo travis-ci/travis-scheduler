@@ -6,15 +6,15 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   let(:features)  { Travis::Features }
-  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }, queued_at: Time.parse('2016-01-01T10:30:00Z'), allow_failure: allow_failure) }
-  let(:request)   { FactoryGirl.create(:request, repository: repo, event_type: event, payload: payload) }
+  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails', name: 'jobname' }, queued_at: Time.parse('2016-01-01T10:30:00Z'), allow_failure: allow_failure) }
+  let(:request)   { FactoryGirl.create(:request, repository: repo, event_type: event) }
   let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
   let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
   let(:repo)      { FactoryGirl.create(:repo, default_branch: 'branch') }
   let(:owner)     { repo.owner }
-  let(:data)      { described_class.new(job, meta, config).data }
   let(:meta)      { { state_update_count: 1 } }
-  let(:config)    { { cache_settings: { 'builds.gce' => s3 }, github: { source_host: 'github.com', api_url: 'https://api.github.com' } } }
+  let(:data)      { described_class.new(job, meta, config).data }
+  let(:config)    { { cache_settings: { 'builds.gce' => s3 }, github: { source_host: 'github.com', api_url: 'https://api.github.com' }, vm_configs: {} } }
   let(:s3)        { { access_key_id: 'ACCESS_KEY_ID', secret_access_key: 'SECRET_ACCESS_KEY', bucket_name: 'bucket' } }
   let(:event)     { 'push' }
   let(:ref)       { 'refs/tags/v1.2.3' }
@@ -40,10 +40,12 @@ describe Travis::Scheduler::Serialize::Worker do
       expect(data).to eq(
         type: :test,
         vm_type: :default,
+        vm_config: {},
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
-          gemfile: 'Gemfile.rails'
+          gemfile: 'Gemfile.rails',
+          name: 'jobname',
         },
         env_vars: [
           { name: 'FOO', value: 'foo', public: false },
@@ -64,8 +66,11 @@ describe Travis::Scheduler::Serialize::Worker do
           secure_env_removed: false,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
-          allow_failure: allow_failure
+          allow_failure: allow_failure,
+          stage_name: nil,
+          name: 'jobname',
         },
+        host: 'https://travis-ci.com',
         source: {
           id: build.id,
           number: '2',
@@ -74,8 +79,10 @@ describe Travis::Scheduler::Serialize::Worker do
         repository: {
           id: repo.id,
           github_id: 549743,
+          private: false,
           slug: 'svenfuchs/gem-release',
           source_url: 'https://github.com/svenfuchs/gem-release.git',
+          source_host: 'github.com',
           api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
           last_build_id: 1,
           last_build_started_at: '2016-01-01T10:00:00Z',
@@ -92,16 +99,23 @@ describe Travis::Scheduler::Serialize::Worker do
           log_silence: 20 * 60
         },
         cache_settings: s3,
+<<<<<<< HEAD
         meta: {
           state_update_count: 1
         }
+=======
+        prefer_https: false,
+        enterprise: false
+>>>>>>> origin/master
       )
     end
 
-    context 'when prefer_https is set' do
+    context 'when prefer_https is set and the repo is private' do
       before { Travis.config.prefer_https = true }
       after  { Travis.config.prefer_https = false }
+      before { repo.update_attributes!(private: true) }
 
+<<<<<<< HEAD
       it 'contains the expected data' do
         expect(data.except('job', 'build', 'repository')).to eq(
           meta: {
@@ -163,6 +177,51 @@ describe Travis::Scheduler::Serialize::Worker do
           cache_settings: s3,
           oauth_token: 'token'
         )
+=======
+      it 'sets the repo source_url to an http url' do
+        expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
+      end
+    end
+
+    context 'when the repo is managed by the github app and the repo is private' do
+      let!(:installation) { FactoryGirl.create(:installation, github_id: rand(1000), owner_id: repo.owner_id, owner_type: repo.owner_type) }
+
+      describe 'on a private repo with a custom ssh key' do
+        before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
+        before { repo.settings.ssh_key = { value: 'settings key' } }
+
+        it 'sets the repo source_url to an ssh git url' do
+          expect(data[:repository][:source_url]).to eq 'git@github.com:svenfuchs/gem-release.git'
+        end
+
+        it 'includes the installation id' do
+          expect(data[:repository][:installation_id]).to eq installation.github_id
+        end
+      end
+
+      describe 'on a private repo' do
+        before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
+
+        it 'sets the repo source_url to an http url' do
+          expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
+        end
+
+        it 'includes the installation id' do
+          expect(data[:repository][:installation_id]).to eq installation.github_id
+        end
+      end
+
+      describe 'on a public repo' do
+        before { repo.update_attributes!(private: false, managed_by_installation_at: Time.now) }
+
+        it 'sets the repo source_url to an http url' do
+          expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
+        end
+
+        it 'does not include the installation id' do
+          expect(data[:repository][:installation_id]).to be nil
+        end
+>>>>>>> origin/master
       end
     end
   end
@@ -178,6 +237,25 @@ describe Travis::Scheduler::Serialize::Worker do
       before { features.activate_owner(:premium_vms, owner) }
       after  { features.deactivate_owner(:premium_vms, owner) }
       it { expect(data[:vm_type]).to eq(:premium) }
+    end
+  end
+
+  describe 'vm_config' do
+    before { config[:vm_configs] = { gpu: { gpu_count: 1 } } }
+
+    describe 'with the feature flag not enabled' do
+      it { expect(data[:vm_config]).to eq({}) }
+    end
+
+    describe 'with the feature flag enabled, but no resources config given' do
+      before { Travis::Features.activate_repository(:resources_gpu, repo) }
+      it { expect(data[:vm_config]).to eq({}) }
+    end
+
+    describe 'with the feature flag enabled, and resources config given' do
+      before { Travis::Features.activate_repository(:resources_gpu, repo) }
+      before { job.config[:resources] = { gpu: true } }
+      it { expect(data[:vm_config]).to eq gpu_count: 1 }
     end
   end
 
@@ -200,10 +278,12 @@ describe Travis::Scheduler::Serialize::Worker do
       expect(data).to eq(
         type: :test,
         vm_type: :default,
+        vm_config: {},
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
-          gemfile: 'Gemfile.rails'
+          gemfile: 'Gemfile.rails',
+          name: 'jobname',
         },
         env_vars: [
           { name: 'BAR', value: 'bar', public: true }
@@ -226,8 +306,11 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request_head_branch: 'head_branch',
           pull_request_head_sha: '62aaef',
           pull_request_head_slug: 'travis-ci/gem-release',
-          allow_failure: allow_failure
+          allow_failure: allow_failure,
+          stage_name: nil,
+          name: 'jobname',
         },
+        host: 'https://travis-ci.com',
         source: {
           id: build.id,
           number: '2',
@@ -236,8 +319,10 @@ describe Travis::Scheduler::Serialize::Worker do
         repository: {
           id: repo.id,
           github_id: 549743,
+          private: false,
           slug: 'svenfuchs/gem-release',
           source_url: 'https://github.com/svenfuchs/gem-release.git',
+          source_host: 'github.com',
           api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
           last_build_id: 1,
           last_build_started_at: '2016-01-01T10:00:00Z',
@@ -254,9 +339,14 @@ describe Travis::Scheduler::Serialize::Worker do
           log_silence: 20 * 60
         },
         cache_settings: s3,
+<<<<<<< HEAD
         meta: {
           state_update_count: 1
         }
+=======
+        prefer_https: false,
+        enterprise: false
+>>>>>>> origin/master
       )
     end
 
@@ -324,4 +414,3 @@ describe Travis::Scheduler::Serialize::Worker do
     end
   end
 end
-

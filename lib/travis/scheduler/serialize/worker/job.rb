@@ -5,11 +5,11 @@ module Travis
   module Scheduler
     module Serialize
       class Worker
-        class Job < Struct.new(:job)
+        class Job < Struct.new(:job, :config)
           extend Forwardable
 
-          def_delegators :job, :id, :repository, :source, :config, :commit,
-            :number, :queue, :state, :debug_options, :queued_at, :allow_failure
+          def_delegators :job, :id, :repository, :source, :commit, :number,
+            :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name
           def_delegators :source, :request
 
           def env_vars
@@ -36,12 +36,27 @@ module Travis
           end
 
           def ssh_key
-            config[:source_key]
+            job.config[:source_key]
           end
 
           def decrypted_config
             secure = Travis::SecureConfig.new(repository.key)
-            Config.decrypt(config, secure, full_addons: secure_env?, secure_env: secure_env?)
+            Config.decrypt(job.config, secure, full_addons: secure_env?, secure_env: secure_env?)
+          end
+
+          def vm_config
+            # we'll want to see out what kinds of vm_config sets we have and
+            # then decide how to best map what to where. at this point that
+            # decision is yagni though, so i'm just picking :gpu as a key here.
+            vm_config? && vm_configs[:gpu] ? vm_configs[:gpu].to_h : {}
+          end
+
+          def trace?
+            Rollout.matches?(:trace, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
+          end
+
+          def warmer?
+            Rollout.matches?(:warmer, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
 
           private
@@ -51,9 +66,17 @@ module Travis
             end
 
             def has_secure_vars?(key)
-              config.key?(key) &&
-              config[key].respond_to?(:key?) &&
-              config[key].key?(:secure)
+              job.config.key?(key) &&
+                job.config[key].respond_to?(:key?) &&
+                job.config[key].key?(:secure)
+            end
+
+            def vm_config?
+              Features.active?(:resources_gpu, repository) && job.config.dig(:resources, :gpu)
+            end
+
+            def vm_configs
+              config[:vm_configs] || {}
             end
         end
       end

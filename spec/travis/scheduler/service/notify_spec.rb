@@ -140,7 +140,7 @@ describe Travis::Scheduler::Service::Notify do
   end
 
   it 'publishes to live' do
-    live.expects(:push).with(instance_of(Hash), event: 'job:queued')
+    live.expects(:push).with(instance_of(Hash), event: 'job:queued', user_ids: job.repository.permissions.pluck(:user_id))
     service.run
   end
 

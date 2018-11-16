@@ -1,34 +1,38 @@
+require 'travis/queue/linux_sudo_required'
+
 module Travis
   class Queue
-    class Sudo < Struct.new(:config)
-      EXECUTABLES = %w(
-        docker
-        ping
-        sudo
-      )
-
-      PATTERN = /^[^#]*\b(#{EXECUTABLES.join('|')})\b/
-
-      STAGES = %i(
-        before_install
-        install
-        before_script
-        script
-        before_cache
-        after_success
-        after_failure
-        after_script
-        before_deploy
-      )
-
-      def detect?
-        stages.any? { |script| PATTERN =~ script.to_s }
+    class Sudo < Struct.new(:repo, :job_config, :config)
+      def value
+        return 'required' if sudo_used?
+        return specified if specified?
+        return 'required' if linux_sudo_required?
+        default_value
       end
 
       private
 
-        def stages
-          config.values_at(*STAGES).compact.flatten
+        def default_value
+          Travis::Scheduler.config.sudo.default
+        end
+
+        def specified
+          {
+            nil => false,
+            true => 'required',
+          }.fetch(job_config[:sudo], job_config[:sudo])
+        end
+
+        def specified?
+          job_config.key?(:sudo)
+        end
+
+        def sudo_used?
+          SudoDetector.new(job_config).detect?
+        end
+
+        def linux_sudo_required?
+          LinuxSudoRequired.new(repo, repo.owner).apply?
         end
     end
   end

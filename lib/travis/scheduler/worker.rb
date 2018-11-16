@@ -1,5 +1,6 @@
 require 'sidekiq'
 require 'travis/scheduler/helper/runner'
+require 'marginalia'
 
 module Travis
   module Scheduler
@@ -7,7 +8,7 @@ module Travis
       include ::Sidekiq::Worker, Helper::Runner
 
       def perform(service, *args)
-        p [service, *args]
+        ::Marginalia.set('service', service)
         inline(service, *normalize(args))
       end
 

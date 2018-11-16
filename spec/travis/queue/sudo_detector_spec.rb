@@ -1,4 +1,4 @@
-describe Travis::Queue::Sudo do
+describe Travis::Queue::SudoDetector do
   let(:sudo) { described_class.new(config) }
 
   describe 'sudo_detected?' do

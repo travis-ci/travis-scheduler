@@ -11,12 +11,14 @@ module Travis
               browserstack
               chrome
               firefox
+              homebrew
               hostname
               hosts
               jwt
               mariadb
               postgresql
               rethinkdb
+              snaps
               sonarqube
               ssh_known_hosts
             )

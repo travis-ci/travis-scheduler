@@ -31,6 +31,8 @@ module Travis
 
           def notify_workers
             info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
+            Travis::Honeycomb.context.add('job_id', job.id)
+            Travis::Honeycomb.context.add('queue', job.queue)
             rollout? ? notify_job_board : notify_rabbitmq
           end
 
@@ -45,7 +47,10 @@ module Travis
           end
 
           def notify_live
-            Live.push(live_payload, event: 'job:queued')
+            # we need to always make sure that the data is fresh, because Active
+            # Record doesn't always refresh the updated_at column
+            job.reload
+            Live.push(live_payload, live_params)
           end
 
           def rollout?
@@ -61,6 +66,15 @@ module Travis
             Serialize::Live.new(job).data
           end
           time :live_payload
+
+          def live_params
+            { event: 'job:queued', user_ids: user_ids }
+          end
+          time :live_params
+
+          def user_ids
+            job.repository.permissions.pluck(:user_id)
+          end
 
           def owner
             job.owner

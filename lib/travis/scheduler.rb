@@ -6,6 +6,7 @@ require 'travis/metrics'
 require 'travis/owners'
 require 'travis/queue'
 require 'travis/scheduler/config'
+require 'travis/scheduler/jobs'
 require 'travis/scheduler/record'
 require 'travis/scheduler/ping'
 require 'travis/scheduler/service'
@@ -14,6 +15,9 @@ require 'travis/scheduler/support/sidekiq'
 require 'travis/scheduler/worker'
 require 'travis/service'
 require 'travis/support/database'
+require 'marginalia'
+
+require 'pry' unless ['production', 'staging'].include? ENV['ENV']
 
 Travis::Exceptions::Queue = ::Queue # TODO fix in travis-exceptions
 
@@ -31,6 +35,10 @@ module Travis
         @metrics = Metrics.setup(config.metrics, logger)
         Sidekiq.setup(config, logger)
         Features.setup(config)
+
+        if ENV['QUERY_COMMENTS_ENABLED'] == 'true'
+          ::Marginalia.install
+        end
       end
 
       def context

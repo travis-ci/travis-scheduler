@@ -3,7 +3,7 @@ describe Travis::Scheduler::Service::Event do
   let(:repo)    { FactoryGirl.create(:repo) }
   let(:owner)   { FactoryGirl.create(:user) }
   let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
-  let(:job)     { FactoryGirl.create(:job, state: :created, config: config.to_h) }
+  let(:job)     { FactoryGirl.create(:job, private: true, state: :created, config: config.to_h) }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { id: build.id, jid: '1234' } }
   let(:event)   { 'build:created' }

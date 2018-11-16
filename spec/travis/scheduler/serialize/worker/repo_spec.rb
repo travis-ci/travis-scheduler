@@ -1,11 +1,101 @@
 describe Travis::Scheduler::Serialize::Worker::Repo do
+  let(:user)   { FactoryGirl.create(:user) }
+  let(:org)    { FactoryGirl.create(:org) }
+
   let(:repo)   { Repository.new(owner_name: 'travis-ci', name: 'travis-ci') }
+  let(:user_repo) { FactoryGirl.create(:repository, owner: user) }
+  let(:org_repo)  { FactoryGirl.create(:repository, owner_name: org.login, owner_id: org.id, owner_type: "Organization") }
+
   let(:config) { { github: {} } }
-  subject      { described_class.new(repo, config) }
+
+  let(:unpaid_timeout) { User::DEFAULT_SPONSORED_TIMEOUT }
+  let(:paid_timeout)   { User::DEFAULT_SUBSCRIBED_TIMEOUT }
+
+  subject { described_class.new(repo, config) }
 
   describe 'api_url' do
     before { config[:github][:api_url] = 'https://api.github.com' }
     it { expect(subject.api_url).to eq 'https://api.github.com/repos/travis-ci/travis-ci' }
+  end
+
+  describe "#timeouts" do
+    context "for a user-owned repo" do
+      let(:worker) { described_class.new(user_repo, config) }
+
+      context "unpaid account" do
+        it "returns a hash of timeout values" do
+          timeouts = worker.timeouts
+
+          expect(timeouts).to be_a Hash
+          expect(timeouts[:hard_limit]).to eq unpaid_timeout
+        end
+      end
+
+      context "paid account" do
+        before do
+          User.any_instance.stubs(:subscribed?).returns(true)
+        end
+
+        it "returns a hash of timeout values" do
+          timeouts = worker.timeouts
+
+          expect(timeouts).to be_a Hash
+          expect(timeouts[:hard_limit]).to eq paid_timeout
+        end
+      end
+
+      context "active trial" do
+        before do
+          User.any_instance.stubs(:active_trial?).returns(true)
+        end
+
+        it "returns a hash of timeout values" do
+          timeouts = worker.timeouts
+
+          expect(timeouts).to be_a Hash
+          expect(timeouts[:hard_limit]).to eq paid_timeout
+        end
+      end
+    end
+
+    context "for an org-owned repo" do
+      let(:worker) { described_class.new(org_repo, config) }
+
+      context "unpaid account" do
+        it "returns a hash of timeout values" do
+          timeouts = worker.timeouts
+
+          expect(timeouts).to be_a Hash
+          expect(timeouts[:hard_limit]).to eq unpaid_timeout
+        end
+      end
+
+      context "paid account" do
+        before do
+          Organization.any_instance.stubs(:subscribed?).returns(true)
+        end
+
+        it "returns a hash of timeout values" do
+          timeouts = worker.timeouts
+
+          expect(timeouts).to be_a Hash
+          expect(timeouts[:hard_limit]).to eq paid_timeout
+        end
+      end
+
+      context "active trial" do
+        before do
+          Organization.any_instance.stubs(:active_trial?).returns(true)
+        end
+
+        it "returns a hash of timeout values" do
+          timeouts = worker.timeouts
+
+          expect(timeouts).to be_a Hash
+          expect(timeouts[:hard_limit]).to eq paid_timeout
+        end
+      end
+    end
   end
 
   describe 'source_url' do
