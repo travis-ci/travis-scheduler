@@ -2,7 +2,7 @@ module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
       KEYS = %i(slug owner os language sudo dist group osx_image percentage
-        resources services)
+        resources services arch)
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
@@ -66,6 +66,10 @@ module Travis
 
         def resources
           resources_enabled? && job.config[:resources] || {}
+        end
+
+        def arch
+          job.config[:arch]
         end
 
         def resources_enabled?
