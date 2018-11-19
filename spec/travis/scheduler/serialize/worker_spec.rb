@@ -6,7 +6,7 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   let(:features)  { Travis::Features }
-  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails' }, queued_at: Time.parse('2016-01-01T10:30:00Z'), allow_failure: allow_failure) }
+  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails', name: 'jobname' }, queued_at: Time.parse('2016-01-01T10:30:00Z'), allow_failure: allow_failure) }
   let(:request)   { FactoryGirl.create(:request, repository: repo, event_type: event) }
   let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
   let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
@@ -43,7 +43,8 @@ describe Travis::Scheduler::Serialize::Worker do
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
-          gemfile: 'Gemfile.rails'
+          gemfile: 'Gemfile.rails',
+          name: 'jobname',
         },
         env_vars: [
           { name: 'FOO', value: 'foo', public: false },
@@ -66,6 +67,7 @@ describe Travis::Scheduler::Serialize::Worker do
           queued_at: '2016-01-01T10:30:00Z',
           allow_failure: allow_failure,
           stage_name: nil,
+          name: 'jobname',
         },
         host: 'https://travis-ci.com',
         source: {
@@ -209,7 +211,8 @@ describe Travis::Scheduler::Serialize::Worker do
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
-          gemfile: 'Gemfile.rails'
+          gemfile: 'Gemfile.rails',
+          name: 'jobname',
         },
         env_vars: [
           { name: 'BAR', value: 'bar', public: true }
@@ -234,6 +237,7 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request_head_slug: 'travis-ci/gem-release',
           allow_failure: allow_failure,
           stage_name: nil,
+          name: 'jobname',
         },
         host: 'https://travis-ci.com',
         source: {

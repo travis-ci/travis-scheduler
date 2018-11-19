@@ -28,7 +28,8 @@ module Travis
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https]
           }
-          data[:trace] = true if job.trace?
+          data[:trace]  = true if job.trace?
+          data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
           data
         end
@@ -61,6 +62,7 @@ module Travis
               queued_at: format_date(job.queued_at),
               allow_failure: job.allow_failure,
               stage_name: job.stage&.name,
+              name: job.name,
             }
             if build.pull_request?
               data = data.merge(

@@ -9,7 +9,7 @@ module Travis
           extend Forwardable
 
           def_delegators :job, :id, :repository, :source, :commit, :number,
-            :queue, :state, :debug_options, :queued_at, :allow_failure, :stage
+            :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name
           def_delegators :source, :request
 
           def env_vars
@@ -52,8 +52,11 @@ module Travis
           end
 
           def trace?
-            return true if job.config[:trace]
-            Rollout.matches?(:trace, uid: repository.owner.uid, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
+            Rollout.matches?(:trace, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
+          end
+
+          def warmer?
+            Rollout.matches?(:warmer, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
 
           private
