@@ -31,7 +31,9 @@ describe Travis::Queue do
       { queue: 'builds.mac_stable', osx_image: 'stable' },
       { queue: 'builds.mac_beta', osx_image: 'beta' },
       { queue: 'builds.new-foo', language: 'foo', percentage: percent },
-      { queue: 'builds.old-foo', language: 'foo' }
+      { queue: 'builds.old-foo', language: 'foo' },
+      { queue: 'builds.power', arch: 'ppc64le', sudo: 'required' },
+      { queue: 'builds.power.container', arch: 'ppc64le', sudo: false },
     ]
     Travis::Queue::Sudo
       .any_instance
@@ -147,6 +149,28 @@ describe Travis::Queue do
     describe 'osx_image: beta' do
       let(:config) { { osx_image: 'beta' } }
       it { expect(queue).to eq 'builds.mac_beta' }
+    end
+  end
+
+  describe 'by job config :arch' do
+    describe 'arch: amd64' do
+      let(:config) { { arch: 'amd64' } }
+      it { expect(queue).to eq 'builds.default' }
+    end
+
+    describe 'arch: ppc64le' do
+      let(:config) { { arch: 'ppc64le' } }
+      it { expect(queue).to eq 'builds.power' }
+    end
+
+    describe 'arch: ppc64le, sudo' do
+      let(:config) { { arch: 'ppc64le', sudo: true } }
+      it { expect(queue).to eq 'builds.power' }
+    end
+
+    describe 'arch: ppc64le, container' do
+      let(:config) { { arch: 'ppc64le', sudo: false } }
+      it { expect(queue).to eq 'builds.power.container' }
     end
   end
 
