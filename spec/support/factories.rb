@@ -34,7 +34,7 @@ FactoryGirl.define do
     settings   {}
 
     # TODO why is the worker payload interested in these at all?
-    last_build_id 1
+    last_build_id nil
     last_build_started_at '2016-01-01T10:00:00Z'
     last_build_finished_at '2016-01-01T11:00:00Z'
     last_build_number 2
