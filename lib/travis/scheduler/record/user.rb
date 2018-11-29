@@ -37,6 +37,10 @@ class User < ActiveRecord::Base
     subscribed? || active_trial?
   end
 
+  # def free_build_plan?
+  #   @subscription.selected_plan == "travis-ci-one-free-build"
+  # end
+
   def default_worker_timeout
     # When the user is a paid user ("subscribed") or has an active trial, they
     #   are granted a different default timeout on their jobs.

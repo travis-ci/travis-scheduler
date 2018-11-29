@@ -26,6 +26,11 @@ module Travis
 
         def plan_limit(plan)
           config[plan.to_sym].tap { |limit| missing_plan(plan) unless limit }
+          # config[plan.to_sym].tap do |limit| 
+          #   missing_plan(plan) unless limit
+          #   limit += 1 unless plan == "travis-ci-one-free-build" || subscriptions.last.owner_type == "Organization"
+          #   limit
+          end
         end
 
         def missing_plan(plan)

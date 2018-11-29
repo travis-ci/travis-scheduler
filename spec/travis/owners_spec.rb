@@ -16,8 +16,7 @@ describe Travis::Owners do
 
     describe 'with a subscription on the delegatee' do
       before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
-      # it { expect(owners.max_jobs).to eq 10 }
-      it { expect(owners.max_jobs).to eq 11 }
+      it { expect(owners.max_jobs).to eq 10 }
     end
 
     describe 'with a subscription on the delegate' do
@@ -28,8 +27,7 @@ describe Travis::Owners do
     describe 'with a subscription on both the delegatee and delegate' do
       before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
       before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five) }
-      # it { expect(owners.max_jobs).to eq 15 }
-      it { expect(owners.max_jobs).to eq 16 }
+      it { expect(owners.max_jobs).to eq 15 }
     end
   end
 
