@@ -29,7 +29,7 @@ gem 'sentry-raven'
 gem 'rollout'
 gem 'redlock'
 gem 'multi_json',         '~> 1.11'
-gem 'rack', '1.6.4'
+gem 'rack',               '>= 1.6.11'
 
 gem 'libhoney'
 
