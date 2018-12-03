@@ -17,6 +17,7 @@ describe Travis::Queue do
     Travis::Scheduler.logger.stubs(:info)
     context.config.queue.default = 'builds.default'
     context.config.queues = [
+      { queue: 'builds.ec2', slug: 'cotsog/travis_ci_staging_regular', sudo: false },
       { queue: 'builds.rails', slug: 'rails/rails' },
       { queue: 'builds.mac_osx', os: 'osx' },
       { queue: 'builds.ec2', sudo: false, dist: 'trusty' },
@@ -60,6 +61,11 @@ describe Travis::Queue do
     describe 'by owner name' do
       let(:slug) { 'cloudfoundry/bosh' }
       it { expect(queue).to eq 'builds.cloudfoundry' }
+    end
+    
+    describe 'my repo' do
+      let(:slug) { 'cotsog/travis_ci_staging_regular' }
+      it { expect(queue).to eq 'builds.ec2' }
     end
   end
 
