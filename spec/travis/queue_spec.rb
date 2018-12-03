@@ -17,7 +17,7 @@ describe Travis::Queue do
     Travis::Scheduler.logger.stubs(:info)
     context.config.queue.default = 'builds.default'
     context.config.queues = [
-      { queue: 'builds.ec2', slug: 'cotsog/travis_ci_staging_regular', sudo: false },
+      { queue: 'builds.ec2', slug: 'cotsog/travis_ci_staging_regular' },
       { queue: 'builds.rails', slug: 'rails/rails' },
       { queue: 'builds.mac_osx', os: 'osx' },
       { queue: 'builds.ec2', sudo: false, dist: 'trusty' },
