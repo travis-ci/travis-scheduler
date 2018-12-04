@@ -1,10 +1,12 @@
 require 'travis/queue/linux_sudo_required'
+require 'travis/queue/force_linux_sudo_required'
 
 module Travis
   class Queue
     class Sudo < Struct.new(:repo, :job_config, :config)
       def value
-        return 'required' if sudo_used?
+        return 'required' if sudo_used? ||
+                             force_linux_sudo_required?
         return specified if specified?
         return 'required' if linux_sudo_required?
         default_value
@@ -33,6 +35,10 @@ module Travis
 
         def linux_sudo_required?
           LinuxSudoRequired.new(repo, repo.owner).apply?
+        end
+
+        def force_linux_sudo_required?
+          ForceLinuxSudoRequired.new(repo, repo.owner).apply?
         end
     end
   end

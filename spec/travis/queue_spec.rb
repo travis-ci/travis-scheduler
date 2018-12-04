@@ -12,6 +12,7 @@ describe Travis::Queue do
   let(:queue)      { described_class.new(job, context.config, logger).select }
 
   let(:linux_sudo_required?) { false }
+  let(:force_linux_sudo_required?) { false }
 
   before do
     Travis::Scheduler.logger.stubs(:info)
@@ -39,6 +40,10 @@ describe Travis::Queue do
       .any_instance
       .stubs(:linux_sudo_required?)
       .returns(linux_sudo_required?)
+    Travis::Queue::Sudo
+      .any_instance
+      .stubs(:force_linux_sudo_required?)
+      .returns(force_linux_sudo_required?)
   end
 
   after do
@@ -211,15 +216,19 @@ describe Travis::Queue do
     { queue: 'builds.ec2', config: { dist: 'xenial', sudo: false } },
     { queue: 'builds.ec2', config: { dist: 'xenial', sudo: false }, education: true },
     { queue: 'builds.ec2', config: { dist: 'xenial', sudo: false }, linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'trusty' }, linux_sudo_required: false, force_linux_sudo_required: true },
     { queue: 'builds.gce', config: { dist: 'trusty' }, linux_sudo_required: true },
     { queue: 'builds.gce', config: { dist: 'trusty' }, linux_sudo_required: true },
     { queue: 'builds.gce', config: { dist: 'trusty', script: 'sudo huh' } },
     { queue: 'builds.gce', config: { dist: 'trusty', sudo: 'required' } },
+    { queue: 'builds.gce', config: { dist: 'trusty', sudo: false }, force_linux_sudo_required: true },
+    { queue: 'builds.gce', config: { dist: 'trusty', sudo: false }, linux_sudo_required: false, force_linux_sudo_required: true },
     { queue: 'builds.gce', config: { dist: 'trusty', sudo: true } },
     { queue: 'builds.gce', config: { dist: 'xenial' }, linux_sudo_required: true },
     { queue: 'builds.gce', config: { dist: 'xenial' }, linux_sudo_required: true },
     { queue: 'builds.gce', config: { dist: 'xenial', script: 'sudo huh' } },
     { queue: 'builds.gce', config: { dist: 'xenial', sudo: 'required' } },
+    { queue: 'builds.gce', config: { dist: 'xenial', sudo: false }, force_linux_sudo_required: true },
     { queue: 'builds.gce', config: { dist: 'xenial', sudo: true } },
   ].map { |qc| Support::Queues::QueueCase.new(qc) }.each do |c|
     describe c.to_s do
@@ -234,6 +243,7 @@ describe Travis::Queue do
 
       let(:config) { c.config }
       let(:linux_sudo_required?) { c.linux_sudo_required? }
+      let(:force_linux_sudo_required?) { c.force_linux_sudo_required? }
 
       it { expect(queue).to eq(c.queue) }
     end
