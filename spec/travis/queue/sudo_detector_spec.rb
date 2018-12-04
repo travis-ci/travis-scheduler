@@ -9,6 +9,7 @@ describe Travis::Queue::SudoDetector do
       [{ before_install: ['docker run busybox echo whatever'] }, true],
       [{ before_script: ['echo ; echo ; echo ; sudo echo ; echo'] }, true],
       [{ install: '# no sudo needed here' }, false],
+      [{ script: 'docker-compose up' }, false],
       [{ install: true }, false],
     ]
 

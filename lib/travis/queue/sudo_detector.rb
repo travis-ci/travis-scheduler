@@ -7,8 +7,6 @@ module Travis
         sudo
       )
 
-      PATTERN = /^[^#]*\b(#{EXECUTABLES.join('|')})\b/
-
       STAGES = %i(
         before_install
         install
@@ -22,13 +20,24 @@ module Travis
       )
 
       def detect?
-        stages.any? { |script| PATTERN =~ script.to_s }
+        stages.any? do |script|
+          commands = script.to_s.sub(/#.*$/,'')
+          has_common? commands.split, EXECUTABLES
+        end
       end
 
       private
 
         def stages
           config.values_at(*STAGES).compact.flatten
+        end
+
+        def has_common?(a,b)
+          Array(a).any? do |a_el|
+            Array(b).any? do |b_el|
+              a_el == b_el
+            end
+          end
         end
     end
   end
