@@ -3,13 +3,15 @@ module Support
     class QueueCase
       def initialize(host: 'travis-ci.org', config: {},
                      desc: 'uh???', queue: 'notset', education: false,
-                     linux_sudo_required: false)
+                     linux_sudo_required: false,
+                     force_linux_sudo_required: false)
         @host = host
         @config = config
         @desc = desc
         @queue = queue
         @education = education
         @linux_sudo_required = linux_sudo_required
+        @force_linux_sudo_required = force_linux_sudo_required
       end
 
       attr_reader :config, :desc, :host, :queue
@@ -22,6 +24,10 @@ module Support
         @linux_sudo_required
       end
 
+      def force_linux_sudo_required?
+        @force_linux_sudo_required
+      end
+
       def to_s
         a = %w[when on]
         a << (host =~ /\.org/ ? 'org' : 'com')
@@ -29,6 +35,7 @@ module Support
         a << "sudo=#{config[:sudo]}" if config.key?(:sudo)
         a << "dist=#{config[:dist]}" if config.key?(:dist)
         a << "sudo required on linux" if linux_sudo_required?
+        a << "sudo forced on linux" if force_linux_sudo_required?
         a.join(' ')
       end
     end
