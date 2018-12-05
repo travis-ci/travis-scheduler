@@ -34,8 +34,8 @@ module Travis
           # https://github.com/travis-ci/product/issues/97
           #
 
-          if plan[:owner].is_a?(User) && !limit.nil?
-            limit += 1 unless limit.nil?
+          if plan[:owner].is_a?(User) && limit
+            limit += 1
           end
 
           limit
