@@ -25,7 +25,20 @@ module Travis
         end
 
         def plan_limit(plan)
-          config[plan.to_sym].tap { |limit| missing_plan(plan) unless limit }
+          limit = config[plan[:plan].to_sym].tap { |limit| missing_plan(plan[:plan]) unless limit }
+
+          # Increment this by 1 as our original values are being increased up by
+          #   one as part of our "free 1-job private repo" plan project,
+          #   expected to be launched in December, 2018.
+          #
+          # https://github.com/travis-ci/product/issues/97
+          #
+
+          if plan[:owner].is_a?(User) && !limit.nil?
+            limit += 1 unless limit.nil?
+          end
+
+          limit
         end
 
         def missing_plan(plan)
@@ -33,7 +46,11 @@ module Travis
         end
 
         def plans
-          subscriptions.map(&:selected_plan).compact
+          subscriptions.map { |sub|
+            if sub.selected_plan && sub.owner
+              { plan: sub.selected_plan, owner: sub.owner }
+            end
+          }.compact
         end
 
         def subscriptions

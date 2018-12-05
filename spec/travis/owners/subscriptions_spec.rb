@@ -10,6 +10,13 @@ describe Travis::Owners::Subscriptions do
 
   subject { described_class.new(owners, plans).max_jobs }
 
+  # Note that all plans are 1 higher than their original values due to our "free
+  #   1-job private repo" plan project, expected to be launched in December,
+  #   2018.
+  #
+  # https://github.com/travis-ci/product/issues/97
+  #
+
   describe 'a single org with a five jobs plan' do
     before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five) }
     it { should eq 5 }

@@ -84,10 +84,10 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
       before { create_jobs(2, state: :created, private: true) }
       before { run }
 
-      it { expect(selected).to eq 1 }
-      it { expect(report).to include('max jobs for user svenfuchs by plan: 2 (svenfuchs)') }
-      it { expect(report).to include('user svenfuchs: total: 2, running: 1, queueable: 1') }
-      it { expect(limit.waiting_by_owner).to eq 1 }
+      it { expect(selected).to eq 2 }
+      it { expect(report).to include('max jobs for user svenfuchs by plan: 3 (svenfuchs)') }
+      it { expect(report).to include('user svenfuchs: total: 2, running: 1, queueable: 2') }
+      it { expect(limit.waiting_by_owner).to eq 0 }
     end
 
     describe 'with public jobs only' do
@@ -97,7 +97,7 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
       before { run }
 
       it { expect(selected).to eq 2 }
-      it { expect(report).to include('max jobs for user svenfuchs by plan: 5 (svenfuchs)') } # TODO fix log output?
+      it { expect(report).to include('max jobs for user svenfuchs by plan: 6 (svenfuchs)') } # TODO fix log output?
       it { expect(report).to include('user svenfuchs: total: 2, running: 1, queueable: 2') }
       it { expect(limit.waiting_by_owner).to eq 0 }
     end
@@ -110,10 +110,10 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
       before { subscription(:two) }
       before { run }
 
-      it { expect(selected).to eq 3 }
-      it { expect(report).to include('max jobs for user svenfuchs by plan: 2 (svenfuchs)') }
-      it { expect(report).to include('user svenfuchs: total: 4, running: 2, queueable: 3') }
-      it { expect(limit.waiting_by_owner).to eq 1 }
+      it { expect(selected).to eq 4 }
+      it { expect(report).to include('max jobs for user svenfuchs by plan: 3 (svenfuchs)') }
+      it { expect(report).to include('user svenfuchs: total: 4, running: 2, queueable: 4') }
+      it { expect(limit.waiting_by_owner).to eq 0 }
     end
   end
 
@@ -303,7 +303,7 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
       before { run }
 
       it { expect(selected).to eq 2 }
-      it { expect(report).to include('max jobs for user svenfuchs by plan: 4 (svenfuchs)') }
+      it { expect(report).to include('max jobs for user svenfuchs by plan: 5 (svenfuchs)') }
       it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 3') }
       it { expect(report).to include('user svenfuchs: total: 4, running: 1, queueable: 2') }
       it { expect(limit.waiting_by_owner).to eq 0 } # TODO eh??? should be 2, no?
@@ -315,7 +315,7 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
       before { run }
 
       it { expect(selected).to eq 2 }
-      it { expect(report).to include('max jobs for user svenfuchs by plan: 7 (svenfuchs)') } # TODO fix log output?
+      it { expect(report).to include('max jobs for user svenfuchs by plan: 8 (svenfuchs)') } # TODO fix log output?
       it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 3') }
       it { expect(report).to include('user svenfuchs: total: 4, running: 1, queueable: 2') }
       it { expect(limit.waiting_by_owner).to eq 0 }
@@ -329,7 +329,7 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
       before { run }
 
       it { expect(selected).to eq 1 }
-      it { expect(report).to include('max jobs for user svenfuchs by plan: 4 (svenfuchs)') }
+      it { expect(report).to include('max jobs for user svenfuchs by plan: 5 (svenfuchs)') }
       it { expect(report).to include('max jobs for repo svenfuchs/gem-release by repo_settings: 3') }
       it { expect(report).to include('user svenfuchs: total: 6, running: 2, queueable: 1') }
       it { expect(limit.waiting_by_owner).to eq 0 } # TODO eh???
@@ -343,8 +343,8 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
       before { subscription(:two) }
       before { run }
 
-      it { expect(selected).to eq 2 }
-      it { expect(report).to include('user svenfuchs: total: 4, running: 0, queueable: 2') }
+      it { expect(selected).to eq 3 }
+      it { expect(report).to include('user svenfuchs: total: 4, running: 0, queueable: 3') }
     end
 
     describe 'with public jobs only' do
@@ -397,7 +397,7 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
 
         it { expect(selected).to eq 6 }
         it { expect(limit.selected.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 3 }
-        it { expect(report).to include('max jobs for user svenfuchs by plan: 8 (svenfuchs, travis-ci)') }
+        it { expect(report).to include('max jobs for user svenfuchs by plan: 9 (svenfuchs, travis-ci)') }
         it { expect(report).to include('user svenfuchs, user carla, org travis-ci: total: 6, running: 2, queueable: 6') }
       end
     end
@@ -430,7 +430,7 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
 
         it { expect(selected).to eq 6 }
         it { expect(limit.selected.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 3 }
-        it { expect(report).to include('max jobs for user svenfuchs by plan: 8 (svenfuchs, travis-ci)') } # TODO fix log output
+        it { expect(report).to include('max jobs for user svenfuchs by plan: 9 (svenfuchs, travis-ci)') } # TODO fix log output
         it { expect(report).to include('user svenfuchs, user carla, org travis-ci: total: 6, running: 2, queueable: 6') }
       end
     end
@@ -463,7 +463,7 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
 
         it { expect(selected).to eq 6 }
         it { expect(limit.selected.map(&:owner).map(&:login)).to eq ['svenfuchs'] * 3 + ['travis-ci'] * 3 }
-        it { expect(report).to include('max jobs for user svenfuchs by plan: 8 (svenfuchs, travis-ci)') }
+        it { expect(report).to include('max jobs for user svenfuchs by plan: 9 (svenfuchs, travis-ci)') }
         it { expect(report).to include('user svenfuchs, user carla, org travis-ci: total: 6, running: 2, queueable: 6') }
       end
     end
