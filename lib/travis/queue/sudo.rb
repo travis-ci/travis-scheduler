@@ -5,6 +5,7 @@ module Travis
   class Queue
     class Sudo < Struct.new(:repo, :job_config, :config)
       def value
+        return 'deprecated' if job_config[:sudo] == 'deprecated'
         return 'required' if sudo_used? ||
                              force_linux_sudo_required?
         return specified if specified?
