@@ -37,7 +37,7 @@ module Travis
         end
 
         def sudo
-          Sudo.new(repo, job.config, config).value
+          job.config[:sudo]
         end
 
         def dist
