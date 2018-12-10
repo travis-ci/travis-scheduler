@@ -16,7 +16,7 @@ then Scheduler will set the job to `queued`, and queue it for the workers.
 Scheduler evaluates jobs for an owner group when a job is created (notified
 from Gatekeeper), and when a job's state changes (notified from Hub).
 
-Before publishing a job for the Workers Scheduler also determines the RabbitMQ
+Before publishing a job for the Workers, Scheduler also determines the RabbitMQ
 queue specific to the infrastructure, based on application and job
 configuration.
 
@@ -25,7 +25,7 @@ This thread publishes a single "ping" message to Sidekiq for Scheduler itself.
 Scheduler will then look at all owner groups that have jobs in the `created`
 state, and publish a message to itself in order to evaluate these owner groups.
 
-The purpose of the ping is to prevent us loosing messages, and jobs getting
+The purpose of the ping is to prevent us losing messages, causing jobs to get
 stuck in the `created` state.
 
 # Resources used
@@ -128,4 +128,3 @@ Other reasons for the queue backing up potentially might be:
 If Scheduler is functional (i.e. it can connect to the database, and it can
 publish to RabbitMQ) then the solution to this can be to scale up more
 `scheduler` dynos in order to work through the queue faster.
-
