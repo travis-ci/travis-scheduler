@@ -20,7 +20,7 @@ module Travis
             end
 
             def queue(job)
-              job.queue ||= Queue.new(job, context.config, nil).select
+              job.queue ||= Travis::Queue.new(job, context.config, nil).select
             end
 
             def enabled?

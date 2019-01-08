@@ -412,6 +412,16 @@ describe Travis::Scheduler::Jobs::Select do
       it { expect(reports).to include 'user svenfuchs plan capacity: running=2 max=10 selected=3' }
       it { expect(reports).to include 'user svenfuchs: queueable=10 running=2 selected=4 total_waiting=6 waiting_for_concurrency=0' }
     end
+
+    describe 'with configured queues' do
+      before { config[:queues] = [{owner: user.login, queue: 'builds.osx'}] }
+      before { create_jobs(7, private: true, queue: nil) }
+
+      it { expect(selected.size).to eq 3 }
+      it { expect(reports).to include 'user svenfuchs limited by queue builds.osx: max=3 rejected=4 selected=3' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=0 max=10 selected=3' }
+      it { expect(reports).to include 'user svenfuchs: queueable=7 running=0 selected=3 total_waiting=4 waiting_for_concurrency=0' }
+    end
   end
 
   describe 'stages' do
