@@ -31,5 +31,3 @@ end
 require 'travis/queue/matcher'
 require 'travis/queue/pool'
 require 'travis/queue/queues'
-require 'travis/queue/sudo'
-require 'travis/queue/sudo_detector'
