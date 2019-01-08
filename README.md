@@ -52,9 +52,8 @@ select 4 jobs to be queued for the workers, leaving 1 job waiting.
 
 ## Contributing
 
-See the CONTRIBUTING.md file for information on how to contribute to travis-hub.
-Note that we're using a [central issue tracker]
-(https://github.com/travis-ci/travis-ci/issues) for all the Travis projects.
+See [CONTRIBUTING](CONTRIBUTING.md) for information on how to contribute to
+travis-scheduler.
 
 
 ## License & copyright
