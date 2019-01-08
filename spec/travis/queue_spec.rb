@@ -11,20 +11,15 @@ describe Travis::Queue do
   let(:job)        { FactoryGirl.build(:job, config: config, owner: owner, repository: repo) }
   let(:queue)      { described_class.new(job, context.config, logger).select }
 
-  let(:linux_sudo_required?) { false }
-  let(:force_linux_sudo_required?) { false }
-
   before do
     Travis::Scheduler.logger.stubs(:info)
     context.config.queue.default = 'builds.default'
     context.config.queues = [
       { queue: 'builds.rails', slug: 'rails/rails' },
       { queue: 'builds.mac_osx', os: 'osx' },
-      { queue: 'builds.ec2', sudo: false, dist: 'trusty' },
-      { queue: 'builds.ec2', sudo: false, dist: 'xenial' },
       { queue: 'builds.gce', services: %w(docker) },
-      { queue: 'builds.gce', dist: 'trusty', sudo: 'required' },
-      { queue: 'builds.gce', dist: 'xenial', sudo: 'required' },
+      { queue: 'builds.gce', dist: 'trusty' },
+      { queue: 'builds.gce', dist: 'xenial' },
       { queue: 'builds.gce', resources: { gpu: true } },
       { queue: 'builds.cloudfoundry', owner: 'cloudfoundry' },
       { queue: 'builds.clojure', language: 'clojure' },
@@ -33,17 +28,8 @@ describe Travis::Queue do
       { queue: 'builds.mac_beta', osx_image: 'beta' },
       { queue: 'builds.new-foo', language: 'foo', percentage: percent },
       { queue: 'builds.old-foo', language: 'foo' },
-      { queue: 'builds.power', arch: 'ppc64le', sudo: 'required' },
-      { queue: 'builds.power.container', arch: 'ppc64le', sudo: false },
+      { queue: 'builds.power', arch: 'ppc64le' },
     ]
-    Travis::Queue::Sudo
-      .any_instance
-      .stubs(:linux_sudo_required?)
-      .returns(linux_sudo_required?)
-    Travis::Queue::Sudo
-      .any_instance
-      .stubs(:force_linux_sudo_required?)
-      .returns(force_linux_sudo_required?)
   end
 
   after do
@@ -167,16 +153,6 @@ describe Travis::Queue do
       let(:config) { { arch: 'ppc64le' } }
       it { expect(queue).to eq 'builds.power' }
     end
-
-    describe 'arch: ppc64le, sudo' do
-      let(:config) { { arch: 'ppc64le', sudo: true } }
-      it { expect(queue).to eq 'builds.power' }
-    end
-
-    describe 'arch: ppc64le, container' do
-      let(:config) { { arch: 'ppc64le', sudo: false } }
-      it { expect(queue).to eq 'builds.power.container' }
-    end
   end
 
   describe 'given a percentage' do
@@ -207,45 +183,5 @@ describe Travis::Queue do
     let(:config) { { dist: 'trusty' } }
 
     it { expect(queue).to eq 'builds.gce-foo' }
-  end
-
-  [
-    { queue: 'builds.ec2', config: { dist: 'trusty', sudo: false } },
-    { queue: 'builds.ec2', config: { dist: 'trusty', sudo: false }, education: true },
-    { queue: 'builds.ec2', config: { dist: 'trusty', sudo: false }, linux_sudo_required: true },
-    { queue: 'builds.ec2', config: { dist: 'xenial', sudo: false } },
-    { queue: 'builds.ec2', config: { dist: 'xenial', sudo: false }, education: true },
-    { queue: 'builds.ec2', config: { dist: 'xenial', sudo: false }, linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'trusty' }, linux_sudo_required: false, force_linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'trusty' }, linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'trusty' }, linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'trusty', script: 'sudo huh' } },
-    { queue: 'builds.gce', config: { dist: 'trusty', sudo: 'required' } },
-    { queue: 'builds.gce', config: { dist: 'trusty', sudo: false }, force_linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'trusty', sudo: false }, linux_sudo_required: false, force_linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'trusty', sudo: true } },
-    { queue: 'builds.gce', config: { dist: 'xenial' }, linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'xenial' }, linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'xenial', script: 'sudo huh' } },
-    { queue: 'builds.gce', config: { dist: 'xenial', sudo: 'required' } },
-    { queue: 'builds.gce', config: { dist: 'xenial', sudo: false }, force_linux_sudo_required: true },
-    { queue: 'builds.gce', config: { dist: 'xenial', sudo: true } },
-  ].map { |qc| Support::Queues::QueueCase.new(qc) }.each do |c|
-    describe c.to_s do
-      before do
-        context.config.host = c.host
-        owner.stubs(:education?).returns(c.education?)
-      end
-
-      after do
-        context.config.host = 'travis-ci.org'
-      end
-
-      let(:config) { c.config }
-      let(:linux_sudo_required?) { c.linux_sudo_required? }
-      let(:force_linux_sudo_required?) { c.force_linux_sudo_required? }
-
-      it { expect(queue).to eq(c.queue) }
-    end
   end
 end
