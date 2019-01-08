@@ -10,7 +10,9 @@ module Travis
       class Limits < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        NAMES = %w(repo queue stages)
+        # These are ordered by how specific the limit is, from most specific to least.
+        # In other orders, we may apply a stricter limit than is intended.
+        NAMES = %w(stages repo queue)
 
         def accept(job)
           yield job if accept?(job)
