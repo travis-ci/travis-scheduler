@@ -521,7 +521,7 @@ describe Travis::Scheduler::Jobs::Select do
     before { create_jobs(1, private: true, stage: two, stage_number: '2.1', queue: 'builds.osx') }
 
     it { expect(selected.size).to eq 1 }
-    it { expect(reports).to include 'user svenfuchs limited by queue builds.osx: max=3 rejected=3 selected=1' }
+    it { expect(reports).to include 'user svenfuchs limited by queue builds.osx: max=3 rejected=2 selected=1' }
     it { expect(reports).to include 'user svenfuchs plan capacity: running=2 max=9999 selected=1' }
     it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=1 total_waiting=3 waiting_for_concurrency=0' }
   end
