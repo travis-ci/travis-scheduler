@@ -14,7 +14,7 @@ describe Travis::Scheduler::Jobs::Select do
   before { config[:limit][:trial] = nil }
   before { config[:limit][:public] = 3 }
   before { config[:limit][:default] = 1 }
-  before { config[:plans] = { one: 1, two: 2, four: 4, seven: 7, ten: 10 } }
+  before { config[:plans] = { one: 1, two: 2, four: 4, seven: 7, ten: 10, unlimited: 9999 } }
   before { config[:site] = 'com' }
 
   def create_jobs(count, attrs = {})
@@ -502,5 +502,27 @@ describe Travis::Scheduler::Jobs::Select do
         it { expect(selected[0].id).to eq Job.where(stage_number: '2.1').first.id }
       end
     end
+  end
+
+  describe 'with stages, an unlimited jobs plan, and a by_queue limit of 3 for the owner' do
+    env BY_QUEUE_NAME: 'builds.osx'
+    env BY_QUEUE_LIMIT: 'svenfuchs=3'
+
+    let(:one) { FactoryGirl.create(:stage, number: 1) }
+    let(:two) { FactoryGirl.create(:stage, number: 2) }
+
+    before { subscribe(:unlimited) }
+
+    before { create_jobs(1, private: true, stage: one, stage_number: '1.1', state: :started, queue: 'builds.osx') }
+    before { create_jobs(1, private: true, stage: one, stage_number: '1.2', state: :started, queue: 'builds.osx') }
+    before { create_jobs(1, private: true, stage: one, stage_number: '1.3', queue: 'builds.osx') }
+    before { create_jobs(1, private: true, stage: one, stage_number: '1.4', queue: 'builds.osx') }
+    before { create_jobs(1, private: true, stage: one, stage_number: '1.5', queue: 'builds.osx') }
+    before { create_jobs(1, private: true, stage: two, stage_number: '2.1', queue: 'builds.osx') }
+
+    it { expect(selected.size).to eq 1 }
+    it { expect(reports).to include 'user svenfuchs limited by queue builds.osx: max=3 rejected=3 selected=1' }
+    it { expect(reports).to include 'user svenfuchs plan capacity: running=2 max=9999 selected=1' }
+    it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=1 total_waiting=3 waiting_for_concurrency=0' }
   end
 end
