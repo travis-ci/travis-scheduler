@@ -26,7 +26,8 @@ module Travis
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
             enterprise: !!config[:enterprise],
-            prefer_https: !!config[:prefer_https]
+            prefer_https: !!config[:prefer_https],
+            keep_netrc: repo.keep_netrc?
           }
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?

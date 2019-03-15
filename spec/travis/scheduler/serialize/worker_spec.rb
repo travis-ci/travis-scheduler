@@ -98,7 +98,8 @@ describe Travis::Scheduler::Serialize::Worker do
         },
         cache_settings: s3,
         prefer_https: false,
-        enterprise: false
+        enterprise: false,
+        keep_netrc: true
       )
     end
 
@@ -267,7 +268,8 @@ describe Travis::Scheduler::Serialize::Worker do
         },
         cache_settings: s3,
         prefer_https: false,
-        enterprise: false
+        enterprise: false,
+        keep_netrc: true
       )
     end
 
@@ -332,6 +334,22 @@ describe Travis::Scheduler::Serialize::Worker do
         before { repo.update_attributes!(private: true) }
         include_examples 'includes an ssh key'
       end
+    end
+  end
+
+  describe 'keep_netrc' do
+    describe 'defaults to true' do
+      it { expect(data[:keep_netrc]).to be true }
+    end
+
+    describe 'preference set to true' do
+      before { repo.owner.update_attributes(preferences: { keep_netrc: true }) }
+      it { expect(data[:keep_netrc]).to be true }
+    end
+
+    describe 'preference set to false' do
+      before { repo.owner.update_attributes(preferences: { keep_netrc: false }) }
+      it { expect(data[:keep_netrc]).to be false }
     end
   end
 end
