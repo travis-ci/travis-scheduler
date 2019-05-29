@@ -61,7 +61,15 @@ module Travis
           time :read_queueable, key: 'scheduler.running_jobs'
 
           def read_queueable
-            Job.by_owners(owners.all).queueable.to_a
+            collection = Job.by_owners(owners.all).queueable.to_a
+            if Travis.config.com?
+              collection = collection.find_all { |job|
+                # we don't want to start migrated jobs if they are in the
+                # queueable state
+                !job.org_id || (job.restarted_at && job.restarted_at > job.repository.migrated_at)
+              }
+            end
+            collection
           end
           time :read_queueable, key: 'scheduler.queueable_jobs'
 
