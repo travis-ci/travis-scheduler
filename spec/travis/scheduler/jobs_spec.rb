@@ -75,14 +75,16 @@ describe Travis::Scheduler::Jobs::Select do
         # a job that was migrated from org, but restarted after migration, should
         # be counted towards running jobs
         before { create_jobs(1, private: true, state: :started, org_id: 11, restarted_at: Time.now) }
+        # a job that was migrated as queueable, shouldn't be queued
+        before { create_jobs(1, private: true, state: :created, org_id: 12) }
+        # a job that was migrated and restarted
+        before { create_jobs(1, private: true, state: :created, org_id: 13, restarted_at: Time.now) }
 
         it { expect(selected.size).to eq 2 }
         it { expect(reports).to include 'user svenfuchs capacities: public max=3, boost max=2' }
         it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
         it { expect(reports).to include 'user svenfuchs boost capacity: running=2 max=2 selected=0' }
-        it { expect(reports).to include 'user svenfuchs: queueable=4 running=3 selected=2 total_waiting=2 waiting_for_concurrency=2' }
-
-
+        it { expect(reports).to include 'user svenfuchs: queueable=5 running=3 selected=2 total_waiting=3 waiting_for_concurrency=3' }
       end
     end
 
