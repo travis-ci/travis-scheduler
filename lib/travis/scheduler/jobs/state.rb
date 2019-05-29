@@ -8,7 +8,7 @@ module Travis
         include Helper::Context, Helper::Metrics
 
         ATTRS = {
-          running:  %i(repository_id private queue),
+          running:  %i(repository_id private queue org_id restarted_at),
           by_build: %i(id state stage_number)
         }
 
@@ -43,7 +43,20 @@ module Travis
         private
 
           def read_running
-            Job.by_owners(owners.all).running.select(*ATTRS[:running]).to_a
+            collection = Job.by_owners(owners.all).running.select(*ATTRS[:running]).includes(:repository).to_a
+            if Travis.config.com?
+              collection = collection.find_all { |job|
+                # I think it's fine to filter running jobs after querying. usually
+                # it's not a good idea to do it in Ruby rather than SQL but jobs
+                # that might be rejected here will be rather rare - it's only for
+                # the purpose of not running migrated jobs. Doing it in SQL on the
+                # other hand would likely need an additional index and a join with
+                # repositories
+                #
+                !job.org_id || (job.restarted_at && job.restarted_at > job.repository.migrated_at)
+              }
+            end
+            collection
           end
           time :read_queueable, key: 'scheduler.running_jobs'
 

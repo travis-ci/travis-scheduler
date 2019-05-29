@@ -1,6 +1,6 @@
 describe Travis::Scheduler::Jobs::Select do
   let(:org)      { FactoryGirl.create(:org, login: 'travis-ci') }
-  let(:repo)     { FactoryGirl.create(:repo, owner: user) }
+  let(:repo)     { FactoryGirl.create(:repo, owner: user, migrated_at: 1.hour.ago) }
   let(:build)    { FactoryGirl.create(:build) }
   let(:user)     { FactoryGirl.create(:user, login: 'svenfuchs') }
   let(:owners)   { Travis::Owners.group({ owner_type: 'User', owner_id: user.id }, config.to_h) }
@@ -68,6 +68,22 @@ describe Travis::Scheduler::Jobs::Select do
       it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
       it { expect(reports).to include 'user svenfuchs boost capacity: running=1 max=2 selected=1' }
       it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=3 total_waiting=1 waiting_for_concurrency=1' }
+
+      describe 'with migrated jobs' do
+        # a job that was migrated from org, shouldn't count towards running jobs
+        before { create_jobs(1, private: true, state: :started, org_id: 10) }
+        # a job that was migrated from org, but restarted after migration, should
+        # be counted towards running jobs
+        before { create_jobs(1, private: true, state: :started, org_id: 11, restarted_at: Time.now) }
+
+        it { expect(selected.size).to eq 2 }
+        it { expect(reports).to include 'user svenfuchs capacities: public max=3, boost max=2' }
+        it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
+        it { expect(reports).to include 'user svenfuchs boost capacity: running=2 max=2 selected=0' }
+        it { expect(reports).to include 'user svenfuchs: queueable=4 running=3 selected=2 total_waiting=2 waiting_for_concurrency=2' }
+
+
+      end
     end
 
     describe 'with no queueable jobs' do
