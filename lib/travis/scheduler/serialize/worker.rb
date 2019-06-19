@@ -25,6 +25,7 @@ module Travis
             ssh_key: ssh_key.data,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
+            workspace_settings: workspace_settings,
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https]
           }
@@ -136,6 +137,12 @@ module Travis
 
           def cache_config
             config[:cache_settings] || {}
+          end
+
+          def workspace_settings
+            if (ws_config = config[:workspace_settings] || {}) && ws_config.key?(job.queue)
+              config[:workspace_settings][job.queue].to_h
+            end
           end
 
           def format_date(date)
