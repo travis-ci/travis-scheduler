@@ -141,7 +141,7 @@ module Travis
           end
 
           def workspace_settings
-            if (ws_config = config[:workspace_settings] || {}) && ws_config.key?(job.queue)
+            if (ws_config = config[:workspace_settings] || {}) && ws_config[job.queue]
               config[:workspace_settings][job.queue].to_h
             end
           end
