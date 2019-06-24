@@ -72,6 +72,10 @@ class Job < ActiveRecord::Base
     FINISHED_STATES.include?(state.try(:to_sym))
   end
 
+  def stage_number_parts
+    stage_number.split('.').map(&:to_i)
+  end
+
   def queueable=(value)
     if value
       queueable || create_queueable
