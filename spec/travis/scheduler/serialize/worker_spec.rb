@@ -48,7 +48,7 @@ describe Travis::Scheduler::Serialize::Worker do
         },
         env_vars: [
           { name: 'FOO', value: 'foo', public: false, branch: 'foo-(dev)' },
-          { name: 'BAR', value: 'bar', public: true , branch: '' }
+          { name: 'BAR', value: 'bar', public: true }
         ],
         job: {
           id: job.id,
@@ -214,7 +214,7 @@ describe Travis::Scheduler::Serialize::Worker do
           name: 'jobname',
         },
         env_vars: [
-          { name: 'BAR', value: 'bar', public: true, branch: '' }
+          { name: 'BAR', value: 'bar', public: true, branch: nil }
         ],
         job: {
           id: job.id,
