@@ -24,7 +24,7 @@ describe Travis::Scheduler::Serialize::Worker do
   let(:settings) do
     Repository::Settings.load({
       env_vars: [
-        { name: 'FOO', value: encrypted('foo') },
+        { name: 'FOO', value: encrypted('foo'), branch: 'foo-(dev)' },
         { name: 'BAR', value: encrypted('bar'), public: true }
       ],
       timeout_hard_limit: 180,
@@ -47,8 +47,8 @@ describe Travis::Scheduler::Serialize::Worker do
           name: 'jobname',
         },
         env_vars: [
-          { name: 'FOO', value: 'foo', public: false },
-          { name: 'BAR', value: 'bar', public: true }
+          { name: 'FOO', value: 'foo', public: false, branch: 'foo-(dev)' },
+          { name: 'BAR', value: 'bar', public: true , branch: '' }
         ],
         job: {
           id: job.id,
@@ -214,7 +214,7 @@ describe Travis::Scheduler::Serialize::Worker do
           name: 'jobname',
         },
         env_vars: [
-          { name: 'BAR', value: 'bar', public: true }
+          { name: 'BAR', value: 'bar', public: true, branch: '' }
         ],
         job: {
           id: job.id,
