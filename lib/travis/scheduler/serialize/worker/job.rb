@@ -62,7 +62,7 @@ module Travis
           private
 
             def env_var(var)
-              { name: var.name, value: var.value.decrypt, public: var.public, branch: var.branch.to_s }
+              { name: var.name, value: var.value.decrypt, public: var.public, branch: var.branch }
             end
 
             def has_secure_vars?(key)
