@@ -25,7 +25,7 @@ module Travis
             ssh_key: ssh_key.data,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
-            workspace_settings: workspace_settings,
+            workspace: workspace,
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
             keep_netrc: repo.keep_netrc?
@@ -140,9 +140,9 @@ module Travis
             config[:cache_settings] || {}
           end
 
-          def workspace_settings
-            if (ws_config = config[:workspace_settings] || {}) && ws_config[job.queue]
-              config[:workspace_settings][job.queue].to_h
+          def workspace
+            if (ws_config = config[:workspace] || {}) && ws_config[job.queue]
+              config[:workspace][job.queue].to_h
             end
           end
 
