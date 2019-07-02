@@ -1,5 +1,6 @@
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/metrics'
+require 'travis/support/filter_migrated_jobs'
 
 module Travis
   module Scheduler
@@ -20,6 +21,7 @@ module Travis
         require 'travis/scheduler/limit/state'
 
         include Helper::Context, Helper::Metrics
+        include FilterMigratedJobs
 
         LIMITS = [ByOwner, ByRepo, ByQueue, ByStage]
         attr_reader :waiting_by_owner
@@ -125,7 +127,9 @@ module Travis
           end
 
           def queueable
-            @queueable ||= Job.by_owners(owners.all).queueable.to_a
+            @queueable ||= begin
+              filter_migrated_jobs(Job.by_owners(owners.all).queueable.to_a)
+            end
           end
           time :queueable, key: 'scheduler.queueable_jobs'
 
