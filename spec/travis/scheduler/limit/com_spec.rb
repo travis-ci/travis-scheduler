@@ -1,6 +1,6 @@
 describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
   let(:org)      { FactoryGirl.create(:org, login: 'travis-ci') }
-  let(:repo)     { FactoryGirl.create(:repo, owner: owner) }
+  let(:repo)     { FactoryGirl.create(:repo, owner: owner, migrated_at: 1.hour.ago) }
   let(:build)    { FactoryGirl.create(:build) }
   let!(:owner)   { FactoryGirl.create(:user, login: 'svenfuchs') }
   let(:owners)   { Travis::Owners.group(data, config.to_h) }
@@ -114,6 +114,25 @@ describe Travis::Scheduler::Limit::Jobs, 'com (github apps)' do
       it { expect(report).to include('max jobs for user svenfuchs by plan: 2 (svenfuchs)') }
       it { expect(report).to include('user svenfuchs: total: 4, running: 2, queueable: 3') }
       it { expect(limit.waiting_by_owner).to eq 1 }
+    end
+
+    describe 'with migrated jobs' do
+      before { create_jobs(1, state: :started, private: false) }
+      before { create_jobs(1, state: :created, private: false) }
+
+      # a job that was migrated from org, shouldn't count towards running jobs
+      before { create_jobs(1, private: false, state: :started, org_id: 10) }
+      # a job that was migrated from org, but restarted after migration, should
+      # be counted towards running jobs
+      before { create_jobs(1, private: false, state: :started, org_id: 11, restarted_at: Time.now) }
+      # a job that was migrated as queueable, shouldn't be queued
+      before { create_jobs(1, private: false, state: :created, org_id: 12) }
+      # a job that was migrated and restarted
+      before { create_jobs(1, private: false, state: :created, org_id: 13, restarted_at: Time.now) }
+      before { run }
+
+      it { expect(selected).to eq 2 }
+      it { expect(report).to include('user svenfuchs: total: 2, running: 2, queueable: 2') }
     end
   end
 

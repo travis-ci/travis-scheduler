@@ -1,11 +1,13 @@
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/metrics'
+require 'travis/support/filter_migrated_jobs'
 
 module Travis
   module Scheduler
     module Jobs
       class State < Struct.new(:context, :owners)
         include Helper::Context, Helper::Metrics
+        include FilterMigratedJobs
 
         ATTRS = {
           running:  %i(repository_id private queue org_id restarted_at),
@@ -43,33 +45,13 @@ module Travis
         private
 
           def read_running
-            collection = Job.by_owners(owners.all).running.select(*ATTRS[:running]).includes(:repository).to_a
-            if Travis.config.com?
-              collection = collection.find_all { |job|
-                # I think it's fine to filter running jobs after querying. usually
-                # it's not a good idea to do it in Ruby rather than SQL but jobs
-                # that might be rejected here will be rather rare - it's only for
-                # the purpose of not running migrated jobs. Doing it in SQL on the
-                # other hand would likely need an additional index and a join with
-                # repositories
-                #
-                !job.org_id || (job.restarted_at && job.restarted_at > job.repository.migrated_at)
-              }
-            end
-            collection
+            result = Job.by_owners(owners.all).running.select(*ATTRS[:running]).includes(:repository).to_a
+            filter_migrated_jobs(result)
           end
           time :read_queueable, key: 'scheduler.running_jobs'
 
           def read_queueable
-            collection = Job.by_owners(owners.all).queueable.to_a
-            if Travis.config.com?
-              collection = collection.find_all { |job|
-                # we don't want to start migrated jobs if they are in the
-                # queueable state
-                !job.org_id || (job.restarted_at && job.restarted_at > job.repository.migrated_at)
-              }
-            end
-            collection
+            filter_migrated_jobs(Job.by_owners(owners.all).queueable.to_a)
           end
           time :read_queueable, key: 'scheduler.queueable_jobs'
 
