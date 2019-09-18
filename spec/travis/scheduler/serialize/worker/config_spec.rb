@@ -12,8 +12,9 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       let(:config) { { env: env, global_env: env } }
       let(:env)    { [{ secure: 'invalid' }] }
 
+      before { subject }
+
       it do
-        subject
         expect(config).to eql(
           env:        [{ secure: 'invalid' }],
           global_env: [{ secure: 'invalid' }]
@@ -21,12 +22,14 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    describe 'regular vars remain untouched' do
+    describe 'string vars' do
       let(:config) { { rvm: '1.8.7', env: 'FOO=foo', global_env: 'BAR=bar' } }
+      it { should eql(rvm: '1.8.7', env: ['FOO=foo'], global_env: ['BAR=bar']) }
+    end
 
-      it do
-        should eql(rvm: '1.8.7', env: ['FOO=foo'], global_env: ['BAR=bar'])
-      end
+    describe 'hash vars' do
+      let(:config) { { rvm: '1.8.7', env: { FOO: 'foo' }, global_env: { BAR: 'bar' } } }
+      it { should eql(rvm: '1.8.7', env: ['FOO=foo'], global_env: ['BAR=bar']) }
     end
 
     describe 'with a nil env' do
@@ -45,40 +48,28 @@ describe Travis::Scheduler::Serialize::Worker::Config do
 
     include_examples :common
 
-    describe 'decrypts env vars' do
+    describe 'decrypts env string vars' do
       let(:config) { { env: env, global_env: env } }
       let(:env)    { [encrypt('FOO=foo')] }
+      it { should eql env: ['SECURE FOO=foo'], global_env: ['SECURE FOO=foo'] }
+    end
 
-      it do
-        should eql(
-          env:        ['SECURE FOO=foo'],
-          global_env: ['SECURE FOO=foo']
-        )
-      end
+    describe 'decrypts env hash vars' do
+      let(:config) { { env: env, global_env: env } }
+      let(:env)    { [FOO: encrypt('foo')] }
+      it { should eql env: ['SECURE FOO=foo'], global_env: ['SECURE FOO=foo'] }
     end
 
     describe 'can mix secure and normal env vars' do
       let(:config) { { env: env, global_env: env } }
       let(:env)    { [encrypt('FOO=foo'), 'BAR=bar'] }
-
-      it do
-        should eql(
-          env:        ['SECURE FOO=foo', 'BAR=bar'],
-          global_env: ['SECURE FOO=foo', 'BAR=bar']
-        )
-      end
+      it { should eql env: ['SECURE FOO=foo', 'BAR=bar'], global_env: ['SECURE FOO=foo', 'BAR=bar'] }
     end
 
     describe 'normalizes env vars which are hashes to strings' do
       let(:config) { { env: env, global_env: env } }
       let(:env)    { [{ FOO: 'foo', BAR: 'bar' }, encrypt('BAZ=baz')] }
-
-      it do
-        should eql(
-          env:        ["FOO=foo BAR=bar", "SECURE BAZ=baz"],
-          global_env: ["FOO=foo BAR=bar", "SECURE BAZ=baz"]
-        )
-      end
+      it { should eql env: ['FOO=foo', 'BAR=bar', 'SECURE BAZ=baz'], global_env: ['FOO=foo', 'BAR=bar', 'SECURE BAZ=baz'] }
     end
   end
 
@@ -90,14 +81,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
     describe 'removes secure env vars' do
       let(:config) { { rvm: '1.8.7', env: env, global_env: env } }
       let(:env)    { ['FOO=foo', 'BAR=bar', encrypt('BAZ=baz')] }
-
-      it do
-        should eql(
-          rvm:        '1.8.7',
-          env:        ["FOO=foo", 'BAR=bar'],
-          global_env: ["FOO=foo", 'BAR=bar']
-        )
-      end
+      it { should eql rvm: '1.8.7', env: ["FOO=foo", 'BAR=bar'], global_env: ["FOO=foo", 'BAR=bar'] }
     end
   end
 
@@ -202,5 +186,4 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
   end
-
 end
