@@ -44,7 +44,7 @@ module Travis
               def decrypt_hash(vars)
                 vars.map do |key, value|
                   secure = false
-                  value = decryptor.decrypt(value) { |value| secure = value }
+                  value = decryptor.decrypt(value) { |value| secure = value } if decrypt?(value)
                   var = "#{key}=#{value}"
                   secure ? "SECURE #{var}" : var
                 end
@@ -56,6 +56,10 @@ module Travis
                 end
               rescue
                 {}
+              end
+
+              def decrypt?(value)
+                value.is_a?(Hash) || value.is_a?(String)
               end
 
               def to_vars(env)
