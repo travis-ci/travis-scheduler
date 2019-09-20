@@ -1,14 +1,16 @@
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/metrics'
+require 'travis/support/filter_migrated_jobs'
 
 module Travis
   module Scheduler
     module Jobs
       class State < Struct.new(:context, :owners)
         include Helper::Context, Helper::Metrics
+        include FilterMigratedJobs
 
         ATTRS = {
-          running:  %i(repository_id private queue),
+          running:  %i(repository_id private queue org_id restarted_at),
           by_build: %i(id state stage_number)
         }
 
@@ -43,12 +45,13 @@ module Travis
         private
 
           def read_running
-            Job.by_owners(owners.all).running.select(*ATTRS[:running]).to_a
+            result = Job.by_owners(owners.all).running.select(*ATTRS[:running]).includes(:repository).to_a
+            filter_migrated_jobs(result)
           end
           time :read_queueable, key: 'scheduler.running_jobs'
 
           def read_queueable
-            Job.by_owners(owners.all).queueable.to_a
+            filter_migrated_jobs(Job.by_owners(owners.all).queueable.to_a)
           end
           time :read_queueable, key: 'scheduler.queueable_jobs'
 
