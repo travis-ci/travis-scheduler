@@ -9,6 +9,9 @@ services:
 - redis
 - rabbitmq
 
+addons:
+  postgresql: 9.6
+
 env:
   matrix:
   - RAKE_TASK=spec
