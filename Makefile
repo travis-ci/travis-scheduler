@@ -29,7 +29,7 @@ docker-build:
 	$(DOCKER) build --build-arg bundle_gems__contribsys__com=$(BUNDLE_GEMS__CONTRIBSYS__COM) -t $(DOCKER_DEST) .
 
 .PHONY: docker-login
-docker-push:
+docker-login:
 	$(DOCKER) login -u=$(QUAY_ROBOT_HANDLE) -p=$(QUAY_ROBOT_TOKEN) $(QUAY)
 
 .PHONY: docker-latest-master
