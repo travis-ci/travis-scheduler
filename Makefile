@@ -9,15 +9,20 @@ QUAY_IMAGE ?= $(QUAY)/$(DOCKER_IMAGE_REPO)
 ifdef $$QUAY_ROBOT_HANDLE
 	QUAY_ROBOT_HANDLE := $$QUAY_ROBOT_HANDLE
 endif
+
 ifdef $$QUAY_ROBOT_TOKEN
 	QUAY_ROBOT_TOKEN := $$QUAY_ROBOT_TOKEN
 endif
+
 ifndef $$TRAVIS_BRANCH
 	TRAVIS_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 endif
+BRANCH = $(shell echo "$(TRAVIS_BRANCH)" | sed 's/\//_/')
+
 ifdef $$TRAVIS_PULL_REQUEST
 	TRAVIS_PULL_REQUEST := $$TRAVIS_PULL_REQUEST
 endif
+
 ifndef $$BUNDLE_GEMS__CONTRIBSYS__COM
 	BUNDLE_GEMS__CONTRIBSYS__COM ?= $$BUNDLE_GEMS__CONTRIBSYS__COM
 endif
@@ -32,32 +37,32 @@ docker-build:
 docker-login:
 	$(DOCKER) login -u=$(QUAY_ROBOT_HANDLE) -p=$(QUAY_ROBOT_TOKEN) $(QUAY)
 
-.PHONY: docker-latest-master
-docker-latest:
+.PHONY: docker-push-latest-master
+docker-push-latest-master:
 	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):$(VERSION_VALUE)
 	$(DOCKER) push $(QUAY_IMAGE):$(VERSION_VALUE)
 	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):latest
 	$(DOCKER) push $(QUAY_IMAGE):latest
 
-.PHONY: docker-pr
-docker-pr:
-	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):$(VERSION_VALUE)-PR
-	$(DOCKER) push $(QUAY_IMAGE):$(VERSION_VALUE)-PR
+.PHONY: docker-push-pull-request
+docker-push-pull-request:
+	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):$(VERSION_VALUE)-pull-request
+	$(DOCKER) push $(QUAY_IMAGE):$(VERSION_VALUE)-pull-request
 
-.PHONY: docker-branch
-docker-branch:
-	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):$(VERSION_VALUE)-$(TRAVIS_BRANCH)
-	$(DOCKER) push $(QUAY_IMAGE):$(VERSION_VALUE)-$(TRAVIS_BRANCH)
+.PHONY: docker-push-branch
+docker-push-branch:
+	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):$(VERSION_VALUE)-$(BRANCH)
+	$(DOCKER) push $(QUAY_IMAGE):$(VERSION_VALUE)-$(BRANCH)
 
 .PHONY: ship
 ship: docker-build docker-login
 
-ifeq ($(TRAVIS_BRANCH),master)
+ifeq ($(BRANCH),master)
 ifeq ($(TRAVIS_PULL_REQUEST),false)
-ship: docker-latest-master
+ship: docker-push-latest-master
 else
-ship: docker-pr
+ship: docker-push-pull-request
 endif
 else
-ship: docker-branch
+ship: docker-push-branch
 endif
