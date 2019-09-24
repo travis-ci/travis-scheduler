@@ -15,8 +15,8 @@ endif
 ifndef $$TRAVIS_BRANCH
 	TRAVIS_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 endif
-ifndef $$TRAVIS_PULL_REQUEST
-	TRAVIS_PULL_REQUEST ?= $$TRAVIS_PULL_REQUEST
+ifdef $$TRAVIS_PULL_REQUEST
+	TRAVIS_PULL_REQUEST := $$TRAVIS_PULL_REQUEST
 endif
 ifndef $$BUNDLE_GEMS__CONTRIBSYS__COM
 	BUNDLE_GEMS__CONTRIBSYS__COM ?= $$BUNDLE_GEMS__CONTRIBSYS__COM
@@ -28,20 +28,36 @@ DOCKER ?= docker
 docker-build:
 	$(DOCKER) build --build-arg bundle_gems__contribsys__com=$(BUNDLE_GEMS__CONTRIBSYS__COM) -t $(DOCKER_DEST) .
 
-.PHONY: docker-push
+.PHONY: docker-login
 docker-push:
 	$(DOCKER) login -u=$(QUAY_ROBOT_HANDLE) -p=$(QUAY_ROBOT_TOKEN) $(QUAY)
+
+.PHONY: docker-latest-master
+docker-latest:
 	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):$(VERSION_VALUE)
 	$(DOCKER) push $(QUAY_IMAGE):$(VERSION_VALUE)
-
-.PHONY: docker-latest
-docker-latest:
 	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):latest
 	$(DOCKER) push $(QUAY_IMAGE):latest
 
-.PHONY: ship
-ship: docker-build docker-push
+.PHONY: docker-pr
+docker-pr:
+	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):$(VERSION_VALUE)-PR
+	$(DOCKER) push $(QUAY_IMAGE):$(VERSION_VALUE)-PR
 
-ifeq ($(shell [[ $(TRAVIS_BRANCH) == master && $(TRAVIS_PULL_REQUEST) == false ]] ),true)
-ship: docker-latest
+.PHONY: docker-branch
+docker-branch:
+	$(DOCKER) tag $(DOCKER_DEST) $(QUAY_IMAGE):$(VERSION_VALUE)-$(TRAVIS_BRANCH)
+	$(DOCKER) push $(QUAY_IMAGE):$(VERSION_VALUE)-$(TRAVIS_BRANCH)
+
+.PHONY: ship
+ship: docker-build docker-login
+
+ifeq ($(TRAVIS_BRANCH),master)
+ifeq ($(TRAVIS_PULL_REQUEST),false)
+ship: docker-latest-master
+else
+ship: docker-pr
+endif
+else
+ship: docker-branch
 endif
