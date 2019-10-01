@@ -28,6 +28,7 @@ describe Travis::Queue do
       { queue: 'builds.mac_beta', osx_image: 'beta' },
       { queue: 'builds.new-foo', language: 'foo', percentage: percent },
       { queue: 'builds.old-foo', language: 'foo' },
+      { queue: 'builds.arm64-lxd', arch: 'arm64' },
       { queue: 'builds.power', arch: 'ppc64le' },
     ]
   end
@@ -151,7 +152,28 @@ describe Travis::Queue do
 
     describe 'arch: ppc64le' do
       let(:config) { { arch: 'ppc64le' } }
-      it { expect(queue).to eq 'builds.power' }
+
+      context 'when repo is public' do
+        it { expect(queue).to eq 'builds.power' }
+      end
+
+      context 'when repo is private' do
+        let(:job) { FactoryGirl.build(:job, config: config, owner: owner, repository: repo, private: true) }
+        it { expect(queue).to eq 'builds.power' }
+      end
+    end
+
+    describe 'arch: arm64' do
+      let(:config) { { arch: 'arm64' } }
+
+      context 'when repo is public' do
+        it { expect(queue).to eq 'builds.arm64-lxd' }
+      end
+
+      context 'when repo is private' do
+        let(:job) { FactoryGirl.build(:job, config: config, owner: owner, repository: repo, private: true) }
+        it { expect(queue).to eq 'builds.default' }
+      end
     end
   end
 
