@@ -18,4 +18,4 @@ RUN bundle config https://gems.contribsys.com/ $bundle_gems__contribsys__com \
 
 COPY . /app
 
-CMD ["bundle", "exec", "je", "bin/sidekiq-pgbouncer", "${SIDEKIQ_CONCURRENCY:-5}", "${SIDEKIQ_QUEUE:-scheduler}"]
+CMD bundle exec je bin/sidekiq-pgbouncer ${SIDEKIQ_CONCURRENCY:-5} ${SIDEKIQ_QUEUE:-scheduler}
