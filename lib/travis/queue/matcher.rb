@@ -8,6 +8,8 @@ module Travis
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
       }
 
+      OSS_ONLY_ARCH = %w(arm64)
+
       def matches?(attrs)
         check_unknown_matchers(attrs.keys)
         matches = matches_for(attrs)
@@ -69,6 +71,8 @@ module Travis
         end
 
         def arch
+          return nil if job.private? && OSS_ONLY_ARCH.include?(job.config[:arch])
+
           job.config[:arch]
         end
 
