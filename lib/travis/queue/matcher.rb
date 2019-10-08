@@ -8,7 +8,7 @@ module Travis
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
       }
 
-      OSS_ONLY_ARCH = %w(arm64)
+      OSS_ONLY_ARCH = %w(arm64 ppc64le)
 
       def matches?(attrs)
         check_unknown_matchers(attrs.keys)

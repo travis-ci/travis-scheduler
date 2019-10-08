@@ -159,7 +159,7 @@ describe Travis::Queue do
 
       context 'when repo is private' do
         let(:job) { FactoryGirl.build(:job, config: config, owner: owner, repository: repo, private: true) }
-        it { expect(queue).to eq 'builds.power' }
+        it { expect(queue).to eq 'builds.default' }
       end
     end
 
