@@ -30,7 +30,6 @@ describe Travis::Queue do
       { queue: 'builds.old-foo', language: 'foo' },
       { queue: 'builds.arm64-lxd', arch: 'arm64' },
       { queue: 'builds.power', arch: 'ppc64le' },
-      { queue: 'builds.z', arch: 's390x' },
     ]
   end
 
@@ -149,19 +148,6 @@ describe Travis::Queue do
     describe 'arch: amd64' do
       let(:config) { { arch: 'amd64' } }
       it { expect(queue).to eq 'builds.default' }
-    end
-
-    describe 'arch: s390x' do
-      let(:config) { { arch: 's390x' } }
-
-      context 'when repo is public' do
-        it { expect(queue).to eq 'builds.z' }
-      end
-
-      context 'when repo is private' do
-        let(:job) { FactoryGirl.build(:job, config: config, owner: owner, repository: repo, private: true) }
-        it { expect(queue).to eq 'builds.default' }
-      end
     end
 
     describe 'arch: ppc64le' do
