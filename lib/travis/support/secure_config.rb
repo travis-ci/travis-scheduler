@@ -61,8 +61,7 @@ module Travis
           Travis.logger.error("Can not decrypt secure config value: #{value.inspect[0..10]} using key: #{key.inspect[0..10]}")
         end
       rescue OpenSSL::PKey::RSAError => e
-        # Travis.logger.error("Error during decrypting secure config value: #{e.message}")
-        value
+        '[unable to decrypt]'
       end
 
       def secure_key?(key)
