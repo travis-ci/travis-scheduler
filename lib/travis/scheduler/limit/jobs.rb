@@ -68,7 +68,7 @@ module Travis
             queueable.each_with_index do |job, index|
               case check(job)
               when :limited
-                # The rest of the jobs will definitely be waiting for 
+                # The rest of the jobs will definitely be waiting for
                 # concurrency, regardless of other limits that might apply
                 @waiting_by_owner += queueable.length - index
                 break

@@ -104,21 +104,21 @@ describe Travis::Scheduler::Jobs::Select do
       before { create_jobs(1, private: true, state: :started) }
       before { create_jobs(5, private: true) }
 
-      it { expect(selected.size).to eq 1 }
-      it { expect(reports).to include 'user svenfuchs capacities: public max=3, plan max=2' }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=1 max=2 selected=1' }
-      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=1 total_waiting=4 waiting_for_concurrency=4' }
+      it { expect(selected.size).to eq 2 }
+      it { expect(reports).to include 'user svenfuchs capacities: public max=3, plan max=3' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=1 max=3 selected=2' }
+      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=2 total_waiting=3 waiting_for_concurrency=3' }
     end
 
     describe 'with public jobs only' do
       before { create_jobs(1, private: false, state: :started) }
       before { create_jobs(5, private: false) }
 
-      it { expect(selected.size).to eq 4 }
-      it { expect(reports).to include 'user svenfuchs capacities: public max=3, plan max=2' }
+      it { expect(selected.size).to eq 5 }
+      it { expect(reports).to include 'user svenfuchs capacities: public max=3, plan max=3' }
       it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=0 max=2 selected=2' }
-      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=4 total_waiting=1 waiting_for_concurrency=1' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=0 max=3 selected=3' }
+      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=5 total_waiting=0 waiting_for_concurrency=0' }
     end
 
     describe 'for mixed public and private jobs' do
@@ -126,11 +126,11 @@ describe Travis::Scheduler::Jobs::Select do
       before { create_jobs(1, private: false, state: :started) }
       before { create_jobs(2, private: false) + create_jobs(2, private: true) }
 
-      it { expect(selected.size).to eq 3 }
-      it { expect(reports).to include 'user svenfuchs capacities: public max=3, plan max=2' }
+      it { expect(selected.size).to eq 4 }
+      it { expect(reports).to include 'user svenfuchs capacities: public max=3, plan max=3' }
       it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=1 max=2 selected=1' }
-      it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=3 total_waiting=1 waiting_for_concurrency=1' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=1 max=3 selected=2' }
+      it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=4 total_waiting=0 waiting_for_concurrency=0' }
     end
   end
 
@@ -250,19 +250,19 @@ describe Travis::Scheduler::Jobs::Select do
       before { create_jobs(1, private: true, state: :started) }
       before { create_jobs(5, private: true) }
 
-      it { expect(selected.size).to eq 1 }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=1 max=2 selected=1' }
-      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=1 total_waiting=4 waiting_for_concurrency=4' }
+      it { expect(selected.size).to eq 2 }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=1 max=3 selected=2' }
+      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=2 total_waiting=3 waiting_for_concurrency=3' }
     end
 
     describe 'with public jobs only' do
       before { create_jobs(1, private: false, state: :started) }
       before { create_jobs(5, private: false) }
 
-      it { expect(selected.size).to eq 4 }
+      it { expect(selected.size).to eq 5 }
       it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=0 max=2 selected=2' }
-      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=4 total_waiting=1 waiting_for_concurrency=1' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=0 max=3 selected=3' }
+      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=5 total_waiting=0 waiting_for_concurrency=0' }
     end
 
     describe 'for mixed public and private jobs' do
@@ -270,10 +270,10 @@ describe Travis::Scheduler::Jobs::Select do
       before { create_jobs(1, private: false, state: :started) }
       before { create_jobs(2, private: false) + create_jobs(2, private: true) }
 
-      it { expect(selected.size).to eq 3 }
+      it { expect(selected.size).to eq 4 }
       it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=1 max=2 selected=1' }
-      it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=3 total_waiting=1 waiting_for_concurrency=1' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=1 max=3 selected=2' }
+      it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=4 total_waiting=0 waiting_for_concurrency=0' }
     end
   end
 
@@ -399,7 +399,7 @@ describe Travis::Scheduler::Jobs::Select do
 
       it { expect(selected.size).to eq 3 }
       it { expect(reports).to include 'user svenfuchs limited by queue builds.osx: max=3 rejected=7 selected=2' }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=2 max=10 selected=3' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=2 max=11 selected=3' }
       it { expect(reports).to include 'user svenfuchs: queueable=10 running=2 selected=3 total_waiting=7 waiting_for_concurrency=0' }
     end
 
@@ -412,7 +412,7 @@ describe Travis::Scheduler::Jobs::Select do
       it { expect(selected.size).to eq 3 }
       it { expect(reports).to include 'user svenfuchs limited by queue builds.osx: max=3 rejected=7 selected=2' }
       it { expect(reports).to include 'user svenfuchs public capacity: running=2 max=3 selected=1' }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=0 max=10 selected=2' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=0 max=11 selected=2' }
       it { expect(reports).to include 'user svenfuchs: queueable=10 running=2 selected=3 total_waiting=7 waiting_for_concurrency=0' }
     end
 
@@ -427,7 +427,7 @@ describe Travis::Scheduler::Jobs::Select do
       it { expect(selected.size).to eq 4 }
       it { expect(reports).to include 'user svenfuchs limited by queue builds.osx: max=3 rejected=6 selected=2' }
       it { expect(reports).to include 'user svenfuchs public capacity: running=0 max=3 selected=1' }
-      it { expect(reports).to include 'user svenfuchs plan capacity: running=2 max=10 selected=3' }
+      it { expect(reports).to include 'user svenfuchs plan capacity: running=2 max=11 selected=3' }
       it { expect(reports).to include 'user svenfuchs: queueable=10 running=2 selected=4 total_waiting=6 waiting_for_concurrency=0' }
     end
 
