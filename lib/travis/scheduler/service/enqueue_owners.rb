@@ -1,5 +1,3 @@
-require 'travis/rollout'
-require 'travis/scheduler/limit/jobs'
 require 'travis/owners'
 
 module Travis
@@ -44,19 +42,9 @@ module Travis
           time :enqueue
 
           def limit
-            if jobs?
-              Jobs::Select.new(context, owners)
-            else
-              Limit::Jobs.new(context, owners)
-            end
+            Jobs::Select.new(context, owners)
           end
           memoize :limit
-
-          def jobs?
-            owners.any? do |owner|
-              Rollout.matches?(:jobs, uid: owner.uid, owner: owner.login)
-            end
-          end
 
           def owners
             @owners ||= Owners.group(data, config.to_h)

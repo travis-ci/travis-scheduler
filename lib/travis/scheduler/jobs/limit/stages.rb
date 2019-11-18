@@ -1,3 +1,5 @@
+require 'travis/scheduler/model/stages'
+
 module Travis
   module Scheduler
     module Jobs
