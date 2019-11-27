@@ -132,7 +132,11 @@ module Travis
           end
 
           def cache_settings
-            cache_config[job.queue].to_h if cache_config[job.queue]
+            if cache_config[job.queue]
+              cache_config[job.queue].to_h
+            elsif cache_config['default']
+              cache_config['default'].to_h
+            end
           end
 
           def cache_config
@@ -142,6 +146,8 @@ module Travis
           def workspace
             if (ws_config = config[:workspace] || {}) && ws_config[job.queue]
               config[:workspace][job.queue].to_h
+            elsif (ws_config = config[:workspace] || {}) && ws_config['default']
+              config[:workspace]['default'].to_h
             end
           end
 
