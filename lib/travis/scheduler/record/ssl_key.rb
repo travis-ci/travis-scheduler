@@ -9,12 +9,10 @@ class SslKey < ActiveRecord::Base
   end
 
   def encrypt(string)
-    key.public_encrypt(string, OpenSSL::PKey::RSA::PKCS1_OAEP_PADDING)
+    key.public_encrypt(string)
   end
 
   def decrypt(string)
-    key.private_decrypt(string, OpenSSL::PKey::RSA::PKCS1_OAEP_PADDING)
-  rescue OpenSSL::PKey::RSAError
     key.private_decrypt(string)
   end
 
