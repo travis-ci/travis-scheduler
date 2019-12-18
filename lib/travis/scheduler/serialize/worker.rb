@@ -79,6 +79,8 @@ module Travis
             compact(
               id: repo.id,
               github_id: repo.github_id,
+              vcs_id: repo.github_id,
+              vcs_type: repo.vcs_type,
               installation_id: repo.installation_id,
               private: repo.private?,
               slug: repo.slug,

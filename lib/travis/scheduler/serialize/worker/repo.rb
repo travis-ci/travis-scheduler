@@ -11,7 +11,7 @@ module Travis
             :last_build_id, :last_build_number, :last_build_started_at,
             :last_build_finished_at, :last_build_duration, :last_build_state,
             :default_branch, :description, :key, :settings, :private?,
-            :managed_by_app?, :installation
+            :managed_by_app?, :installation, :vcs_id, :vcs_type
 
           def vm_type
             Features.active?(:premium_vms, repo) ? :premium : :default
