@@ -1,12 +1,17 @@
 language: ruby
 
-rvm: 2.4.2
-
 import:
   - travis-ci/build-configs:db-setup.yml
 
-cache:
-  bundler: true
+rvm: 2.4.2
+
+cache: bundler
+
+addons:
+  apt:
+    packages:
+      - rabbitmq-server
+
 
 services:
 - redis
