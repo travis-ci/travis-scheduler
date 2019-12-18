@@ -1,9 +1,9 @@
 language: ruby
-dist: trusty
+
 rvm: 2.4.2
 
 import:
-  - travis-ci/build-configs:db-setup.yml@postgres-9.6
+  - travis-ci/build-configs:db-setup.yml
 
 cache:
   bundler: true
