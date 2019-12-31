@@ -64,6 +64,7 @@ module Travis
 
             # TODO use vcs service
             def source_host
+              Travis.logger.info("SOURCE HOST #{vcs_type}, repo: #{repo.inspect}, vcs_type == 'BitbucketRepository' #{vcs_type == 'BitbucketRepository'}")
               return 'bitbucket.com' if vcs_type == 'BitbucketRepository'
               config[:github][:source_host] || 'github.com'
             end
