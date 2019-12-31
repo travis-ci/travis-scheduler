@@ -81,6 +81,7 @@ module Travis
               github_id: repo.github_id,
               vcs_id: repo.github_id,
               vcs_type: repo.vcs_type,
+              url: repo.url,
               installation_id: repo.installation_id,
               private: repo.private?,
               slug: repo.slug,
@@ -95,7 +96,7 @@ module Travis
               last_build_duration: repo.last_build_duration,
               last_build_state: repo.last_build_state.to_s,
               default_branch: repo.default_branch,
-              description: repo.description
+              description: repo.description,
             )
           end
 
