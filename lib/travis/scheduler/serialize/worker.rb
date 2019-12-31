@@ -79,7 +79,7 @@ module Travis
             compact(
               id: repo.id,
               github_id: repo.github_id,
-              vcs_id: repo.github_id,
+              vcs_id: repo.vcs_id,
               vcs_type: repo.vcs_type,
               url: repo.url,
               installation_id: repo.installation_id,
