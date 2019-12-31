@@ -62,7 +62,9 @@ module Travis
               "https://#{source_host}/#{slug}.git"
             end
 
+            # TODO use vcs service
             def source_host
+              return 'bitbucket.com' if repo.vcs_type == 'BitbucketRepository'
               config[:github][:source_host] || 'github.com'
             end
         end
