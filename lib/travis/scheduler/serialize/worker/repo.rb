@@ -55,7 +55,7 @@ module Travis
             end
 
             def force_private?
-              source_host.not_in?('github.com', 'bitbucket.com')
+               %w[github.com bitbucket.com].exclude?(source_host)
             end
 
             def source_http_url
