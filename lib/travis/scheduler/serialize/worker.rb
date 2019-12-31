@@ -130,7 +130,9 @@ module Travis
             @ssh_key ||= SshKey.new(repo, job, config)
           end
 
+          #TODO vcs service
           def source_host
+            return 'bitbucket.com' if repo.vcs_type == 'BitbucketRepository'
             config[:github][:source_host] || 'github.com'
           end
 
