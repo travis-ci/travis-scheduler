@@ -1,4 +1,5 @@
 require 'forwardable'
+require 'travis/remote_vcs/repository'
 
 module Travis
   module Scheduler
@@ -55,18 +56,25 @@ module Travis
             end
 
             def force_private?
-               %w[github.com bitbucket.com].exclude?(source_host)
+              if vcs_source_host['host_name']
+                return vcs_source_host['host_name'] != source_host
+              end
+              source_host != 'github.com'
             end
 
             def source_http_url
+              Travis.logger.info "XXX source_http_url #{source_host}"
               "https://#{source_host}/#{slug}.git"
             end
 
-            # TODO use vcs service
             def source_host
-              Travis.logger.info("SOURCE HOST #{vcs_type}, repo: #{repo.inspect}, vcs_type == 'BitbucketRepository' #{vcs_type == 'BitbucketRepository'}")
-              return 'bitbucket.com' if vcs_type == 'BitbucketRepository'
-              config[:github][:source_host] || 'github.com'
+              vcs_source_host['host_name'] || config[:github][:source_host] || 'github.com'
+            end
+
+            def vcs_source_host
+              @vcs_source_host ||= Travis::RemoteVCS::Repository.new(config).meta(id)
+            rescue
+              {}
             end
         end
       end
