@@ -14,6 +14,8 @@ module Travis
       attr_reader :config
 
       def connection
+        raise StandardError unless config[:vcs][:url] && config[:vcs][:token]
+
         @connection ||= ::Faraday.new(http_options.merge(url: config[:vcs][:url])) do |c|
           c.request :authorization, :token, config[:vcs][:token]
           c.request :retry, max: 5, interval: 0.1, backoff_factor: 2

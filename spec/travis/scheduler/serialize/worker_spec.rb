@@ -78,7 +78,7 @@ describe Travis::Scheduler::Serialize::Worker do
         repository: {
           id: repo.id,
           github_id: 549743,
-          vcs_id: 549743,
+          vcs_id: '549743',
           vcs_type: 'GithubRepository',
           private: false,
           slug: 'svenfuchs/gem-release',
@@ -250,7 +250,7 @@ describe Travis::Scheduler::Serialize::Worker do
         repository: {
           id: repo.id,
           github_id: 549743,
-          vcs_id: 549743,
+          vcs_id: '549743',
           vcs_type: 'GithubRepository',
           private: false,
           slug: 'svenfuchs/gem-release',
