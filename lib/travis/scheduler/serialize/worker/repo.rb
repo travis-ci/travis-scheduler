@@ -63,7 +63,6 @@ module Travis
             end
 
             def source_http_url
-              Travis.logger.info "XXX source_http_url #{source_host}"
               "https://#{source_host}/#{slug}.git"
             end
 
