@@ -220,6 +220,7 @@ DEPENDENCIES
   concurrent-ruby
   database_cleaner (~> 1.7)
   factory_girl (~> 4.7.0)
+  faraday
   gh!
   jemalloc
   libhoney
@@ -248,4 +249,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.16.1
+   1.17.3
