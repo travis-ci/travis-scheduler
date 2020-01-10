@@ -18,12 +18,18 @@ class Repository < ActiveRecord::Base
   end
 
   def settings
-    @settings ||= Repository::Settings.load(super, repository_id: id).tap do |s|
+    @settings ||= build_settings(super).tap do |s|
       s.on_save do
         self.settings = s.to_json
         self.save!
       end
     end
+  end
+
+  def build_settings(main)
+    Repository::Settings.load(main, repository_id: id)
+  rescue
+    Repository::Settings.load(nil, repository_id: id)
   end
 end
 
