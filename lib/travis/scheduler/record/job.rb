@@ -1,6 +1,8 @@
 class JobConfig < ActiveRecord::Base
   def config=(config)
-    super rescue nil
+    self.config_json = config if has_attribute?(:config_json)
+    super
+  rescue Encoding::UndefinedConversionError
   end
 end
 
@@ -85,7 +87,11 @@ class Job < ActiveRecord::Base
   end
 
   def config
-    config = super&.config || has_attribute?(:config) && read_attribute(:config) || {}
+    record = super
+    config = record&.config_json if record.respond_to?(:config_json) # TODO remove once we've rolled over
+    config ||= record&.config
+    config ||= read_attribute(:config) if has_attribute?(:config)
+    config ||= {}
     config.deep_symbolize_keys!
   end
 
