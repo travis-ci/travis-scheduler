@@ -25,7 +25,7 @@ class Request < ActiveRecord::Base
     # false if Scheduler.config.enterprise is not true.
 
     # It's not the same repo PR if repo names don't match
-    return false if head_repo_vcs_id.to_i != repository.vcs_id.to_i
+    return false if head_repo_vcs_id.to_s != repository.vcs_id.to_s
     # It may not be the same repo if head_ref or head_sha are missing
     return false if head_ref.nil? or head_sha.nil?
     # It may not be same repo PR if ref is a commit
