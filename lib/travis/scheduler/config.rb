@@ -26,7 +26,7 @@ module Travis
              site:       ENV['TRAVIS_SITE'] || 'org',
              ssl:        { },
              job_board:  { url: ENV['JOB_BOARD_URL'] || 'https://job-board.travis-ci.org', auth: ENV['JOB_BOARD_AUTH'] || 'user:pass' },
-             vcs: { cache_ex: 600 }
+             vcs: {}
 
       def metrics
         # TODO fix keychain?
