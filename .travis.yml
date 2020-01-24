@@ -1,16 +1,11 @@
 language: ruby
-dist: trusty
-rvm: 2.4.2
 
 import:
   - travis-ci/build-configs:db-setup.yml
 
-cache:
-  bundler: true
+rvm: 2.4.2
 
-services:
-- redis
-- rabbitmq
+cache: bundler
 
 env:
   matrix:
@@ -18,7 +13,17 @@ env:
   global:
     secure: BdVC3OHqYcgePLrkKIk28Ewn/dxCYFf3Cx+Q8P+BCDj6UPJyRSbKmILBzuX96H5xhKmUFo0A/upUhJI9UUP9aXHO7MzRe04/c88QdO4wGacVUaIyB20S0pr262zbc/nA50K9cVgpmWc64n6uQR1tgM6ZyyBnBeXkLzCAOHPq99I=
 
-before_install: gem install bundler
+addons:
+  apt:
+    packages:
+      - rabbitmq-server
+
+services:
+- redis
+- rabbitmq
+
+before_install:
+  - 'gem install bundler:1.16.1'
 
 jobs:
  include:

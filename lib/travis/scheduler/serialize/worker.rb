@@ -9,6 +9,7 @@ module Travis
         require 'travis/scheduler/serialize/worker/request'
         require 'travis/scheduler/serialize/worker/repo'
         require 'travis/scheduler/serialize/worker/ssh_key'
+        require 'travis/remote_vcs/repository'
 
         def data
           data = {
@@ -80,6 +81,9 @@ module Travis
             compact(
               id: repo.id,
               github_id: repo.github_id,
+              vcs_id: repo.vcs_id,
+              vcs_type: repo.vcs_type,
+              url: repo.url,
               installation_id: repo.installation_id,
               private: repo.private?,
               slug: repo.slug,
@@ -94,7 +98,7 @@ module Travis
               last_build_duration: repo.last_build_duration,
               last_build_state: repo.last_build_state.to_s,
               default_branch: repo.default_branch,
-              description: repo.description
+              description: repo.description,
             )
           end
 
@@ -129,7 +133,7 @@ module Travis
           end
 
           def source_host
-            config[:github][:source_host] || 'github.com'
+            vcs_source_host['host_name'] || config[:github][:source_host] || 'github.com'
           end
 
           def cache_settings
@@ -165,6 +169,12 @@ module Travis
 
           def compact(hash)
             hash.reject { |_, value| value.nil? }
+          end
+
+          def vcs_source_host
+            @vcs_source_host ||= Travis::RemoteVCS::Repository.new(config).meta(repo.id)
+          rescue
+            {}
           end
       end
     end
