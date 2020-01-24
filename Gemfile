@@ -32,7 +32,6 @@ gem 'multi_json',         '~> 1.11'
 gem 'rack',               '>= 1.6.11'
 
 gem 'libhoney'
-gem 'faraday'
 
 group :development, :test do
   gem 'pry'

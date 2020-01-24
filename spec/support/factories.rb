@@ -27,8 +27,6 @@ FactoryGirl.define do
   factory :repository, aliases: [:repo] do
     name       'gem-release'
     github_id  549743
-    vcs_id     '549743'
-    vcs_type   "GithubRepository"
     owner      { User.first || FactoryGirl.create(:user) }
     owner_name { owner.login }
     key        { SslKey.create(public_key: REPO_KEY.public_key, private_key: REPO_KEY.to_pem) }
