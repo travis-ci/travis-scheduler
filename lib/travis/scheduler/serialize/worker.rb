@@ -33,7 +33,6 @@ module Travis
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
-          Travis.logger.info("MAIN DATA XXX #{data}")
           data
         end
 
@@ -104,7 +103,6 @@ module Travis
 
           def source_url
             # TODO move these things to Build
-            Travis.logger.info "XXX SOURCE URL FETCH #{repo.private? && ssh_key.custom?}"
             return repo.source_git_url if repo.private? && ssh_key.custom?
             repo.source_url
           end

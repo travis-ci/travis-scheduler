@@ -32,12 +32,10 @@ module Travis
           end
 
           def source_git_url
-            Travis.logger.info "XXX SOURCE git@#{source_host}:#{slug}.git"
             "git@#{source_host}:#{slug}.git"
           end
 
           def installation_id
-            Travis.logger.info "XXX INSTALLATION #{repo.managed_by_app? && repo.private} #{repo.installation}"
             repo.installation&.github_id if repo.managed_by_app? && repo.private
           end
 
@@ -74,8 +72,6 @@ module Travis
 
             def vcs_source_host
               @vcs_source_host ||= Travis::RemoteVCS::Repository.new(config).meta(id)
-              Travis.logger.info "XXX META #{@vcs_source_host}"
-              @vcs_source_host
             rescue
               {}
             end
