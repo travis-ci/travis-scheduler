@@ -34,6 +34,7 @@ jobs:
      services:
      addons:
      before_install: skip
+     before_script: skip
      install: skip
      script: make ship
      if: type = cron OR commit_message =~ /ship:docker/ OR env(SHIP_DOCKER) = true
