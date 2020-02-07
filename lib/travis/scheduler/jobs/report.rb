@@ -10,7 +10,7 @@ module Travis
       class Report < Struct.new(:owners, :state, :reports)
         include Helper::Memoize
 
-        WARN_QUEUE_SIZE = 10_000
+        WARN_QUEUE_SIZE = ENV.fetch('WARN_QUEUE_SIZE', 10_000).to_i
 
         MSGS = {
           default: '%s capacity for %s: total=%s running=%s accepted=%s',
