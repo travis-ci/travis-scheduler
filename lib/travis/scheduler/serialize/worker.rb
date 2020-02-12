@@ -121,14 +121,6 @@ module Travis
             config[:cache_settings] || {}
           end
 
-          def workspace
-            if (ws_config = config[:workspace] || {}) && ws_config[job.queue]
-              config[:workspace][job.queue].to_h
-            elsif (ws_config = config[:workspace] || {}) && ws_config['default']
-              config[:workspace]['default'].to_h
-            end
-          end
-
           def format_date(date)
             date && date.strftime('%Y-%m-%dT%H:%M:%SZ')
           end
