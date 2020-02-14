@@ -56,7 +56,7 @@ module Travis
 
           def warnings
             msgs = []
-            msgs << MSGS[:warn] % [owners.to_s, queue_size] if queue_size > WARN_QUEUE_SIZE
+            msgs << MSGS[:excess] % [owners.to_s, queue_size] if queue_size > WARN_QUEUE_SIZE
             msgs
           end
 
