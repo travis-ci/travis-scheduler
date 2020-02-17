@@ -29,7 +29,8 @@ module Travis
             workspace: workspace,
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
-            keep_netrc: repo.keep_netrc?
+            keep_netrc: repo.keep_netrc?,
+            secrets: job.secrets
           }
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?

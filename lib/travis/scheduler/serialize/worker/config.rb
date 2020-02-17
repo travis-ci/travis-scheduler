@@ -18,6 +18,24 @@ module Travis
               config = Normalize.new(config, options).jwt_sanitize
               config
             end
+
+            def secrets(config)
+              secrets = []
+              walk(config) { |obj| secrets << obj[:secure] if obj.key?(:secure) }
+              secrets
+            end
+
+            def walk(obj, &block)
+              case obj
+              when Hash
+                block.call(obj)
+                obj.each { |key, obj| [key, walk(obj, &block)] }.to_h
+              when Array
+                obj.each { |obj| walk(obj, &block) }
+              else
+                obj
+              end
+            end
           end
         end
       end

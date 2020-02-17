@@ -102,7 +102,8 @@ describe Travis::Scheduler::Serialize::Worker do
         workspace: s3,
         prefer_https: false,
         enterprise: false,
-        keep_netrc: true
+        keep_netrc: true,
+        secrets: []
       )
     end
 
@@ -275,7 +276,8 @@ describe Travis::Scheduler::Serialize::Worker do
         workspace: s3,
         prefer_https: false,
         enterprise: false,
-        keep_netrc: true
+        keep_netrc: true,
+        secrets: []
       )
     end
 
