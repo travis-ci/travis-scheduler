@@ -44,6 +44,16 @@ module Travis
             Config.decrypt(job.config, secure, full_addons: secure_env?, secure_env: secure_env?)
           end
 
+          def secrets
+            secrets = Config.secrets(job.config)
+            secrets.map { |str| decrypt(str) }.compact
+          end
+
+          def decrypt(str)
+            repository.key.decrypt(Base64.decode64(str))
+          rescue OpenSSL::PKey::RSAError => e
+          end
+
           def vm_config
             # we'll want to see out what kinds of vm_config sets we have and
             # then decide how to best map what to where. at this point that
