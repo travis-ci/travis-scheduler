@@ -1,8 +1,8 @@
 describe Travis::Scheduler::Serialize::Worker::Job do
   let(:request) { Request.new }
   let(:build)   { Build.new(request: request) }
-  let(:repository) { Repository.new }
-  let(:job)     { Job.new(source: build, config: config, repository: repository) }
+  let(:repo)    { FactoryGirl.create(:repository) }
+  let(:job)     { Job.new(source: build, config: config, repository: repo) }
   let(:config)  { {} }
   subject       { described_class.new(job) }
 
@@ -66,11 +66,34 @@ describe Travis::Scheduler::Serialize::Worker::Job do
         end
 
         context "when repository settings define a secure var" do
-          before { repository.settings.stubs(:has_secure_vars?).returns(true) }
+          before { repo.settings.stubs(:has_secure_vars?).returns(true) }
           it { expect(subject.secure_env_removed?).to eq(true) }
         end
       end
-
     end
+  end
+
+  describe 'secrets' do
+    let(:config) do
+      {
+        env: {
+          global: [
+            { secure: Base64.encode64(repo.key.encrypt('one')) },
+            { secure: Base64.encode64(repo.key.encrypt('two')) },
+            'FOO=foo'
+          ]
+        },
+        deploy: [
+          {
+            provider: 's3',
+            secret_access_token: {
+              secure: Base64.encode64(repo.key.encrypt('three'))
+            }
+          }
+        ]
+      }
+    end
+
+    it { expect(subject.secrets).to eq %w(one two three) }
   end
 end

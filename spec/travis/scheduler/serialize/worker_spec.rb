@@ -101,7 +101,8 @@ describe Travis::Scheduler::Serialize::Worker do
         cache_settings: s3,
         workspace: s3,
         prefer_https: false,
-        enterprise: false
+        enterprise: false,
+        secrets: []
       )
     end
 
@@ -273,7 +274,8 @@ describe Travis::Scheduler::Serialize::Worker do
         cache_settings: s3,
         workspace: s3,
         prefer_https: false,
-        enterprise: false
+        enterprise: false,
+        secrets: []
       )
     end
 
