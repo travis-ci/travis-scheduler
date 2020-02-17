@@ -1,4 +1,4 @@
-# Travis Scheduler [![Build Status](https://travis-ci.org/travis-ci/travis-scheduler.svg?branch=master)](https://travis-ci.org/travis-ci/travis-scheduler)
+# Travis Scheduler [![Build Status](https://travis-ci.com/travis-ci/travis-scheduler.svg?branch=master)](https://travis-ci.com/travis-ci/travis-scheduler)
 
 *Keeper of the limits*
 

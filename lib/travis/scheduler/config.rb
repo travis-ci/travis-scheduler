@@ -25,7 +25,8 @@ module Travis
              ping:       { interval: 5 * 60 },
              site:       ENV['TRAVIS_SITE'] || 'org',
              ssl:        { },
-             job_board:  { url: ENV['JOB_BOARD_URL'] || 'https://job-board.travis-ci.org', auth: ENV['JOB_BOARD_AUTH'] || 'user:pass' }
+             job_board:  { url: ENV['JOB_BOARD_URL'] || 'https://job-board.travis-ci.org', auth: ENV['JOB_BOARD_AUTH'] || 'user:pass' },
+             vcs: { cache_ex: 600 }
 
       def metrics
         # TODO fix keychain?

@@ -12,15 +12,15 @@ describe Travis::Scheduler::Service::Event do
   context do
     before { Travis::JobBoard.stubs(:post) }
     before { config.limit.delegate = { owner.login => org.login } }
-    before { config.limit.default = 1 }
+    before { config.limit.by_owner = { org.login => 1 } }
     before { service.run }
 
     it { expect(Job.first.state).to eq 'queued' }
 
-    it { expect(log).to include "Evaluating jobs for owner group: user svenfuchs, org travis-ci" }
+    it { expect(log).to include 'Evaluating jobs for owner group: user svenfuchs, org travis-ci' }
     it { expect(log).to include "enqueueing job #{Job.first.id} (svenfuchs/gem-release)" }
-    it { expect(log).to include "max jobs for user svenfuchs by default: 1" }
-    it { expect(log).to include "user svenfuchs, org travis-ci: total: 1, running: 0, queueable: 1" }
+    it { expect(log).to include 'user svenfuchs, org travis-ci capacities: public max=5, config max=1' }
+    it { expect(log).to include 'user svenfuchs, org travis-ci: queueable=1 running=0 selected=1 total_waiting=0 waiting_for_concurrency=0' }
   end
 
   describe 'owner group already locked' do

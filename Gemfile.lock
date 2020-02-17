@@ -157,7 +157,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     public_suffix (2.0.5)
-    rack (2.0.6)
+    rack (2.1.1)
     rack-protection (2.0.1)
       rack
     rake (11.3.0)
@@ -220,6 +220,7 @@ DEPENDENCIES
   concurrent-ruby
   database_cleaner (~> 1.7)
   factory_girl (~> 4.7.0)
+  faraday
   gh!
   jemalloc
   libhoney
@@ -248,4 +249,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.16.1
+   1.17.3
