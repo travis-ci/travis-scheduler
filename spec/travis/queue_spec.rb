@@ -17,6 +17,7 @@ describe Travis::Queue do
     context.config.queues = [
       { queue: 'builds.rails', slug: 'rails/rails' },
       { queue: 'builds.mac_osx', os: 'osx' },
+      { queue: 'builds.amd64-lxd', virt: 'lxd' },
       { queue: 'builds.gce', services: %w(docker) },
       { queue: 'builds.gce', dist: 'trusty' },
       { queue: 'builds.gce', dist: 'xenial' },
@@ -144,6 +145,29 @@ describe Travis::Queue do
       it { expect(queue).to eq 'builds.mac_beta' }
     end
   end
+
+  describe 'by job config :virt' do
+    describe 'virt: lxd' do
+      let(:config) { { virt: 'lxd' } }
+      it { expect(queue).to eq 'builds.amd64-lxd' }
+    end
+
+    describe 'virt: vm' do
+      let(:config) { { virt: 'vm' } }
+      it { expect(queue).to eq 'builds.default' }
+    end
+
+    describe 'virt: vm, dist: xenial' do
+      let(:config) { { virt: 'lxd', dist: 'xenial' } }
+      it { expect(queue).to eq 'builds.amd64-lxd' }
+    end
+
+    describe 'no :virt config' do
+      let(:config) { { services: %w(redis docker postgresql) } }
+      it { expect(queue).to eq 'builds.gce' }
+    end
+  end
+
 
   describe 'by job config :arch' do
     describe 'arch: amd64' do
