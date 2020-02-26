@@ -27,3 +27,4 @@ RUN gem install --user-install executable-hooks
 COPY . /app
 
 CMD bundle exec je bin/sidekiq-pgbouncer ${SIDEKIQ_CONCURRENCY:-5} ${SIDEKIQ_QUEUE:-scheduler}
+
