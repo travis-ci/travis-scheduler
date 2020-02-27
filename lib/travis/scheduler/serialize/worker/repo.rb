@@ -56,9 +56,8 @@ module Travis
             end
 
             def force_private?
-              if vcs_source_host['host_name']
-                return vcs_source_host['host_name'] != source_host
-              end
+              return repo.vcs_source_host != source_host if repo.vcs_source_host
+
               source_host != 'github.com'
             end
 
@@ -67,13 +66,7 @@ module Travis
             end
 
             def source_host
-              vcs_source_host['host_name'] || config[:github][:source_host] || 'github.com'
-            end
-
-            def vcs_source_host
-              @vcs_source_host ||= Travis::RemoteVCS::Repository.new(config).meta(id)
-            rescue
-              {}
+              repo.vcs_source_host || config[:github][:source_host] || 'github.com'
             end
         end
       end

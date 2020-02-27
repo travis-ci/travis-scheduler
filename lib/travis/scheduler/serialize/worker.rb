@@ -133,7 +133,7 @@ module Travis
           end
 
           def source_host
-            vcs_source_host['host_name'] || config[:github][:source_host] || 'github.com'
+            repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           end
 
           def cache_settings
