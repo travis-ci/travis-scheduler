@@ -1,5 +1,4 @@
 language: ruby
-dist: bionic
 
 import:
   - travis-ci/build-configs:db-setup.yml
@@ -31,6 +30,7 @@ jobs:
    - stage: "testing time"
      script: bundle exec rspec spec
    - stage: ":ship: it to quay.io"
+     dist: bionic
      ruby:
      services:
      addons:
