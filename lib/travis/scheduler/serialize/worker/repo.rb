@@ -1,5 +1,4 @@
 require 'forwardable'
-require 'travis/remote_vcs/repository'
 
 module Travis
   module Scheduler
