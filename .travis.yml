@@ -27,6 +27,7 @@ jobs:
    - stage: "testing time"
      script: bundle exec rspec spec
    - stage: ":ship: it to quay.io"
+     dist: bionic
      ruby:
      services:
      addons:
