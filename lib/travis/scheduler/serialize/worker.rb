@@ -110,7 +110,11 @@ module Travis
           end
 
           def cache_settings
-            cache_config[job.queue].to_h if cache_config[job.queue]
+            if cache_config[job.queue]
+              cache_config[job.queue].to_h
+            elsif cache_config['default']
+              cache_config['default'].to_h
+            end
           end
 
           def cache_config
