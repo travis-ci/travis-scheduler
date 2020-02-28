@@ -19,7 +19,6 @@ gem 'marginalia', git: 'https://github.com/travis-ci/marginalia'
 
 gem 'cl'
 gem 'sidekiq-pro', require: 'sidekiq-pro', source: 'https://gems.contribsys.com'
-gem 'jemalloc'
 gem 'redis-namespace'
 gem 'activerecord',       '~> 4.2.7'
 gem 'bunny',              '~> 2.9.2'
