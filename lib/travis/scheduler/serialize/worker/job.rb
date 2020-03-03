@@ -50,7 +50,7 @@ module Travis
           end
 
           def decrypt(str)
-            repository.key.decrypt(Base64.decode64(str))
+            repository.key.decrypt(Base64.decode64(str)) if str.is_a?(String)
           rescue OpenSSL::PKey::RSAError => e
           end
 
