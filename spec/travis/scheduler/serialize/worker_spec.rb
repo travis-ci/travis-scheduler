@@ -202,7 +202,7 @@ describe Travis::Scheduler::Serialize::Worker do
     let(:ref)       { 'refs/pull/180/merge' }
     let(:pr_number) { 180 }
     let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '62aaef', 'repo' => {'full_name' => 'travis-ci/gem-release'} } } } }
-    let(:pull_request) { PullRequest.create(head_ref: 'head_branch', head_repo_slug: 'travis-ci/gem-release') }
+    let(:pull_request) { PullRequest.create(head_ref: 'head_branch', head_repo_slug: 'travis-ci/gem-release', title: 'Awesome pull request') }
 
     before { request.update_attributes(pull_request: pull_request, base_commit: '0cd9ff', head_commit: '62aaef') }
 
@@ -238,6 +238,7 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request_head_branch: 'head_branch',
           pull_request_head_sha: '62aaef',
           pull_request_head_slug: 'travis-ci/gem-release',
+          pull_request_title: 'Awesome pull request',
           allow_failure: allow_failure,
           stage_name: nil,
           name: 'jobname',
