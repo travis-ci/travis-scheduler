@@ -1,3 +1,4 @@
+
 require 'travis/scheduler/serialize/worker'
 
 describe Travis::Scheduler::Serialize::Worker do
@@ -276,10 +277,7 @@ describe Travis::Scheduler::Serialize::Worker do
         workspace: s3,
         prefer_https: false,
         enterprise: false,
-<<<<<<< HEAD
-=======
         keep_netrc: true,
->>>>>>> 901291fafaac75b7003f2d0646a5cea744235b5f
         secrets: []
       )
     end
