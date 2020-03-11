@@ -38,6 +38,10 @@ module Travis
             repo.installation&.github_id if repo.managed_by_app? && repo.private
           end
 
+          def keep_netrc?
+            repo.owner&.keep_netrc?
+          end
+
           private
 
             # If the repo does not have a custom timeout, look to the repo's
