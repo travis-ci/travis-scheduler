@@ -25,4 +25,20 @@ describe Repository do
       expect(repo.settings.to_hash).to eq(Repository::Settings.new(maximum_number_of_builds: 44).to_hash)
     end
   end
+
+  describe '#github?' do
+    subject { repo.github? }
+
+    context 'when repo is a github repository (default)' do
+      let(:repo) { FactoryGirl.create(:repository) }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when repo is not a github repository' do
+      let(:repo) { FactoryGirl.create(:repository, vcs_type: 'BitbucketRepository') }
+
+      it { is_expected.to be false }
+    end
+  end
 end
