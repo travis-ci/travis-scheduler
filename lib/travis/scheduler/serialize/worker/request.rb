@@ -21,6 +21,14 @@ module Travis
             pull_request ? pull_request.head_repo_slug : pull_request_head_repo['full_name']
           end
 
+          def pull_request_base_slug
+            pull_request ? pull_request.base_repo_slug : pull_request_base_repo['full_name']
+          end
+
+          def pull_request_base_ref
+            pull_request ? pull_request.base_ref : pull_request_head['base_ref']
+          end
+
           private
 
             # TODO remove once we've backfilled the pull_requests table
@@ -28,8 +36,16 @@ module Travis
               pull_request_head['repo'] || {}
             end
 
+            def pull_request_base_repo
+              pull_request_head['base'] || {}
+            end
+
             def pull_request_head
               payload && payload['pull_request'] && payload['pull_request']['head'] || {}
+            end
+
+            def pull_request_base
+              payload && payload['pull_request'] && payload['pull_request']['base'] || {}
             end
         end
       end
