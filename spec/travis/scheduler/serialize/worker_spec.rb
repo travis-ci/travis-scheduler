@@ -243,7 +243,7 @@ describe Travis::Scheduler::Serialize::Worker do
           name: 'jobname',
           pull_request_head_slug: 'travis-ci/gem-release',
           pull_request_base_slug: nil,
-          pull_request_based_ref: nil
+          pull_request_base_ref: nil
         },
         host: 'https://travis-ci.com',
         source: {

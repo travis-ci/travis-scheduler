@@ -72,7 +72,7 @@ module Travis
                 pull_request_head_sha:    request.pull_request_head_sha,
                 pull_request_head_slug:   request.pull_request_head_slug,
                 pull_request_base_slug:   request.pull_request_base_slug,
-                pull_request_based_ref:   request.pull_request_based_ref
+                pull_request_base_ref:    request.pull_request_base_ref
               )
             end
             data

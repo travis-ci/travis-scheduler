@@ -25,7 +25,7 @@ module Travis
             pull_request ? pull_request.base_repo_slug : pull_request_base_repo['full_name']
           end
 
-          def pull_request_based_ref
+          def pull_request_base_ref
             pull_request ? pull_request.base_ref : pull_request_head['base_ref']
           end
 
