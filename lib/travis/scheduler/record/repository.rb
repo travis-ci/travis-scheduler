@@ -25,6 +25,10 @@ class Repository < ActiveRecord::Base
       end
     end
   end
+
+  def github?
+    self.vcs_type == 'GithubRepository'
+  end
 end
 
 require 'travis/scheduler/record/repository/settings'
