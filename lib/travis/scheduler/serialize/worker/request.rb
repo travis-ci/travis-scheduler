@@ -22,7 +22,7 @@ module Travis
           end
 
           def pull_request_base_slug
-            pull_request ? pull_request.source_repo_slug : pull_request_base_repo['full_name']
+            pull_request ? pull_request.base_repo_slug : pull_request_base_repo['full_name']
           end
 
           private
