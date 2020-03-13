@@ -241,6 +241,9 @@ describe Travis::Scheduler::Serialize::Worker do
           allow_failure: allow_failure,
           stage_name: nil,
           name: 'jobname',
+          pull_request_head_slug: 'travis-ci/gem-release',
+          pull_request_base_slug: nil,
+          pull_request_base_ref: nil
         },
         host: 'https://travis-ci.com',
         source: {
