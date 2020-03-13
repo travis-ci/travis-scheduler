@@ -32,5 +32,38 @@ describe Request do
     describe 'returns false if repo data is not available' do
       it { expect(request.same_repo_pull_request?).to eq(false) }
     end
+
+    describe '#head_repo_vcs_id' do
+      subject { request.send(:head_repo_vcs_id) }
+
+      context 'when pull request does not exist' do
+        let(:pull_request) { nil }
+
+        it { is_expected.to be_nil }
+      end
+
+      context 'when pull request exists' do
+        let(:head_repo_github_id) { 123 }
+        let(:head_repo_vcs_id) { 'bitbucket123' }
+        let(:pull_request) do
+          FactoryGirl.build(
+            :pull_request, head_ref: head_ref, head_repo_github_id: head_repo_github_id,
+            head_repo_github_id: head_repo_github_id, head_repo_vcs_id: head_repo_vcs_id
+          )
+        end
+
+        context 'when repo is a github repository' do
+          it { is_expected.to eq(head_repo_github_id.to_s) }
+        end
+
+        context 'when repo is not a github repository' do
+          let(:repo) do
+            FactoryGirl.build(:repository, owner_name: 'travis-ci', name: 'travis-ci', vcs_type: 'BitbucketRepository')
+          end
+
+          it { is_expected.to eq(head_repo_vcs_id) }
+        end
+      end
+    end
   end
 end
