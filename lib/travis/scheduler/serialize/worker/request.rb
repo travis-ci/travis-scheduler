@@ -29,6 +29,10 @@ module Travis
             pull_request ? pull_request.base_ref : pull_request_head['base_ref']
           end
 
+          def pull_request_head_url(repo)
+            pull_request.head_url(repo) if pull_request
+          end
+
           private
 
             # TODO remove once we've backfilled the pull_requests table

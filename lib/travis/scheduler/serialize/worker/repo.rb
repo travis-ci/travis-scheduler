@@ -26,16 +26,24 @@ module Travis
           end
 
           def source_url
-            return source_http_url if Travis.config.prefer_https || managed_by_app?
-            (repo.private? || force_private?) ? source_git_url : source_http_url
+            git_url? ? source_git_url : source_http_url
           end
 
-          def source_git_url
-            "git@#{source_host}:#{slug}.git"
+          def source_git_url(repo_slug = nil)
+            "git@#{source_host}:#{repo_slug || slug}.git"
+          end
+
+          def source_http_url(repo_slug = nil)
+            "https://#{source_host}/#{repo_slug || slug}.git"
           end
 
           def installation_id
             repo.installation&.github_id if repo.managed_by_app? && repo.private
+          end
+
+          def git_url?
+            return false if Travis.config.prefer_https || managed_by_app?
+            (repo.private? || force_private?) ? true : false
           end
 
           private
@@ -58,10 +66,6 @@ module Travis
               return repo.vcs_source_host != source_host if repo.vcs_source_host
 
               source_host != 'github.com'
-            end
-
-            def source_http_url
-              "https://#{source_host}/#{slug}.git"
             end
 
             def source_host
