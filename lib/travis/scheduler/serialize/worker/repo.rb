@@ -26,6 +26,7 @@ module Travis
           end
 
           def source_url
+            return source_git_url unless github?
             return source_http_url if Travis.config.prefer_https || managed_by_app?
             (repo.private? || force_private?) ? source_git_url : source_http_url
           end
@@ -66,6 +67,10 @@ module Travis
 
             def source_host
               repo.vcs_source_host || config[:github][:source_host] || 'github.com'
+            end
+
+            def github?
+              rep.vcs_type == 'GithubRepository'
             end
         end
       end
