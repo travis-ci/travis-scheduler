@@ -7,7 +7,7 @@ class PullRequest < ActiveRecord::Base
   end
 
   def head_http_url(repo)
-    repository.source_http_url(head_repo_slug)
+    repo.source_http_url(head_repo_slug)
   end
 
   def head_url(repo)
