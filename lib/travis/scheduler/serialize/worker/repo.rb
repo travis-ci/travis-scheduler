@@ -51,6 +51,10 @@ module Travis
             (private || force_private?) ? true : false
           end
 
+          def github?
+            vcs_type == 'GtihubRepository'
+          end
+
           private
 
             # If the repo does not have a custom timeout, look to the repo's
