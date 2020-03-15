@@ -42,7 +42,11 @@ module Travis
           end
 
           def git_url?(private = nil)
+            puts "private #{private}"
             private = repo.private? if private.nil?
+            puts "private 1 #{private}"
+            puts "managed_by_app? #{managed_by_app?}"
+            puts "Travis.config.prefer_https #{Travis.config.prefer_https}"
             return false if Travis.config.prefer_https || managed_by_app?
             (private || force_private?) ? true : false
           end
