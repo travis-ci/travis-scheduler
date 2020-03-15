@@ -11,6 +11,7 @@ class PullRequest < ActiveRecord::Base
   end
 
   def head_url(repo)
+    puts "REPOSITORY IS #{repositoru}"
     repo.git_url? ? head_git_url(repo) : head_http_url(repo)
   end
 end
