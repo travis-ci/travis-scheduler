@@ -41,9 +41,10 @@ module Travis
             repo.installation&.github_id if repo.managed_by_app? && repo.private
           end
 
-          def git_url?
+          def git_url?(private = nil)
+            private = repo.private? if private.nil?
             return false if Travis.config.prefer_https || managed_by_app?
-            (repo.private? || force_private?) ? true : false
+            (private || force_private?) ? true : false
           end
 
           private
