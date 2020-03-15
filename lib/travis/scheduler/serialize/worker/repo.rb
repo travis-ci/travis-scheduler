@@ -26,7 +26,8 @@ module Travis
           end
 
           def source_url
-            git_url? ? source_git_url : source_http_url
+            return source_http_url if Travis.config.prefer_https || managed_by_app?
+            (repo.private? || force_private?) ? source_git_url : source_http_url
           end
 
           def source_git_url(repo_slug = nil)
@@ -41,18 +42,8 @@ module Travis
             repo.installation&.github_id if repo.managed_by_app? && repo.private
           end
 
-          def git_url?(private = nil)
-            puts "private #{private}"
-            private = repo.private? if private.nil?
-            puts "private 1 #{private}"
-            puts "managed_by_app? #{managed_by_app?}"
-            puts "Travis.config.prefer_https #{Travis.config.prefer_https}"
-            return false if Travis.config.prefer_https || managed_by_app?
-            (private || force_private?) ? true : false
-          end
-
           def github?
-            vcs_type == 'GtihubRepository'
+            vcs_type == 'GithubRepository'
           end
 
           private
