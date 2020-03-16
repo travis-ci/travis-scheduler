@@ -30,8 +30,12 @@ module Travis
             (repo.private? || force_private?) ? source_git_url : source_http_url
           end
 
-          def source_git_url
-            "git@#{source_host}:#{slug}.git"
+          def source_git_url(repo_slug = nil)
+            "git@#{source_host}:#{repo_slug || slug}.git"
+          end
+
+          def source_http_url(repo_slug = nil)
+            "https://#{source_host}/#{repo_slug || slug}.git"
           end
 
           def installation_id
@@ -40,6 +44,10 @@ module Travis
 
           def keep_netrc?
             repo.owner&.keep_netrc?
+          end
+          
+          def github?
+            vcs_type == 'GithubRepository'
           end
 
           private
@@ -62,10 +70,6 @@ module Travis
               return repo.vcs_source_host != source_host if repo.vcs_source_host
 
               source_host != 'github.com'
-            end
-
-            def source_http_url
-              "https://#{source_host}/#{slug}.git"
             end
 
             def source_host
