@@ -11,6 +11,7 @@ class PullRequest < ActiveRecord::Base
   end
 
   def head_url(repo)
+    return head_git_url(repo)
     head_repository = Repository.find_by(vcs_slug: head_repo_slug)
     head_repository&.private? ? head_git_url(repo) : head_http_url(repo)
   end
