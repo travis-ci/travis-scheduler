@@ -244,7 +244,7 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request_head_slug: 'travis-ci/gem-release',
           pull_request_base_slug: nil,
           pull_request_base_ref: nil,
-          pull_request_head_url: "https://github.com/travis-ci/gem-release.git",
+          pull_request_head_url: "git@github.com:travis-ci/gem-release.git",
         },
         host: 'https://travis-ci.com',
         source: {
