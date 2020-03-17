@@ -13,48 +13,40 @@ module Travis
       class Capacities < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        ANY = %i(boost config plan education trial)
+        ALL = %i(public boost config plan education trial)
 
         # TODO warn if no applicable :any capacity can be found
         def initialize(*)
           super
-          reduce(public, any)
+          reduce(*all)
         end
 
         def accept(job)
-          public.accept?(job) || any.try(:accept?, job)
+          all.detect { |capacity| capacity.accept?(job) }
         end
 
         def reports
-          active.map(&:reports).flatten
+          all.map(&:reports).flatten
         end
         memoize :reports
 
         def accepted
-          active.map(&:accepted).inject(&:+)
+          all.map(&:accepted).inject(&:+)
         end
 
         def exhausted?
-          active.all?(&:exhausted?)
+          all.all?(&:exhausted?)
         end
         memoize :exhausted
 
         def msg
-          "#{owners.to_s} capacities: #{active.map(&:to_s).join(', ')}"
+          "#{owners.to_s} capacities: #{all.map(&:to_s).join(', ')}"
         end
 
         private
 
-          def active
-            [public, any].compact
-          end
-
-          def public
-            @public ||= build(:public)
-          end
-
-          def any
-            @any ||= ANY.map { |name| build(name) }.detect(&:applicable?)
+          def all
+            @all ||= ALL.map { |name| build(name) }.select(&:applicable?)
           end
 
           def reduce(*all)
