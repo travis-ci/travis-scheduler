@@ -6,7 +6,7 @@ class Repository < ActiveRecord::Base
   has_many :users, :through => :permissions
 
   def slug
-    @slug ||= [owner_name, name].join('/')
+    @slug ||= vcs_slug || [owner_name, name].join('/')
   end
 
   def managed_by_app?
@@ -24,6 +24,10 @@ class Repository < ActiveRecord::Base
         self.save!
       end
     end
+  end
+
+  def github?
+    self.vcs_type == 'GithubRepository'
   end
 end
 

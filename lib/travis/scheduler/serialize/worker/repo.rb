@@ -1,5 +1,4 @@
 require 'forwardable'
-require 'travis/remote_vcs/repository'
 
 module Travis
   module Scheduler
@@ -12,7 +11,7 @@ module Travis
             :last_build_id, :last_build_number, :last_build_started_at,
             :last_build_finished_at, :last_build_duration, :last_build_state,
             :default_branch, :description, :key, :settings, :private?,
-            :managed_by_app?, :installation, :vcs_id, :vcs_type, :url
+            :managed_by_app?, :installation, :vcs_id, :vcs_type, :url, :vcs_source_host
 
           def vm_type
             Features.active?(:premium_vms, repo) ? :premium : :default
@@ -31,12 +30,20 @@ module Travis
             (repo.private? || force_private?) ? source_git_url : source_http_url
           end
 
-          def source_git_url
-            "git@#{source_host}:#{slug}.git"
+          def source_git_url(repo_slug = nil)
+            "git@#{source_host}:#{repo_slug || slug}.git"
+          end
+
+          def source_http_url(repo_slug = nil)
+            "https://#{source_host}/#{repo_slug || slug}.git"
           end
 
           def installation_id
             repo.installation&.github_id if repo.managed_by_app? && repo.private
+          end
+
+          def github?
+            vcs_type == 'GithubRepository'
           end
 
           private
@@ -56,24 +63,13 @@ module Travis
             end
 
             def force_private?
-              if vcs_source_host['host_name']
-                return vcs_source_host['host_name'] != source_host
-              end
+              return repo.vcs_source_host != source_host if repo.vcs_source_host
+
               source_host != 'github.com'
             end
 
-            def source_http_url
-              "https://#{source_host}/#{slug}.git"
-            end
-
             def source_host
-              vcs_source_host['host_name'] || config[:github][:source_host] || 'github.com'
-            end
-
-            def vcs_source_host
-              @vcs_source_host ||= Travis::RemoteVCS::Repository.new(config).meta(id)
-            rescue
-              {}
+              repo.vcs_source_host || config[:github][:source_host] || 'github.com'
             end
         end
       end

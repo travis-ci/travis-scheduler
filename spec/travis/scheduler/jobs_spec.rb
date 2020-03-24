@@ -277,7 +277,7 @@ describe Travis::Scheduler::Jobs::Select do
     end
   end
 
-  describe 'with a boost of 4, and a two jobs plan, only the boost is being used' do
+  describe 'with a boost of 4, and a two jobs plan, these add up' do
     before { subscribe(:two) }
     before { redis.set("scheduler.owner.limit.#{user.login}", 4) }
 
@@ -285,9 +285,44 @@ describe Travis::Scheduler::Jobs::Select do
       before { create_jobs(1, private: true, state: :started) }
       before { create_jobs(5, private: true) }
 
-      it { expect(selected.size).to eq 3 }
+      it { expect(selected.size).to eq 5 }
       it { expect(reports).to include 'user svenfuchs boost capacity: running=1 max=4 selected=3' }
-      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=3 total_waiting=2 waiting_for_concurrency=2' }
+      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=5 total_waiting=0 waiting_for_concurrency=0' }
+    end
+
+    describe 'with public jobs only' do
+      before { create_jobs(1, private: false, state: :started) }
+      before { create_jobs(5, private: false) }
+
+      it { expect(selected.size).to eq 5 }
+      it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
+      it { expect(reports).to include 'user svenfuchs boost capacity: running=0 max=4 selected=3' }
+      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=5 total_waiting=0 waiting_for_concurrency=0' }
+    end
+
+    describe 'for mixed public and private jobs' do
+      before { create_jobs(1, private: true, state: :started) }
+      before { create_jobs(1, private: false, state: :started) }
+      before { create_jobs(2, private: false) + create_jobs(2, private: true) }
+
+      it { expect(selected.size).to eq 4 }
+      it { expect(reports).to include 'user svenfuchs public capacity: running=1 max=3 selected=2' }
+      it { expect(reports).to include 'user svenfuchs boost capacity: running=1 max=4 selected=2' }
+      it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=4 total_waiting=0 waiting_for_concurrency=0' }
+    end
+  end
+
+  describe 'with a boost of 4, and a config of 2, these add up' do
+    before { redis.set("scheduler.owner.limit.#{user.login}", 4) }
+    before { config[:limit][:by_owner][user.login] = 2 }
+
+    describe 'with private jobs only' do
+      before { create_jobs(1, private: true, state: :started) }
+      before { create_jobs(5, private: true) }
+
+      it { expect(selected.size).to eq 5 }
+      it { expect(reports).to include 'user svenfuchs boost capacity: running=1 max=4 selected=3' }
+      it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=5 total_waiting=0 waiting_for_concurrency=0' }
     end
 
     describe 'with public jobs only' do
