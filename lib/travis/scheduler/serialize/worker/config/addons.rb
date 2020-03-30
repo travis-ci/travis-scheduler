@@ -19,7 +19,7 @@ module Travis
               postgresql
               rethinkdb
               snaps
-              sonarqube
+              sonarcloud
               ssh_known_hosts
             )
 
