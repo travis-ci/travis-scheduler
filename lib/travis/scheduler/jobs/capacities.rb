@@ -6,7 +6,6 @@ require 'travis/scheduler/jobs/capacity/education'
 require 'travis/scheduler/jobs/capacity/plan'
 require 'travis/scheduler/jobs/capacity/public'
 require 'travis/scheduler/jobs/capacity/trial'
-require 'travis/scheduler/jobs/capacity/enterprise'
 
 module Travis
   module Scheduler
@@ -14,7 +13,7 @@ module Travis
       class Capacities < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        ALL = %i(public boost config plan education trial enterprise)
+        ALL = %i(public boost config plan education trial)
 
         # TODO warn if no applicable :any capacity can be found
         def initialize(*)
@@ -23,7 +22,7 @@ module Travis
         end
 
         def accept(job)
-          all.detect { |capacity| capacity.accept?(job) }
+          enterprise? ? true : all.detect { |capacity| capacity.accept?(job) }
         end
 
         def reports
@@ -58,6 +57,10 @@ module Travis
 
           def build(name)
             Capacity.const_get(name.to_s.camelize).new(context, owners, self)
+          end
+
+          def enterprise?
+            !!context.config[:enterprise]
           end
       end
     end
