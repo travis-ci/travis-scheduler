@@ -6,6 +6,7 @@ require 'travis/scheduler/jobs/capacity/education'
 require 'travis/scheduler/jobs/capacity/plan'
 require 'travis/scheduler/jobs/capacity/public'
 require 'travis/scheduler/jobs/capacity/trial'
+require 'travis/scheduler/jobs/capacity/enterprise'
 
 module Travis
   module Scheduler
@@ -13,7 +14,7 @@ module Travis
       class Capacities < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        ANY = %i(boost config plan education trial)
+        ANY = %i(boost config plan education trial enterprise)
 
         # TODO warn if no applicable :any capacity can be found
         def initialize(*)
