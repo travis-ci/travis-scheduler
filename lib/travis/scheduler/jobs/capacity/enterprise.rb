@@ -4,7 +4,7 @@ module Travis
       module Capacity
         class Enterprise < Base
           def applicable?
-            true
+            config[:enterprise]
           end
 
           def accept?(job)
