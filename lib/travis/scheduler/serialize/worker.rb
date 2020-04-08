@@ -28,7 +28,8 @@ module Travis
             workspace: workspace,
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
-            secrets: job.secrets
+            secrets: job.secrets,
+            allowed_repositories: allowed_repositories
           }
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
@@ -171,6 +172,15 @@ module Travis
 
           def compact(hash)
             hash.reject { |_, value| value.nil? }
+          end
+
+          def allowed_repositories
+            @allowed_repositories ||= begin
+              owner_ids = build.owner_type == 'User' ? Membership.where(user_id: build.owner_id).pluck(:organization_id) : []
+              owner_ids << build.owner_id
+              repository_ids = Permission.where(user_id: owner_ids).pluck(:repository_id)
+              Repository.where(id: repository_ids).select{ |repo| repo.settings.allow_config_imports }
+            end
           end
       end
     end
