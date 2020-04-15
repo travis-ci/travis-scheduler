@@ -176,7 +176,9 @@ module Travis
 
           def allowed_repositories
             @allowed_repositories ||= begin
-              Repository.where(owner_id: build.owner_id, active: true).select{ |repo| repo.settings.allow_config_imports }.map(&:vcs_id)
+              repository_ids = Repository.where(owner_id: build.owner_id, active: true).select{ |repo| repo.settings.allow_config_imports }.map(&:vcs_id)
+              repository_ids << repo.vcs_id
+              repository_ids.uniq.sort              
             end
           end
       end
