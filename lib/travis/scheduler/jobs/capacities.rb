@@ -22,7 +22,7 @@ module Travis
         end
 
         def accept(job)
-          all.detect { |capacity| capacity.accept?(job) }
+          enterprise? ? true : all.detect { |capacity| capacity.accept?(job) }
         end
 
         def reports
@@ -57,6 +57,10 @@ module Travis
 
           def build(name)
             Capacity.const_get(name.to_s.camelize).new(context, owners, self)
+          end
+
+          def enterprise?
+            !!context.config[:enterprise]
           end
       end
     end

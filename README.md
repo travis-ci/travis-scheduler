@@ -59,4 +59,3 @@ travis-scheduler.
 ## License & copyright
 
 See [MIT-LICENSE](MIT-LICENSE.md).
-
