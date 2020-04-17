@@ -52,6 +52,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def preferences
+    super || {}
+  end
+
+  def keep_netrc?
+    preferences.key?('keep_netrc') ? preferences['keep_netrc'] : true
+  end
+
   def uid
     "user:#{id}"
   end
