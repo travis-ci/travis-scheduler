@@ -4,6 +4,7 @@ ruby '2.6.5' if ENV['DYNO']
 
 gem 'travis-config',      '~> 1.1.3'
 gem 'travis-lock'
+gem 'travis-conditions',  '~> 1.0.10'
 gem 'travis-metrics',     git: 'https://github.com/travis-ci/travis-metrics'
 gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout'
 gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions'

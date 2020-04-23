@@ -476,7 +476,6 @@ describe Travis::Scheduler::Jobs::Select do
       it { expect(reports).to include 'user svenfuchs: queueable=7 running=0 selected=3 total_waiting=4 waiting_for_concurrency=0' }
     end
   end
-
   describe 'stages' do
     before { config[:limit][:by_owner][user.login] = 10 }
 
@@ -577,5 +576,25 @@ describe Travis::Scheduler::Jobs::Select do
     it { expect(reports).to include 'user svenfuchs limited by queue builds.osx: max=3 rejected=2 selected=1' }
     it { expect(reports).to include 'user svenfuchs plan capacity: running=2 max=9999 selected=1' }
     it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=1 total_waiting=3 waiting_for_concurrency=0' }
+  end
+
+  describe 'with an unlimited jobs plan, and a by_build limit of 2 depending on the branch' do
+    let(:request) { FactoryGirl.create(:request) }
+    let(:one)     { FactoryGirl.create(:build, request: request) }
+    let(:two)     { FactoryGirl.create(:build, request: request) }
+    let(:three)   { FactoryGirl.create(:build, request: request) }
+
+    before { subscribe(:unlimited) }
+    before { repo.settings.update_attributes!(maximum_number_of_builds: 2) }
+    before { repo.settings.update_attributes!(maximum_number_of_builds_condition: 'branch = master') }
+
+    before { create_jobs(1, source: one) }
+    before { create_jobs(1, source: two) }
+    before { create_jobs(1, source: three) }
+
+    it { expect(selected.size).to eq 2 }
+    it { expect(reports).to include 'repo svenfuchs/gem-release limited by repo max builds settings: max=2 rejected=1 selected=2' }
+    it { expect(reports).to include 'repo svenfuchs/gem-release: queueable=3 running=0 selected=2 waiting=1' }
+    it { expect(reports).to include 'user svenfuchs: queueable=3 running=0 selected=2 total_waiting=1 waiting_for_concurrency=0' }
   end
 end

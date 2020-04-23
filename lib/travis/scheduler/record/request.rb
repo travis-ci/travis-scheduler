@@ -9,6 +9,7 @@ class Request < ActiveRecord::Base
   belongs_to :pull_request
   belongs_to :repository
   belongs_to :owner, polymorphic: true
+  belongs_to :sender, polymorphic: true
 
   serialize :payload
 

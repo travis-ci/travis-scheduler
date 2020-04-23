@@ -7,7 +7,8 @@ module Travis
         class Limits < Struct.new(:owners, :reports)
           MSGS = {
             queue:  '%s limited by queue %s: max=%s rejected=%s selected=%s',
-            repo:   'repo %s limited by repo settings: max=%s rejected=%s selected=%s',
+            repo:   'repo %s limited by repo max jobs settings: max=%s rejected=%s selected=%s',
+            build:  'repo %s limited by repo max builds settings: max=%s rejected=%s selected=%s',
             stages: 'repo %s limited by stage on build_id=%s: rejected=%s selected=%s',
           }
 
@@ -28,6 +29,12 @@ module Travis
             def report_repo(data)
               map_repos(data) do |slug, data|
                 msg :repo, slug, data[0][:max], rejected(data), selected(data)
+              end
+            end
+
+            def report_build(data)
+              map_repos(data) do |slug, data|
+                msg :build, slug, data[0][:max], rejected(data), selected(data)
               end
             end
 

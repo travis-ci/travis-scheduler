@@ -87,6 +87,7 @@ class Repository::Settings < Travis::Settings
   attribute :build_pushes, Boolean, default: true
   attribute :build_pull_requests, Boolean, default: true
   attribute :maximum_number_of_builds, Integer
+  attribute :maximum_number_of_builds_condition, String
   attribute :ssh_key, SshKey
   attribute :timeout_hard_limit
   attribute :timeout_log_silence
