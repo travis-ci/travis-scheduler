@@ -102,7 +102,8 @@ describe Travis::Scheduler::Serialize::Worker do
         workspace: s3,
         prefer_https: false,
         enterprise: false,
-        secrets: []
+        secrets: [],
+        allowed_repositories: ["549743"]
       )
     end
 
@@ -279,7 +280,8 @@ describe Travis::Scheduler::Serialize::Worker do
         workspace: s3,
         prefer_https: false,
         enterprise: false,
-        secrets: []
+        secrets: [],
+        allowed_repositories: ["549743"]
       )
     end
 
