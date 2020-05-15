@@ -26,6 +26,7 @@ module Travis
           end
 
           def source_url
+            return source_git_url if force_private? && !Travis.config.prefer_https
             return source_http_url if Travis.config.prefer_https || managed_by_app?
             (repo.private? || force_private?) ? source_git_url : source_http_url
           end
@@ -39,7 +40,7 @@ module Travis
           end
 
           def installation_id
-            repo.installation&.github_id if repo.managed_by_app? && repo.private
+            repo.installation&.github_id if repo.managed_by_app? && (repo.private || force_private?)
           end
 
           def github?
