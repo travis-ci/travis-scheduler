@@ -40,7 +40,7 @@ module Travis
           end
 
           def installation_id
-            repo.installation&.github_id if (repo.managed_by_app? && repo.private) || force_private?
+            repo.installation&.github_id if repo.managed_by_app? && (repo.private || force_private?)
           end
 
           def github?
