@@ -11,10 +11,14 @@ env:
   matrix:
   - RAKE_TASK=spec
   global:
-    secure: BdVC3OHqYcgePLrkKIk28Ewn/dxCYFf3Cx+Q8P+BCDj6UPJyRSbKmILBzuX96H5xhKmUFo0A/upUhJI9UUP9aXHO7MzRe04/c88QdO4wGacVUaIyB20S0pr262zbc/nA50K9cVgpmWc64n6uQR1tgM6ZyyBnBeXkLzCAOHPq99I=
+    - secure: BdVC3OHqYcgePLrkKIk28Ewn/dxCYFf3Cx+Q8P+BCDj6UPJyRSbKmILBzuX96H5xhKmUFo0A/upUhJI9UUP9aXHO7MzRe04/c88QdO4wGacVUaIyB20S0pr262zbc/nA50K9cVgpmWc64n6uQR1tgM6ZyyBnBeXkLzCAOHPq99I=
+    - PATH=/snap/bin:$PATH
 
 addons:
-  apt:
+  - snaps:
+    - name: docker
+      channel: latest/beta
+  - apt:
     packages:
       - rabbitmq-server
 
