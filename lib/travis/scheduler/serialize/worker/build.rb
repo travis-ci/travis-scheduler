@@ -13,6 +13,14 @@ module Travis
           def pull_request?
             event_type == 'pull_request'
           end
+
+          def owner_type
+            build.owner_type
+          end
+
+          def owner_id
+            build.owner_id
+          end
         end
       end
     end

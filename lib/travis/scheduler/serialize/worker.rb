@@ -28,7 +28,9 @@ module Travis
             workspace: workspace,
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
-            secrets: job.secrets
+            keep_netrc: repo.keep_netrc?,
+            secrets: job.secrets,
+            allowed_repositories: allowed_repositories
           }
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
@@ -171,6 +173,14 @@ module Travis
 
           def compact(hash)
             hash.reject { |_, value| value.nil? }
+          end
+
+          def allowed_repositories
+            @allowed_repositories ||= begin
+              repository_ids = Repository.where(owner_id: build.owner_id, active: true).select{ |repo| repo.settings.allow_config_imports }.map(&:vcs_id)
+              repository_ids << repo.vcs_id
+              repository_ids.uniq.sort              
+            end
           end
       end
     end
