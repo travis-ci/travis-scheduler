@@ -43,6 +43,10 @@ module Travis
             repo.installation&.github_id if repo.managed_by_app? && (repo.private || force_private?)
           end
 
+          def keep_netrc?
+            repo.owner&.keep_netrc?
+          end
+
           def github?
             vcs_type == 'GithubRepository'
           end
