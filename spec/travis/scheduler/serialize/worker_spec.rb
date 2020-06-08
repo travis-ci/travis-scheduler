@@ -119,25 +119,6 @@ describe Travis::Scheduler::Serialize::Worker do
       end
     end
 
-    context 'when prefer_https is not set and the repo is GHE' do
-      before { Travis.config.prefer_https = true }
-      after  { Travis.config.prefer_https = false }
-      before { repo.update_attributes!(source_host: 'local.ghe.com') }
-
-      it 'sets the repo source_url to an git url' do
-        expect(data[:repository][:source_url]).to eq 'git@local.ghe.com:svenfuchs/gem-release.git'
-      end
-    end
-
-    context 'when prefer_https is not set and the repo is public' do
-      before { Travis.config.prefer_https = true }
-      after  { Travis.config.prefer_https = false }
-
-      it 'sets the repo source_url to an http url' do
-        expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
-      end
-    end
-
     context 'when the repo is managed by the github app and the repo is private' do
       let!(:installation) { FactoryGirl.create(:installation, github_id: rand(1000), owner_id: repo.owner_id, owner_type: repo.owner_type) }
 

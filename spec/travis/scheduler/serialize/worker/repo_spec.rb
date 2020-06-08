@@ -111,6 +111,11 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
         before { repo.private = true }
         it { expect(subject.source_url).to eq 'git@github.com:travis-ci/travis-ci.git' }
       end
+
+      describe 'on a GHE repo' do
+        before { config[:github][:source_host] = 'local.ghe.com', Travis.config.prefer_https = false }
+        it { expect(subject.source_url).to eq 'git@github.com:travis-ci/travis-ci.git' }
+      end
     end
 
     describe 'custom source endpoint' do
