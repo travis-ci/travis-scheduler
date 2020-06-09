@@ -46,7 +46,6 @@ module Travis
           def keep_netrc?
             repo.owner&.keep_netrc?
           end
-
           def github?
             vcs_type == 'GithubRepository'
           end
