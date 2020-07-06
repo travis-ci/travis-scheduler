@@ -16,7 +16,7 @@ module Travis
         matches.any? && matches.all? do |key, value|
           attr_val = attrs[key]
           if attr_val.is_a?(Array)
-            attr_val.include?(value)
+            (attr_val & [value].flatten).any?
           else
             value === attr_val
           end
@@ -70,7 +70,7 @@ module Travis
         end
 
         def services
-          ->(services) { (Array(job.config[:services]) & services).any? }
+          job.config[:services]
         end
 
         def repo
