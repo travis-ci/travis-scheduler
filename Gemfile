@@ -32,6 +32,7 @@ gem 'rack',               '>= 1.6.11'
 
 gem 'libhoney'
 gem 'faraday'
+gem 'faraday_middleware'
 
 group :development, :test do
   gem 'pry'

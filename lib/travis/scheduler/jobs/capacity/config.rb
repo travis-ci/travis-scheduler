@@ -6,7 +6,7 @@ module Travis
         # richer config format? or can we get rid of it on com?
         class Config < Base
           def applicable?
-            owners.logins.any? { |login| max_for(login) }
+            !on_metered_plan? && owners.logins.any? { |login| max_for(login) }
           end
 
           def report(status, job)
