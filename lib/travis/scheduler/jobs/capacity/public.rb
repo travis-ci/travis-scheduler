@@ -4,7 +4,7 @@ module Travis
       module Capacity
         class Public < Base
           def applicable?
-            true
+            !on_metered_plan?
           end
 
           def reduce(jobs)
