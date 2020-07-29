@@ -6,7 +6,7 @@ module Travis
           include Helper::Memoize
 
           def applicable?
-            com? && active?
+            !on_metered_plan? && com? && active?
           end
 
           def accept?(job)
