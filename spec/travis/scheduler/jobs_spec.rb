@@ -588,6 +588,7 @@ describe Travis::Scheduler::Jobs::Select do
   context 'when user is on a metered plan' do
     let(:metered_plan_limit) { Travis::Scheduler::Jobs::Capacity::Plan::METERED_PLAN_LIMIT }
     let(:body) { { private_repos: true, public_repos: true } }
+    let(:billing_url) { "http://localhost:9292/usage/users/#{user.id}/allowance" }
 
     before do
       stub_request(:get, billing_url).to_return(
