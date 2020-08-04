@@ -586,8 +586,8 @@ describe Travis::Scheduler::Jobs::Select do
   end
 
   context 'when user is on a metered plan' do
-    let(:metered_plan_limit) { Travis::Scheduler::Jobs::Capacity::Plan::METERED_PLAN_LIMIT }
-    let(:body) { { private_repos: true, public_repos: true } }
+    let(:metered_plan_limit) { 45 }
+    let(:body) { { private_repos: true, public_repos: true, concurrency_limit: metered_plan_limit } }
     let(:billing_url) { "http://localhost:9292/usage/users/#{user.id}/allowance" }
 
     before do
@@ -606,7 +606,7 @@ describe Travis::Scheduler::Jobs::Select do
       it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=5 total_waiting=0 waiting_for_concurrency=0' }
 
       context 'when private jobs are not allowed by the billing service' do
-        let(:body) { { private_repos: false, public_repos: true } }
+        let(:body) { { private_repos: false, public_repos: true, concurrency_limit: metered_plan_limit } }
 
         it { expect(selected.size).to eq 0 }
         it { expect(reports).to include "user svenfuchs capacities: plan max=#{metered_plan_limit}" }
@@ -624,7 +624,7 @@ describe Travis::Scheduler::Jobs::Select do
       it { expect(reports).to include 'user svenfuchs: queueable=5 running=1 selected=5 total_waiting=0 waiting_for_concurrency=0' }
 
       context 'when public jobs are not allowed by the billing service' do
-        let(:body) { { private_repos: true, public_repos: false } }
+        let(:body) { { private_repos: true, public_repos: false, concurrency_limit: metered_plan_limit } }
 
         it { expect(selected.size).to eq 0 }
         it { expect(reports).to include "user svenfuchs capacities: plan max=#{metered_plan_limit}" }
@@ -643,7 +643,7 @@ describe Travis::Scheduler::Jobs::Select do
       it { expect(reports).to include 'user svenfuchs: queueable=4 running=2 selected=4 total_waiting=0 waiting_for_concurrency=0' }
 
       context 'when private jobs are not allowed by the billing service' do
-        let(:body) { { private_repos: false, public_repos: true } }
+        let(:body) { { private_repos: false, public_repos: true, concurrency_limit: metered_plan_limit } }
 
         it { expect(selected.size).to eq 2 }
         it { expect(reports).to include "user svenfuchs capacities: plan max=#{metered_plan_limit}" }
@@ -651,7 +651,7 @@ describe Travis::Scheduler::Jobs::Select do
       end
 
       context 'when public jobs are not allowed by the billing service' do
-        let(:body) { { private_repos: true, public_repos: false } }
+        let(:body) { { private_repos: true, public_repos: false, concurrency_limit: metered_plan_limit } }
 
         it { expect(selected.size).to eq 2 }
         it { expect(reports).to include "user svenfuchs capacities: plan max=#{metered_plan_limit}" }
