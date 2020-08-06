@@ -3,8 +3,6 @@ module Travis
     module Jobs
       module Capacity
         class Plan < Base
-          METERED_PLAN_LIMIT = 9_999_999
-
           def applicable?
             on_metered_plan? || owners.subscribed?
           end
@@ -20,7 +18,7 @@ module Travis
           private
 
             def max
-              @max ||= on_metered_plan? ? METERED_PLAN_LIMIT : owners.paid_capacity
+              @max ||= on_metered_plan? ? billing_allowance['concurrency_limit'] : owners.paid_capacity
             end
 
             def allowance_key(job)
