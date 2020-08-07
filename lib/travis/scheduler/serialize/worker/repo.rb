@@ -70,7 +70,7 @@ module Travis
             def force_private?
               return repo.vcs_source_host != source_host if repo.vcs_source_host
 
-              source_host != 'github.com'
+              github? && source_host != 'github.com'
             end
 
             def source_host
