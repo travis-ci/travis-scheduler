@@ -71,6 +71,10 @@ class Job < ActiveRecord::Base
   serialize :config
   serialize :debug_options
 
+  def paid?
+    owner&.paid? || false # prevents nil
+  end
+
   def finished?
     FINISHED_STATES.include?(state.try(:to_sym))
   end
