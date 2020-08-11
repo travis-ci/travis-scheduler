@@ -13,7 +13,8 @@ class Job < ActiveRecord::Base
     }
 
     def queueable
-      jobs = where(state: :created).order(:id)
+      # sets jobs order based on priority first, ie: 5, nil, -5
+      jobs = where(state: :created).order("COALESCE(priority, 0) desc").order(:id)
       jobs = jobs.joins(SQL[:queueable]).order(:id) if ENV['USE_QUEUEABLE_JOBS']
       jobs
     end
