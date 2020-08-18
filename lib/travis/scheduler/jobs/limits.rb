@@ -1,5 +1,6 @@
 require 'travis/scheduler/helper/memoize'
 require 'travis/scheduler/jobs/limit/base'
+require 'travis/scheduler/jobs/limit/build'
 require 'travis/scheduler/jobs/limit/queue'
 require 'travis/scheduler/jobs/limit/repo'
 require 'travis/scheduler/jobs/limit/stages'
@@ -12,7 +13,7 @@ module Travis
 
         # These are ordered by how specific the limit is, from most specific to least.
         # In other orders, we may apply a stricter limit than is intended.
-        NAMES = %w(stages repo queue)
+        NAMES = %w(stages build repo queue)
 
         def accept(job)
           yield job if accept?(job)

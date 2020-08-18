@@ -11,7 +11,10 @@ module Travis
           private
 
             def max(job)
-              num = job.repository.settings.maximum_number_of_builds
+              settings = job.repository.settings
+              # rename the setting to maximum_number_of_jobs, and remove this
+              return if settings.maximum_number_of_builds_condition
+              num = settings.maximum_number_of_builds
               num > 0 ? num : nil
             end
 
