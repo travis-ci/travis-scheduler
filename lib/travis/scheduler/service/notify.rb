@@ -43,6 +43,10 @@ module Travis
 
           def notify_rabbitmq
             info :publish, job.id, job.queue, 'rabbitmq'
+            puts '-----------------------'
+            puts 'sb-scheduler-debugging-rabbitmq'
+            puts worker_payload
+            puts '-----------------------'
             amqp.publish(worker_payload, properties: { type: 'test', persistent: true })
           end
 
