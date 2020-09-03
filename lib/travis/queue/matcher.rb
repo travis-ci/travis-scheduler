@@ -11,6 +11,12 @@ module Travis
       OSS_ONLY_ARCH = %w(arm64 ppc64le s390x)
 
       def matches?(attrs)
+        puts '----------matches start-------------'
+        puts 'sb-scheduler-debugging-matches'
+        puts "attrs is: #{attrs}"
+        puts "keys is: #{attrs.keys}"
+        puts "job is: #{job}"
+        puts '----------matches end-------------'
         check_unknown_matchers(attrs.keys)
         matches = matches_for(attrs)
         matches.any? && matches.all? { |key, value| value === attrs[key] }

@@ -30,7 +30,6 @@ module Travis
         puts 'sb-scheduler-debugging'
         puts payload
         puts '-----------------------'
-        
         response = http.post(PATH, JSON.dump(payload))
         log response.status
       rescue Faraday::ClientError => e

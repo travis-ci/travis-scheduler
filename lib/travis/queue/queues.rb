@@ -11,6 +11,7 @@ module Travis
 
         def queues
           Array(config).compact.map do |attrs|
+            puts "Queue debugging is: #{attrs[:queue]}, Queue2 #{attrs}"
             Queue.new(attrs[:queue], attrs.reject { |key, _| key == :queue })
           end
         end
