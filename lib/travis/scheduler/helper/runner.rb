@@ -9,7 +9,7 @@ module Travis
         # "notify", [{:job=>{:id=>380999582}, :jid=>"38aac6999227d976e5b5eb76"}]
 
         def inline(service, *args)
-          binding.pry
+          # binding.pry
           Service[service].new(context, *symbolize_keys(args)).run
         end
 

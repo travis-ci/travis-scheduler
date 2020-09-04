@@ -10,7 +10,7 @@ module Travis
       def perform(service, *args)
         ::Marginalia.set('service', service)
 
-        binding.pry
+        # binding.pry
         inline(service, *normalize(args))
       end
 
