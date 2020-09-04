@@ -15,7 +15,7 @@ module Travis
         puts 'sb-scheduler-debugging-matches'
         puts "attrs is: #{attrs}"
         puts "keys is: #{attrs.keys}"
-        puts "job is: #{job}"
+        puts "job is: #{job.id}"
         puts '----------matches end-------------'
         check_unknown_matchers(attrs.keys)
         matches = matches_for(attrs)

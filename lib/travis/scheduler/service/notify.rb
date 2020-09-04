@@ -58,6 +58,7 @@ module Travis
           end
 
           def rollout?
+            puts '________Rollout_________'
             Rollout.matches?(:job_board, uid: owner.id, owner: owner.login, redis: redis)
           end
 
