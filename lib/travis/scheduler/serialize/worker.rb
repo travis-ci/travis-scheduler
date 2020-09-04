@@ -11,6 +11,7 @@ module Travis
         require 'travis/scheduler/serialize/worker/ssh_key'
 
         def data
+          # binding.pry
           data = {
             type: :test,
             vm_config: job.vm_config,

@@ -21,6 +21,14 @@ module Travis
       end
 
       def publish(data, options = {})
+        puts '--------------------------'
+        puts 'sb-RABBITMQ-debugging'
+        puts "data: #{data}"
+        puts "default data: #{default_data}"
+        puts "option data: #{options}"
+        puts "deep merge: #{deep_merge(default_data, options)}"
+        puts "routing key: #{routing_key}"
+        puts '--------------------------'
         data = MultiJson.encode(data)
         exchange.publish(data, deep_merge(default_data, options))
         debug "Published AMQP message to #{routing_key}."

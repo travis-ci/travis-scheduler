@@ -1,7 +1,7 @@
 require 'sidekiq'
 require 'travis/scheduler/helper/runner'
 require 'marginalia'
-
+require 'pry'
 module Travis
   module Scheduler
     class Worker
@@ -9,6 +9,8 @@ module Travis
 
       def perform(service, *args)
         ::Marginalia.set('service', service)
+
+        binding.pry
         inline(service, *normalize(args))
       end
 

@@ -17,6 +17,7 @@ module Travis
         }
 
         def run
+          binding.pry
           # fail('kaputt. testing exception tracking.') if job.repository.owner_name == 'svenfuchs'
           set_queue
           notify_workers
@@ -26,10 +27,12 @@ module Travis
         private
 
           def set_queue
+            binding.pry
             inline :set_queue, job, jid: jid, src: src
           end
 
           def notify_workers
+            binding.pry
             info "Publishing worker payload for job=#{job.id} queue=#{job.queue}"
             Travis::Honeycomb.context.add('job_id', job.id)
             Travis::Honeycomb.context.add('queue', job.queue)
@@ -37,11 +40,13 @@ module Travis
           end
 
           def notify_job_board
+            binding.pry
             info :publish, job.id, job.queue, 'job board'
             JobBoard.post(job.id, worker_payload)
           end
 
           def notify_rabbitmq
+            binding.pry
             info :publish, job.id, job.queue, 'rabbitmq'
             puts '-----------------------'
             puts 'sb-scheduler-debugging-rabbitmq'
