@@ -1,4 +1,4 @@
-language: ruby
+ language: ruby
 
 import:
   - travis-ci/build-configs:db-setup.yml@master
@@ -36,3 +36,5 @@ jobs:
      install: skip
      script: make ship
      if: commit_message =~ /ship:docker/ OR env(SHIP_DOCKER) = true
+virt_size:
+  - medium
