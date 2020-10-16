@@ -190,15 +190,7 @@ describe Travis::Queue do
 
     describe 'arch: ppc64le' do
       let(:config) { { arch: 'ppc64le' } }
-
-      context 'when repo is public' do
-        it { expect(queue).to eq 'builds.power' }
-      end
-
-      context 'when repo is private' do
-        let(:job) { FactoryGirl.build(:job, config: config, owner: owner, repository: repo, private: true) }
-        it { expect(queue).to eq 'builds.default' }
-      end
+      it { expect(queue).to eq 'builds.power' }
     end
 
     describe 'arch: arm64' do
