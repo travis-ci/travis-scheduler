@@ -9,6 +9,7 @@ module Travis
              encryption: { key: SecureRandom.hex(64) },
              enterprise: false,
              github:     { api_url: 'https://api.github.com', source_host: 'github.com' },
+             billing:    { url: 'http://localhost:9292/', auth_key: 'auth_keys' },
              host:       'https://travis-ci.com',
              interval:   2,
              limit:      { public: 5, education: 1, default: 5, by_owner: {}, delegate: {} },
