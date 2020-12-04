@@ -2,7 +2,6 @@ require 'active_record'
 require 'travis/scheduler/record/organization'
 require 'travis/scheduler/record/repository'
 require 'travis/scheduler/record/user'
-require 'gh'
 
 class Request < ActiveRecord::Base
   belongs_to :commit
