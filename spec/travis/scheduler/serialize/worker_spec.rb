@@ -41,6 +41,7 @@ describe Travis::Scheduler::Serialize::Worker do
         type: :test,
         vm_type: :default,
         vm_config: {},
+        vm_size: nil,
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
@@ -214,6 +215,7 @@ describe Travis::Scheduler::Serialize::Worker do
         type: :test,
         vm_type: :default,
         vm_config: {},
+        vm_size: nil,
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
