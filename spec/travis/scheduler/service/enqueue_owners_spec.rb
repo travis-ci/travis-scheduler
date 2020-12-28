@@ -7,12 +7,18 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { owner_type: 'User', owner_id: owner.id, jid: '1234' } }
   let(:service) { described_class.new(Travis::Scheduler.context, data) }
+  let(:authorize_build_url) { "http://localhost:9292/users/#{owner.id}/authorize_build" }
 
   before { Travis::JobBoard.stubs(:post) }
 
   before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, private: true, state: :created, queue: 'builds.gce', config: {}) } }
   before { config.limit.delegate = { owner.login => org.login } }
   before { config.limit.by_owner = { org.login => 1 } }
+  before do
+    stub_request(:post, authorize_build_url).to_return(
+      body: MultiJson.dump(allowed: false, rejection_code: nil)
+    )
+  end
   before { service.run }
 
   it { expect(Job.order(:id).map(&:state)).to eq %w[queued created] }
