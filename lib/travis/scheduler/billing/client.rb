@@ -45,6 +45,10 @@ module Travis
           get("/usage/#{owner_class.pluralize}/#{owner_id}/allowance")
         end
 
+        def authorize_build(repo, owner, sender_id)
+          post("/#{owner.class.name.downcase.pluralize}/#{owner.id}/authorize_build", { repository: { private: repo.private? }, sender_id: sender_id, jobs: [] })
+        end
+
         private
 
         def request(method, path, params)
@@ -55,6 +59,10 @@ module Travis
 
         def get(path, params = {})
           request(:get, path, params).body
+        end
+
+        def post(path, params = {})
+          request(:post, path, params).body
         end
 
         def client
