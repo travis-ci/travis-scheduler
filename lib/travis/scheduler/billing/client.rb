@@ -54,6 +54,10 @@ module Travis
         def request(method, path, params)
           client.send(method, path, params)
         rescue Faraday::ClientError => e
+          puts "New-plan-error: #{e}, #{e.message}"
+          puts "New-plan-error: Method: #{method}"
+          puts "New-plan-error: path: #{path}"
+          puts "New-plan-error: Params: #{params}"
           raise Error.new(e, e.response)
         end
 
