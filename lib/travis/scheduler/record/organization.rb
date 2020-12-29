@@ -44,7 +44,9 @@ class Organization < ActiveRecord::Base
     #   those enforced by workers themselves, but we plan to sometime in the
     #   following weeks/months.
     #
-    if paid? || educational? || paid_new_plan?(repo)
+    if paid? || educational?
+      DEFAULT_SUBSCRIBED_TIMEOUT
+    elsif paid_new_plan?(repo)
       DEFAULT_SUBSCRIBED_TIMEOUT
     else
       DEFAULT_SPONSORED_TIMEOUT
