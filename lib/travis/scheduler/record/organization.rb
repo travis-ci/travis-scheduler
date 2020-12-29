@@ -45,8 +45,8 @@ class Organization < ActiveRecord::Base
     #   following weeks/months.
     #
     if paid? || educational?
-      DEFAULT_SUBSCRIBED_TIMEOUT
       Travis.logger.info 'Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT'
+      DEFAULT_SUBSCRIBED_TIMEOUT
     elsif paid_new_plan?(repo)
       Travis.logger.info 'Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT'
       DEFAULT_SUBSCRIBED_TIMEOUT
