@@ -45,8 +45,8 @@ module Travis
           get("/usage/#{owner_class.pluralize}/#{owner_id}/allowance")
         end
 
-        def authorize_build(repo, owner, sender_id)
-          post("/#{owner.class.name.downcase.pluralize}/#{owner.id}/authorize_build", { repository: { private: repo.private? }, sender_id: sender_id, jobs: [] })
+        def get_plan(owner)
+          get("/#{owner.class.name.downcase.pluralize}/#{owner.id}/plan")
         end
 
         private

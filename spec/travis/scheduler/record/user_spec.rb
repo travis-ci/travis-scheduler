@@ -1,7 +1,7 @@
 describe User do
   let(:user) { FactoryGirl.create(:user) }
   let(:repo) { FactoryGirl.create(:repository) }
-  let(:authorize_build_url) { "http://localhost:9292/users/#{user.id}/authorize_build" }
+  let(:authorize_build_url) { "http://localhost:9292/users/#{user.id}/plan" }
 
   describe "constants" do
     # It isn't often that we see tests for constants, but these are special.
@@ -53,7 +53,7 @@ describe User do
       end
 
       it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
-        expect(user.default_worker_timeout(repo)).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
+        expect(user.default_worker_timeout).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
       end
     end
 
@@ -63,7 +63,7 @@ describe User do
       end
 
       it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
-        expect(user.default_worker_timeout(repo)).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
+        expect(user.default_worker_timeout).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
       end
     end
 
@@ -73,7 +73,20 @@ describe User do
       end
 
       it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
-        expect(user.default_worker_timeout(repo)).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
+        expect(user.default_worker_timeout).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
+      end
+    end
+
+    context "paid_new_plan? == true" do
+      before do
+        user.stubs(:paid_new_plan?).returns(true)
+        stub_request(:get, authorize_build_url).to_return(
+          body: MultiJson.dump(plan_name: 'two_concurrent_plan', hybrid: true, free: false, status: 'subscribed', metered: false)
+        )
+      end
+
+      it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
+        expect(user.default_worker_timeout).to eq Organization::DEFAULT_SUBSCRIBED_TIMEOUT
       end
     end
 
@@ -82,13 +95,13 @@ describe User do
         user.stubs(:subscribed?).returns(false)
         user.stubs(:active_trial?).returns(false)
         user.stubs(:educational?).returns(false)
-        stub_request(:post, authorize_build_url).to_return(
-          body: MultiJson.dump(allowed: false, rejection_code: nil)
+        stub_request(:get, authorize_build_url).to_return(
+          body: MultiJson.dump(plan_name: 'two_concurrent_plan', hybrid: true, free: false, status: 'subscribed', metered: false)
         )
       end
 
       it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
-        expect(user.default_worker_timeout(repo)).to eq User::DEFAULT_SPONSORED_TIMEOUT
+        expect(user.default_worker_timeout).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
       end
     end
   end

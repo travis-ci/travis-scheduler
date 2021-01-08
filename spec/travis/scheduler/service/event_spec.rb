@@ -8,15 +8,15 @@ describe Travis::Scheduler::Service::Event do
   let(:data)    { { id: build.id, jid: '1234' } }
   let(:event)   { 'build:created' }
   let(:service) { described_class.new(Travis::Scheduler.context, event, data) }
-  let(:authorize_build_url) { "http://localhost:9292/users/#{owner.id}/authorize_build" }
+  let(:authorize_build_url) { "http://localhost:9292/users/#{owner.id}/plan" }
 
   context do
     before { Travis::JobBoard.stubs(:post) }
     before { config.limit.delegate = { owner.login => org.login } }
     before { config.limit.by_owner = { org.login => 1 } }
     before do
-      stub_request(:post, authorize_build_url).to_return(
-        body: MultiJson.dump(allowed: false, rejection_code: nil)
+      stub_request(:get, authorize_build_url).to_return(
+        body: MultiJson.dump(plan_name: 'two_concurrent_plan', hybrid: true, free: false, status: 'subscribed', metered: false)
       )
     end
     before { service.run }

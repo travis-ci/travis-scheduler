@@ -58,7 +58,7 @@ module Travis
             #   current paid/unpaid status.
             #
             def hard_limit_timeout
-              timeout(:hard_limit) || repo.owner.default_worker_timeout(repo)
+              timeout(:hard_limit) || repo.owner.default_worker_timeout
             end
 
             def timeout(type)

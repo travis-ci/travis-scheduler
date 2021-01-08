@@ -32,11 +32,14 @@ class Organization < ActiveRecord::Base
     redis.get("trial:#{login}").to_i > 0
   end
 
-  def paid_new_plan?(repo)
-    billing_client.authorize_build(repo, self, repo&.users&.first&.id)['allowed']
+  def paid_new_plan?
+    plan = billing_client.get_plan(self).to_h
+    return false if plan[:error]
+
+    plan["hybrid"] || !plan["plan_name"].include?('free')
   end
 
-  def default_worker_timeout(repo)
+  def default_worker_timeout
     # When the user is a paid user ("subscribed") or has an active trial, they
     #   are granted a different default timeout on their jobs.
     #
@@ -47,7 +50,7 @@ class Organization < ActiveRecord::Base
     if paid? || educational?
       Travis.logger.info 'Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT'
       DEFAULT_SUBSCRIBED_TIMEOUT
-    elsif paid_new_plan?(repo)
+    elsif paid_new_plan?
       Travis.logger.info 'Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT'
       DEFAULT_SUBSCRIBED_TIMEOUT
     else
