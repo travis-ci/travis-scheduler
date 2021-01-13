@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
 
   def paid_new_plan?
     plan = billing_client.get_plan(self).to_h
-    return false if plan[:error]
+    return false if plan[:error] || plan["plan_name"].nil?
 
     plan["hybrid"] || !plan["plan_name"].include?('free')
   end
