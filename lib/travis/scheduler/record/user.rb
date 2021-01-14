@@ -37,6 +37,13 @@ class User < ActiveRecord::Base
     subscribed? || active_trial?
   end
 
+  def paid_new_plan?
+    plan = billing_client.get_plan(self).to_h
+    return false if plan[:error] || plan["plan_name"].nil?
+
+    plan["hybrid"] || !plan["plan_name"].include?('free')
+  end
+
   def default_worker_timeout
     # When the user is a paid user ("subscribed") or has an active trial, they
     #   are granted a different default timeout on their jobs.
@@ -46,8 +53,13 @@ class User < ActiveRecord::Base
     #   following weeks/months.
     #
     if paid? || educational?
+      Travis.logger.info "Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT for owner=#{id}"
+      DEFAULT_SUBSCRIBED_TIMEOUT
+    elsif paid_new_plan?
+      Travis.logger.info "Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT for owner=#{id}"
       DEFAULT_SUBSCRIBED_TIMEOUT
     else
+      Travis.logger.info "Default Timeout: DEFAULT_SPONSORED_TIMEOUT for owner=#{id}"
       DEFAULT_SPONSORED_TIMEOUT
     end
   end
@@ -68,5 +80,13 @@ class User < ActiveRecord::Base
 
   def redis
     Travis::Scheduler.context.redis
+  end
+
+  def billing_client
+    @billing_client ||= Travis::Scheduler::Billing::Client.new(context)
+  end
+
+  def context
+    Travis::Scheduler.context
   end
 end

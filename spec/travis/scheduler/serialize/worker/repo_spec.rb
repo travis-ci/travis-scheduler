@@ -23,6 +23,12 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       let(:worker) { described_class.new(user_repo, config) }
 
       context "unpaid account" do
+        let(:authorize_build_url) { "http://localhost:9292/users/#{user.id}/plan" }
+        before do
+          stub_request(:get, authorize_build_url).to_return(
+            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed', metered: true)
+          )
+        end
         it "returns a hash of timeout values" do
           timeouts = worker.timeouts
 
@@ -62,6 +68,12 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       let(:worker) { described_class.new(org_repo, config) }
 
       context "unpaid account" do
+        let(:authorize_build_url) { "http://localhost:9292/organizations/#{org.id}/plan" }
+        before do
+          stub_request(:get, authorize_build_url).to_return(
+            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed', metered: true)
+          )
+        end
         it "returns a hash of timeout values" do
           timeouts = worker.timeouts
 

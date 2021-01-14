@@ -10,8 +10,14 @@ describe Travis::Scheduler::Service::Notify do
   let(:url)     { 'https://job-board.travis-ci.org/jobs/add' }
   let(:status)  { 201 }
   let(:body)    { 'Created' }
+  let(:authorize_build_url) { "http://localhost:9292/users/#{job.owner.id}/plan" }
 
   before { stub_request(:post, url).to_return(status: status, body: body)  }
+  before do
+    stub_request(:get, authorize_build_url).to_return(
+      body: MultiJson.dump(plan_name: 'two_concurrent_plan', hybrid: true, free: false, status: 'subscribed', metered: false)
+    )
+  end
 
   describe 'with rollout job_board not enabled' do
     before { disable_rollout('job_board', job.owner) }
