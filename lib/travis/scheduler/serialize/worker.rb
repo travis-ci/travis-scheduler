@@ -15,6 +15,7 @@ module Travis
             type: :test,
             vm_config: job.vm_config,
             vm_type: repo.vm_type,
+            vm_size: job.vm_size,
             queue: job.queue,
             config: job.decrypted_config,
             env_vars: job.env_vars,
