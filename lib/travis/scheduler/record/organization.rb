@@ -25,7 +25,7 @@ class Organization < ActiveRecord::Base
   end
 
   def paid?
-    subscribed? || active_trial?
+    subscribed? || active_trial? || paid_new_plan?
   end
 
   def active_trial?
@@ -48,9 +48,6 @@ class Organization < ActiveRecord::Base
     #   following weeks/months.
     #
     if paid? || educational?
-      Travis.logger.info "Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT for owner=#{id}"
-      DEFAULT_SUBSCRIBED_TIMEOUT
-    elsif paid_new_plan?
       Travis.logger.info "Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT for owner=#{id}"
       DEFAULT_SUBSCRIBED_TIMEOUT
     else
