@@ -69,6 +69,9 @@ describe Organization do
     context "subscribed? == true" do
       before do
         org.stubs(:educational?).returns(true)
+        stub_request(:get, authorize_build_url).to_return(
+          body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: nil, metered: true)
+        )
       end
 
       it "returns the DEFAULT_SUBSCRIBED_TIMEOUT" do
