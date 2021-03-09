@@ -84,7 +84,7 @@ module Travis
           def repository_data
             compact(
               id: repo.id,
-              github_id: repo.github_id,
+              github_id: repo.vcs_id.to_i,
               vcs_id: repo.vcs_id,
               vcs_type: repo.vcs_type,
               url: repo.url,
@@ -179,7 +179,7 @@ module Travis
             @allowed_repositories ||= begin
               repository_ids = Repository.where(owner_id: build.owner_id, active: true).select{ |repo| repo.settings.allow_config_imports }.map(&:vcs_id)
               repository_ids << repo.vcs_id
-              repository_ids.uniq.sort              
+              repository_ids.uniq.sort
             end
           end
       end

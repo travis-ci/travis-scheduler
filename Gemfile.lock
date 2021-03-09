@@ -5,18 +5,6 @@ GIT
     coder (0.4.0)
 
 GIT
-  remote: https://github.com/travis-ci/gh
-  revision: 38fb339510ff9ae67cb08c6df7698f4c393f5a44
-  specs:
-    gh (0.15.1)
-      addressable (~> 2.4)
-      backports
-      faraday (~> 0.8)
-      multi_json (~> 1.0)
-      net-http-persistent (~> 2.9)
-      net-http-pipeline
-
-GIT
   remote: https://github.com/travis-ci/marginalia
   revision: 46bbe301640efb5ea81828cb7deeaf874516de78
   specs:
@@ -102,7 +90,6 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
-    backports (3.10.3)
     builder (3.2.3)
     bunny (2.9.2)
       amq-protocol (~> 2.3.0)
@@ -151,8 +138,6 @@ GEM
       metaclass (~> 0.0.1)
     multi_json (1.12.1)
     multipart-post (2.1.1)
-    net-http-persistent (2.9.4)
-    net-http-pipeline (1.0.1)
     pg (0.21.0)
     pry (0.11.3)
       coderay (~> 1.1.0)
@@ -223,7 +208,6 @@ DEPENDENCIES
   factory_girl (~> 4.7.0)
   faraday
   faraday_middleware
-  gh!
   libhoney
   marginalia!
   metriks!
