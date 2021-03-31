@@ -10,6 +10,7 @@ describe Travis::Queue do
   let(:repo)       { FactoryGirl.build(:repo, owner: owner, owner_name: owner.login, name: slug.split('/').last, created_at: created_at) }
   let(:job)        { FactoryGirl.build(:job, config: config, owner: owner, repository: repo) }
   let(:queue)      { described_class.new(job, context.config, logger).select }
+  let(:plan_url) { "http://localhost:9292/users//plan" }
 
   before do
     Travis::Scheduler.logger.stubs(:info)
@@ -241,6 +242,10 @@ describe Travis::Queue do
   end
 
   describe 'pooled' do
+    before do
+      stub_request(:get, plan_url).
+        to_return(status: 200, body: "", headers: {})
+    end
     env TRAVIS_SITE: 'com',
         POOL_QUEUES: 'gce',
         POOL_SUFFIX: 'foo'

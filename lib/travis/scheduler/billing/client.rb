@@ -45,16 +45,25 @@ module Travis
           get("/usage/#{owner_class.pluralize}/#{owner_id}/allowance")
         end
 
+        def get_plan(owner)
+          get("/#{owner.class.name.downcase.pluralize}/#{owner.id}/plan")
+        end
+
         private
 
         def request(method, path, params)
           client.send(method, path, params)
         rescue Faraday::ClientError => e
+          Travis.logger.error("New-plan-error: #{e}, Method: #{method}, path: #{path}, Params: #{params}")
           raise Error.new(e, e.response)
         end
 
         def get(path, params = {})
           request(:get, path, params).body
+        end
+
+        def post(path, params = {})
+          request(:post, path, params).body
         end
 
         def client
