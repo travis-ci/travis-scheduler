@@ -2,7 +2,7 @@ module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
       KEYS = %i(slug owner os language sudo dist group osx_image percentage
-        resources services arch virt paid)
+        resources services arch virt paid vm_size)
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
@@ -89,6 +89,10 @@ module Travis
 
         def virt
           job.config[:virt]
+        end
+
+        def vm_size
+          job.config[:vm][:size] if job.config[:vm]
         end
 
         def resources_enabled?

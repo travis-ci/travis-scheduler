@@ -23,6 +23,7 @@ describe Travis::Queue do
       { queue: 'builds.gce', dist: 'trusty' },
       { queue: 'builds.gce', dist: 'xenial' },
       { queue: 'builds.gce', resources: { gpu: true } },
+      { queue: 'builds.gce_vm', vm_size: 'large' },
       { queue: 'builds.cloudfoundry', owner: 'cloudfoundry' },
       { queue: 'builds.clojure', language: 'clojure' },
       { queue: 'builds.erlang', language: 'erlang' },
@@ -166,6 +167,18 @@ describe Travis::Queue do
     describe 'no :virt config' do
       let(:config) { { services: %w(redis docker postgresql) } }
       it { expect(queue).to eq 'builds.gce' }
+    end
+  end
+
+  describe 'by job config :vm_size' do
+    describe 'vm_size: large' do
+      let(:config) { { vm: { size: 'large' } } }
+      it { expect(queue).to eq 'builds.gce_vm' }
+    end
+
+    describe 'vm_size: unknown' do
+      let(:config) { { vm: { size: 'unknown' } } }
+      it { expect(queue).to eq 'builds.default' }
     end
   end
 

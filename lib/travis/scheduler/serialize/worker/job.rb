@@ -61,6 +61,10 @@ module Travis
             vm_config? && vm_configs[:gpu] ? vm_configs[:gpu].to_h : {}
           end
 
+          def vm_size
+            job.config.dig(:vm, :size)
+          end
+
           def trace?
             Rollout.matches?(:trace, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
