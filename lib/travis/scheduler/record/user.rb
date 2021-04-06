@@ -38,7 +38,12 @@ class User < ActiveRecord::Base
   end
 
   def paid_new_plan?
-    plan = billing_client.get_plan(self).to_h
+    redis_key = "user:#{self.id}:plan"
+    plan = if redis.exists(redis_key)
+             JSON.parse(redis.get(redis_key))
+           else
+             billing_client.get_plan(self).to_h
+           end
     return false if plan[:error] || plan["plan_name"].nil?
 
     plan["hybrid"] || !plan["plan_name"].include?('free')
