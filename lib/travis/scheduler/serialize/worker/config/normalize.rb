@@ -61,7 +61,9 @@ module Travis
               end
 
               def normalize_env(env)
-                [env].flatten.compact
+                puts '-------------------------------------- Debug --------------------------------------'
+                pp env
+                [Shellwords.shellescape(env)].flatten.compact
               end
 
               def normalize_deploy
