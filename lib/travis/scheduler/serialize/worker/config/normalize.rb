@@ -51,6 +51,9 @@ module Travis
 
               def normalize_envs
                 [:env, :global_env].each do |key|
+                  puts '------------------------------- Debug ----------------------------------'
+                  pp config[key]
+                  puts '------------------------------- Debug ----------------------------------'
                   config[key] = normalize_env(config[key]) if config[key]
                 end
               end
@@ -61,9 +64,7 @@ module Travis
               end
 
               def normalize_env(env)
-                puts '-------------------------------------- Debug --------------------------------------'
-                pp env
-                [Shellwords.shellescape(env)].flatten.compact
+                [env].flatten.compact
               end
 
               def normalize_deploy
