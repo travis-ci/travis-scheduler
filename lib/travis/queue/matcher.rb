@@ -2,7 +2,7 @@ module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
       KEYS = %i(slug owner os language sudo dist group osx_image percentage
-        resources services arch virt paid vm_size repo_private)
+        resources services arch virt paid vm_size)
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
@@ -17,8 +17,6 @@ module Travis
           attr_val = attrs[key]
           if attr_val.is_a?(Array)
             (attr_val & [value].flatten).any?
-          elsif key == 'repo_private' # Special case
-            attr_val.nil? || value === attr_val
           else
             value === attr_val
           end
@@ -33,10 +31,6 @@ module Travis
 
         def paid
           job.paid?
-        end
-
-        def repo_private
-          job.private?
         end
 
         def slug
