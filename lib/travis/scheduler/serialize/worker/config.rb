@@ -11,11 +11,13 @@ module Travis
           class << self
             include Travis::Scheduler::Helper::DeepDup
 
-            def decrypt(config, decryptor, options)
+            def decrypt(config, decryptor, options)              
               config = deep_dup(config)
               config = Normalize.new(config, options).apply
               config = Decrypt.new(config, decryptor, options).apply
               config = Normalize.new(config, options).jwt_sanitize
+              config = Normalize.new(config, options).env_sanitize
+
               config
             end
 

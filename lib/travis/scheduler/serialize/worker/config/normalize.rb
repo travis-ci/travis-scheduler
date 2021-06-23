@@ -43,6 +43,22 @@ module Travis
               config
             end
 
+            def env_sanitize
+              [:env, :global_env].each do |key|
+                case config[key]
+                when Hash
+                when Array
+                  config[key] = config[key].map do |val|
+                    quotize_env(val)
+                  end
+                else
+                  config[key] = quotize_env(config[key]) unless config[key].nil?
+                end
+              end
+
+              config
+            end
+
             private
 
               def full_addons?
@@ -51,9 +67,6 @@ module Travis
 
               def normalize_envs
                 [:env, :global_env].each do |key|
-                  puts '------------------------------- Debug ----------------------------------'
-                  pp config[key]
-                  puts '------------------------------- Debug ----------------------------------'
                   config[key] = normalize_env(config[key]) if config[key]
                 end
               end
@@ -82,6 +95,22 @@ module Travis
 
               def compact(hash)
                 hash.reject { |_, value| value.nil? }
+              end
+
+              def quotize_env(val)
+                if val.include?('=')
+                  var = val.split('=').first
+                  value = val.split('=', 2).last
+                else
+                  var = ''
+                  value = val
+                end
+
+                if (value[0] == '"' && value[-1] == '"') || (value[0] == "'" && value[-1] == "'")
+                  "#{var}#{var.empty? ? '' : '='}#{value}"
+                else
+                  "#{var}#{var.empty? ? '' : '='}'#{value.gsub("'", "\\\\'")}'"
+                end
               end
           end
         end
