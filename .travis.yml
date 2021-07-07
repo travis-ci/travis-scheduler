@@ -17,7 +17,7 @@ env:
 addons:
   - snaps:
     - name: docker
-      channel: latest/beta
+      channel: latest/stable
   - apt:
     packages:
       - rabbitmq-server
