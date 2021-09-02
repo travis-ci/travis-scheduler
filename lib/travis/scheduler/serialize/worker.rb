@@ -9,6 +9,9 @@ module Travis
         require 'travis/scheduler/serialize/worker/request'
         require 'travis/scheduler/serialize/worker/repo'
         require 'travis/scheduler/serialize/worker/ssh_key'
+        require 'travis/scheduler/helper/job_repository'
+
+        include Travis::Scheduler::Helper::JobRepository
 
         def data
           data = {
@@ -134,7 +137,7 @@ module Travis
           end
 
           def ssh_key
-            @ssh_key ||= SshKey.new(repo, job, config)
+            @ssh_key ||= SshKey.new(Repo.new(job_repository, config), job, config)
           end
 
           def source_host
@@ -180,7 +183,7 @@ module Travis
             @allowed_repositories ||= begin
               repository_ids = Repository.where(owner_id: build.owner_id, active: true).select{ |repo| repo.settings.allow_config_imports }.map(&:vcs_id)
               repository_ids << repo.vcs_id
-              repository_ids.uniq.sort              
+              repository_ids.uniq.sort
             end
           end
       end

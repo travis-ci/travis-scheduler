@@ -1,5 +1,6 @@
 require 'forwardable'
 require 'travis/scheduler/serialize/worker/config'
+require 'travis/scheduler/helper/job_repository'
 
 module Travis
   module Scheduler
@@ -7,6 +8,7 @@ module Travis
       class Worker
         class Job < Struct.new(:job, :config)
           extend Forwardable
+          include Travis::Scheduler::Helper::JobRepository
 
           def_delegators :job, :id, :repository, :source, :commit, :number,
             :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name
@@ -31,8 +33,7 @@ module Travis
           end
 
           def secure_env_removed?
-            !secure_env? &&
-            (job.repository.settings.has_secure_vars? || has_secure_vars?(:env) || has_secure_vars?(:global_env))
+            !secure_env? && job.repository.settings.has_secure_vars?
           end
 
           def ssh_key
@@ -40,8 +41,8 @@ module Travis
           end
 
           def decrypted_config
-            secure = Travis::SecureConfig.new(repository.key)
-            Config.decrypt(job.config, secure, full_addons: secure_env?, secure_env: secure_env?)
+            secure = Travis::SecureConfig.new(job_repository.key)
+            Config.decrypt(job.config, secure, full_addons: true, secure_env: true)
           end
 
           def secrets
@@ -50,7 +51,7 @@ module Travis
           end
 
           def decrypt(str)
-            repository.key.decrypt(Base64.decode64(str)) if str.is_a?(String)
+            job_repository.key.decrypt(Base64.decode64(str)) if str.is_a?(String)
           rescue OpenSSL::PKey::RSAError => e
           end
 

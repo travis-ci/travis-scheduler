@@ -62,7 +62,7 @@ describe Travis::Scheduler::Serialize::Worker::Job do
 
         context "when .travis.yml defines a secure var" do
           let(:config) { { env: { secure: "secret" } } }
-          it { expect(subject.secure_env_removed?).to eq(true) }
+          it { expect(subject.secure_env_removed?).to eq(false) }
         end
 
         context "when repository settings define a secure var" do
@@ -95,5 +95,51 @@ describe Travis::Scheduler::Serialize::Worker::Job do
     end
 
     it { expect(subject.secrets).to eq %w(one two three) }
+  end
+
+  describe 'decrypted config' do
+    context 'when in a pull request' do
+      let(:head_repo_key) { OpenSSL::PKey::RSA.generate(4096) }
+      let(:config) do
+        {
+          env: [
+            { :BAR => 'bar' },
+            { secure: Base64.encode64(repo.key.encrypt('MAIN=1')) },
+          ]
+        }
+      end
+      let(:head_repo) { FactoryGirl.create(:repository, github_id: 549744) }
+      let(:pull_request) { PullRequest.new(base_repo_slug: 'travis-ci/travis-yml', head_repo_slug: "#{head_repo.owner_name}/#{head_repo.name}") }
+      let(:request) { Request.new(pull_request: pull_request) }
+
+      before do
+        head_repo.key.update(private_key: head_repo_key.to_pem, public_key: head_repo_key.public_key)
+        build.event_type = 'pull_request'
+        config[:env] << { secure: Base64.encode64(head_repo.key.encrypt('FOO=one')) }
+      end
+
+      it do
+        expect(subject.decrypted_config[:env]).to eq(['BAR=bar', 'SECURE [unable to decrypt]', 'SECURE FOO=one'])
+      end
+    end
+
+    context 'when in a push' do
+      let(:config) do
+        {
+          env: [
+            { :BAR => 'bar' },
+            { secure: Base64.encode64(repo.key.encrypt('MAIN=1')) },
+          ]
+        }
+      end
+
+      before do
+        build.event_type = 'push'
+      end
+
+      it do
+        expect(subject.decrypted_config[:env]).to eq(['BAR=bar', 'SECURE MAIN=1'])
+      end
+    end
   end
 end
