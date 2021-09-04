@@ -223,6 +223,7 @@ describe Travis::Scheduler::Serialize::Worker do
           name: 'jobname',
         },
         env_vars: [
+          { name: 'FOO', value: 'foo', public: false, branch: 'foo-(dev)' },
           { name: 'BAR', value: 'bar', public: true, branch: nil }
         ],
         job: {
@@ -236,8 +237,8 @@ describe Travis::Scheduler::Serialize::Worker do
           tag: nil,
           pull_request: 180,
           state: 'queued',
-          secure_env_enabled: false,
-          secure_env_removed: true,
+          secure_env_enabled: true,
+          secure_env_removed: false,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',

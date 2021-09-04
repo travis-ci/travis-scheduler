@@ -19,7 +19,7 @@ module Travis
           end
 
           def secure_env?
-            defined?(@secure_env) ? @secure_env : @secure_env = !pull_request? || same_repo_pull_request?
+            true
           end
 
           def pull_request?
@@ -40,7 +40,7 @@ module Travis
           end
 
           def decrypted_config
-            secure = Travis::SecureConfig.new(repository.key)
+            secure = Travis::SecureConfig.new(job_repository.key)
             Config.decrypt(job.config, secure, full_addons: secure_env?, secure_env: secure_env?)
           end
 
@@ -50,7 +50,7 @@ module Travis
           end
 
           def decrypt(str)
-            repository.key.decrypt(Base64.decode64(str)) if str.is_a?(String)
+            job_repository.key.decrypt(Base64.decode64(str)) if str.is_a?(String)
           rescue OpenSSL::PKey::RSAError => e
           end
 
@@ -91,6 +91,15 @@ module Travis
 
             def vm_configs
               config[:vm_configs] || {}
+            end
+
+            def job_repository
+              return job.repository if !pull_request? || same_repo_pull_request?
+
+              owner_name, repo_name = request.pull_request.head_repo_slug.split('/')
+              return job.repository if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
+
+              ::Repository.find_by(owner_name: owner_name, name: repo_name) || job.repository
             end
         end
       end
