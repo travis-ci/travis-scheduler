@@ -104,6 +104,7 @@ module Travis
               last_build_state: repo.last_build_state.to_s,
               default_branch: repo.default_branch,
               description: repo.description,
+              server_type: repo.server_type,
             )
           end
 
