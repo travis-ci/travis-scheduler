@@ -137,7 +137,7 @@ module Travis
           end
 
           def ssh_key
-            @ssh_key ||= SshKey.new(Repo.new(job_repository, config), job, config)
+            @ssh_key ||= SshKey.new(repo, job, config)
           end
 
           def source_host
