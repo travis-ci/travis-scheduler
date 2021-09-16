@@ -1,5 +1,6 @@
 require 'forwardable'
 require 'travis/scheduler/serialize/worker/config'
+require 'travis/scheduler/helper/job_repository'
 
 module Travis
   module Scheduler
@@ -7,6 +8,8 @@ module Travis
       class Worker
         class Job < Struct.new(:job)
           extend Forwardable
+
+          include Travis::Scheduler::Helper::JobRepository
 
           def_delegators :job, :id, :repository, :source, :config, :commit,
             :number, :queue, :state, :debug_options, :queued_at, :allow_failure
@@ -40,8 +43,12 @@ module Travis
           end
 
           def decrypted_config
-            secure = Travis::SecureConfig.new(repository.key)
+            secure = Travis::SecureConfig.new(repository_key)
             Config.decrypt(config, secure, full_addons: secure_env?, secure_env: secure_env?)
+          end
+
+          def repository_key
+            job_repository&.key || ::SslKey.new(private_key: 'test')
           end
 
           private
