@@ -318,8 +318,8 @@ describe Travis::Scheduler::Serialize::Worker do
             pull_request.update(head_repo_slug: 'travis-ci/gem-release', head_ref: 'master', base_repo_slug: 'svenfuchs/gem-release', base_ref: 'master')
           end
 
-          it 'returns key from the head repo' do
-            expect(data[:ssh_key][:value]).to eq(head_repo.key.private_key)
+          it 'returns key from the base repo' do
+            expect(data[:ssh_key][:value]).to eq(repo.key.private_key)
           end
         end
       end

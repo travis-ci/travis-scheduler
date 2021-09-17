@@ -9,9 +9,6 @@ module Travis
         require 'travis/scheduler/serialize/worker/request'
         require 'travis/scheduler/serialize/worker/repo'
         require 'travis/scheduler/serialize/worker/ssh_key'
-        require 'travis/scheduler/helper/job_repository'
-
-        include Travis::Scheduler::Helper::JobRepository
 
         def data
           data = {

@@ -1,6 +1,5 @@
 require 'forwardable'
 require 'travis/scheduler/serialize/worker/config'
-require 'travis/scheduler/helper/job_repository'
 
 module Travis
   module Scheduler
@@ -8,7 +7,6 @@ module Travis
       class Worker
         class Job < Struct.new(:job, :config)
           extend Forwardable
-          include Travis::Scheduler::Helper::JobRepository
 
           def_delegators :job, :id, :repository, :source, :commit, :number,
             :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name
@@ -41,7 +39,7 @@ module Travis
           end
 
           def decrypted_config
-            secure = Travis::SecureConfig.new(job_repository.key)
+            secure = Travis::SecureConfig.new(repository_key)
             Config.decrypt(job.config, secure, full_addons: true, secure_env: true)
           end
 
@@ -51,7 +49,7 @@ module Travis
           end
 
           def decrypt(str)
-            job_repository.key.decrypt(Base64.decode64(str)) if str.is_a?(String)
+            repository_key.decrypt(Base64.decode64(str)) if str.is_a?(String)
           rescue OpenSSL::PKey::RSAError => e
           end
 
@@ -92,6 +90,19 @@ module Travis
 
             def vm_configs
               config[:vm_configs] || {}
+            end
+
+            def job_repository
+              return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
+
+              owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
+              return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
+
+              ::Repository.find_by(owner_name: owner_name, name: repo_name)
+            end
+
+            def repository_key
+              job_repository&.key || ::SslKey.new(private_key: 'test')
             end
         end
       end

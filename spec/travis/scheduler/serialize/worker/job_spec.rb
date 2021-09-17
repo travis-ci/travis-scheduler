@@ -99,7 +99,6 @@ describe Travis::Scheduler::Serialize::Worker::Job do
 
   describe 'decrypted config' do
     context 'when in a pull request' do
-      let(:head_repo_key) { OpenSSL::PKey::RSA.generate(4096) }
       let(:config) do
         {
           env: [
@@ -108,18 +107,28 @@ describe Travis::Scheduler::Serialize::Worker::Job do
           ]
         }
       end
-      let(:head_repo) { FactoryGirl.create(:repository, github_id: 549744) }
-      let(:pull_request) { PullRequest.new(base_repo_slug: 'travis-ci/travis-yml', head_repo_slug: "#{head_repo.owner_name}/#{head_repo.name}") }
       let(:request) { Request.new(pull_request: pull_request) }
 
       before do
-        head_repo.key.update(private_key: head_repo_key.to_pem, public_key: head_repo_key.public_key)
         build.event_type = 'pull_request'
-        config[:env] << { secure: Base64.encode64(head_repo.key.encrypt('FOO=one')) }
       end
 
-      it do
-        expect(subject.decrypted_config[:env]).to eq(['BAR=bar', 'SECURE [unable to decrypt]', 'SECURE FOO=one'])
+      context 'when head repo is present' do
+        let(:head_repo) { FactoryGirl.create(:repository, github_id: 549744) }
+        let(:head_repo_key) { OpenSSL::PKey::RSA.generate(4096) }
+        let(:pull_request) { PullRequest.new(base_repo_slug: 'travis-ci/travis-yml', head_repo_slug: "#{head_repo.owner_name}/#{head_repo.name}") }
+
+        it do
+          expect(subject.decrypted_config[:env]).to eq(['BAR=bar', 'SECURE MAIN=1'])
+        end
+      end
+
+      context 'when head repo is not found' do
+        let(:pull_request) { PullRequest.new(base_repo_slug: 'travis-ci/travis-yml', head_repo_slug: 'mytest/letssee') }
+
+        it 'returns garbage' do
+          expect(subject.decrypted_config[:env]).to eq(['BAR=bar', 'SECURE [unable to decrypt]'])
+        end
       end
     end
 
