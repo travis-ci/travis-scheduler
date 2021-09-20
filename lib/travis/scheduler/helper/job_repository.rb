@@ -7,6 +7,8 @@ module Travis
         def job_repository
           return job.repository if job.source.event_type != 'pull_request'
 
+          return unless job.source.request.pull_request&.repository_id
+
           base_repo = ::Repository.find(job.source.request.pull_request.repository_id)
 
           return unless base_repo
