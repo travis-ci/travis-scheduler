@@ -35,7 +35,9 @@ module Travis
           }
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
-          data[:oauth_token] = github_oauth_token if config[:prefer_https]
+          data[:oauth_token] = github_oauth_token if config[:prefer_https] || repo&.server_type != 'git'
+
+          data[:sender_login] = sender_login if repo&.server_type != 'git'
           data
         end
 
@@ -175,6 +177,11 @@ module Travis
 
           def compact(hash)
             hash.reject { |_, value| value.nil? }
+          end
+
+          def sender_login
+            @user ||= User.where(id: build.sender_id)&.first
+            @user.login if @user
           end
 
           def allowed_repositories
