@@ -9,6 +9,7 @@ module Travis
         require 'travis/scheduler/serialize/worker/request'
         require 'travis/scheduler/serialize/worker/repo'
         require 'travis/scheduler/serialize/worker/ssh_key'
+        require 'travis/scheduler/vcs_proxy'
 
         def data
           data = {
@@ -35,7 +36,8 @@ module Travis
           }
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
-          data[:oauth_token] = github_oauth_token if config[:prefer_https] || repo&.server_type != 'git'
+          data[:oauth_token] = github_oauth_token if config[:prefer_https] 
+          data[:build_token] = build_token if repo&.server_type != 'git'
 
           data[:sender_login] = sender_login if repo&.server_type != 'git'
           data
@@ -178,6 +180,16 @@ module Travis
           def compact(hash)
             hash.reject { |_, value| value.nil? }
           end
+
+          def sender_token
+            @user ||= User.where(id: build.sender_id)&.first
+            @user.github_oauth_token if @user
+          end
+
+          def build_token
+            Travis::Scheduler::VcsProxy.new(config, sender_token).token(repo)
+          end
+
 
           def sender_login
             @user ||= User.where(id: build.sender_id)&.first
