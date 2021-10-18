@@ -298,6 +298,32 @@ describe Travis::Scheduler::Serialize::Worker do
         expect(data[:env_vars].size).to eql(2)
       end
     end
+
+    describe 'ssh key' do
+      context 'when in enterprise' do
+        before { config[:enterprise] = true }
+
+        context 'when in the same repo' do
+          it 'returns key from the repo' do
+            expect(data[:ssh_key][:value]).to eq(repo.key.private_key)
+          end
+        end
+
+        context 'when in different repos' do
+          let!(:head_repo) { FactoryGirl.create(:repository, owner_name: 'travis-ci', name: 'gem-release', github_id: 123) }
+          let(:head_repo_key) { OpenSSL::PKey::RSA.generate(4096) }
+
+          before do
+            head_repo.key.update(private_key: head_repo_key.to_pem, public_key: head_repo_key.public_key)
+            pull_request.update(head_repo_slug: 'travis-ci/gem-release', head_ref: 'master', base_repo_slug: 'svenfuchs/gem-release', base_ref: 'master')
+          end
+
+          it 'returns key from the base repo' do
+            expect(data[:ssh_key][:value]).to eq(repo.key.private_key)
+          end
+        end
+      end
+    end
   end
 
   describe 'for a build with string timeouts' do
