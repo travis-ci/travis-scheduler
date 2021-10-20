@@ -26,6 +26,7 @@ module Travis
           end
 
           def source_url
+            return repo.vcs_source_host if travis_vcs_proxy?
             return source_git_url if force_private? && !Travis.config.prefer_https
             return source_http_url if Travis.config.prefer_https || managed_by_app?
             (repo.private? || force_private?) ? source_git_url : source_http_url
@@ -51,6 +52,10 @@ module Travis
             vcs_type == 'GithubRepository'
           end
 
+          def travis_vcs_proxy?
+            vcs_type == 'TravisproxyRepository'
+          end
+
           private
 
             # If the repo does not have a custom timeout, look to the repo's
@@ -74,6 +79,7 @@ module Travis
             end
 
             def source_host
+              return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
               repo.vcs_source_host || config[:github][:source_host] || 'github.com'
             end
         end
