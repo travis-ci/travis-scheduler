@@ -40,6 +40,7 @@ module Travis
           data[:build_token] = build_token if repo&.server_type != 'git'
 
           data[:sender_login] = sender_login if repo&.server_type != 'git'
+          Travis.logger.info 'data done'
           data
         end
 
@@ -87,6 +88,7 @@ module Travis
           end
 
           def repository_data
+            Travis.logger.info repo.inspect
             compact(
               id: repo.id,
               github_id: repo.github_id,
