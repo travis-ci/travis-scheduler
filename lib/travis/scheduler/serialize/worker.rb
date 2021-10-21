@@ -89,8 +89,8 @@ module Travis
 
           def repository_data
             Travis.logger.info repo.url
-            Travis.logger.info repo.source_url
-            Travis.logger.info repo.source_host
+            Travis.logger.info source_url
+            Travis.logger.info source_host
             compact(
               id: repo.id,
               github_id: repo.github_id,
@@ -118,7 +118,7 @@ module Travis
 
           def source_url
             # TODO move these things to Build
-            return repo.source_git_url if repo.private? && ssh_key.custom?
+            return repo.source_git_url if repo.private? && ssh_key.custom? && repo&.server_type == 'git'
             repo.source_url
           end
 
