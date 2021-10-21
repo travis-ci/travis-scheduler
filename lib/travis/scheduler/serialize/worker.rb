@@ -88,7 +88,9 @@ module Travis
           end
 
           def repository_data
-            Travis.logger.info repo.inspect
+            Travis.logger.info repo.url
+            Travis.logger.info repo.source_url
+            Travis.logger.info repo.source_host
             compact(
               id: repo.id,
               github_id: repo.github_id,
