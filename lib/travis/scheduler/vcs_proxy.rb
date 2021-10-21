@@ -3,6 +3,15 @@ require 'faraday_middleware'
 module Travis
   module Scheduler
     class VcsProxy < Struct.new(:config, :oauth_token)
+      class Error < StandardError
+        attr_reader :response
+
+        def initialize(msg, response)
+          super(msg)
+          @response = response || {}
+        end
+      end
+
       DEFAULT_HEADERS  = {
         'User-Agent'     => 'Travis-CI-Scheduler/Faraday',
         'Accept'         => 'application/json',
