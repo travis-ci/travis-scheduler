@@ -88,9 +88,6 @@ module Travis
           end
 
           def repository_data
-            Travis.logger.info repo.url
-            Travis.logger.info source_url
-            Travis.logger.info source_host
             compact(
               id: repo.id,
               github_id: repo.github_id,
@@ -147,6 +144,7 @@ module Travis
           end
 
           def source_host
+            return URI(repo.vcs_source_host)&.host if repo&.server_type != 'git'
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           end
 

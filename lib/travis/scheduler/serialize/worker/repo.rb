@@ -79,10 +79,7 @@ module Travis
             end
 
             def source_host
-              #Travis.logger.info 'source_host uri start'
-              #u = URI(repo.vcs_source_host)
-              #Travis.logger.info 'source_host uri end'
-              #return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
+              return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
               repo.vcs_source_host || config[:github][:source_host] || 'github.com'
             end
         end
