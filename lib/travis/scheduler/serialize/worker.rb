@@ -37,10 +37,9 @@ module Travis
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https] 
-          data[:build_token] = build_token if repo&.server_type != 'git'
+          data[:build_token] = build_token if travis_vcs_proxy?
 
-          data[:sender_login] = sender_login if repo&.server_type != 'git'
-          Travis.logger.info 'data done'
+          data[:sender_login] = sender_login if travis_vcs_proxy?
           data
         end
 
@@ -144,7 +143,7 @@ module Travis
           end
 
           def source_host
-            return URI(repo.vcs_source_host)&.host if repo&.server_type != 'git'
+            return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           end
 
@@ -204,6 +203,10 @@ module Travis
               repository_ids << repo.vcs_id
               repository_ids.uniq.sort              
             end
+          end
+
+          def travis_vcs_proxy?
+            repo.vcs_type == 'TravisproxyRepository'
           end
       end
     end
