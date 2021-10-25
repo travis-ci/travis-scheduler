@@ -108,13 +108,13 @@ module Travis
               last_build_state: repo.last_build_state.to_s,
               default_branch: repo.default_branch,
               description: repo.description,
-              server_type: repo.server_type,
+              server_type: repo.server_type || 'git',
             )
           end
 
           def source_url
             # TODO move these things to Build
-            return repo.source_git_url if repo.private? && ssh_key.custom? && repo&.server_type == 'git'
+            return repo.source_git_url if repo.private? && ssh_key.custom? && !travis_vcs_proxy?
             repo.source_url
           end
 
