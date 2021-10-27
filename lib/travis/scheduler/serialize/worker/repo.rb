@@ -63,7 +63,7 @@ module Travis
             def timeout(type)
               timeout = repo.settings.send(:"timeout_#{type}")
               if timeout == nil
-                config = Travis.config.settings&.timeouts.defaults
+                config = Travis.config.settings&.timeouts&.defaults
                 timeout = config[type] if config
               end
               return unless timeout
