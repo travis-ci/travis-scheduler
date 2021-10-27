@@ -61,7 +61,12 @@ module Travis
             end
 
             def timeout(type)
-              return unless timeout = repo.settings.send(:"timeout_#{type}")
+              timeout = repo.settings.send(:"timeout_#{type}")
+              if timeout == nil
+                config = Travis.config.settings.timeouts.defaults
+                timeout = config[type] if config
+              end
+              return unless timeout
               timeout = Integer(timeout)
               timeout * 60 # worker handles timeouts in seconds
             end
