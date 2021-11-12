@@ -40,6 +40,7 @@ module Travis
           data[:build_token] = build_token if travis_vcs_proxy?
 
           data[:sender_login] = sender_login if travis_vcs_proxy?
+	  puts "isproxy: #{travis_vcs_proxy?}"
           data
         end
 

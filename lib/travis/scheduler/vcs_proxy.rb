@@ -35,12 +35,14 @@ module Travis
       }
 
       def initialize(config, oauth_token)
+        puts "init! #{oauth_token.inspect}"
         @oauth_token = oauth_token
         @config = config
       end
 
       def token(repo)
         resp = get("repositories/#{repo.vcs_id}/token/get")
+        puts "resp: #{resp.inspect}"
         resp['token'] if resp
       end
 
@@ -62,6 +64,7 @@ module Travis
       end
 
       def client
+        puts "client, url: #{@config.vcs_proxy_api.inspect}"
         Faraday.new(url: @config.vcs_proxy_api.url, headers: DEFAULT_HEADERS) do |c|
           c.request :oauth2, @oauth_token, token_type: :bearer
           c.request  :retry, RETRY
