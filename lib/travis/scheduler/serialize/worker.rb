@@ -12,6 +12,8 @@ module Travis
         require 'travis/scheduler/vcs_proxy'
 
         def data
+	  puts "DATA!!!!!!!"
+          puts "job: #{job.inspect}"
           data = {
             type: :test,
             vm_config: job.vm_config,
@@ -34,6 +36,7 @@ module Travis
             secrets: job.secrets,
             allowed_repositories: allowed_repositories
           }
+          puts "DATA2 !"
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https] 
@@ -189,6 +192,7 @@ module Travis
           end
 
           def build_token
+            puts "GETTIN BUILD TOKEN!"
             Travis::Scheduler::VcsProxy.new(config, sender_token).token(repo)
           end
 
