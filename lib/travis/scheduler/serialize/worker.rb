@@ -153,6 +153,9 @@ module Travis
             puts "shost: #{repo.vcs_source_host.inspect}"
             return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
+          rescue URI::BadURIError
+            puts "baduri!"
+            repo.vcs_source_host
           end
 
           def cache_settings
