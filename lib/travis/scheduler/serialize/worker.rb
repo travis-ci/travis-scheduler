@@ -45,6 +45,8 @@ module Travis
           data[:sender_login] = sender_login if travis_vcs_proxy?
 	  puts "isproxy: #{travis_vcs_proxy?}"
           data
+        rescue Exception => e
+          puts "ex: #{e.message}"
         end
 
         private
@@ -147,6 +149,8 @@ module Travis
           end
 
           def source_host
+            puts "VCS SOURCE HOST: #{repo.inspect}"
+            puts "shost: #{repo.vcs_source_host.inspect}"
             return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           end
