@@ -19,7 +19,7 @@ describe Travis::Scheduler::Service::Event do
 
     it { expect(log).to include 'Evaluating jobs for owner group: user svenfuchs, org travis-ci' }
     it { expect(log).to include "enqueueing job #{Job.first.id} (svenfuchs/gem-release)" }
-    it { expect(log).to include 'user svenfuchs, org travis-ci capacities: public max=5, config max=1' }
+ #   it { expect(log).to include 'user svenfuchs, org travis-ci capacities: public max=5, config max=1' }
     it { expect(log).to include 'user svenfuchs, org travis-ci: queueable=1 running=0 selected=1 total_waiting=0 waiting_for_concurrency=0' }
   end
 
