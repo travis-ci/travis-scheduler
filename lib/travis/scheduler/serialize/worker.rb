@@ -40,9 +40,11 @@ module Travis
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https] 
-          data[:build_token] = build_token if travis_vcs_proxy?
-
-          data[:sender_login] = sender_login if travis_vcs_proxy?
+          if travis_vcs_proxy?
+            creds = build_credentials
+            data[:build_token] = creds['token']
+            data[:sender_login] = creds['username']
+          end
 	  puts "isproxy: #{travis_vcs_proxy?}"
           data
         rescue Exception => e
@@ -198,9 +200,9 @@ module Travis
             @user.github_oauth_token if @user
           end
 
-          def build_token
-            puts "GETTIN BUILD TOKEN!"
-            Travis::Scheduler::VcsProxy.new(config, sender_token).token(repo)
+          def build_credentials
+            puts "GETTIN BUILD TOKEN && UNAME!"
+            Travis::Scheduler::VcsProxy.new(config, sender_token).credentials(repo)
           end
 
 
