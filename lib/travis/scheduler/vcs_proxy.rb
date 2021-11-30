@@ -44,6 +44,10 @@ module Travis
         resp['token'] if resp
       end
 
+      def credentials(repo)
+        get("repositories/#{repo.vcs_id}/token/get")
+      end
+
       private
 
       def request(method, path, params)

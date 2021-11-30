@@ -36,11 +36,15 @@ module Travis
           }
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
-          data[:oauth_token] = github_oauth_token if config[:prefer_https] 
-          data[:build_token] = build_token if travis_vcs_proxy?
-
-          data[:sender_login] = sender_login if travis_vcs_proxy?
+          data[:oauth_token] = github_oauth_token if config[:prefer_https]
+          if travis_vcs_proxy?
+            creds = build_credentials
+            data[:build_token] = creds['token']
+            data[:sender_login] = creds['username']
+          end
           data
+        rescue Exception => e
+          puts "ex: #{e.message}"
         end
 
         private
@@ -145,6 +149,8 @@ module Travis
           def source_host
             return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
+          rescue Exception => e
+            repo.vcs_source_host
           end
 
           def cache_settings
@@ -187,8 +193,8 @@ module Travis
             @user.github_oauth_token if @user
           end
 
-          def build_token
-            Travis::Scheduler::VcsProxy.new(config, sender_token).token(repo)
+          def build_credentials
+            Travis::Scheduler::VcsProxy.new(config, sender_token).credentials(repo)
           end
 
 
