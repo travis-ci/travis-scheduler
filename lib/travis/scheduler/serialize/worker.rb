@@ -12,8 +12,6 @@ module Travis
         require 'travis/scheduler/vcs_proxy'
 
         def data
-	  puts "DATA!!!!!!!"
-          puts "job: #{job.inspect}"
           data = {
             type: :test,
             vm_config: job.vm_config,
@@ -36,16 +34,14 @@ module Travis
             secrets: job.secrets,
             allowed_repositories: allowed_repositories
           }
-          puts "DATA2 !"
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
-          data[:oauth_token] = github_oauth_token if config[:prefer_https] 
+          data[:oauth_token] = github_oauth_token if config[:prefer_https]
           if travis_vcs_proxy?
             creds = build_credentials
             data[:build_token] = creds['token']
             data[:sender_login] = creds['username']
           end
-	  puts "isproxy: #{travis_vcs_proxy?}"
           data
         rescue Exception => e
           puts "ex: #{e.message}"
@@ -151,12 +147,10 @@ module Travis
           end
 
           def source_host
-            puts "VCS SOURCE HOST: #{repo.inspect}"
-            puts "shost!: #{repo.vcs_source_host.inspect}"
             return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
-          rescue
-            puts "baduri!"
+          rescue Exception => e
+            puts "source host fail: #{e.message}"
             repo.vcs_source_host
           end
 
@@ -201,7 +195,6 @@ module Travis
           end
 
           def build_credentials
-            puts "GETTIN BUILD TOKEN && UNAME!"
             Travis::Scheduler::VcsProxy.new(config, sender_token).credentials(repo)
           end
 

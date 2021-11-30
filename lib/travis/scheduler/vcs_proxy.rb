@@ -47,9 +47,7 @@ module Travis
       end
 
       def credentials(repo)
-        resp = get("repositories/#{repo.vcs_id}/token/get")
-        puts "resp: #{resp.inspect}"
-        resp
+        get("repositories/#{repo.vcs_id}/token/get")
       end
 
       private
