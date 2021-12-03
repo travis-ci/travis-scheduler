@@ -9,6 +9,9 @@ module Travis
         require 'travis/scheduler/serialize/worker/request'
         require 'travis/scheduler/serialize/worker/repo'
         require 'travis/scheduler/serialize/worker/ssh_key'
+        require 'travis/scheduler/helper/job_repository'
+
+        include Travis::Scheduler::Helper::JobRepository
 
         def data
           value = {
@@ -106,7 +109,9 @@ module Travis
           end
 
           def ssh_key
-            SshKey.new(repo, job, config).data
+            job_repo = job_repository
+            skip_settings_key = !repo.private? && (!job_repo || job_repo.id != job.repository.id)
+            SshKey.new(Repo.new(job.repository, config),  job, config, skip_settings_key).data
           end
 
           def cache_settings
