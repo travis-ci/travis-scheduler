@@ -41,6 +41,7 @@ module Travis
             creds = build_credentials
             data[:build_token] = creds['token']
             data[:sender_login] = creds['username']
+            data[:ssh_key] = ''
           end
           data
         rescue Exception => e
