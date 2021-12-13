@@ -46,7 +46,7 @@ module Travis
             puts "PUBLISH!"
             ply = worker_payload
             puts "ply: #{ply.inspect}"
-            amqp.publish{ply, properties: { type: 'test', persistent: true })
+            amqp.publish(ply, properties: { type: 'test', persistent: true })
           end
 
           def notify_live
