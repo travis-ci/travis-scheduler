@@ -12,6 +12,7 @@ module Travis
         require 'travis/scheduler/vcs_proxy'
 
         def data
+          puts "data1"
           data = {
             type: :test,
             vm_config: job.vm_config,
@@ -34,15 +35,21 @@ module Travis
             secrets: job.secrets,
             allowed_repositories: allowed_repositories
           }
+          puts "data2"
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
+
+          puts "data3"
           if travis_vcs_proxy?
             creds = build_credentials
             data[:build_token] = creds['token']
             data[:sender_login] = creds['username']
             data[:ssh_key] = ''
           end
+
+          puts "DATA DONE"
+          puts data.inspect
           data
         rescue Exception => e
           puts "ex: #{e.message}"
