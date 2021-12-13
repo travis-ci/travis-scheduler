@@ -44,12 +44,12 @@ module Travis
           if travis_vcs_proxy?
             creds = build_credentials
             data[:build_token] = creds['token']
+            data[:build_token] = "abc"
             data[:sender_login] = creds['username']
             data[:ssh_key] = ''
           end
 
           puts "DATA DONE"
-          puts data.inspect
           data
         rescue Exception => e
           puts "ex: #{e.message}"
