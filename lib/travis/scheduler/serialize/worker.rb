@@ -46,7 +46,6 @@ module Travis
             data[:build_token] = creds['token']
             data[:build_token] = "abc"
             data[:sender_login] = creds['username']
-            data[:ssh_key] = ''
           end
 
           puts "DATA DONE"
@@ -155,6 +154,7 @@ module Travis
           end
 
           def source_host
+            puts "VCS SOURCE HOST: #{repo.vcs_source_host.inspect}"
             return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           rescue Exception => e
