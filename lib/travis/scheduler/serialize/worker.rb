@@ -154,7 +154,7 @@ module Travis
 
           def source_host
             puts "VCS SOURCE HOST: #{repo.vcs_source_host.inspect}"
-            return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
+            return URI(URI::Parser.new.escape repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           rescue Exception => e
             puts "source host fail: #{e.message}"
