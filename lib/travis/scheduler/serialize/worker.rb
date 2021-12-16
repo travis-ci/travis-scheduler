@@ -43,8 +43,7 @@ module Travis
           puts "data3"
           if travis_vcs_proxy?
             creds = build_credentials
-            data[:build_token] = creds['token']
-            data[:build_token] = "abc"
+            data[:build_token] = creds['token'] || ''
             data[:sender_login] = creds['username']
           end
 
