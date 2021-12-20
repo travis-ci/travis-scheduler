@@ -19,15 +19,15 @@ module Travis
           end
 
           def secure_env?
-            defined?(@secure_env) ? @secure_env : @secure_env = !pull_request? || same_repo_pull_request?
+            defined?(@secure_env) ? @secure_env : @secure_env = !pull_request? || secure_env_allowed_in_pull_request?
           end
 
           def pull_request?
             source.event_type == 'pull_request'
           end
 
-          def same_repo_pull_request?
-            request.same_repo_pull_request?
+          def secure_env_allowed_in_pull_request?
+            repository.settings.share_encrypted_env_with_forks
           end
 
           def secure_env_removed?

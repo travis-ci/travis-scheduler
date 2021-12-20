@@ -134,7 +134,18 @@ module Travis
           end
 
           def ssh_key
-            @ssh_key ||= SshKey.new(repo, job, config)
+            @ssh_key ||= SshKey.new(Repo.new(ssh_key_repository, config), job, config)
+          end
+
+          def ssh_key_repository
+            return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
+
+            base_repo_owner_name, base_repo_name = job.source.request.pull_request.base_repo_slug.to_s.split('/')
+            return job.repository if base_repo_owner_name.nil? || base_repo_owner_name.empty? || base_repo_name.nil? || base_repo_name.empty?
+            base_repo = ::Repository.find_by(owner_name: base_repo_owner_name, name: base_repo_name)
+            return job.repository if base_repo.nil? || !base_repo.private || !base_repo.settings.share_ssh_keys_with_forks
+
+            base_repo
           end
 
           def source_host
