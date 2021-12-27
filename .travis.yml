@@ -1,5 +1,4 @@
 language: ruby
-group: edge
 
 import:
   - travis-ci/build-configs:db-setup.yml
@@ -30,6 +29,7 @@ jobs:
      script: bundle exec rspec spec
    - stage: ":ship: it to quay.io"
      dist: bionic
+     group: edge
      ruby:
      services:
      addons:
