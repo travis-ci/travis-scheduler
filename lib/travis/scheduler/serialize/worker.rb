@@ -37,11 +37,13 @@ module Travis
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
+
           if travis_vcs_proxy?
             creds = build_credentials
-            data[:build_token] = creds['token']
+            data[:build_token] = creds['token'] || ''
             data[:sender_login] = creds['username']
           end
+
           data
         rescue Exception => e
           puts "ex: #{e.message}"
@@ -147,9 +149,10 @@ module Travis
           end
 
           def source_host
-            return URI(repo.vcs_source_host)&.host if travis_vcs_proxy?
+            return URI(URI::Parser.new.escape repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           rescue Exception => e
+            puts "source host fail: #{e.message}"
             repo.vcs_source_host
           end
 
