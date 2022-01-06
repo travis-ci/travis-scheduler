@@ -36,6 +36,11 @@ module Travis
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
+
+          unless data.config[:os_custom].blank?
+            data[:tam_token] = tam_token
+          end
+
           data
         end
 
@@ -182,6 +187,10 @@ module Travis
               repository_ids << repo.vcs_id
               repository_ids.uniq.sort
             end
+          end
+
+          def tam_token
+            Travis::Scheduler::Tam.new(build.sender_id).get_token  
           end
       end
     end
