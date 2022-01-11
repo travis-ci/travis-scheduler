@@ -15,10 +15,14 @@ module Travis
 
           return job.repository if job.source.request.pull_request.head_repo_github_id == base_repo.github_id
 
-          owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
-          return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
+          return base_repo if base_repo.settings.share_ssh_keys_with_forks
 
-          ::Repository.find_by(owner_name: owner_name, name: repo_name)
+          owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
+          return job.repository if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
+
+
+          #::Repository.find_by(owner_name: owner_name, name: repo_name) || 
+          job.repository
         end
       end
     end
