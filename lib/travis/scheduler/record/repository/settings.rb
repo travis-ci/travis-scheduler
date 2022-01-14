@@ -132,7 +132,7 @@ class Repository::Settings < Travis::Settings
   def share_ssh_keys_with_forks
     return super unless super.nil?
     return unless repo = Repository.find_by(id: repository_id)
-    unless ENV['IBM_REPO_SWITCHES_DATE'] return false
+    return false unless ENV['IBM_REPO_SWITCHES_DATE']
 
     repo.created_at <= Date.parse(ENV['IBM_REPO_SWITCHES_DATE'])
   end
