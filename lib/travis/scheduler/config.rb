@@ -4,7 +4,7 @@ module Travis
   module Scheduler
     class Config < Travis::Config
       define amqp:       { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
-             database:   { adapter: 'postgresql', database: "travis_#{env}", encoding: 'unicode', min_messages: 'warning' },
+             database:   { adapter: 'postgresql', database: "travis_#{env}", encoding: 'unicode', min_messages: 'warning', host: 'db', username: 'root', password: 'root' },
              delegate:   { },
              encryption: { key: SecureRandom.hex(64) },
              enterprise: false,
