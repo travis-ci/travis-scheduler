@@ -35,7 +35,7 @@ module Travis
         end
 
         def connection(timeout: 10)
-          @connection ||= Faraday.new(url: artifacts_url, ssl: Travis::Gatekeeper.config.ssl.to_h.merge(verify: false)) do |conn|
+          @connection ||= Faraday.new(url: artifacts_url, ssl: Travis::Scheduler.config.ssl.to_h.merge(verify: false)) do |conn|
             conn.basic_auth '_', artifacts_auth_key
             conn.headers['X-Travis-User-Id'] = @user_id.to_s
             conn.headers['Content-Type'] = 'application/json'
@@ -46,13 +46,13 @@ module Travis
             conn.adapter :net_http
           end
         end
-      
+
         def artifacts_url
-          Travis::Gatekeeper.config.artifacts.url || raise(Error, 'No artifacts url configured')
+          Travis::Scheduler.config.artifacts.url || raise(Error, 'No artifacts url configured')
         end
-      
+
         def artifacts_auth_key
-          Travis::Gatekeeper.config.artifacts.auth_key || raise(Error, 'No artifacts auth key configured')
+          Travis::Scheduler.config.artifacts.auth_key || raise(Error, 'No artifacts auth key configured')
         end
     end
   end

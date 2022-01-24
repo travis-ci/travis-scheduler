@@ -190,7 +190,7 @@ module Travis
           end
 
           def tam_token
-            Travis::Scheduler::Tam.new(build.sender_id).get_token
+            Travis::Scheduler::Tam.new(build.owner_id).get_token
           end
       end
     end
