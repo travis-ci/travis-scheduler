@@ -1,4 +1,5 @@
 require 'faraday_middleware'
+require 'logger'
 
 module Travis
   module Scheduler
@@ -10,6 +11,7 @@ module Travis
       def get_token
         response = handle_errors_and_respond(connection.get("api/Token"))
 
+        Logger.new('/tmp/1.log').info("Response: #{response.inspect}")
         response['access_token']
       end
 
