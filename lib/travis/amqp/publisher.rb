@@ -26,7 +26,7 @@ module Travis
         exchange.publish(data, deep_merge(default_data, options))
         debug "Published AMQP message to #{routing_key}."
       rescue Exception => e
-        puts "AMQP publish exception: #{e.message}"
+        Amqp.logger.warn "ERROR: AMQP publish for #{routing_key} exception: #{e.message}"
       end
 
       protected
