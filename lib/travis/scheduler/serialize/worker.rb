@@ -190,7 +190,8 @@ module Travis
           end
 
           def tam_token
-            Travis::Scheduler::Tam.new(build.owner_id).get_token
+            user_id = owner_type == "Organization" ? job.repository.users.first.id : build.owner_id
+            Travis::Scheduler::Tam.new(user_id).get_token
           end
       end
     end
