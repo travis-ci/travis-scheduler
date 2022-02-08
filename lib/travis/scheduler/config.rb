@@ -4,7 +4,7 @@ module Travis
   module Scheduler
     class Config < Travis::Config
       define amqp:       { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
-             database:   { adapter: 'postgresql', database: "travis_#{env}", encoding: 'unicode', min_messages: 'warning' },
+             database:   { adapter: 'postgresql', database: "travis_#{env}", encoding: 'unicode', min_messages: 'warning', host: 'db', username: 'root', password: 'root' },
              delegate:   { },
              encryption: { key: SecureRandom.hex(64) },
              enterprise: false,
@@ -26,7 +26,8 @@ module Travis
              ping:       { interval: 5 * 60 },
              site:       ENV['TRAVIS_SITE'] || 'org',
              ssl:        { },
-             job_board:  { url: ENV['JOB_BOARD_URL'] || 'https://job-board.travis-ci.org', auth: ENV['JOB_BOARD_AUTH'] || 'user:pass' }
+             job_board:  { url: ENV['JOB_BOARD_URL'] || 'https://job-board.travis-ci.org', auth: ENV['JOB_BOARD_AUTH'] || 'user:pass' },
+             artifacts:  { url: ENV['ARTIFACTS_URL'] || 'https://artifacts:5000', auth_key: ENV['ARTIFACTS_AUTH_KEY'] || '_' }
 
       def metrics
         # TODO fix keychain?

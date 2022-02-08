@@ -94,6 +94,8 @@ module Travis
         end
 
         def virt
+          return 'lxd' unless job.config[:os_custom].blank?
+
           job.config[:virt]
         end
 

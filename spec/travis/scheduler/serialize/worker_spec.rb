@@ -110,6 +110,20 @@ describe Travis::Scheduler::Serialize::Worker do
       )
     end
 
+    context 'when os_custom is set' do
+      let(:token) { '123' }
+
+      before do
+        job.update(config: job.config.merge(os_custom: 'test1'))
+        stub_request(:get, 'https://artifacts:5000/api/Token')
+          .to_return(status: 200, body: JSON.dump('access_token' => token))
+      end
+
+      it 'returns the right token' do
+        expect(data[:tam_token]).to eq(token)
+      end
+    end
+
     context 'when prefer_https is set and the repo is private' do
       before { Travis.config.prefer_https = true }
       after  { Travis.config.prefer_https = false }
