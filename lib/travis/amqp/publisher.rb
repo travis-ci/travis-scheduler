@@ -22,7 +22,7 @@ module Travis
 
       def publish(data, options = {})
         data = MultiJson.encode(data)
-        puts "\n\n PUBLISHING #{data.ispect}\n\n"
+        puts "\n\n PUBLISHING #{data.inspect}\n\n"
         exchange.publish(data, deep_merge(default_data, options))
         debug "Published AMQP message to #{routing_key}."
       end
