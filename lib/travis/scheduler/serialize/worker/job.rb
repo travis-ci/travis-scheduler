@@ -49,6 +49,7 @@ module Travis
           end
 
           def decrypt(str)
+            puts "DECRYPTING USING KEY: #{repository_key&.data.inspect}\n\n"
             repository_key.decrypt(Base64.decode64(str)) if str.is_a?(String)
           rescue OpenSSL::PKey::RSAError => e
           end
