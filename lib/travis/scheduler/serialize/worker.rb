@@ -135,7 +135,7 @@ module Travis
 
           def ssh_key
             @ssh_key ||= SshKey.new(Repo.new(ssh_key_repository, config), job, config)
-            puts "SSHKEY USED: #{@ssh_key.inspect}\n\n"
+            puts "KEY USED: #{@ssh_key&.data}"
             @ssh_key
           end
 
