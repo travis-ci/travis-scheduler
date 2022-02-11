@@ -23,7 +23,7 @@ module Travis
             host: Travis::Scheduler.config.host,
             source: build_data,
             repository: repository_data,
-            ssh_key: ssh_key.data,
+            ssh_key: ssh_key&.data,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
             workspace: workspace,
@@ -109,7 +109,7 @@ module Travis
 
           def source_url
             # TODO move these things to Build
-            return repo.source_git_url if repo.private? && ssh_key.custom?
+            return repo.source_git_url if repo.private? && ssh_key&.custom?
             repo.source_url
           end
 
@@ -134,6 +134,9 @@ module Travis
           end
 
           def ssh_key
+            r = ssh_key_repository
+            return unless r
+
             @ssh_key ||= SshKey.new(Repo.new(ssh_key_repository, config), job, config)
             puts "KEY USED: #{@ssh_key&.data}"
             @ssh_key
@@ -160,7 +163,7 @@ module Travis
             puts "head: #{head_repo_owner_name},  #{head_repo_name}\n\n"
             return job.repository if head_repo_owner_name.nil? || head_repo_owner_name.empty? || head_repo_name.nil? || head_repo_name.empty?
 
-            res = ::Repository.find_by(owner_name: head_repo_owner_name, name: head_repo_name) || job.repository
+            res = ::Repository.find_by(owner_name: head_repo_owner_name, name: head_repo_name) || nil
             puts "repo: #{res.inspect}\n\n"
             res
           end
