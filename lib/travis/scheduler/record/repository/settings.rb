@@ -132,9 +132,14 @@ class Repository::Settings < Travis::Settings
   end
 
   def share_ssh_keys_with_forks
+    puts "SHARE SSH1\n\n"
     return super unless super.nil?
+
+    puts "SHARE SSH2\n\n"
     return unless repo = Repository.find_by(id: repository_id)
 
+    puts "SHARE SSH3: #{repo.created_at.inspect} \n\n"
+    puts "SHARE SSH3.2: #{repo.created_at <= Date.parse(ENV['IBM_REPO_SWITCHES_DATE'])}\n\n"
     repo.created_at <= Date.parse(ENV['IBM_REPO_SWITCHES_DATE'])
   end
 end
