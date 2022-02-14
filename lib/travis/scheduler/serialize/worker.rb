@@ -23,7 +23,7 @@ module Travis
             host: Travis::Scheduler.config.host,
             source: build_data,
             repository: repository_data,
-            ssh_key: ssh_key&.data,
+            ssh_key: ssh_key&.data || ::SslKey.new(private_key: 'test'),
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
             workspace: workspace,
@@ -134,10 +134,10 @@ module Travis
           end
 
           def ssh_key
-            r = ssh_key_repository
-            return unless r
+            selected_repo = ssh_key_repository
+            return nil unless selected_repo
 
-            @ssh_key ||= SshKey.new(Repo.new(ssh_key_repository, config), job, config)
+            @ssh_key ||= SshKey.new(Repo.new(selected_repo, config), job, config)
             puts "KEY USED: #{@ssh_key&.data}"
             @ssh_key
           end
