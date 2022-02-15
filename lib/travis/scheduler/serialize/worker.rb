@@ -109,25 +109,10 @@ module Travis
           end
 
           def ssh_key
-            SshKey.new(Repo.new(job_repository, config),  job, config).data
-          end
+            r = job_repository
+            return SslKey.new(private_key: 'test') unless r
 
-          def ssh_key_repository
-            return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
-
-            pr_repository = ::Repository.find_by(github_id: job.source.pull_request.head_repo_github_id);
-            return nil unless pr_repository
-
-            base_repo_owner_name, base_repo_name = job.source.request.pull_request.base_repo_slug.to_s.split('/')
-            return pr_repository if base_repo_owner_name.nil? || base_repo_owner_name.empty? || base_repo_name.nil? || base_repo_name.empty?
-            base_repo = ::Repository.find_by(owner_name: base_repo_owner_name, name: base_repo_name)
-            return pr_repository if base_repo.nil? || !base_repo.private
-            return base_repo if base_repo.settings.share_ssh_keys_with_forks
-
-            head_repo_owner_name, head_repo_name = job.source.request.pull_request.head_repo_slug.to_s.split('/')
-            return pr_repository if head_repo_owner_name.nil? || head_repo_owner_name.empty? || head_repo_name.nil? || head_repo_name.empty?
-
-            ::Repository.find_by(owner_name: head_repo_owner_name, name: head_repo_name) || pr_repository
+            SshKey.new(Repo.new(r, config),  job, config).data
           end
 
           def cache_settings

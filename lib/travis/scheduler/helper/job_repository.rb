@@ -25,8 +25,7 @@ module Travis
           return pr_repository if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
 
 
-          #::Repository.find_by(owner_name: owner_name, name: repo_name) || 
-          pr_repository
+          ::Repository.find_by(owner_name: owner_name, name: repo_name) || nil
         end
       end
     end
