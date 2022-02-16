@@ -31,13 +31,13 @@ describe Travis::Scheduler::Serialize::Worker::Job do
     describe 'with a pull_request event' do
       before { build.event_type = 'pull_request' }
 
-      describe 'from the same repository' do
-        before { request.stubs(:same_repo_pull_request?).returns(true) }
+      describe 'with secure env allowed in the PR' do
+        before { repo.settings.stubs(:share_encrypted_env_with_forks).returns(true) }
         it { expect(subject.secure_env?).to eq(true) }
       end
 
-      describe 'from a different repository' do
-        before { request.stubs(:same_repo_pull_request?).returns(false) }
+      describe 'with secure env forbidden in the PR' do
+        before { repo.settings.stubs(:share_encrypted_env_with_forks).returns(false) }
         it { expect(subject.secure_env?).to eq(false) }
       end
     end
@@ -62,7 +62,7 @@ describe Travis::Scheduler::Serialize::Worker::Job do
 
         context "when .travis.yml defines a secure var" do
           let(:config) { { env: { secure: "secret" } } }
-          it { expect(subject.secure_env_removed?).to eq(true) }
+          it { expect(subject.secure_env_removed?).to eq(false) }
         end
 
         context "when repository settings define a secure var" do

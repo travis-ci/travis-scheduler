@@ -57,10 +57,12 @@ RSpec.configure do |c|
     Travis::Scheduler.instance_variable_set(:@config, nil) # TODO remove once everything uses context
     Travis::Scheduler.redis.flushall
     Travis::Amqp::Publisher.any_instance.stubs(:publish)
+    ENV['IBM_REPO_SWITCHES_DATE'] = '2021-10-01'
   end
 
   c.after do
     DatabaseCleaner.clean
+    ENV['IBM_REPO_SWITCHES_DATE'] = nil
   end
 
   if ENV['SHOW_QUERIES']
