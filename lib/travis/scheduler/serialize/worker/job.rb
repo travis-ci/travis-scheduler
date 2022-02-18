@@ -27,7 +27,7 @@ module Travis
           end
 
           def secure_env_allowed_in_pull_request?
-            repository.settings.share_encrypted_env_with_forks
+            repository.settings.share_encrypted_env_with_forks || request.same_repo_pull_request?
           end
 
           def secure_env_removed?
