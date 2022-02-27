@@ -2,6 +2,10 @@ class JobConfig < ActiveRecord::Base
   def config=(config)
     self.config_json = config if has_attribute?(:config_json)
     super
+  end
+
+  def save(arg)
+    super(arg)
   rescue Encoding::UndefinedConversionError
   end
 end
@@ -14,8 +18,8 @@ class Job < ActiveRecord::Base
 
     def queueable
       # sets jobs order based on priority first, ie: 5, nil, -5
-      jobs = where(state: :created).order("COALESCE(priority, 0) desc").order(:id)
-      jobs = jobs.joins(SQL[:queueable]).order(:id) if ENV['USE_QUEUEABLE_JOBS']
+      jobs = where(state: :created).order(Arel.sql("COALESCE(priority, 0) desc")).order(:id)
+      jobs = jobs.joins(Arel.sql(SQL[:queueable])).order(:id) if ENV['USE_QUEUEABLE_JOBS']
       jobs
     end
 
@@ -65,7 +69,7 @@ class Job < ActiveRecord::Base
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
   belongs_to :stage
-  belongs_to :config, foreign_key: :config_id, class_name: JobConfig
+  belongs_to :config, foreign_key: :config_id, class_name: 'JobConfig'
   has_one :queueable
 
   serialize :config
@@ -81,7 +85,7 @@ class Job < ActiveRecord::Base
 
   def queueable=(value)
     if value
-      queueable || create_queueable
+       queueable || new_queueable
     else
       Queueable.where(job_id: id).delete_all
     end
@@ -102,5 +106,11 @@ class Job < ActiveRecord::Base
 
   def name
     config[:name]
+  end
+
+  def new_queueable
+    return if repository_id.blank? # to avoid trying save objects without repository_id
+    saved = new_record? ? save : true # saves if it is a new record
+    create_queueable if saved # it is allowed to create queueable records only for jobs which are persisting in the database
   end
 end

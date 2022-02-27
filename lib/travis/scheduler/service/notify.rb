@@ -95,7 +95,7 @@ module Travis
           def redirect_queue
             queue = redirections[job.queue] or return
             info MSGS[:redirect] % [job.queue, queue]
-            job.update_attributes!(queue: queue)
+            job.update!(queue: queue)
           end
 
           def redirections

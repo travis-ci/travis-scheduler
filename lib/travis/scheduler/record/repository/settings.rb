@@ -96,7 +96,7 @@ class Repository::Settings < Travis::Settings
 
   validates_with TimeoutsValidator
 
-  def update_attributes!(attrs)
+  def update!(attrs)
     attrs.each { |key, value| send(:"#{key}=", value) }
     save
   end

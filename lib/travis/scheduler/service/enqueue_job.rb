@@ -22,7 +22,7 @@ module Travis
         private
 
           def set_queued
-            job.update_attributes!(state: :queued, queued_at: Time.now.utc)
+            job.update!(state: :queued, queued_at: Time.now.utc)
             job.queueable = false
           end
           with :set_queued, :transaction

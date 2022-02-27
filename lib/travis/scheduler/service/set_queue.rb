@@ -13,7 +13,7 @@ module Travis
 
         def run
           info MSGS[:queue] % [queue, job.id]
-          job.update_attributes!(queue: queue)
+          job.update!(queue: queue)
         end
 
         private
