@@ -5,8 +5,6 @@ import:
 
 rvm: 2.7.5
 
-cache: bundler
-
 env:
   matrix:
   - RAKE_TASK=spec
