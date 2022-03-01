@@ -22,7 +22,7 @@ module Travis
             host: Travis::Scheduler.config.host,
             source: build_data,
             repository: repository_data,
-            ssh_key: ssh_key&.data || ::SslKey.new(private_key: 'test'),
+            ssh_key: ssh_key&.data || nil,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
             workspace: workspace,
