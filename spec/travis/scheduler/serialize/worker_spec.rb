@@ -357,7 +357,10 @@ describe Travis::Scheduler::Serialize::Worker do
           end
 
           context 'when repo is not private' do
-            before { repo.update(private: false) }
+            before do
+              repo.update(private: false)
+              repo.update(created_at: Time.now)
+            end
 
             it 'returns keys from the head repo' do
               expect(data[:ssh_key][:value]).to eq(head_repo.key.private_key)
