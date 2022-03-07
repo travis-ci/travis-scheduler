@@ -40,8 +40,8 @@ module Travis
 
           if travis_vcs_proxy?
             creds = build_credentials
-            data[:build_token] = creds['token'] || ''
-            data[:sender_login] = creds['username']
+            data[:build_token] = (creds['token'] if creds) || ''
+            data[:sender_login] = (creds['username'] if creds) || ''
           end
 
           data

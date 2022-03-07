@@ -21,10 +21,10 @@ module Travis
       end
 
       def publish(data, options = {})
+        return unless data
+
         data = MultiJson.encode(data)
-      	return unless data
         exchange.publish(data, deep_merge(default_data, options))
-        puts "Published AMQP message to #{routing_key}."
       end
 
       protected
