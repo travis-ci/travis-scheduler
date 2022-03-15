@@ -133,7 +133,7 @@ module Travis
           end
 
           def selected_repo
-            @selected_repo || ssh_key_repository
+            @selected_repo ||= ssh_key_repository
           end
 
           def ssh_key
