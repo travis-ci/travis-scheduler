@@ -15,7 +15,7 @@ describe Repository do
 
       before { repo.update(created_at: created_at) }
 
-      subject { repo.settings.share_ssh_keys_with_forks }
+      subject { repo.settings.share_ssh_keys_with_forks? }
 
       context 'when repo is old' do
         it { is_expected.to be true }
