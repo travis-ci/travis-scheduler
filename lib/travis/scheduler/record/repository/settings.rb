@@ -92,7 +92,7 @@ class Repository::Settings < Travis::Settings
   attribute :timeout_log_silence
   attribute :allow_config_imports, Boolean, default: false
   attribute :share_encrypted_env_with_forks, Boolean, default: false
-  attribute :share_ssh_keys_with_forks, Boolean
+  attribute :share_ssh_keys_with_forks, Boolean, default: nil
 
   validates :maximum_number_of_builds, numericality: true
 
@@ -131,9 +131,10 @@ class Repository::Settings < Travis::Settings
     env_vars.any? { |v| !v.public? }
   end
 
-  def share_ssh_keys_with_forks
-    return super unless super.nil?
+  def share_ssh_keys_with_forks?
+    return share_ssh_keys_with_forks unless share_ssh_keys_with_forks.nil?
     return unless repo = Repository.find_by(id: repository_id)
+    return false unless ENV['IBM_REPO_SWITCHES_DATE']
 
     repo.created_at <= Date.parse(ENV['IBM_REPO_SWITCHES_DATE'])
   end
