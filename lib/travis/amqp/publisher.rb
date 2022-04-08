@@ -25,6 +25,7 @@ module Travis
 
         data = MultiJson.encode(data)
         exchange.publish(data, deep_merge(default_data, options))
+        debug "Published AMQP message to #{routing_key}."
       end
 
       protected

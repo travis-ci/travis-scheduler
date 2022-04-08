@@ -120,7 +120,7 @@ module Travis
 
           def source_url
             # TODO move these things to Build
-            return repo.source_git_url if repo.private? && ssh_key.custom? && !travis_vcs_proxy?
+            return repo.source_git_url if repo.private? && ssh_key&.custom? && !travis_vcs_proxy?
 
             repo.source_url
           end
@@ -174,8 +174,7 @@ module Travis
             return URI(URI::Parser.new.escape repo.vcs_source_host)&.host if travis_vcs_proxy?
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           rescue Exception => e
-            puts "source host fail: #{e.message}"
-            repo.vcs_source_host
+            repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           end
 
           def cache_settings
