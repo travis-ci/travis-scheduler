@@ -83,7 +83,7 @@ module Travis
               repo.vcs_source_host || config[:github][:source_host] || 'github.com'
             rescue Exception => e
               puts "source host fail: #{e.message}"
-              repo.vcs_source_host
+              repo.vcs_source_host || config[:github][:source_host] || 'github.com'
             end
         end
       end
