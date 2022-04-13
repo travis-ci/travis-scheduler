@@ -95,6 +95,7 @@ describe Travis::Scheduler::Serialize::Worker do
           last_build_state: 'passed',
           default_branch: 'branch',
           description: 'description',
+          server_type: 'git',
         },
         ssh_key: nil,
         timeouts: {
@@ -274,6 +275,7 @@ describe Travis::Scheduler::Serialize::Worker do
           last_build_state: 'passed',
           default_branch: 'branch',
           description: 'description',
+          server_type: 'git',
         },
         ssh_key: nil,
         timeouts: {

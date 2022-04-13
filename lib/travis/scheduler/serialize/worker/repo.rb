@@ -11,7 +11,7 @@ module Travis
             :last_build_id, :last_build_number, :last_build_started_at,
             :last_build_finished_at, :last_build_duration, :last_build_state,
             :default_branch, :description, :key, :settings, :private?,
-            :managed_by_app?, :installation, :vcs_id, :vcs_type, :url, :vcs_source_host
+            :managed_by_app?, :installation, :vcs_id, :vcs_type, :url, :vcs_source_host, :server_type
 
           def vm_type
             Features.active?(:premium_vms, repo) ? :premium : :default
@@ -26,6 +26,7 @@ module Travis
           end
 
           def source_url
+            return repo.vcs_source_host if travis_vcs_proxy?
             return source_git_url if force_private? && !Travis.config.prefer_https
             return source_http_url if Travis.config.prefer_https || managed_by_app?
             (repo.private? || force_private?) ? source_git_url : source_http_url
@@ -51,6 +52,10 @@ module Travis
             vcs_type == 'GithubRepository'
           end
 
+          def travis_vcs_proxy?
+            vcs_type == 'TravisproxyRepository'
+          end
+
           private
 
             # If the repo does not have a custom timeout, look to the repo's
@@ -74,6 +79,10 @@ module Travis
             end
 
             def source_host
+              return URI(URI::Parser.new.escape repo.vcs_source_host)&.host if travis_vcs_proxy?
+              repo.vcs_source_host || config[:github][:source_host] || 'github.com'
+            rescue Exception => e
+              puts "source host fail: #{e.message}"
               repo.vcs_source_host || config[:github][:source_host] || 'github.com'
             end
         end
