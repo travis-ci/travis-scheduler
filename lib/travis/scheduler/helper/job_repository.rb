@@ -17,6 +17,8 @@ module Travis
 
           return base_repo if base_repo.settings.share_ssh_keys_with_forks
 
+          return base_repo unless base_repo.settings.ssh_key
+
           pr_repository = ::Repository.find_by(github_id: job.source.request.pull_request.head_repo_github_id);
 
           return unless pr_repository
