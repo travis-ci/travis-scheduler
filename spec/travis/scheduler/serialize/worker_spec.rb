@@ -113,7 +113,7 @@ describe Travis::Scheduler::Serialize::Worker do
     context 'when prefer_https is set and the repo is private' do
       before { Travis.config.prefer_https = true }
       after  { Travis.config.prefer_https = false }
-      before { repo.update_attributes!(private: true) }
+      before { repo.update!(private: true) }
 
       it 'sets the repo source_url to an http url' do
         expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
@@ -124,7 +124,7 @@ describe Travis::Scheduler::Serialize::Worker do
       let!(:installation) { FactoryGirl.create(:installation, github_id: rand(1000), owner_id: repo.owner_id, owner_type: repo.owner_type) }
 
       describe 'on a private repo with a custom ssh key' do
-        before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
+        before { repo.update!(private: true, managed_by_installation_at: Time.now) }
         before { repo.settings.ssh_key = { value: 'settings key' } }
 
         it 'sets the repo source_url to an ssh git url' do
@@ -137,7 +137,7 @@ describe Travis::Scheduler::Serialize::Worker do
       end
 
       describe 'on a private repo' do
-        before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
+        before { repo.update!(private: true, managed_by_installation_at: Time.now) }
 
         it 'sets the repo source_url to an http url' do
           expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
@@ -149,7 +149,7 @@ describe Travis::Scheduler::Serialize::Worker do
       end
 
       describe 'on a public repo' do
-        before { repo.update_attributes!(private: false, managed_by_installation_at: Time.now) }
+        before { repo.update!(private: false, managed_by_installation_at: Time.now) }
 
         it 'sets the repo source_url to an http url' do
           expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
@@ -208,7 +208,7 @@ describe Travis::Scheduler::Serialize::Worker do
     let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '62aaef', 'repo' => {'full_name' => 'travis-ci/gem-release'} } } } }
     let(:pull_request) { PullRequest.create(head_ref: 'head_branch', head_repo_slug: 'travis-ci/gem-release') }
 
-    before { request.update_attributes(pull_request: pull_request, base_commit: '0cd9ff', head_commit: '62aaef') }
+    before { request.update(pull_request: pull_request, base_commit: '0cd9ff', head_commit: '62aaef') }
 
     it 'data' do
       expect(data).to eq(
@@ -408,12 +408,12 @@ describe Travis::Scheduler::Serialize::Worker do
 
     describe 'outside enterprise' do
       describe 'on a public repo' do
-        before { repo.update_attributes!(private: false) }
+        before { repo.update!(private: false) }
         include_examples 'does not include an ssh key'
       end
 
       describe 'on a private repo' do
-        before { repo.update_attributes!(private: true) }
+        before { repo.update!(private: true) }
         include_examples 'includes an ssh key'
       end
     end
@@ -422,12 +422,12 @@ describe Travis::Scheduler::Serialize::Worker do
       before { config[:enterprise] = true }
 
       describe 'on a public repo' do
-        before { repo.update_attributes!(private: false) }
+        before { repo.update!(private: false) }
         include_examples 'includes an ssh key'
       end
 
       describe 'on a private repo' do
-        before { repo.update_attributes!(private: true) }
+        before { repo.update!(private: true) }
         include_examples 'includes an ssh key'
       end
     end
@@ -439,12 +439,12 @@ describe Travis::Scheduler::Serialize::Worker do
     end
 
     describe 'preference set to true' do
-      before { repo.owner.update_attributes(preferences: { keep_netrc: true }) }
+      before { repo.owner.update(preferences: { keep_netrc: true }) }
       it { expect(data[:keep_netrc]).to be true }
     end
 
     describe 'preference set to false' do
-      before { repo.owner.update_attributes(preferences: { keep_netrc: false }) }
+      before { repo.owner.update(preferences: { keep_netrc: false }) }
       it { expect(data[:keep_netrc]).to be false }
     end
   end

@@ -28,7 +28,7 @@ module Travis
       def post
         response = http.post(PATH, JSON.dump(payload))
         log response.status
-      rescue Faraday::ClientError => e
+      rescue Faraday::ClientError, Faraday::ServerError => e
         log e.response[:status], e.response[:body]
         raise
       end

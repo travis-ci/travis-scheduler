@@ -208,7 +208,7 @@ describe Travis::Scheduler::Jobs::Select do
 
   describe 'with an educational status, allowing 2 educational jobs' do
     before { config[:limit][:education] = 2 }
-    before { user.update_attributes!(education: true) }
+    before { user.update!(education: true) }
 
     describe 'with private jobs only' do
       before { create_jobs(1, private: true, state: :started) }
@@ -349,7 +349,7 @@ describe Travis::Scheduler::Jobs::Select do
 
   describe 'with a boost of 5 and a repo settings limit 3' do
     before { redis.set("scheduler.owner.limit.#{user.login}", 5) }
-    before { repo.settings.update_attributes!(maximum_number_of_builds: 3) }
+    before { repo.settings.update!(maximum_number_of_builds: 3) }
 
     describe 'with private jobs only' do
       before { create_jobs(1, private: true, state: :started) }
@@ -386,7 +386,7 @@ describe Travis::Scheduler::Jobs::Select do
   describe 'with a boost of 4, a two jobs plan, and a repo setting of 3' do
     before { subscribe(:two) }
     before { redis.set("scheduler.owner.limit.#{user.login}", 4) }
-    before { repo.settings.update_attributes!(maximum_number_of_builds: 3) }
+    before { repo.settings.update!(maximum_number_of_builds: 3) }
 
     describe 'with private jobs only' do
       before { create_jobs(1, private: true, state: :started) }

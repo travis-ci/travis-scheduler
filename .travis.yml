@@ -3,9 +3,7 @@ language: ruby
 import:
   - travis-ci/build-configs:db-setup.yml
 
-rvm: 2.6.5
-
-cache: bundler
+rvm: 2.7.5
 
 env:
   matrix:
@@ -13,6 +11,10 @@ env:
   global:
     - secure: BdVC3OHqYcgePLrkKIk28Ewn/dxCYFf3Cx+Q8P+BCDj6UPJyRSbKmILBzuX96H5xhKmUFo0A/upUhJI9UUP9aXHO7MzRe04/c88QdO4wGacVUaIyB20S0pr262zbc/nA50K9cVgpmWc64n6uQR1tgM6ZyyBnBeXkLzCAOHPq99I=
     - PATH=/snap/bin:$PATH
+
+before_install:
+  - gem uninstall -v '>=2' -i $(rvm gemdir)@global -ax bundler || true
+  - gem install bundler -v '2.3.7'
 
 addons:
   - apt:
