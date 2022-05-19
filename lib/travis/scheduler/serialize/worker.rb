@@ -149,7 +149,10 @@ module Travis
             return job.repository if base_repo_owner_name.nil? || base_repo_owner_name.empty? || base_repo_name.nil? || base_repo_name.empty?
             base_repo = ::Repository.find_by(owner_name: base_repo_owner_name, name: base_repo_name)
             return job.repository if base_repo.nil?
+
             return base_repo if base_repo.settings.share_ssh_keys_with_forks?
+
+            return base_repo unless base_repo.settings.ssh_key
 
             head_repo_owner_name, head_repo_name = job.source.request.pull_request.head_repo_slug.to_s.split('/')
             return job.repository if head_repo_owner_name.nil? || head_repo_owner_name.empty? || head_repo_name.nil? || head_repo_name.empty?
