@@ -362,13 +362,36 @@ describe Travis::Scheduler::Serialize::Worker do
               repo.update(created_at: Time.now)
             end
 
+            it 'returns keys from the base repo' do
+              expect(data[:ssh_key][:value]).to eq(repo.key.private_key)
+            end
+          end
+
+          context 'when repo is not private but contains custom key' do
+            before do
+              repo.update(private: false)
+              repo.update(created_at: Time.now)
+              repo.update(settings: {ssh_key: {value: 'settings key'}})
+            end
+
             it 'returns keys from the head repo' do
               expect(data[:ssh_key][:value]).to eq(head_repo.key.private_key)
             end
           end
 
-          context 'when not sharing SSH keys with forks' do
+          context 'when not sharing SSH keys with forks but no custom key defined' do
             before { repo.update(created_at: Time.now) }
+
+            it 'returns keys from the base repo' do
+              expect(data[:ssh_key][:value]).to eq(repo.key.private_key)
+            end
+          end
+
+          context 'when not sharing SSH keys with forks and base repo has a custom key' do
+            before {
+              repo.update(created_at: Time.now)
+              repo.update(settings: {ssh_key: {value: 'settings key'}})
+            }
 
             it 'returns keys from the head repo' do
               expect(data[:ssh_key][:value]).to eq(head_repo.key.private_key)
