@@ -5,7 +5,7 @@ module Travis
         module Config
           class Decrypt < Struct.new(:config, :decryptor, :options)
             def apply
-              [:env, :global_env].each do |key|
+              [:env, :global_env, :vault].each do |key|
                 config[key] = process_env(config[key]) if config[key]
               end
 
