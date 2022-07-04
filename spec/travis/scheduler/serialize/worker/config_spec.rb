@@ -74,7 +74,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
 
     describe 'decrypts vault secure token' do
       let(:config) { { vault: { token: { secure: encrypt('my_key') } }, jobs:
-        { include: [{ vault: { token: { secure: encrypt('my_key_other') } } }] } } }
+        { env: [{ GAR: 'DAR'  }], include: [{ vault: { token: { secure: encrypt('my_key_other') } } }] } } }
       it { should eql vault: {token: 'my_key'} }
     end
   end
