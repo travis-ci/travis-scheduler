@@ -76,6 +76,11 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       let(:config) { { vault: { token: { secure: encrypt('my_key') } } } }
       it { should eql vault: {token: 'my_key'} }
     end
+
+    describe 'clears vault unsecure token' do
+      let(:config) { { vault: { token:  'my_key' } }  }
+      it { should eql vault: {} }
+    end
   end
 
   describe 'with secure env disabled' do

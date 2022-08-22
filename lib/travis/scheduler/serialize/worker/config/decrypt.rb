@@ -9,12 +9,17 @@ module Travis
                 config[key] = process_env(config[key]) if config[key]
               end
 
+              force_vault_to_be_secure!(config)
               config[:vault] = decryptor.decrypt(config[:vault]) if config[:vault]
               config[:addons] = decryptor.decrypt(config[:addons]) if config[:addons]
               config
             end
 
             private
+
+              def force_vault_to_be_secure!(config)
+                config[:vault].delete(:token) if config[:vault] && config.dig(:vault, :token).is_a?(String)
+              end
 
               def secure_env?
                 !!options[:secure_env]
