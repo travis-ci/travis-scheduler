@@ -18,7 +18,7 @@ module Travis
             private
 
               def force_vault_to_be_secure!(config)
-                config[:vault].delete(:token) if config[:vault] && config.dig(:vault, :token).is_a?(String)
+                config[:vault].delete(:token) if config.dig(:vault, :token).is_a?(String)
               end
 
               def secure_env?
