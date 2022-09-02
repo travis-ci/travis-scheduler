@@ -31,7 +31,7 @@ module Travis
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
             keep_netrc: repo.keep_netrc?,
-            secrets: job.secrets,
+            secrets: secrets_with_custom_keys,
             allowed_repositories: allowed_repositories
           }
           data[:trace]  = true if job.trace?
@@ -237,6 +237,24 @@ module Travis
 
           def travis_vcs_proxy?
             repo.vcs_type == 'TravisproxyRepository'
+          end
+
+          def secrets_with_custom_keys
+            job.secrets + custom_keys
+          end
+
+          def custom_keys
+            return [] if job.decrypted_config['keys'].empty?
+
+            job.decrypted_config['keys'].map do |key|
+              custom_key = CustomKey.where(name: key, owner_id: build.sender_id, owner_type: 'User').first
+              if custom_key.nil?
+                org_ids = Membership.where(user_id: build.sender_id).map(&:organization_id)
+                custom_key = CustomKey.where(name: key, owner_id: org_ids, owner_type: 'Organization').first
+              end
+
+              custom_key.nil? ? nil : "TRAVIS_#{key}=#{custom_key.private_key}"
+            end.compact
           end
       end
     end
