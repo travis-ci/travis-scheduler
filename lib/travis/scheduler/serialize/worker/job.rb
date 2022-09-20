@@ -19,7 +19,7 @@ module Travis
           end
 
           def secure_env?
-            defined?(@secure_env) ? @secure_env : @secure_env = !pull_request? || secure_env_allowed_in_pull_request?
+            defined?(@secure_env) ? @secure_env : (@secure_env = (!pull_request? || secure_env_allowed_in_pull_request?))
           end
 
           def pull_request?
