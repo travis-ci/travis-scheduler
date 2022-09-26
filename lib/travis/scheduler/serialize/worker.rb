@@ -19,7 +19,7 @@ module Travis
             vm_size: job.vm_size,
             queue: job.queue,
             config: job.decrypted_config,
-            env_vars: job.env_vars,
+            env_vars: env_vars_with_custom_keys,
             job: job_data,
             host: Travis::Scheduler.config.host,
             source: build_data,
@@ -31,7 +31,7 @@ module Travis
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
             keep_netrc: repo.keep_netrc?,
-            secrets: secrets_with_custom_keys,
+            secrets: job.secrets,
             allowed_repositories: allowed_repositories
           }
           data[:trace]  = true if job.trace?
@@ -239,8 +239,8 @@ module Travis
             repo.vcs_type == 'TravisproxyRepository'
           end
 
-          def secrets_with_custom_keys
-            job.secrets + custom_keys
+          def env_vars_with_custom_keys
+            job.env_vars + custom_keys
           end
 
           def custom_keys
@@ -253,7 +253,7 @@ module Travis
                 custom_key = CustomKey.where(name: key, owner_id: org_ids, owner_type: 'Organization').first
               end
 
-              custom_key.nil? ? nil : "TRAVIS_#{key}=\"#{custom_key.private_key}\""
+              custom_key.nil? ? nil : { name: "TRAVIS_#{key}", value: custom_key.private_key, public: false, branch: nil }
             end.compact
           end
       end
