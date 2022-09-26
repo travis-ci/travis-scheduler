@@ -244,16 +244,16 @@ module Travis
           end
 
           def custom_keys
-            return [] if job.decrypted_config['keys'].empty?
+            return [] if job.config[:keys].empty?
 
-            job.decrypted_config['keys'].map do |key|
+            job.config[:keys].map do |key|
               custom_key = CustomKey.where(name: key, owner_id: build.sender_id, owner_type: 'User').first
               if custom_key.nil?
                 org_ids = Membership.where(user_id: build.sender_id).map(&:organization_id)
                 custom_key = CustomKey.where(name: key, owner_id: org_ids, owner_type: 'Organization').first
               end
 
-              custom_key.nil? ? nil : "TRAVIS_#{key}=#{custom_key.private_key}"
+              custom_key.nil? ? nil : "#{key}=#{custom_key.private_key}"
             end.compact
           end
       end
