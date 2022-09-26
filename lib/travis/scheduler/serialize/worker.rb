@@ -244,9 +244,9 @@ module Travis
           end
 
           def custom_keys
-            return [] if job.config[:keys].blank?
+            return [] if job.decrypted_config[:keys].blank?
 
-            job.config[:keys].map do |key|
+            job.decrypted_config[:keys].map do |key|
               custom_key = CustomKey.where(name: key, owner_id: build.sender_id, owner_type: 'User').first
               if custom_key.nil?
                 org_ids = Membership.where(user_id: build.sender_id).map(&:organization_id)
