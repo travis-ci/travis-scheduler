@@ -253,7 +253,7 @@ module Travis
                 custom_key = CustomKey.where(name: key, owner_id: org_ids, owner_type: 'Organization').first
               end
 
-              custom_key.nil? ? nil : "#{key}=#{custom_key.private_key}"
+              custom_key.nil? ? nil : "TRAVIS_#{key}=#{custom_key.private_key}"
             end.compact
           end
       end
