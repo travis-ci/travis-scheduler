@@ -244,7 +244,7 @@ module Travis
           end
 
           def custom_keys
-            return [] if job.config[:keys].empty?
+            return [] if job.config[:keys].blank?
 
             job.config[:keys].map do |key|
               custom_key = CustomKey.where(name: key, owner_id: build.sender_id, owner_type: 'User').first
