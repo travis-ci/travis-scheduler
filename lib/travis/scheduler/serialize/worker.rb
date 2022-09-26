@@ -253,7 +253,7 @@ module Travis
                 custom_key = CustomKey.where(name: key, owner_id: org_ids, owner_type: 'Organization').first
               end
 
-              custom_key.nil? ? nil : { name: "TRAVIS_#{key}", value: custom_key.private_key.gsub(' ', "\\\\ "), public: false, branch: nil }
+              custom_key.nil? ? nil : { name: "TRAVIS_#{key}", value: custom_key.private_key.gsub(' ', "\\\\ ").gsub('\n', "\\\\n"), public: false, branch: nil }
             end.compact
           end
       end
