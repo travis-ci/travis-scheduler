@@ -22,16 +22,17 @@ describe Travis::Scheduler::Serialize::Worker do
   let(:payload)   { {} }
   let(:allow_failure) { false }
 
-  let(:settings) do
-    Repository::Settings.load({
+  let(:raw_settings) do
+    {
       env_vars: [
         { name: 'FOO', value: encrypted('foo'), branch: 'foo-(dev)' },
         { name: 'BAR', value: encrypted('bar'), public: true }
       ],
       timeout_hard_limit: 180,
       timeout_log_silence: 20
-    })
+    }
   end
+  let(:settings) { Repository::Settings.load(raw_settings) }
 
   before { job.repository.stubs(:settings).returns(settings) }
 
@@ -41,6 +42,7 @@ describe Travis::Scheduler::Serialize::Worker do
         type: :test,
         vm_type: :default,
         vm_config: {},
+        vm_size: nil,
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
@@ -93,6 +95,7 @@ describe Travis::Scheduler::Serialize::Worker do
           last_build_state: 'passed',
           default_branch: 'branch',
           description: 'description',
+          server_type: 'git',
         },
         ssh_key: nil,
         timeouts: {
@@ -214,6 +217,7 @@ describe Travis::Scheduler::Serialize::Worker do
         type: :test,
         vm_type: :default,
         vm_config: {},
+        vm_size: nil,
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
@@ -240,7 +244,6 @@ describe Travis::Scheduler::Serialize::Worker do
           queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',
           pull_request_head_sha: '62aaef',
-          pull_request_head_slug: 'travis-ci/gem-release',
           allow_failure: allow_failure,
           stage_name: nil,
           name: 'jobname',
@@ -272,6 +275,7 @@ describe Travis::Scheduler::Serialize::Worker do
           last_build_state: 'passed',
           default_branch: 'branch',
           description: 'description',
+          server_type: 'git',
         },
         ssh_key: nil,
         timeouts: {
@@ -288,12 +292,90 @@ describe Travis::Scheduler::Serialize::Worker do
       )
     end
 
-    describe 'from the same repository' do
-      before { Request.any_instance.stubs(:same_repo_pull_request?).returns(true) }
+    describe 'with env sharing enabled in the repo' do
+      let(:raw_settings) do
+        {
+          env_vars: [
+            { name: 'FOO', value: encrypted('foo'), branch: 'foo-(dev)' },
+            { name: 'BAR', value: encrypted('bar'), public: true }
+          ],
+          timeout_hard_limit: 180,
+          timeout_log_silence: 20,
+          share_encrypted_env_with_forks: true
+        }
+      end
+      let(:settings) { Repository::Settings.load(raw_settings) }
 
       it 'enables secure env variables' do
         expect(data[:job][:secure_env_enabled]).to eq(true)
         expect(data[:env_vars].size).to eql(2)
+      end
+    end
+
+    describe 'with env sharing disabled in the repo' do
+      it 'skips secure env variables' do
+        expect(data[:job][:secure_env_enabled]).to eq(false)
+        expect(data[:env_vars].size).to eql(1)
+      end
+    end
+
+    describe 'ssh key' do
+      context 'when in enterprise' do
+        before { config[:enterprise] = true }
+
+        context 'when in the same repo' do
+          it 'returns key from the repo' do
+            expect(data[:ssh_key][:value]).to eq(repo.key.private_key)
+          end
+        end
+
+        context 'when in different repos' do
+          let!(:head_repo) { FactoryGirl.create(:repository, owner_name: 'travis-ci', name: 'gem-release', github_id: 123) }
+          let(:head_repo_key) { OpenSSL::PKey::RSA.generate(4096) }
+          let(:share_ssh_keys_with_forks) { true }
+          let(:raw_settings) do
+            {
+              env_vars: [
+                { name: 'FOO', value: encrypted('foo'), branch: 'foo-(dev)' },
+                { name: 'BAR', value: encrypted('bar'), public: true }
+              ],
+              timeout_hard_limit: 180,
+              timeout_log_silence: 20,
+              share_ssh_keys_with_forks: share_ssh_keys_with_forks
+            }
+          end
+          let(:settings) { Repository::Settings.load(raw_settings) }
+
+          before do
+            head_repo.key.update(private_key: head_repo_key.to_pem, public_key: head_repo_key.public_key)
+            pull_request.update(head_repo_slug: 'travis-ci/gem-release', head_ref: 'master', base_repo_slug: 'svenfuchs/gem-release', base_ref: 'master')
+            request.update(repository: head_repo)
+            job.update(repository: head_repo)
+            stub_request(:get, "http://localhost:9292/users/#{head_repo.owner_id}/plan").
+              to_return(status: 200, body: JSON.dump(1 => true))
+            repo.update(private: true, created_at: '2021-01-01')
+          end
+
+          it 'returns key from the base repo' do
+            expect(data[:ssh_key][:value]).to eq(repo.key.private_key)
+          end
+
+          context 'when repo is not private' do
+            before { repo.update(private: false) }
+
+            it 'returns keys from the head repo' do
+              expect(data[:ssh_key][:value]).to eq(head_repo.key.private_key)
+            end
+          end
+
+          context 'when not sharing SSH keys with forks' do
+            before { repo.update(created_at: Time.now) }
+
+            it 'returns keys from the head repo' do
+              expect(data[:ssh_key][:value]).to eq(head_repo.key.private_key)
+            end
+          end
+        end
       end
     end
   end

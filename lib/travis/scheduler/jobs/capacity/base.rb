@@ -3,6 +3,8 @@ module Travis
     module Jobs
       module Capacity
         class Base < Struct.new(:context, :owners, :capacities)
+          include Helper::Memoize
+
           def reduce(count)
             @reduced = count
             [count - max, 0].max.tap do |rest|
@@ -79,6 +81,30 @@ module Travis
 
             def config
               context.config
+            end
+
+            def billing_client
+              @billing_client ||= Billing::Client.new(context)
+            end
+
+            def billing_allowance
+              owner = owners.first
+              owner_class = owner.is_a?(User) ? 'users' : 'organizations'
+
+              billing_client.allowance(owner_class, owner.id)
+            rescue Billing::Client::Error => e
+              if e.response[:status] == 404 # Owner is not on a metered plan
+                return {}
+              end
+
+              raise e
+            end
+            memoize :billing_allowance
+
+            def on_metered_plan?
+              return false unless config.com?
+
+              billing_allowance.present?
             end
         end
       end

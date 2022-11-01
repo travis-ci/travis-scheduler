@@ -10,6 +10,7 @@ describe Travis::Queue do
   let(:repo)       { FactoryGirl.build(:repo, owner: owner, owner_name: owner.login, name: slug.split('/').last, created_at: created_at) }
   let(:job)        { FactoryGirl.build(:job, config: config, owner: owner, repository: repo) }
   let(:queue)      { described_class.new(job, context.config, logger).select }
+  let(:plan_url) { "http://localhost:9292/users//plan" }
 
   before do
     Travis::Scheduler.logger.stubs(:info)
@@ -22,6 +23,7 @@ describe Travis::Queue do
       { queue: 'builds.gce', dist: 'trusty' },
       { queue: 'builds.gce', dist: 'xenial' },
       { queue: 'builds.gce', resources: { gpu: true } },
+      { queue: 'builds.gce_vm', vm_size: 'large' },
       { queue: 'builds.cloudfoundry', owner: 'cloudfoundry' },
       { queue: 'builds.clojure', language: 'clojure' },
       { queue: 'builds.erlang', language: 'erlang' },
@@ -30,7 +32,8 @@ describe Travis::Queue do
       { queue: 'builds.new-foo', language: 'foo', percentage: percent },
       { queue: 'builds.old-foo', language: 'foo' },
       { queue: 'builds.arm64-lxd', arch: 'arm64' },
-      { queue: 'builds.power', arch: 'ppc64le' },
+      { queue: 'builds.power.private', arch: 'ppc64le', repo_private: true },
+      { queue: 'builds.power', arch: 'ppc64le', repo_private: false },
       { queue: 'builds.z', arch: 's390x' },
     ]
   end
@@ -168,6 +171,18 @@ describe Travis::Queue do
     end
   end
 
+  describe 'by job config :vm_size' do
+    describe 'vm_size: large' do
+      let(:config) { { vm: { size: 'large' } } }
+      it { expect(queue).to eq 'builds.gce_vm' }
+    end
+
+    describe 'vm_size: unknown' do
+      let(:config) { { vm: { size: 'unknown' } } }
+      it { expect(queue).to eq 'builds.default' }
+    end
+  end
+
 
   describe 'by job config :arch' do
     describe 'arch: amd64' do
@@ -189,8 +204,62 @@ describe Travis::Queue do
     end
 
     describe 'arch: ppc64le' do
-      let(:config) { { arch: 'ppc64le' } }
-      it { expect(queue).to eq 'builds.power' }
+      before { config[:arch] = 'ppc64le' }
+
+      context 'when repo is public' do
+        it 'uses queue for public repos' do
+          expect(queue).to eq 'builds.power'
+        end
+      end
+
+      context 'when repo is private' do
+        before { job.private = true }
+
+        it 'uses queue for private repos' do
+          expect(queue).to eq 'builds.power.private'
+        end
+      end
+
+      context 'when there is no queue separation for private/public' do
+        before do
+          context.config.queues.delete_if { |queue| queue[:arch] == 'ppc64le' && queue[:repo_private] }
+          context.config.queues.detect { |queue| queue[:arch] == 'ppc64le' }.delete(:repo_private)
+        end
+
+        context 'when repo is public' do
+          it 'uses common queue' do
+            expect(queue).to eq 'builds.power'
+          end
+        end
+
+        context 'when repo is private' do
+          before { job.private = true }
+
+          it 'uses common queue' do
+            expect(queue).to eq 'builds.power'
+          end
+        end
+      end
+
+      context 'when there is no dedicated queue for ppc64le' do
+        before do
+          context.config.queues.delete_if { |queue| queue[:arch] == 'ppc64le' }
+        end
+
+        context 'when repo is public' do
+          it 'uses default queue' do
+            expect(queue).to eq 'builds.default'
+          end
+        end
+
+        context 'when repo is private' do
+          before { job.private = true }
+
+          it 'uses default queue' do
+            expect(queue).to eq 'builds.default'
+          end
+        end
+      end
     end
 
     describe 'arch: arm64' do
@@ -228,6 +297,10 @@ describe Travis::Queue do
   end
 
   describe 'pooled' do
+    before do
+      stub_request(:get, plan_url).
+        to_return(status: 200, body: "", headers: {})
+    end
     env TRAVIS_SITE: 'com',
         POOL_QUEUES: 'gce',
         POOL_SUFFIX: 'foo'

@@ -19,20 +19,19 @@ module Travis
           end
 
           def secure_env?
-            defined?(@secure_env) ? @secure_env : @secure_env = !pull_request? || same_repo_pull_request?
+            defined?(@secure_env) ? @secure_env : @secure_env = !pull_request? || secure_env_allowed_in_pull_request?
           end
 
           def pull_request?
             source.event_type == 'pull_request'
           end
 
-          def same_repo_pull_request?
-            request.same_repo_pull_request?
+          def secure_env_allowed_in_pull_request?
+            repository.settings.share_encrypted_env_with_forks || request.same_repo_pull_request?
           end
 
           def secure_env_removed?
-            !secure_env? &&
-            (job.repository.settings.has_secure_vars? || has_secure_vars?(:env) || has_secure_vars?(:global_env))
+            !secure_env? && job.repository.settings.has_secure_vars?
           end
 
           def ssh_key
@@ -40,8 +39,8 @@ module Travis
           end
 
           def decrypted_config
-            secure = Travis::SecureConfig.new(repository.key)
-            Config.decrypt(job.config, secure, full_addons: secure_env?, secure_env: secure_env?)
+            secure = Travis::SecureConfig.new(repository_key)
+            Config.decrypt(job.config, secure, full_addons: true, secure_env: true)
           end
 
           def secrets
@@ -50,7 +49,7 @@ module Travis
           end
 
           def decrypt(str)
-            repository.key.decrypt(Base64.decode64(str)) if str.is_a?(String)
+            repository_key.decrypt(Base64.decode64(str)) if str.is_a?(String)
           rescue OpenSSL::PKey::RSAError => e
           end
 
@@ -59,6 +58,10 @@ module Travis
             # then decide how to best map what to where. at this point that
             # decision is yagni though, so i'm just picking :gpu as a key here.
             vm_config? && vm_configs[:gpu] ? vm_configs[:gpu].to_h : {}
+          end
+
+          def vm_size
+            job.config.dig(:vm, :size)
           end
 
           def trace?
@@ -87,6 +90,19 @@ module Travis
 
             def vm_configs
               config[:vm_configs] || {}
+            end
+
+            def job_repository
+              return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
+
+              owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
+              return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
+
+              ::Repository.find_by(owner_name: owner_name, name: repo_name)
+            end
+
+            def repository_key
+              job_repository&.key || ::SslKey.new(private_key: 'test')
             end
         end
       end

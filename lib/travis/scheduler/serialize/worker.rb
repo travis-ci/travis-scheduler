@@ -9,12 +9,14 @@ module Travis
         require 'travis/scheduler/serialize/worker/request'
         require 'travis/scheduler/serialize/worker/repo'
         require 'travis/scheduler/serialize/worker/ssh_key'
+        require 'travis/scheduler/vcs_proxy'
 
         def data
           data = {
             type: :test,
             vm_config: job.vm_config,
             vm_type: repo.vm_type,
+            vm_size: job.vm_size,
             queue: job.queue,
             config: job.decrypted_config,
             env_vars: job.env_vars,
@@ -22,7 +24,7 @@ module Travis
             host: Travis::Scheduler.config.host,
             source: build_data,
             repository: repository_data,
-            ssh_key: ssh_key.data,
+            ssh_key: ssh_key&.data || nil,
             timeouts: repo.timeouts,
             cache_settings: cache_settings,
             workspace: workspace,
@@ -35,7 +37,16 @@ module Travis
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
+
+          if travis_vcs_proxy?
+            creds = build_credentials
+            data[:build_token] = (creds['token'] if creds) || ''
+            data[:sender_login] = (creds['username'] if creds) || ''
+          end
+
           data
+        rescue Exception => e
+          puts "ex: #{e.message}"
         end
 
         private
@@ -103,12 +114,14 @@ module Travis
               last_build_state: repo.last_build_state.to_s,
               default_branch: repo.default_branch,
               description: repo.description,
+              server_type: repo.server_type || 'git',
             )
           end
 
           def source_url
             # TODO move these things to Build
-            return repo.source_git_url if repo.private? && ssh_key.custom?
+            return repo.source_git_url if repo.private? && ssh_key&.custom? && !travis_vcs_proxy?
+
             repo.source_url
           end
 
@@ -132,11 +145,35 @@ module Travis
             @build ||= Build.new(job.source)
           end
 
+          def selected_repo
+            @selected_repo ||= ssh_key_repository
+          end
+
           def ssh_key
-            @ssh_key ||= SshKey.new(repo, job, config)
+            return nil unless selected_repo
+
+            @ssh_key ||= SshKey.new(Repo.new(selected_repo, config), job, config)
+          end
+
+          def ssh_key_repository
+            return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
+
+            base_repo_owner_name, base_repo_name = job.source.request.pull_request.base_repo_slug.to_s.split('/')
+            return job.repository if base_repo_owner_name.nil? || base_repo_owner_name.empty? || base_repo_name.nil? || base_repo_name.empty?
+            base_repo = ::Repository.find_by(owner_name: base_repo_owner_name, name: base_repo_name)
+            return job.repository if base_repo.nil? || !base_repo.private
+            return base_repo if base_repo.settings.share_ssh_keys_with_forks?
+
+            head_repo_owner_name, head_repo_name = job.source.request.pull_request.head_repo_slug.to_s.split('/')
+            return job.repository if head_repo_owner_name.nil? || head_repo_owner_name.empty? || head_repo_name.nil? || head_repo_name.empty?
+
+            ::Repository.find_by(owner_name: head_repo_owner_name, name: head_repo_name) || nil
           end
 
           def source_host
+            return URI(URI::Parser.new.escape repo.vcs_source_host)&.host if travis_vcs_proxy?
+            repo.vcs_source_host || config[:github][:source_host] || 'github.com'
+          rescue Exception => e
             repo.vcs_source_host || config[:github][:source_host] || 'github.com'
           end
 
@@ -175,12 +212,31 @@ module Travis
             hash.reject { |_, value| value.nil? }
           end
 
+          def sender_token
+            @user ||= User.where(id: build.sender_id)&.first
+            @user.github_oauth_token if @user
+          end
+
+          def build_credentials
+            Travis::Scheduler::VcsProxy.new(config, sender_token).credentials(repo)
+          end
+
+
+          def sender_login
+            @user ||= User.where(id: build.sender_id)&.first
+            @user.login if @user
+          end
+
           def allowed_repositories
             @allowed_repositories ||= begin
               repository_ids = Repository.where(owner_id: build.owner_id, active: true).select{ |repo| repo.settings.allow_config_imports }.map(&:vcs_id)
               repository_ids << repo.vcs_id
-              repository_ids.uniq.sort              
+              repository_ids.uniq.sort
             end
+          end
+
+          def travis_vcs_proxy?
+            repo.vcs_type == 'TravisproxyRepository'
           end
       end
     end
