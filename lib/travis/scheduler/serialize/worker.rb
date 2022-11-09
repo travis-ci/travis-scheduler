@@ -246,6 +246,16 @@ module Travis
           def custom_keys
             return [] if job.decrypted_config[:keys].blank?
 
+            if job.source.event_type == 'pull_request' && job.source.request.pull_request.head_repo_slug != job.source.request.pull_request.base_repo_slug
+              base_repo_owner_name, base_repo_name = job.source.request.pull_request.base_repo_slug.to_s.split('/')
+              return [] unless base_repo_owner_name && base_repo_name
+
+
+              base_repo = ::Repository.find_by(owner_name: base_repo_owner_name, name: base_repo_name)
+              return [] unless base_repo && base_repo.settings.share_ssh_keys_with_forks?
+
+            end
+
             job.decrypted_config[:keys].map do |key|
               custom_key = CustomKey.where(name: key, owner_id: build.sender_id, owner_type: 'User').first
               if custom_key.nil?
