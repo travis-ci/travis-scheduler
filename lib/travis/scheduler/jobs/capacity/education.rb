@@ -8,7 +8,7 @@ module Travis
           include Helper::Memoize
 
           def applicable?
-            com? && educational?
+            !on_metered_plan? && com? && educational?
           end
 
           def accept?(job)

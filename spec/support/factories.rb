@@ -43,6 +43,7 @@ FactoryGirl.define do
     last_build_duration 60
     last_build_state :passed
     description 'description'
+    server_type 'git'
   end
 
   factory :installation

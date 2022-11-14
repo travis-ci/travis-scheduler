@@ -25,11 +25,23 @@ class Organization < ActiveRecord::Base
   end
 
   def paid?
-    subscribed? || active_trial?
+    subscribed? || active_trial? || paid_new_plan?
   end
 
   def active_trial?
     redis.get("trial:#{login}").to_i > 0
+  end
+
+  def paid_new_plan?
+    redis_key = "organization:#{self.id}:plan"
+    plan = if redis.exists?(redis_key)
+             JSON.parse(redis.get(redis_key))
+           else
+             billing_client.get_plan(self).to_h
+           end
+    return false if plan[:error] || plan["plan_name"].nil?
+
+    plan["hybrid"] || !plan["plan_name"].include?('free')
   end
 
   def default_worker_timeout
@@ -41,8 +53,10 @@ class Organization < ActiveRecord::Base
     #   following weeks/months.
     #
     if paid? || educational?
+      Travis.logger.info "Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT for owner=#{id}"
       DEFAULT_SUBSCRIBED_TIMEOUT
     else
+      Travis.logger.info "Default Timeout: DEFAULT_SPONSORED_TIMEOUT for owner=#{id}"
       DEFAULT_SPONSORED_TIMEOUT
     end
   end
@@ -63,5 +77,13 @@ class Organization < ActiveRecord::Base
 
   def redis
     Travis::Scheduler.context.redis
+  end
+
+  def billing_client
+    @billing_client ||= Travis::Scheduler::Billing::Client.new(context)
+  end
+
+  def context
+    Travis::Scheduler.context
   end
 end
