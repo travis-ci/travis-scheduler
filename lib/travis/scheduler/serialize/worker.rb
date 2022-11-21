@@ -260,9 +260,14 @@ module Travis
               custom_key = CustomKey.where(name: key, owner_id: build.sender_id, owner_type: 'User').first
               if custom_key.nil?
                 org_ids = Membership.where(user_id: build.sender_id).map(&:organization_id)
-                custom_key = CustomKey.where(name: key, owner_id: org_ids, owner_type: 'Organization').first
-              end
+                if !base_repo.nil? && base_repo.owner_type == 'Organization'
+                  org_ids.reject! { |id| id != base_repo.owner_id }
+                elsif repo.owner_type == 'Organization'
+                  org_ids.reject! { |id| id != repo.owner_id }
+                end
 
+                custom_key = CustomKey.where(name: key, owner_id: org_ids, owner_type: 'Organization').first unless org_ids.empty?
+              end
               custom_key.nil? ? nil : { name: "TRAVIS_#{key}", value: Base64.strict_encode64(custom_key.private_key), public: false, branch: nil }
             end.compact
           end

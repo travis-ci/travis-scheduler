@@ -87,5 +87,14 @@ FactoryGirl.define do
     author_name     'Sven Fuchs'
     author_email    'me@svenfuchs.com'
   end
+
+  factory :membership do
+    association :organization
+    association :user
+  end
+
+  factory :custom_key, :class => 'CustomKey' do
+    name 'key'
+  end
 end
 
