@@ -56,6 +56,14 @@ module Travis
             vcs_type == 'TravisproxyRepository'
           end
 
+          def owner_type
+            repo.owner_type
+          end
+
+          def owner_id
+            repo.owner_id
+          end
+
           private
 
             # If the repo does not have a custom timeout, look to the repo's
