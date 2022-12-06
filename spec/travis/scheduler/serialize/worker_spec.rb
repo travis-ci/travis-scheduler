@@ -449,4 +449,45 @@ describe Travis::Scheduler::Serialize::Worker do
       it { expect(data[:keep_netrc]).to be false }
     end
   end
+
+  context 'custom_keys' do
+    let!(:organization1) {FactoryGirl.create(:org, login: "org1", id: 1)}
+    let!(:organization2) {FactoryGirl.create(:org, login: "org2", id: 2)}
+    let!(:repo)      { FactoryGirl.create(:repo, default_branch: 'main') }
+    let!(:membership1) {FactoryGirl.create(:membership, user: repo.owner, organization: organization1) }
+    let!(:membership2) {FactoryGirl.create(:membership, user: repo.owner, organization: organization2) }
+    let!(:custom_key1) {FactoryGirl.create(:custom_key, name: 'key1', owner_id: organization1.id, owner_type: 'Organization', private_key: 'abc')}
+    let!(:custom_key2) {FactoryGirl.create(:custom_key, name: 'key1', owner_id: organization2.id, owner_type: 'Organization', private_key: 'def')}
+
+    describe 'when two organization have the same key name' do
+      before {
+        build.update(sender_id: repo.owner.id)
+        job.update(config: {:keys => ['key1']})
+        repo.update_attributes(owner: organization2, owner_name: 'org2')
+      }
+
+      it { expect(data[:env_vars]).to include({:name=>"TRAVIS_key1", :value=>"ZGVm", :public=>false, :branch=>nil})}
+    end
+
+    describe 'when user has no access to organization' do
+      let!(:organization3) {FactoryGirl.create(:org, login: "org3", id: 3)}
+      let!(:custom_key3) {FactoryGirl.create(:custom_key, name: 'key1', owner_id: organization3.id, owner_type: 'Organization', private_key: 'ghi')}
+      let(:raw_settings) do
+        {
+          env_vars: nil,
+          timeout_hard_limit: 180,
+          timeout_log_silence: 20,
+          share_ssh_keys_with_forks: false
+        }
+      end
+
+      before {
+        build.update(sender_id: repo.owner.id)
+        job.update(config: {:keys => ['key1']})
+        repo.update_attributes(owner: organization3, owner_name: 'org3')
+      }
+
+      it { expect(data[:env_vars]).to eq([])}
+    end
+  end
 end

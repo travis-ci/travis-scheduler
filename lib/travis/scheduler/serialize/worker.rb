@@ -19,7 +19,7 @@ module Travis
             vm_size: job.vm_size,
             queue: job.queue,
             config: job.decrypted_config,
-            env_vars: job.env_vars,
+            env_vars: env_vars_with_custom_keys,
             job: job_data,
             host: Travis::Scheduler.config.host,
             source: build_data,
@@ -237,6 +237,39 @@ module Travis
 
           def travis_vcs_proxy?
             repo.vcs_type == 'TravisproxyRepository'
+          end
+
+          def env_vars_with_custom_keys
+            job.env_vars + custom_keys
+          end
+
+          def custom_keys
+            return [] if job.decrypted_config[:keys].blank?
+
+            if job.source.event_type == 'pull_request' && job.source.request.pull_request.head_repo_slug != job.source.request.pull_request.base_repo_slug
+              base_repo_owner_name, base_repo_name = job.source.request.pull_request.base_repo_slug.to_s.split('/')
+              return [] unless base_repo_owner_name && base_repo_name
+
+
+              base_repo = ::Repository.find_by(owner_name: base_repo_owner_name, name: base_repo_name)
+              return [] unless base_repo && base_repo.settings.share_ssh_keys_with_forks?
+
+            end
+
+            job.decrypted_config[:keys].map do |key|
+              custom_key = CustomKey.where(name: key, owner_id: build.sender_id, owner_type: 'User').first
+              if custom_key.nil?
+                org_ids = Membership.where(user_id: build.sender_id).map(&:organization_id)
+                if !base_repo.nil? && base_repo.owner_type == 'Organization'
+                  org_ids.reject! { |id| id != base_repo.owner_id }
+                elsif repo.owner_type == 'Organization'
+                  org_ids.reject! { |id| id != repo.owner_id }
+                end
+
+                custom_key = CustomKey.where(name: key, owner_id: org_ids, owner_type: 'Organization').first unless org_ids.empty?
+              end
+              custom_key.nil? ? nil : { name: "TRAVIS_#{key}", value: Base64.strict_encode64(custom_key.private_key), public: false, branch: nil }
+            end.compact
           end
       end
     end
