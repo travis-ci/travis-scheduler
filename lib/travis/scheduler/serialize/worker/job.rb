@@ -19,7 +19,7 @@ module Travis
           end
 
           def secure_env?
-            defined?(@secure_env) ? @secure_env : @secure_env = !pull_request? || secure_env_allowed_in_pull_request?
+            defined?(@secure_env) ? @secure_env : (@secure_env = (!pull_request? || secure_env_allowed_in_pull_request?))
           end
 
           def pull_request?
@@ -58,6 +58,10 @@ module Travis
             # then decide how to best map what to where. at this point that
             # decision is yagni though, so i'm just picking :gpu as a key here.
             vm_config? && vm_configs[:gpu] ? vm_configs[:gpu].to_h : {}
+          end
+
+          def vm_size
+            job.config.dig(:vm, :size)
           end
 
           def trace?

@@ -21,6 +21,8 @@ module Travis
       end
 
       def publish(data, options = {})
+        return unless data
+
         Amqp.logger.warn "Queue #{routing_key} doesn't exist!" if ENV['AMQP_QUEUE_VALIDATION'] && !Amqp.connection.queue_exists?(routing_key)
         data = MultiJson.encode(data)
         exchange.publish(data, deep_merge(default_data, options))

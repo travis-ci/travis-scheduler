@@ -8,7 +8,7 @@ module Travis
           extend Forwardable
 
           def_delegators :build, :id, :request, :number, :event_type,
-            :pull_request_number
+            :pull_request_number, :sender_id
 
           def pull_request?
             event_type == 'pull_request'
@@ -20,6 +20,10 @@ module Travis
 
           def owner_id
             build.owner_id
+          end
+
+          def sender_id
+            build.sender_id
           end
         end
       end

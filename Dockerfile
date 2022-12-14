@@ -16,7 +16,8 @@ RUN ( \
    apt-get upgrade -y ; \
    apt-get install -y --no-install-recommends git make gcc g++ libpq-dev libjemalloc-dev \
    && rm -rf /var/lib/apt/lists/*; \
-   gem install bundler -v '2.3.7'; \
+   gem update --system; \
+   gem install bundler -v '2.3.24'; \
    bundle config https://gems.contribsys.com/ $bundle_gems__contribsys__com; \
    bundle config set without 'development test'; \
    bundle install; \

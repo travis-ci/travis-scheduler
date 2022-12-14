@@ -40,8 +40,9 @@ describe Travis::Scheduler::Serialize::Worker do
     it 'data' do
       expect(data).to eq(
         type: :test,
-        vm_type: :default,
         vm_config: {},
+        vm_type: :default,
+        vm_size: nil,
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
@@ -87,13 +88,14 @@ describe Travis::Scheduler::Serialize::Worker do
           source_url: 'https://github.com/svenfuchs/gem-release.git',
           source_host: 'github.com',
           api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
+          last_build_number: '2',
           last_build_started_at: '2016-01-01T10:00:00Z',
           last_build_finished_at: '2016-01-01T11:00:00Z',
-          last_build_number: '2',
           last_build_duration: 60,
           last_build_state: 'passed',
           default_branch: 'branch',
           description: 'description',
+          server_type: 'git',
         },
         ssh_key: nil,
         timeouts: {
@@ -213,8 +215,9 @@ describe Travis::Scheduler::Serialize::Worker do
     it 'data' do
       expect(data).to eq(
         type: :test,
-        vm_type: :default,
         vm_config: {},
+        vm_type: :default,
+        vm_size: nil,
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',
@@ -239,11 +242,11 @@ describe Travis::Scheduler::Serialize::Worker do
           secure_env_removed: true,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
-          pull_request_head_branch: 'head_branch',
-          pull_request_head_sha: '62aaef',
           allow_failure: allow_failure,
           stage_name: nil,
           name: 'jobname',
+          pull_request_head_branch: 'head_branch',
+          pull_request_head_sha: '62aaef',
           pull_request_head_slug: 'travis-ci/gem-release',
           pull_request_base_slug: nil,
           pull_request_base_ref: nil,
@@ -265,13 +268,14 @@ describe Travis::Scheduler::Serialize::Worker do
           source_url: 'https://github.com/svenfuchs/gem-release.git',
           source_host: 'github.com',
           api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
+          last_build_number: '2',
           last_build_started_at: '2016-01-01T10:00:00Z',
           last_build_finished_at: '2016-01-01T11:00:00Z',
-          last_build_number: '2',
           last_build_duration: 60,
           last_build_state: 'passed',
           default_branch: 'branch',
           description: 'description',
+          server_type: 'git',
         },
         ssh_key: nil,
         timeouts: {
