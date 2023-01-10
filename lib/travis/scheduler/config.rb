@@ -15,6 +15,18 @@ module Travis
         def billing_auth_keys
           ENV['TRAVIS_BILLING_AUTH_KEYS'] || 'auth_keys'
         end
+
+        def travis_site
+          ENV['TRAVIS_SITE'] || 'org'
+        end
+
+        def job_board_url
+          ENV['JOB_BOARD_URL'] || 'https://job-board.travis-ci.org'
+        end
+
+        def job_board_auth
+          ENV['JOB_BOARD_AUTH'] || 'user:pass'
+        end
       end
 
       define amqp:          { username: amqp_username, password: amqp_password, host: 'localhost', prefetch: 1 },
@@ -38,9 +50,9 @@ module Travis
              sentry:        { },
              sidekiq:       { namespace: 'sidekiq', pool_size: 3, log_level: :warn },
              ping:          { interval: 5 * 60 },
-             site:          ENV['TRAVIS_SITE'] || 'org',
+             site:          travis_site,
              ssl:           { },
-             job_board:     { url: ENV['JOB_BOARD_URL'] || 'https://job-board.travis-ci.org', auth: ENV['JOB_BOARD_AUTH'] || 'user:pass' },
+             job_board:     { url: job_board_url, auth: job_board_auth },
              vcs_proxy_api: { url: 'http://vcs_proxy_api' }
 
       def metrics
