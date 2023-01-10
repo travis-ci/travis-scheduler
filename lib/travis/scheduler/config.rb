@@ -3,13 +3,27 @@ require 'travis/config'
 module Travis
   module Scheduler
     class Config < Travis::Config
-      define amqp:          { username: 'guest', password: 'guest', host: 'localhost', prefetch: 1 },
+      class << self
+        def amqp_username
+          ENV['TRAVIS_AMQP_USERNAME'] || 'guest'
+        end
+
+        def amqp_password
+          ENV['TRAVIS_AMQP_PASSWORD'] || 'guest'
+        end
+
+        def billing_auth_keys
+          ENV['TRAVIS_BILLING_AUTH_KEYS'] || 'auth_keys'
+        end
+      end
+
+      define amqp:          { username: amqp_username, password: amqp_password, host: 'localhost', prefetch: 1 },
              database:      { adapter: 'postgresql', database: "travis_#{env}", encoding: 'unicode', min_messages: 'warning' },
              delegate:      { },
              encryption:    { key: SecureRandom.hex(64) },
              enterprise:    false,
              github:        { api_url: 'https://api.github.com', source_host: 'github.com' },
-             billing:       { url: 'http://localhost:9292/', auth_key: 'auth_keys' },
+             billing:       { url: 'http://localhost:9292/', auth_key: billing_auth_keys },
              host:          'https://travis-ci.com',
              interval:      2,
              limit:         { public: 5, education: 1, default: 5, by_owner: {}, delegate: {} },
