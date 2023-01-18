@@ -75,8 +75,13 @@ GIT
       virtus
 
 GEM
-  remote: https://rubygems.org/
   remote: https://gems.contribsys.com/
+  specs:
+    sidekiq-pro (3.4.0)
+      sidekiq (>= 4.1.5)
+
+GEM
+  remote: https://rubygems.org/
   specs:
     HDRHistogram (0.1.3)
     activemodel (4.2.10)
@@ -158,7 +163,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     public_suffix (2.0.5)
-    rack (2.2.3)
+    rack (2.2.6.2)
     rack-protection (2.0.1)
       rack
     rake (13.0.1)
@@ -189,8 +194,6 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (>= 1.5.0)
       redis (~> 3.2, >= 3.2.1)
-    sidekiq-pro (3.4.0)
-      sidekiq (>= 4.1.5)
     thread_safe (0.3.6)
     travis-config (1.1.3)
       hashr (~> 2.0)
