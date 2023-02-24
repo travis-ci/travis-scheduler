@@ -2,7 +2,7 @@ module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
       KEYS = %i(slug owner os language sudo dist group osx_image percentage
-        resources services arch virt paid vm_size repo_private)
+        resources services arch virt paid vm_size repo_private gpu)
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
@@ -99,6 +99,11 @@ module Travis
 
         def vm_size
           job.config[:vm][:size] if job.config[:vm]
+        end
+
+        def gpu
+          return false unless vm_size
+          vm_size[/\Agpu-.+\z/].present?
         end
 
         def resources_enabled?
