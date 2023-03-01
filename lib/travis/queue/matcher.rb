@@ -102,8 +102,7 @@ module Travis
         end
 
         def gpu
-          return false unless vm_size
-          vm_size[/\Agpu-.+\z/].present?
+          %w(gpu-medium gpu-large gpu-xlarge).include?(vm_size)
         end
 
         def resources_enabled?
