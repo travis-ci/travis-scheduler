@@ -102,7 +102,7 @@ module Travis
         end
 
         def gpu
-          %w(gpu-medium gpu-large gpu-xlarge).include?(vm_size)
+          %w(gpu-medium gpu-xlarge).include?(vm_size)
         end
 
         def resources_enabled?
