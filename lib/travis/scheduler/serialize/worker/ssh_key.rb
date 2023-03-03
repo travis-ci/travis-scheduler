@@ -11,7 +11,7 @@ module Travis
             elsif job_key
               { source: :travis_yaml, value: job_key, encoded: true }
             else
-              { source: :default_repository_key, value: repo_key, encoded: false }
+              { source: :default_repository_key, value: repo_key, public_key: repo.key.public_key, encoded: false }
             end
           end
 

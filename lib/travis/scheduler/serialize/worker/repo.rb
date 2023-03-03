@@ -27,6 +27,7 @@ module Travis
 
           def source_url
             return repo.vcs_source_host if travis_vcs_proxy?
+            return repo.clone_url if repo.vcs_type == 'AssemblaRepository' && repo.server_type == 'perforce'
             return source_git_url if force_private? && !Travis.config.prefer_https
             return source_http_url if Travis.config.prefer_https || managed_by_app?
             (repo.private? || force_private?) ? source_git_url : source_http_url
