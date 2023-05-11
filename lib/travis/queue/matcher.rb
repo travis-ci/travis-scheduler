@@ -88,7 +88,7 @@ module Travis
         end
 
         def arch
-          return nil if job.private? && OSS_ONLY_ARCH.include?(job.config[:arch])
+          return nil if job.private? && OSS_ONLY_ARCH.include?(job.config[:arch]) && !enterprise?
 
           job.config[:arch]
         end
@@ -108,6 +108,10 @@ module Travis
         def check_unknown_matchers(used)
           unknown = used - KEYS
           logger.warn MSGS[:unknown_matchers] % [used, unknown, repo.slug] if logger && unknown.any?
+        end
+
+        def enterprise?
+          !!Travis::Scheduler.context.config[:enterprise]
         end
     end
   end
