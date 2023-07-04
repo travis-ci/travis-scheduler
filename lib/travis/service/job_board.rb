@@ -31,6 +31,9 @@ module Travis
       rescue Faraday::ClientError => e
         log e.response[:status], e.response[:body]
         raise
+      rescue Faraday::ServerError => e
+        log e.response[:status], e.response[:body]
+        raise
       end
 
       private
@@ -42,7 +45,7 @@ module Travis
         def http
           Faraday.new(url: host, headers: headers, ssl: ssl_options) do |c|
             # c.response :logger
-            c.request  :basic_auth, *auth.split(':')
+            c.request  :authorization, :basic, *auth.split(':')
             c.request  :retry
             c.response :raise_error
             c.adapter  :net_http

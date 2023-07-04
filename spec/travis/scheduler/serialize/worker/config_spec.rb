@@ -1,5 +1,5 @@
 describe Travis::Scheduler::Serialize::Worker::Config do
-  let(:repo)    { FactoryGirl.create(:repository) }
+  let(:repo)    { FactoryBot.create(:repository) }
   let(:secure)  { Travis::SecureConfig.new(repo.key) }
   subject       { described_class.decrypt(config, secure, options) }
 

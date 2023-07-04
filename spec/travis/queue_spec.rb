@@ -6,9 +6,9 @@ describe Travis::Queue do
   let(:config)     { {} }
   let(:percent)    { 0 }
 
-  let(:owner)      { FactoryGirl.build(:user, login: slug.split('/').first) }
-  let(:repo)       { FactoryGirl.build(:repo, owner: owner, owner_name: owner.login, name: slug.split('/').last, created_at: created_at) }
-  let(:job)        { FactoryGirl.build(:job, config: config, owner: owner, repository: repo) }
+  let(:owner)      { FactoryBot.build(:user, login: slug.split('/').first) }
+  let(:repo)       { FactoryBot.build(:repo, owner: owner, owner_name: owner.login, name: slug.split('/').last, created_at: created_at) }
+  let(:job)        { FactoryBot.build(:job, config: config, owner: owner, repository: repo) }
   let(:queue)      { described_class.new(job, context.config, logger).select }
   let(:plan_url) { "http://localhost:9292/users//plan" }
 
@@ -198,7 +198,7 @@ describe Travis::Queue do
       end
 
       context 'when repo is private' do
-        let(:job) { FactoryGirl.build(:job, config: config, owner: owner, repository: repo, private: true) }
+        let(:job) { FactoryBot.build(:job, config: config, owner: owner, repository: repo, private: true) }
         it { expect(queue).to eq 'builds.default' }
       end
     end
@@ -270,7 +270,7 @@ describe Travis::Queue do
       end
 
       context 'when repo is private' do
-        let(:job) { FactoryGirl.build(:job, config: config, owner: owner, repository: repo, private: true) }
+        let(:job) { FactoryBot.build(:job, config: config, owner: owner, repository: repo, private: true) }
         it { expect(queue).to eq 'builds.default' }
       end
     end

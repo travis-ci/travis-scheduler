@@ -1,6 +1,6 @@
 describe Travis::Owners::Config do
   let(:config)    { { limit: { delegate: { sven: 'travis', carla: 'travis' } } } }
-  let(:owner)     { FactoryGirl.create(:user, login: 'sven') }
+  let(:owner)     { FactoryBot.create(:user, login: 'sven') }
   let(:delegates) { described_class.new(owner, config) }
 
   subject { delegates.send(:logins).sort }

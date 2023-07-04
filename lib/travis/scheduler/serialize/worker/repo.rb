@@ -14,7 +14,7 @@ module Travis
             :managed_by_app?, :installation, :vcs_id, :vcs_type, :url, :vcs_source_host, :server_type
 
           def vm_type
-            Features.active?(:premium_vms, repo) ? :premium : :default
+            Travis::Features.active?(:premium_vms, repo) ? :premium : :default
           end
 
           def timeouts

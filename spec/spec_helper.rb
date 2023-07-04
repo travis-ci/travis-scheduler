@@ -17,12 +17,11 @@ require 'support/stages'
 require 'support/rollout'
 require 'support/queues'
 
-include Mocha::API
-
 Travis::Scheduler.setup
 
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :transaction
+DatabaseCleaner.allow_remote_database_url = true
 
 WebMock.disable_net_connect!
 
@@ -32,7 +31,7 @@ RSpec.configure do |c|
   c.include Support::Features
   c.include Support::Logger
   c.include Support::Rollout
-  c.include FactoryGirl::Syntax::Methods
+  c.include FactoryBot::Syntax::Methods
   # c.backtrace_clean_patterns = []
 
   # TODO for webmock request expectation

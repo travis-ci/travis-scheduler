@@ -1,8 +1,8 @@
 describe Request do
-  let(:repo)                   { FactoryGirl.build(:repository, owner_name: 'travis-ci', name: 'travis-ci') }
-  let(:commit)                 { FactoryGirl.build(:commit, commit: '12345678') }
-  let(:pull_request)           { FactoryGirl.build(:pull_request, head_ref: head_ref, head_repo_github_id: head_repo_github_id) }
-  let(:request)                { FactoryGirl.build(:request, repository: repo, commit: commit, head_commit: head_commit, pull_request: pull_request) }
+  let(:repo)                   { FactoryBot.build(:repository, owner_name: 'travis-ci', name: 'travis-ci') }
+  let(:commit)                 { FactoryBot.build(:commit, commit: '12345678') }
+  let(:pull_request)           { FactoryBot.build(:pull_request, head_ref: head_ref, head_repo_github_id: head_repo_github_id) }
+  let(:request)                { FactoryBot.build(:request, repository: repo, commit: commit, head_commit: head_commit, pull_request: pull_request) }
   let(:head_repo_github_id)    { repo.github_id }
   let(:head_ref)               { }
   let(:head_commit)            { }
@@ -46,7 +46,7 @@ describe Request do
         let(:head_repo_github_id) { 123 }
         let(:head_repo_vcs_id) { 'bitbucket123' }
         let(:pull_request) do
-          FactoryGirl.build(
+          FactoryBot.build(
             :pull_request, head_ref: head_ref, head_repo_github_id: head_repo_github_id,
             head_repo_github_id: head_repo_github_id, head_repo_vcs_id: head_repo_vcs_id
           )
@@ -58,7 +58,7 @@ describe Request do
 
         context 'when repo is not a github repository' do
           let(:repo) do
-            FactoryGirl.build(:repository, owner_name: 'travis-ci', name: 'travis-ci', vcs_type: 'BitbucketRepository')
+            FactoryBot.build(:repository, owner_name: 'travis-ci', name: 'travis-ci', vcs_type: 'BitbucketRepository')
           end
 
           it { is_expected.to eq(head_repo_vcs_id) }

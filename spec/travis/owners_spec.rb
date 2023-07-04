@@ -1,9 +1,9 @@
 describe Travis::Owners do
-  let!(:travis) { FactoryGirl.create(:org, login: 'travis') }
-  let!(:rails)  { FactoryGirl.create(:org, login: 'rails') }
-  let!(:anja)   { FactoryGirl.create(:user, login: 'anja')  }
-  let!(:carla)  { FactoryGirl.create(:user, login: 'carla') }
-  let!(:joe)    { FactoryGirl.create(:user, login: 'joe') }
+  let!(:travis) { FactoryBot.create(:org, login: 'travis') }
+  let!(:rails)  { FactoryBot.create(:org, login: 'rails') }
+  let!(:anja)   { FactoryBot.create(:user, login: 'anja')  }
+  let!(:carla)  { FactoryBot.create(:user, login: 'carla') }
+  let!(:joe)    { FactoryBot.create(:user, login: 'joe') }
 
   let(:plans)   { { five: 5, ten: 10 } }
   let(:config)  { { limit: respond_to?(:limits) ? limits : {}, plans: plans } }
@@ -15,18 +15,18 @@ describe Travis::Owners do
     end
 
     describe 'with a subscription on the delegatee' do
-      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
+      before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
       it { expect(owners.max_jobs).to eq 10 }
     end
 
     describe 'with a subscription on the delegate' do
-      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :ten) }
+      before { FactoryBot.create(:subscription, owner: travis, selected_plan: :ten) }
       it { expect(owners.max_jobs).to eq 10 }
     end
 
     describe 'with a subscription on both the delegatee and delegate' do
-      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
-      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five) }
+      before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
+      before { FactoryBot.create(:subscription, owner: travis, selected_plan: :five) }
       it { expect(owners.max_jobs).to eq 15 }
     end
   end
@@ -37,18 +37,18 @@ describe Travis::Owners do
     end
 
     describe 'with a subscription on the delegatee' do
-      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
+      before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
       it { expect(owners.subscribed_owners).to eq %w(anja) }
     end
 
     describe 'with a subscription on the delegate' do
-      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :ten) }
+      before { FactoryBot.create(:subscription, owner: travis, selected_plan: :ten) }
       it { expect(owners.subscribed_owners).to eq %w(travis) }
     end
 
     describe 'with a subscription on both the delegatee and delegate' do
-      before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :ten) }
-      before { FactoryGirl.create(:subscription, owner: travis, selected_plan: :five) }
+      before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
+      before { FactoryBot.create(:subscription, owner: travis, selected_plan: :five) }
       it { expect(owners.subscribed_owners).to eq %w(anja travis) }
     end
   end
@@ -106,7 +106,7 @@ describe Travis::Owners do
   end
 
   describe 'with a missing/unknown plan' do
-    before { FactoryGirl.create(:subscription, owner: anja, selected_plan: :unknown) }
+    before { FactoryBot.create(:subscription, owner: anja, selected_plan: :unknown) }
     before { owners.paid_capacity }
     it { expect(log).to include 'W [missing_plan] Plan missing from application config: unknown (user anja)' }
   end

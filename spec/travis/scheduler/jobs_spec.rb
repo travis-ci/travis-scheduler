@@ -1,8 +1,8 @@
 describe Travis::Scheduler::Jobs::Select do
-  let(:org)      { FactoryGirl.create(:org, login: 'travis-ci') }
-  let(:repo)     { FactoryGirl.create(:repo, owner: user, migrated_at: 1.hour.ago) }
-  let(:build)    { FactoryGirl.create(:build) }
-  let(:user)     { FactoryGirl.create(:user, login: 'svenfuchs') }
+  let(:org)      { FactoryBot.create(:org, login: 'travis-ci') }
+  let(:repo)     { FactoryBot.create(:repo, owner: user, migrated_at: 1.hour.ago) }
+  let(:build)    { FactoryBot.create(:build) }
+  let(:user)     { FactoryBot.create(:user, login: 'svenfuchs') }
   let(:owners)   { Travis::Owners.group({ owner_type: 'User', owner_id: user.id }, config.to_h) }
   let(:context)  { Travis::Scheduler.context }
   let(:redis)    { context.redis }
@@ -32,11 +32,11 @@ describe Travis::Scheduler::Jobs::Select do
       queueable: true,
       private: false
     }
-    (1..count).map { FactoryGirl.create(:job, defaults.merge(attrs)) }
+    (1..count).map { FactoryBot.create(:job, defaults.merge(attrs)) }
   end
 
   def subscribe(plan, owner = self.user)
-    FactoryGirl.create(:subscription, selected_plan: plan, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id)
+    FactoryBot.create(:subscription, selected_plan: plan, valid_to: Time.now.utc, owner_type: owner.class.name, owner_id: owner.id)
   end
 
   describe 'with a boost limit 2' do
@@ -142,7 +142,7 @@ describe Travis::Scheduler::Jobs::Select do
 
   describe 'with a trial' do
     before { config[:limit][:trial] = 2 }
-    before { FactoryGirl.create(:trial, owner: user, status: :started) }
+    before { FactoryBot.create(:trial, owner: user, status: :started) }
 
     describe 'with private jobs only' do
       before { create_jobs(1, private: true, state: :started) }
@@ -214,7 +214,7 @@ describe Travis::Scheduler::Jobs::Select do
 
   describe 'with an educational status, allowing 2 educational jobs' do
     before { config[:limit][:education] = 2 }
-    before { user.update_attributes!(education: true) }
+    before { user.update!(education: true) }
 
     describe 'with private jobs only' do
       before { create_jobs(1, private: true, state: :started) }
@@ -487,9 +487,9 @@ describe Travis::Scheduler::Jobs::Select do
     before { config[:limit][:by_owner][user.login] = 10 }
 
     describe 'with private jobs only' do
-      let(:one) { FactoryGirl.create(:stage, number: 1) }
-      let(:two) { FactoryGirl.create(:stage, number: 2) }
-      let(:three) { FactoryGirl.create(:stage, number: 3) }
+      let(:one) { FactoryBot.create(:stage, number: 1) }
+      let(:two) { FactoryBot.create(:stage, number: 2) }
+      let(:three) { FactoryBot.create(:stage, number: 3) }
 
       before { create_jobs(1, private: true, stage: one, stage_number: '1.1', state: :started) }
       before { create_jobs(1, private: true, stage: one, stage_number: '1.2') }
@@ -512,9 +512,9 @@ describe Travis::Scheduler::Jobs::Select do
     end
 
     describe 'with public jobs only' do
-      let(:one) { FactoryGirl.create(:stage, number: 1) }
-      let(:two) { FactoryGirl.create(:stage, number: 2) }
-      let(:three) { FactoryGirl.create(:stage, number: 3) }
+      let(:one) { FactoryBot.create(:stage, number: 1) }
+      let(:two) { FactoryBot.create(:stage, number: 2) }
+      let(:three) { FactoryBot.create(:stage, number: 3) }
 
       before { create_jobs(1, stage: one, stage_number: '1.1', state: :started) }
       before { create_jobs(1, stage: one, stage_number: '1.2') }
@@ -537,9 +537,9 @@ describe Travis::Scheduler::Jobs::Select do
     end
 
     describe 'for mixed public and private jobs' do
-      let(:one) { FactoryGirl.create(:stage, number: 1) }
-      let(:two) { FactoryGirl.create(:stage, number: 2) }
-      let(:three) { FactoryGirl.create(:stage, number: 3) }
+      let(:one) { FactoryBot.create(:stage, number: 1) }
+      let(:two) { FactoryBot.create(:stage, number: 2) }
+      let(:three) { FactoryBot.create(:stage, number: 3) }
 
       before { create_jobs(1, private: false, stage: one, stage_number: '1.1', state: :started) }
       before { create_jobs(1, private: true,  stage: one, stage_number: '1.2') }
@@ -567,8 +567,8 @@ describe Travis::Scheduler::Jobs::Select do
     env BY_QUEUE_NAME: 'builds.osx'
     env BY_QUEUE_LIMIT: 'svenfuchs=3'
 
-    let(:one) { FactoryGirl.create(:stage, number: 1) }
-    let(:two) { FactoryGirl.create(:stage, number: 2) }
+    let(:one) { FactoryBot.create(:stage, number: 1) }
+    let(:two) { FactoryBot.create(:stage, number: 2) }
 
     before { subscribe(:unlimited) }
 
@@ -661,9 +661,9 @@ describe Travis::Scheduler::Jobs::Select do
 
     describe 'stages' do
       describe 'with private jobs only' do
-        let(:one) { FactoryGirl.create(:stage, number: 1) }
-        let(:two) { FactoryGirl.create(:stage, number: 2) }
-        let(:three) { FactoryGirl.create(:stage, number: 3) }
+        let(:one) { FactoryBot.create(:stage, number: 1) }
+        let(:two) { FactoryBot.create(:stage, number: 2) }
+        let(:three) { FactoryBot.create(:stage, number: 3) }
 
         before { create_jobs(1, private: true, stage: one, stage_number: '1.1', state: :started) }
         before { create_jobs(1, private: true, stage: one, stage_number: '1.2') }
@@ -685,9 +685,9 @@ describe Travis::Scheduler::Jobs::Select do
       end
 
       describe 'with public jobs only' do
-        let(:one) { FactoryGirl.create(:stage, number: 1) }
-        let(:two) { FactoryGirl.create(:stage, number: 2) }
-        let(:three) { FactoryGirl.create(:stage, number: 3) }
+        let(:one) { FactoryBot.create(:stage, number: 1) }
+        let(:two) { FactoryBot.create(:stage, number: 2) }
+        let(:three) { FactoryBot.create(:stage, number: 3) }
 
         before { create_jobs(1, stage: one, stage_number: '1.1', state: :started) }
         before { create_jobs(1, stage: one, stage_number: '1.2') }
@@ -710,9 +710,9 @@ describe Travis::Scheduler::Jobs::Select do
       end
 
       describe 'for mixed public and private jobs' do
-        let(:one) { FactoryGirl.create(:stage, number: 1) }
-        let(:two) { FactoryGirl.create(:stage, number: 2) }
-        let(:three) { FactoryGirl.create(:stage, number: 3) }
+        let(:one) { FactoryBot.create(:stage, number: 1) }
+        let(:two) { FactoryBot.create(:stage, number: 2) }
+        let(:three) { FactoryBot.create(:stage, number: 3) }
 
         before { create_jobs(1, private: false, stage: one, stage_number: '1.1', state: :started) }
         before { create_jobs(1, private: true,  stage: one, stage_number: '1.2') }

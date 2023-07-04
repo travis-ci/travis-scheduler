@@ -14,8 +14,8 @@ class Job < ActiveRecord::Base
 
     def queueable
       # sets jobs order based on priority first, ie: 5, nil, -5
-      jobs = where(state: :created).order("COALESCE(priority, 0) desc").order(:id)
-      jobs = jobs.joins(SQL[:queueable]).order(:id) if ENV['USE_QUEUEABLE_JOBS']
+      jobs = where(state: :created).order(Arel.sql("COALESCE(priority, 0) desc")).order(:id)
+      jobs = jobs.joins(Arel.sql(SQL[:queueable])).order(:id) if ENV['USE_QUEUEABLE_JOBS']
       jobs
     end
 
@@ -65,7 +65,7 @@ class Job < ActiveRecord::Base
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
   belongs_to :stage
-  belongs_to :config, foreign_key: :config_id, class_name: JobConfig
+  belongs_to :config, foreign_key: :config_id, class_name: 'JobConfig'
   has_one :queueable
 
   serialize :config
@@ -81,10 +81,16 @@ class Job < ActiveRecord::Base
 
   def queueable=(value)
     if value
-      queueable || create_queueable
+      unless queueable
+        save!
+        create_queueable
+      end
+      queueable
     else
       Queueable.where(job_id: id).delete_all
     end
+  rescue ActiveRecord::NotNullViolation
+    nil
   end
 
   def public?

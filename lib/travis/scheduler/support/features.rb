@@ -8,8 +8,8 @@ module Travis
   # Travis::Features contains methods to handle feature flags.
   module Features
     class << self
-      methods = (Rollout.public_instance_methods(false) - [:active?, "active?", :redis]) << {:to => :rollout}
-      delegate(*methods)
+      methods = (Rollout.public_instance_methods(false) - [:active?, "active?", :redis])
+      delegate(*methods, to: :rollout)
 
       attr_reader :redis
 
@@ -35,11 +35,11 @@ module Travis
     end
 
     def activate_repository(feature, repository)
-      redis.sadd(repository_key(feature), repository_id(repository))
+      redis.sadd?(repository_key(feature), repository_id(repository))
     end
 
     def deactivate_repository(feature, repository)
-      redis.srem(repository_key(feature), repository_id(repository))
+      redis.srem?(repository_key(feature), repository_id(repository))
     end
 
     # Return whether a given feature is enabled for a repository.
@@ -109,11 +109,11 @@ module Travis
     end
 
     def activate_owner(feature, owner)
-      redis.sadd(owner_key(feature, owner), owner.id)
+      redis.sadd?(owner_key(feature, owner), owner.id)
     end
 
     def deactivate_owner(feature, owner)
-      redis.srem(owner_key(feature, owner), owner.id)
+      redis.srem?(owner_key(feature, owner), owner.id)
     end
 
     # Return whether a feature has been enabled for a user.

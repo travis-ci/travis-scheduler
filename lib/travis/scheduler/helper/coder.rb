@@ -1,5 +1,3 @@
-require 'coder'
-
 module Travis
   module Scheduler
     module Helper
@@ -11,7 +9,7 @@ module Travis
           when Array
             obj.map { |obj| deep_clean(obj) }
           when String
-            ::Coder.clean(obj)
+            obj.force_encoding(Encoding::UTF_8)
           else
             obj
           end

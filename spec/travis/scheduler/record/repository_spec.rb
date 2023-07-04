@@ -1,6 +1,6 @@
 describe Repository do
   describe 'settings' do
-    let(:repo) { FactoryGirl.create(:repository) }
+    let(:repo) { FactoryBot.create(:repository) }
 
     it 'adds repository_id to collection records' do
       env_var = repo.settings.env_vars.create(name: 'FOO')
@@ -54,13 +54,13 @@ describe Repository do
     subject { repo.github? }
 
     context 'when repo is a github repository (default)' do
-      let(:repo) { FactoryGirl.create(:repository) }
+      let(:repo) { FactoryBot.create(:repository) }
 
       it { is_expected.to be true }
     end
 
     context 'when repo is not a github repository' do
-      let(:repo) { FactoryGirl.create(:repository, vcs_type: 'BitbucketRepository') }
+      let(:repo) { FactoryBot.create(:repository, vcs_type: 'BitbucketRepository') }
 
       it { is_expected.to be false }
     end

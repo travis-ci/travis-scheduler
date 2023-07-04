@@ -3,6 +3,7 @@ require 'active_support/concern'
 module Support
   module Rollout
     def enable_rollout(name, owner)
+      DatabaseCleaner.allow_production = true
       ENV['ENV'] = 'production'
       ENV['ROLLOUT'] = name
       context.redis.set  "#{name}.rollout.enabled", 1
@@ -10,6 +11,7 @@ module Support
     end
 
     def disable_rollout(name, owner)
+      DatabaseCleaner.allow_production = false
       ENV['ENV'] = 'test'
       ENV['ROLLOUT'] = nil
       context.redis.del "#{name}.rollout.enabled"

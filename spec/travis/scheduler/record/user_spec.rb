@@ -1,6 +1,6 @@
 describe User do
-  let(:user) { FactoryGirl.create(:user) }
-  let(:repo) { FactoryGirl.create(:repository) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:repo) { FactoryBot.create(:repository) }
   let(:authorize_build_url) { "http://localhost:9292/users/#{user.id}/plan" }
 
   describe "constants" do
