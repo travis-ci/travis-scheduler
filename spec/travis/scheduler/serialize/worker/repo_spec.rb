@@ -129,6 +129,14 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
         before { Travis.config.prefer_https = false }
         it { expect(subject.source_url).to eq 'git@local.ghe.com:travis-ci/travis-ci.git' }
       end
+
+      context 'when it is an Assembla p4 repo' do
+        let(:clone_url) { 'ssl:perforce.assembla.com:1667' }
+
+        before { repo.update(vcs_type: 'AssemblaRepository', server_type: 'perforce', clone_url: clone_url) }
+
+        it { expect(subject.source_url).to eq(clone_url) }
+      end
     end
 
     describe 'custom source endpoint' do
