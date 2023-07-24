@@ -2,20 +2,20 @@ source 'https://rubygems.org'
 
 ruby '3.2.2'
 
-gem 'travis-config',  path: '~/tmp/travis-config'
-gem 'travis-lock'
-gem 'travis-metrics',    path: '~/tmp/travis-metrics'# git: 'https://github.com/travis-ci/travis-metrics'
-gem 'travis-rollout',   git: 'https://github.com/travis-ci/travis-rollout'
-gem 'travis-exceptions', path: '~/tmp/travis-exceptions'# git: 'https://github.com/travis-ci/travis-exceptions'
-gem 'travis-logger',     path: '~/tmp/travis-logger'# git: 'https://github.com/travis-ci/travis-logger'
-gem 'travis-settings', path: '~/tmp/travis-settings'#   git: 'https://github.com/travis-ci/travis-settings'
-gem 'gh',           path: '~/tmp/gh'#      git: 'https://github.com/travis-ci/gh'
+gem 'travis-config',      git: 'https://github.com/travis-ci/travis-config', branch: 'prd-ruby-upgrade-dev'
+gem 'travis-lock',        git: 'https://github.com/travis-ci/travis-lock', branch: 'prd-ruby-upgrade-dev'
+gem 'travis-metrics',     git: 'https://github.com/travis-ci/travis-metrics', branch: 'prd-ruby-upgrade-dev'
+gem 'travis-rollout',     git: 'https://github.com/travis-ci/travis-rollout'
+gem 'travis-exceptions',  git: 'https://github.com/travis-ci/travis-exceptions', branch: 'prd-ruby-upgrade-dev'
+gem 'travis-logger',      git: 'https://github.com/travis-ci/travis-logger', branch: 'prd-ruby-upgrade-dev'
+gem 'travis-settings',    git: 'https://github.com/travis-ci/travis-settings', branch: 'prd-ruby-upgrade-dev'
+gem 'gh',                 git: 'https://github.com/travis-ci/gh', branch: 'prd-ruby-upgrade-dev'
 gem 'coder',              git: 'https://github.com/rkh/coder'
 
-gem 'metriks',        path: '~/tmp/metriks'#         git: 'https://github.com/travis-ci/metriks'
-gem 'metriks-librato_metrics', path: '~/tmp/metriks-librato_metrics' #git: 'https://github.com/travis-ci/metriks-librato_metrics'
+gem 'metriks',                 git: 'https://github.com/travis-ci/metriks', branch: 'prd-ruby-upgrade-dev'
+gem 'metriks-librato_metrics', git: 'https://github.com/travis-ci/metriks-librato_metrics', branch: 'prd-ruby-upgrade-dev'
 
-gem 'marginalia', path: '~/tmp/marginalia'#git: 'https://github.com/travis-ci/marginalia'
+gem 'marginalia', git: 'https://github.com/travis-ci/marginalia', branch: 'prd-ruby-upgrade-dev'
 
 gem 'cl'
 gem 'sidekiq-pro', require: 'sidekiq-pro', source: 'https://gems.contribsys.com'
@@ -44,4 +44,12 @@ group :test do
   gem 'mocha',            '~> 2.0'
   gem 'rspec'
   gem 'webmock'
+end
+
+group :development, :test do
+  gem 'rubocop', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'simplecov', require: false
+  gem 'simplecov-console', require: false
 end

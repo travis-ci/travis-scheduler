@@ -5,13 +5,9 @@ GIT
     coder (0.4.0)
 
 GIT
-  remote: https://github.com/travis-ci/travis-rollout
-  revision: c79c6d0c76da98ed50b9a3edb30399d7aba8a7e2
-  specs:
-    travis-rollout (0.0.1)
-
-PATH
-  remote: ../gh
+  remote: https://github.com/travis-ci/gh
+  revision: 7e06c717617b29131090acd23869e43b947cc9dc
+  branch: prd-ruby-upgrade-dev
   specs:
     gh (0.20.0)
       activesupport (>= 5, < 8)
@@ -23,19 +19,18 @@ PATH
       net-http-persistent (~> 4)
       net-http-pipeline
 
-PATH
-  remote: ../marginalia
+GIT
+  remote: https://github.com/travis-ci/marginalia
+  revision: af24f2a6d2c5da19626bfc469194aecf058e7b3f
+  branch: prd-ruby-upgrade-dev
   specs:
     marginalia (1.5.0)
       pg
 
-PATH
-  remote: ../metriks-librato_metrics
-  specs:
-    metriks-librato_metrics (1.0.6)
-
-PATH
-  remote: ../metriks
+GIT
+  remote: https://github.com/travis-ci/metriks
+  revision: 6292ce11b8d22888bd9947b9f38d104834268fa7
+  branch: prd-ruby-upgrade-dev
   specs:
     metriks (0.9.9.8)
       HDRHistogram (~> 0.1)
@@ -43,31 +38,61 @@ PATH
       avl_tree (~> 1.2)
       hitimes (~> 1.3)
 
-PATH
-  remote: ../travis-config
+GIT
+  remote: https://github.com/travis-ci/metriks-librato_metrics
+  revision: 41aca2ed2ab40ecdc1dbebabf70e35a38377d101
+  branch: prd-ruby-upgrade-dev
+  specs:
+    metriks-librato_metrics (1.0.6)
+
+GIT
+  remote: https://github.com/travis-ci/travis-config
+  revision: f02604a813cce3a672ae89cd7e4adaa30b001532
+  branch: prd-ruby-upgrade-dev
   specs:
     travis-config (1.1.5)
       hashr (~> 2.0)
 
-PATH
-  remote: ../travis-exceptions
+GIT
+  remote: https://github.com/travis-ci/travis-exceptions
+  revision: d7ee239df46a148c6c4e286bb74e1297bb39b9ac
+  branch: prd-ruby-upgrade-dev
   specs:
     travis-exceptions (0.0.2)
       sentry-ruby
 
-PATH
-  remote: ../travis-logger
+GIT
+  remote: https://github.com/travis-ci/travis-lock
+  revision: 46950a25cca6c3e4626bf7304787c02ce96eb5c6
+  branch: prd-ruby-upgrade-dev
+  specs:
+    travis-lock (0.1.1)
+
+GIT
+  remote: https://github.com/travis-ci/travis-logger
+  revision: 6f0627028d027a6ae9b74bbb654c9b5c37c76ee5
+  branch: prd-ruby-upgrade-dev
   specs:
     travis-logger (0.0.1)
 
-PATH
-  remote: ../travis-metrics
+GIT
+  remote: https://github.com/travis-ci/travis-metrics
+  revision: 45579421778d855a6c0cfe926d2f724f48cf6bc8
+  branch: prd-ruby-upgrade-dev
   specs:
     travis-metrics (2.0.0)
       metriks-librato_metrics (~> 1.0)
 
-PATH
-  remote: ../travis-settings
+GIT
+  remote: https://github.com/travis-ci/travis-rollout
+  revision: c79c6d0c76da98ed50b9a3edb30399d7aba8a7e2
+  specs:
+    travis-rollout (0.0.1)
+
+GIT
+  remote: https://github.com/travis-ci/travis-settings
+  revision: 62dcff454e21f522789d1b729a038d4adf118a40
+  branch: prd-ruby-upgrade-dev
   specs:
     travis-settings (0.0.1)
       activemodel
@@ -96,6 +121,8 @@ GEM
     addressable (2.8.4)
       public_suffix (>= 2.0.2, < 6.0)
     amq-protocol (2.3.2)
+    ansi (1.5.0)
+    ast (2.4.2)
     atomic (1.1.101)
     avl_tree (1.2.1)
       atomic (~> 1.1)
@@ -124,6 +151,7 @@ GEM
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.5.0)
+    docile (1.4.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     ethon (0.16.0)
@@ -131,7 +159,7 @@ GEM
     excon (0.100.0)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
-    faraday (2.7.9)
+    faraday (2.7.10)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
@@ -158,6 +186,8 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
+    json (2.6.3)
+    language_server-protocol (3.17.0.3)
     libhoney (2.2.0)
       addressable (~> 2.0)
       excon
@@ -173,12 +203,18 @@ GEM
     net-http-persistent (4.0.2)
       connection_pool (~> 2.2)
     net-http-pipeline (1.0.1)
+    parallel (1.23.0)
+    parser (3.2.2.3)
+      ast (~> 2.4.1)
+      racc
     pg (1.5.3)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (5.0.1)
+    public_suffix (5.0.3)
+    racc (1.7.1)
     rack (3.0.8)
+    rainbow (3.1.1)
     rake (13.0.6)
     rbtree (0.4.6)
     redis (4.8.1)
@@ -188,6 +224,7 @@ GEM
       redis (>= 4)
     redlock (2.0.2)
       redis-client (~> 0.14.1)
+    regexp_parser (2.8.1)
     regstry (1.0.15)
     rexml (3.2.5)
     rollout (2.5.0)
@@ -201,10 +238,35 @@ GEM
     rspec-expectations (3.12.3)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
-    rspec-mocks (3.12.5)
+    rspec-mocks (3.12.6)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
     rspec-support (3.12.1)
+    rubocop (1.54.2)
+      json (~> 2.3)
+      language_server-protocol (>= 3.17.0)
+      parallel (~> 1.10)
+      parser (>= 3.2.2.3)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml (>= 3.2.5, < 4.0)
+      rubocop-ast (>= 1.28.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 3.0)
+    rubocop-ast (1.29.0)
+      parser (>= 3.2.1.0)
+    rubocop-capybara (2.18.0)
+      rubocop (~> 1.41)
+    rubocop-factory_bot (2.23.1)
+      rubocop (~> 1.33)
+    rubocop-performance (1.18.0)
+      rubocop (>= 1.7.0, < 2.0)
+      rubocop-ast (>= 0.4.0)
+    rubocop-rspec (2.22.0)
+      rubocop (~> 1.33)
+      rubocop-capybara (~> 2.17)
+      rubocop-factory_bot (~> 2.22)
+    ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     sentry-raven (3.1.2)
       faraday (>= 1.0)
@@ -216,11 +278,22 @@ GEM
       connection_pool (>= 2.3.0)
       rack (>= 2.2.4)
       redis-client (>= 0.14.0)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-console (0.9.1)
+      ansi
+      simplecov
+      terminal-table
+    simplecov-html (0.12.3)
+    simplecov_json_formatter (0.1.4)
     sorted_set (1.0.3)
       rbtree
       set (~> 1.0)
+    terminal-table (3.0.2)
+      unicode-display_width (>= 1.1.1, < 3)
     thread_safe (0.3.6)
-    travis-lock (0.1.2)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
     tzinfo (2.0.6)
@@ -228,6 +301,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
+    unicode-display_width (2.4.2)
     virtus (2.0.0)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
@@ -264,11 +338,16 @@ DEPENDENCIES
   redlock
   rollout
   rspec
+  rubocop
+  rubocop-performance
+  rubocop-rspec
   sentry-raven
   sidekiq-pro!
+  simplecov
+  simplecov-console
   travis-config!
   travis-exceptions!
-  travis-lock
+  travis-lock!
   travis-logger!
   travis-metrics!
   travis-rollout!
