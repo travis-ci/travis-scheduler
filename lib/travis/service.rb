@@ -10,8 +10,8 @@ module Travis
       ::Sidekiq::Client.push(
         'queue' => ENV['SIDEKIQ_QUEUE'] || 'scheduler',
         'class' => 'Travis::Scheduler::Worker',
-        'args' => args,
-        'at' => args.last.is_a?(Hash) ? args.last.delete(:at) : nil
+        'args' => args.map! { |arg| arg.to_json },
+        'at' => args.last.is_a?(Hash) ? args.last.delete(:at) : Time.now.to_f
       )
     end
   end

@@ -11,6 +11,7 @@ module Travis
       include ::Sidekiq::Worker
 
       def perform(service, *args)
+        service = JSON.parse(service).to_sym
         ::Marginalia.set('service', service)
         inline(service, *normalize(args))
       end
@@ -18,6 +19,7 @@ module Travis
       private
 
       def normalize(args)
+        args = args.map! { |arg| JSON.parse(arg) }
         args = symbolize_keys(args)
         args.last[:jid] ||= jid if args.last.is_a?(Hash)
         args
