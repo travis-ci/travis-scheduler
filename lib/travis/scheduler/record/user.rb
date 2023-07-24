@@ -39,10 +39,11 @@ class User < ActiveRecord::Base
 
   def paid_new_plan?
     redis_key = "user:#{self.id}:plan"
-    plan = if redis.exists(redis_key)
+    plan = if redis.exists?(redis_key)
              JSON.parse(redis.get(redis_key))
            else
-             billing_client.get_plan(self).to_h
+             p = billing_client.get_plan(self)
+             p.length > 0 ? p.to_h : {}
            end
     return false if plan[:error] || plan["plan_name"].nil?
 

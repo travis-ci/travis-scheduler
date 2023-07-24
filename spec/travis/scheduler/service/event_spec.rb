@@ -1,9 +1,9 @@
 describe Travis::Scheduler::Service::Event do
-  let!(:org)    { FactoryGirl.create(:org, login: 'travis-ci') }
-  let(:repo)    { FactoryGirl.create(:repo) }
-  let(:owner)   { FactoryGirl.create(:user) }
-  let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
-  let(:job)     { FactoryGirl.create(:job, private: true, state: :created, config: config.to_h) }
+  let!(:org)    { FactoryBot.create(:org, login: 'travis-ci') }
+  let(:repo)    { FactoryBot.create(:repo) }
+  let(:owner)   { FactoryBot.create(:user) }
+  let(:build)   { FactoryBot.create(:build, repository: repo, owner: owner, jobs: [job]) }
+  let(:job)     { FactoryBot.create(:job, private: true, state: :created, config: config.to_h) }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { id: build.id, jid: '1234' } }
   let(:event)   { 'build:created' }

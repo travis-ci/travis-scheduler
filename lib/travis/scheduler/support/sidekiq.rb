@@ -17,8 +17,7 @@ module Travis
 
           ::Sidekiq.configure_server do |c|
             c.redis = {
-              url: config.redis.url,
-              namespace: config.sidekiq.namespace
+              url: config.redis.url
             }
 
             # Raven sets up a middleware unsolicitedly:
@@ -42,8 +41,7 @@ module Travis
 
           ::Sidekiq.configure_client do |c|
             c.redis = {
-              url: config.redis.url,
-              namespace: config.sidekiq.namespace
+              url: config.redis.url
             }
           end
 

@@ -1,22 +1,22 @@
 describe Job do
   let(:config) { { rvm: '1.8.7' } }
-  let(:job) { FactoryGirl.create(:job, config: config).reload }
-  let(:stage) { FactoryGirl.create(:stage, number: 1) }
+  let(:job) { FactoryBot.create(:job, config: config).reload }
+  let(:stage) { FactoryBot.create(:stage, number: 1) }
   let(:priority) { { high: 5, low: -5, medium: nil } }
-  let(:build1)   { FactoryGirl.create(:build) }
-  let(:build2)   { FactoryGirl.create(:build) }
-  let(:build3)   { FactoryGirl.create(:build) }
+  let(:build1)   { FactoryBot.create(:build) }
+  let(:build2)   { FactoryBot.create(:build) }
+  let(:build3)   { FactoryBot.create(:build) }
 
   it 'deserializes config' do
     expect(job.config).to be_a(Hash)
   end
 
   describe 'jobs having all types of priorities' do
-    before { FactoryGirl.create(:job, stage: stage, state: :created, source: build1) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, priority: priority[:low], source: build2) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, priority: priority[:low], source: build2) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, priority: priority[:high], source: build3) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, priority: priority[:high], source: build3) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, source: build1) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, priority: priority[:low], source: build2) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, priority: priority[:low], source: build2) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, priority: priority[:high], source: build3) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, priority: priority[:high], source: build3) }
 
     describe 'ordering' do
       it { expect(stage.jobs.queueable.collect(&:priority)).to eq [priority[:high], priority[:high],
@@ -25,10 +25,10 @@ describe Job do
   end
 
   describe 'jobs having high and low priorities' do
-    before { FactoryGirl.create(:job, stage: stage, state: :created, priority: priority[:low], source: build1) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, priority: priority[:low], source: build1) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, priority: priority[:high], source: build2) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, priority: priority[:high], source: build2) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, priority: priority[:low], source: build1) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, priority: priority[:low], source: build1) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, priority: priority[:high], source: build2) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, priority: priority[:high], source: build2) }
 
     describe 'ordering' do
       it { expect(stage.jobs.queueable.collect(&:priority)).to eq [priority[:high], priority[:high],
@@ -37,11 +37,11 @@ describe Job do
   end
 
   describe 'jobs not having any priorities' do
-    before { FactoryGirl.create(:job, stage: stage, state: :created, source: build1) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, source: build1) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, source: build2) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, source: build2) }
-    before { FactoryGirl.create(:job, stage: stage, state: :created, source: build3) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, source: build1) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, source: build1) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, source: build2) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, source: build2) }
+    before { FactoryBot.create(:job, stage: stage, state: :created, source: build3) }
 
     describe 'ordering' do
       it { expect(stage.jobs.queueable.collect(&:priority)).to eq [priority[:medium], priority[:medium],
@@ -51,20 +51,20 @@ describe Job do
 
   describe 'multiple builds with same priority' do
     before(:each) do
-      @stage = FactoryGirl.create(:stage, number: 1)
-      @build1 = FactoryGirl.create(:build)
-      @build2 =  FactoryGirl.create(:build)
-      @build3 =  FactoryGirl.create(:build)
-      @build4 =  FactoryGirl.create(:build)
+      @stage = FactoryBot.create(:stage, number: 1)
+      @build1 = FactoryBot.create(:build)
+      @build2 =  FactoryBot.create(:build)
+      @build3 =  FactoryBot.create(:build)
+      @build4 =  FactoryBot.create(:build)
 
-      @job1 = FactoryGirl.create(:job, stage: @stage, state: :created, priority: nil, source: @build1)
-      @job2 = FactoryGirl.create(:job, stage: @stage, state: :created, priority: nil, source: @build1)
-      @job3 = FactoryGirl.create(:job, stage: @stage, state: :created, priority: -5, source: @build2)
-      @job4 = FactoryGirl.create(:job, stage: @stage, state: :created, priority: -5, source: @build2)
-      @job5 = FactoryGirl.create(:job, stage: @stage, state: :created, priority: 5, source: @build3)
-      @job6 = FactoryGirl.create(:job, stage: @stage, state: :created, priority: 5, source: @build3)
-      @job7 = FactoryGirl.create(:job, stage: @stage, state: :created, priority: 5, source: @build4)
-      @job8 = FactoryGirl.create(:job, stage: @stage, state: :created, priority: 5, source: @build4)
+      @job1 = FactoryBot.create(:job, stage: @stage, state: :created, priority: nil, source: @build1)
+      @job2 = FactoryBot.create(:job, stage: @stage, state: :created, priority: nil, source: @build1)
+      @job3 = FactoryBot.create(:job, stage: @stage, state: :created, priority: -5, source: @build2)
+      @job4 = FactoryBot.create(:job, stage: @stage, state: :created, priority: -5, source: @build2)
+      @job5 = FactoryBot.create(:job, stage: @stage, state: :created, priority: 5, source: @build3)
+      @job6 = FactoryBot.create(:job, stage: @stage, state: :created, priority: 5, source: @build3)
+      @job7 = FactoryBot.create(:job, stage: @stage, state: :created, priority: 5, source: @build4)
+      @job8 = FactoryBot.create(:job, stage: @stage, state: :created, priority: 5, source: @build4)
     end
 
     # builds having same priority will be ordered by job id

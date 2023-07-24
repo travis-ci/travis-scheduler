@@ -1,5 +1,5 @@
 describe Travis::Scheduler::Service::Notify do
-  let(:job)     { FactoryGirl.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z'), config: {}) }
+  let(:job)     { FactoryBot.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z'), config: {}) }
   let(:data)    { { job: { id: job.id } } }
   let(:context) { Travis::Scheduler.context }
   let(:service) { described_class.new(context, data) }
@@ -34,6 +34,12 @@ describe Travis::Scheduler::Service::Notify do
     shared_examples_for 'raises' do
       it 'raises' do
         expect { service.run }.to raise_error(Faraday::ClientError)
+      end
+    end
+
+    shared_examples_for 'raises_server' do
+      it 'raises_server' do
+        expect { service.run }.to raise_error(Faraday::ServerError)
       end
     end
 
@@ -135,7 +141,7 @@ describe Travis::Scheduler::Service::Notify do
         let(:status) { 500 }
         let(:body)   { nil }
 
-        include_examples 'raises'
+        include_examples 'raises_server'
 
         it 'logs' do
           rescueing { service.run }
@@ -152,7 +158,7 @@ describe Travis::Scheduler::Service::Notify do
 
   describe 'sets the queue' do
     let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx'} }
-    let(:job)    { FactoryGirl.create(:job, state: :queued, config: config, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z')) }
+    let(:job)    { FactoryBot.create(:job, state: :queued, config: config, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z')) }
 
     before { context.config.queues = [{ queue: 'builds.mac_osx', os: 'osx' }] }
     before { service.run }
@@ -175,7 +181,7 @@ describe Travis::Scheduler::Service::Notify do
 
   describe 'does not raise on encoding issues ("\xC3" from ASCII-8BIT to UTF-8)' do
     let(:config) { { global_env: ["SECURE GH_USER_NAME=Max Nöthe".force_encoding('ASCII-8BIT')] } }
-    before { job.update_attributes!(config: config) }
+    before { job.update!(config: config) }
     it { expect { service.run }.to_not raise_error }
   end
 end

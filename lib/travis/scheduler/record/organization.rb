@@ -34,7 +34,7 @@ class Organization < ActiveRecord::Base
 
   def paid_new_plan?
     redis_key = "organization:#{self.id}:plan"
-    plan = if redis.exists(redis_key)
+    plan = if redis.exists?(redis_key)
              JSON.parse(redis.get(redis_key))
            else
              billing_client.get_plan(self).to_h

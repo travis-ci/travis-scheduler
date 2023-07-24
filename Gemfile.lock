@@ -5,234 +5,260 @@ GIT
     coder (0.4.0)
 
 GIT
-  remote: https://github.com/travis-ci/gh
-  revision: 38fb339510ff9ae67cb08c6df7698f4c393f5a44
+  remote: https://github.com/travis-ci/travis-rollout
+  revision: c79c6d0c76da98ed50b9a3edb30399d7aba8a7e2
   specs:
-    gh (0.15.1)
-      addressable (~> 2.4)
-      backports
-      faraday (~> 0.8)
-      multi_json (~> 1.0)
-      net-http-persistent (~> 2.9)
+    travis-rollout (0.0.1)
+
+PATH
+  remote: ../gh
+  specs:
+    gh (0.20.0)
+      activesupport (>= 5, < 8)
+      addressable (~> 2.8)
+      faraday (~> 2)
+      faraday-retry
+      faraday-typhoeus
+      multi_json (~> 1)
+      net-http-persistent (~> 4)
       net-http-pipeline
 
-GIT
-  remote: https://github.com/travis-ci/marginalia
-  revision: 46bbe301640efb5ea81828cb7deeaf874516de78
+PATH
+  remote: ../marginalia
   specs:
     marginalia (1.5.0)
-      pg (~> 0.21)
+      pg
 
-GIT
-  remote: https://github.com/travis-ci/metriks
-  revision: 9b5a34fecebecc741417b25e43c340394aa6cc5e
-  specs:
-    metriks (0.9.9.8)
-      HDRHistogram (~> 0.1.3)
-      atomic (~> 1.0)
-      avl_tree (~> 1.2.0)
-      hitimes (~> 1.1)
-
-GIT
-  remote: https://github.com/travis-ci/metriks-librato_metrics
-  revision: 7ec1c97f4f6f783d2a04c7922baac98a9fbbba25
+PATH
+  remote: ../metriks-librato_metrics
   specs:
     metriks-librato_metrics (1.0.6)
-      metriks (>= 0.9.9.6)
 
-GIT
-  remote: https://github.com/travis-ci/travis-exceptions
-  revision: ab236981f810b820bc3ebfaf33f317bbaa9b3465
+PATH
+  remote: ../metriks
+  specs:
+    metriks (0.9.9.8)
+      HDRHistogram (~> 0.1)
+      atomic (~> 1.0)
+      avl_tree (~> 1.2)
+      hitimes (~> 1.3)
+
+PATH
+  remote: ../travis-config
+  specs:
+    travis-config (1.1.5)
+      hashr (~> 2.0)
+
+PATH
+  remote: ../travis-exceptions
   specs:
     travis-exceptions (0.0.2)
-      sentry-raven
+      sentry-ruby
 
-GIT
-  remote: https://github.com/travis-ci/travis-logger
-  revision: 765046a4746617a70395fe2200e8a91dc416f1b3
+PATH
+  remote: ../travis-logger
   specs:
     travis-logger (0.0.1)
 
-GIT
-  remote: https://github.com/travis-ci/travis-metrics
-  revision: ce620aecdf179ea82280872ec56aa3095a2e59a5
+PATH
+  remote: ../travis-metrics
   specs:
     travis-metrics (2.0.0)
       metriks-librato_metrics (~> 1.0)
 
-GIT
-  remote: https://github.com/travis-ci/travis-rollout
-  revision: ac0184411b3618dd5e5706db8fe7676a107c7b07
-  specs:
-    travis-rollout (0.0.1)
-
-GIT
-  remote: https://github.com/travis-ci/travis-settings
-  revision: 0f477ddbcf852e1551d459fdda8fe2786e376495
+PATH
+  remote: ../travis-settings
   specs:
     travis-settings (0.0.1)
       activemodel
       virtus
 
 GEM
-  remote: https://rubygems.org/
   remote: https://gems.contribsys.com/
   specs:
-    HDRHistogram (0.1.3)
-    activemodel (4.2.10)
-      activesupport (= 4.2.10)
-      builder (~> 3.1)
-    activerecord (4.2.10)
-      activemodel (= 4.2.10)
-      activesupport (= 4.2.10)
-      arel (~> 6.0)
-    activesupport (4.2.10)
-      i18n (~> 0.7)
-      minitest (~> 5.1)
-      thread_safe (~> 0.3, >= 0.3.4)
-      tzinfo (~> 1.1)
-    addressable (2.5.1)
-      public_suffix (~> 2.0, >= 2.0.2)
-    amq-protocol (2.3.0)
-    arel (6.0.4)
-    atomic (1.1.99)
+    sidekiq-pro (7.1.3)
+      sidekiq (>= 7.1.0, < 8)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    HDRHistogram (0.1.11)
+    activemodel (7.0.6)
+      activesupport (= 7.0.6)
+    activerecord (7.0.6)
+      activemodel (= 7.0.6)
+      activesupport (= 7.0.6)
+    activesupport (7.0.6)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+    addressable (2.8.4)
+      public_suffix (>= 2.0.2, < 6.0)
+    amq-protocol (2.3.2)
+    atomic (1.1.101)
     avl_tree (1.2.1)
       atomic (~> 1.1)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
-    backports (3.10.3)
-    builder (3.2.3)
-    bunny (2.9.2)
-      amq-protocol (~> 2.3.0)
-    cl (0.0.4)
-    coderay (1.1.2)
+    bunny (2.22.0)
+      amq-protocol (~> 2.3, >= 2.3.1)
+      sorted_set (~> 1, >= 1.0.2)
+    cl (1.2.4)
+      regstry (~> 1.0.3)
+    coderay (1.1.3)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
-    concurrent-ruby (1.0.5)
-    connection_pool (2.2.1)
-    crack (0.4.3)
-      safe_yaml (~> 1.0.0)
-    database_cleaner (1.7.0)
+    concurrent-ruby (1.2.2)
+    connection_pool (2.4.1)
+    crack (0.4.5)
+      rexml
+    database_cleaner (2.0.2)
+      database_cleaner-active_record (>= 2, < 3)
+    database_cleaner-active_record (2.1.0)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
-    diff-lcs (1.3)
-    domain_name (0.5.20170404)
+    diff-lcs (1.5.0)
+    domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
-    equalizer (0.0.11)
-    factory_girl (4.7.0)
-      activesupport (>= 3.0.0)
-    faraday (0.17.3)
-      multipart-post (>= 1.2, < 3)
-    faraday_middleware (0.14.0)
-      faraday (>= 0.7.4, < 1.0)
-    hashdiff (0.3.4)
+    ethon (0.16.0)
+      ffi (>= 1.15.0)
+    excon (0.100.0)
+    factory_bot (6.2.1)
+      activesupport (>= 5.0.0)
+    faraday (2.7.9)
+      faraday-net_http (>= 2.0, < 3.1)
+      ruby2_keywords (>= 0.0.4)
+    faraday-net_http (3.0.2)
+    faraday-retry (2.2.0)
+      faraday (~> 2.0)
+    faraday-typhoeus (1.0.0)
+      faraday (~> 2.0)
+      typhoeus (~> 1.4)
+    ffi (1.15.5)
+    ffi-compiler (1.0.1)
+      ffi (>= 1.0.0)
+      rake
+    hashdiff (1.0.1)
     hashr (2.0.1)
-    hitimes (1.2.6)
-    http (2.2.2)
-      addressable (~> 2.3)
+    hitimes (1.3.1)
+    http (5.1.1)
+      addressable (~> 2.8)
       http-cookie (~> 1.0)
-      http-form_data (~> 1.0.1)
-      http_parser.rb (~> 0.6.0)
-    http-cookie (1.0.3)
+      http-form_data (~> 2.2)
+      llhttp-ffi (~> 0.4.0)
+    http-cookie (1.0.5)
       domain_name (~> 0.5)
-    http-form_data (1.0.3)
-    http_parser.rb (0.6.0)
-    i18n (0.9.3)
+    http-form_data (2.3.0)
+    i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
-    libhoney (1.3.2)
-      http (~> 2.0)
-    metaclass (0.0.4)
-    method_source (0.9.0)
-    minitest (5.11.3)
-    mocha (0.10.5)
-      metaclass (~> 0.0.1)
-    multi_json (1.12.1)
-    multipart-post (2.1.1)
-    net-http-persistent (2.9.4)
+    libhoney (2.2.0)
+      addressable (~> 2.0)
+      excon
+      http (>= 2.0, < 6.0)
+    llhttp-ffi (0.4.0)
+      ffi-compiler (~> 1.0)
+      rake (~> 13.0)
+    method_source (1.0.0)
+    minitest (5.18.1)
+    mocha (2.0.4)
+      ruby2_keywords (>= 0.0.5)
+    multi_json (1.15.0)
+    net-http-persistent (4.0.2)
+      connection_pool (~> 2.2)
     net-http-pipeline (1.0.1)
-    pg (0.21.0)
-    pry (0.11.3)
-      coderay (~> 1.1.0)
-      method_source (~> 0.9.0)
-    public_suffix (2.0.5)
-    rack (2.2.3)
-    rack-protection (2.0.1)
-      rack
-    rake (13.0.1)
-    redis (3.3.3)
-    redis-namespace (1.5.2)
-      redis (~> 3.0, >= 3.0.4)
-    redlock (0.1.8)
-      redis (~> 3, >= 3.0.0)
-    rollout (1.1.0)
-    rspec (3.7.0)
-      rspec-core (~> 3.7.0)
-      rspec-expectations (~> 3.7.0)
-      rspec-mocks (~> 3.7.0)
-    rspec-core (3.7.1)
-      rspec-support (~> 3.7.0)
-    rspec-expectations (3.7.0)
+    pg (1.5.3)
+    pry (0.14.2)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    public_suffix (5.0.1)
+    rack (3.0.8)
+    rake (13.0.6)
+    rbtree (0.4.6)
+    redis (4.8.1)
+    redis-client (0.14.1)
+      connection_pool
+    redis-namespace (1.11.0)
+      redis (>= 4)
+    redlock (2.0.2)
+      redis-client (~> 0.14.1)
+    regstry (1.0.15)
+    rexml (3.2.5)
+    rollout (2.5.0)
+      redis (~> 4.0)
+    rspec (3.12.0)
+      rspec-core (~> 3.12.0)
+      rspec-expectations (~> 3.12.0)
+      rspec-mocks (~> 3.12.0)
+    rspec-core (3.12.2)
+      rspec-support (~> 3.12.0)
+    rspec-expectations (3.12.3)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.7.0)
-    rspec-mocks (3.7.0)
+      rspec-support (~> 3.12.0)
+    rspec-mocks (3.12.5)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.7.0)
-    rspec-support (3.7.1)
-    safe_yaml (1.0.4)
-    sentry-raven (2.6.3)
-      faraday (>= 0.7.6, < 1.0)
-    sidekiq (4.2.6)
-      concurrent-ruby (~> 1.0)
-      connection_pool (~> 2.2, >= 2.2.0)
-      rack-protection (>= 1.5.0)
-      redis (~> 3.2, >= 3.2.1)
-    sidekiq-pro (3.4.0)
-      sidekiq (>= 4.1.5)
+      rspec-support (~> 3.12.0)
+    rspec-support (3.12.1)
+    ruby2_keywords (0.0.5)
+    sentry-raven (3.1.2)
+      faraday (>= 1.0)
+    sentry-ruby (5.10.0)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+    set (1.0.3)
+    sidekiq (7.1.2)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.14.0)
+    sorted_set (1.0.3)
+      rbtree
+      set (~> 1.0)
     thread_safe (0.3.6)
-    travis-config (1.1.3)
-      hashr (~> 2.0)
-    travis-lock (0.1.1)
-    tzinfo (1.2.5)
-      thread_safe (~> 0.1)
+    travis-lock (0.1.2)
+    typhoeus (1.4.0)
+      ethon (>= 0.9.0)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.4)
-    virtus (1.0.5)
+    unf_ext (0.0.8.2)
+    virtus (2.0.0)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
-      equalizer (~> 0.0, >= 0.0.9)
-    webmock (3.0.1)
-      addressable (>= 2.3.6)
+    webmock (3.18.1)
+      addressable (>= 2.8.0)
       crack (>= 0.3.2)
-      hashdiff
+      hashdiff (>= 0.4.0, < 2.0.0)
 
 PLATFORMS
-  ruby
+  x86_64-linux
 
 DEPENDENCIES
-  activerecord (~> 4.2.7)
-  bunny (~> 2.9.2)
+  activerecord (~> 7)
+  bunny (~> 2.22)
   cl
   coder!
   concurrent-ruby
-  database_cleaner (~> 1.7)
-  factory_girl (~> 4.7.0)
-  faraday
-  faraday_middleware
+  database_cleaner (~> 2.0)
+  factory_bot
+  faraday (~> 2)
   gh!
   libhoney
   marginalia!
   metriks!
   metriks-librato_metrics!
-  mocha (~> 0.10.0)
-  multi_json (~> 1.11)
+  mocha (~> 2.0)
+  multi_json (~> 1.15)
   pg
   pry
-  rack (>= 2.1.4)
+  rack (>= 3.0)
   rake
   redis-namespace
   redlock
@@ -240,7 +266,7 @@ DEPENDENCIES
   rspec
   sentry-raven
   sidekiq-pro!
-  travis-config (~> 1.1.3)
+  travis-config!
   travis-exceptions!
   travis-lock
   travis-logger!
@@ -249,5 +275,8 @@ DEPENDENCIES
   travis-settings!
   webmock
 
+RUBY VERSION
+   ruby 3.2.2p53
+
 BUNDLED WITH
-   2.1.4
+   2.4.14

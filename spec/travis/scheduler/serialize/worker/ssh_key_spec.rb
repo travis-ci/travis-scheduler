@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 describe Travis::Scheduler::Serialize::Worker::SshKey do
-  let(:repo) { FactoryGirl.create :repo, private: true }
-  let(:db_job) { FactoryGirl.create :job, repository: repo }
+  let(:repo) { FactoryBot.create :repo, private: true }
+  let(:db_job) { FactoryBot.create :job, repository: repo }
   let(:job) { Travis::Scheduler::Serialize::Worker::Job.new(db_job, config) }
   let(:config) do
     { enterprise: false }

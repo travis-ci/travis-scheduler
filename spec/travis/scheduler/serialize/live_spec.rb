@@ -1,7 +1,7 @@
 require 'travis/scheduler/serialize/live'
 
 describe Travis::Scheduler::Serialize::Live do
-  let(:job)    { FactoryGirl.create(:job, state: :queued) }
+  let(:job)    { FactoryBot.create(:job, state: :queued) }
   let(:commit) { job.commit }
   let(:build)  { job.source }
   let(:repo)   { job.repository }

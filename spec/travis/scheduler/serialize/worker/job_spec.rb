@@ -1,7 +1,7 @@
 describe Travis::Scheduler::Serialize::Worker::Job do
   let(:request) { Request.new }
   let(:build)   { Build.new(request: request) }
-  let(:repo)    { FactoryGirl.create(:repository) }
+  let(:repo)    { FactoryBot.create(:repository) }
   let(:job)     { Job.new(source: build, config: config, repository: repo) }
   let(:config)  { {} }
   subject       { described_class.new(job) }
@@ -114,7 +114,7 @@ describe Travis::Scheduler::Serialize::Worker::Job do
       end
 
       context 'when head repo is present' do
-        let(:head_repo) { FactoryGirl.create(:repository, github_id: 549744) }
+        let(:head_repo) { FactoryBot.create(:repository, github_id: 549744) }
         let(:head_repo_key) { OpenSSL::PKey::RSA.generate(4096) }
         let(:pull_request) { PullRequest.new(base_repo_slug: 'travis-ci/travis-yml', head_repo_slug: "#{head_repo.owner_name}/#{head_repo.name}") }
 

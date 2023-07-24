@@ -63,7 +63,7 @@ module Travis
       end
 
       def redis
-        @redis ||= Redis.connect(config[:redis].to_h) # TODO should be a pool, no?
+        @_redis ||= Redis.new(config[:redis].to_h) # TODO should be a pool, no?
       end
 
       def ping

@@ -1,10 +1,10 @@
 describe Travis::Scheduler::Serialize::Worker::Repo do
-  let(:user)   { FactoryGirl.create(:user) }
-  let(:org)    { FactoryGirl.create(:org) }
+  let(:user)   { FactoryBot.create(:user) }
+  let(:org)    { FactoryBot.create(:org) }
 
   let(:repo)   { Repository.new(owner_name: 'travis-ci', name: 'travis-ci') }
-  let(:user_repo) { FactoryGirl.create(:repository, owner: user) }
-  let(:org_repo)  { FactoryGirl.create(:repository, owner_name: org.login, owner_id: org.id, owner_type: "Organization") }
+  let(:user_repo) { FactoryBot.create(:repository, owner: user) }
+  let(:org_repo)  { FactoryBot.create(:repository, owner_name: org.login, owner_id: org.id, owner_type: "Organization") }
 
   let(:config) { { github: {} } }
 

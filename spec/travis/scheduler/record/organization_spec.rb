@@ -1,5 +1,5 @@
 describe Organization do
-  let(:org) { FactoryGirl.create(:org) }
+  let(:org) { FactoryBot.create(:org) }
   let(:authorize_build_url) { "http://localhost:9292/organizations/#{org.id}/plan" }
 
   describe "constants" do

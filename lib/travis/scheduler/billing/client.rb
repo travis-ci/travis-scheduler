@@ -1,5 +1,3 @@
-require 'faraday_middleware'
-
 module Travis
   module Scheduler
     module Billing
@@ -59,16 +57,18 @@ module Travis
         end
 
         def get(path, params = {})
-          request(:get, path, params).body
+          body = request(:get, path, params).body
+          body&.length > 0 && body.is_a?(String) ? JSON.parse(body) : body
         end
 
         def post(path, params = {})
-          request(:post, path, params).body
+          body = request(:post, path, params).body
+          body&.length > 0 && body.is_a?(String) ? JSON.parse(body) : body
         end
 
         def client
           Faraday.new(url: config.billing.url, headers: DEFAULT_HEADERS) do |c|
-            c.basic_auth '_', config.billing.auth_key
+            c.request :authorization, :basic, '_', config.billing.auth_key
             c.request  :retry, RETRY
             c.request :json
             c.response :json
