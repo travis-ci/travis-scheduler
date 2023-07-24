@@ -14,8 +14,12 @@ module Travis
         Travis::Registry[:service][key]
       end
 
-      include Helper::Context, Helper::Locking, Helper::Logging,
-        Helper::Metrics, Helper::Runner, Helper::With
+      include Helper::With
+      include Helper::Runner
+      include Helper::Metrics
+      include Helper::Logging
+      include Helper::Locking
+      include Helper::Context
     end
   end
 end

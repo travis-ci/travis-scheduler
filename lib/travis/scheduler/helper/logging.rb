@@ -13,16 +13,16 @@ module Travis
 
           private
 
-            def jid
-              context[:jid]
-            end
+          def jid
+            context[:jid]
+          end
 
-            def src
-              context[:src]
-            end
+          def src
+            context[:src]
+          end
         end
 
-        %i(info warn debug error fatal).each do |level|
+        %i[info warn debug error fatal].each do |level|
           define_method(level) { |msg, *args| log(level, msg, *args) }
         end
 

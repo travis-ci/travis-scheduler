@@ -7,10 +7,12 @@ describe Travis::Queue do
   let(:percent)    { 0 }
 
   let(:owner)      { FactoryBot.build(:user, login: slug.split('/').first) }
-  let(:repo)       { FactoryBot.build(:repo, owner: owner, owner_name: owner.login, name: slug.split('/').last, created_at: created_at) }
-  let(:job)        { FactoryBot.build(:job, config: config, owner: owner, repository: repo) }
+  let(:repo)       do
+    FactoryBot.build(:repo, owner:, owner_name: owner.login, name: slug.split('/').last, created_at:)
+  end
+  let(:job)        { FactoryBot.build(:job, config:, owner:, repository: repo) }
   let(:queue)      { described_class.new(job, context.config, logger).select }
-  let(:plan_url) { "http://localhost:9292/users//plan" }
+  let(:plan_url) { 'http://localhost:9292/users//plan' }
 
   before do
     Travis::Scheduler.logger.stubs(:info)
@@ -19,7 +21,7 @@ describe Travis::Queue do
       { queue: 'builds.rails', slug: 'rails/rails' },
       { queue: 'builds.mac_osx', os: 'osx' },
       { queue: 'builds.amd64-lxd', virt: 'lxd' },
-      { queue: 'builds.gce', services: %w(docker) },
+      { queue: 'builds.gce', services: %w[docker] },
       { queue: 'builds.gce', dist: 'trusty' },
       { queue: 'builds.gce', dist: 'xenial' },
       { queue: 'builds.gce', resources: { gpu: true } },
@@ -34,7 +36,7 @@ describe Travis::Queue do
       { queue: 'builds.arm64-lxd', arch: 'arm64' },
       { queue: 'builds.power.private', arch: 'ppc64le', repo_private: true },
       { queue: 'builds.power', arch: 'ppc64le', repo_private: false },
-      { queue: 'builds.z', arch: 's390x' },
+      { queue: 'builds.z', arch: 's390x' }
     ]
   end
 
@@ -103,7 +105,7 @@ describe Travis::Queue do
 
   describe 'by job config :os' do
     describe 'by os' do
-      let(:config) { { :os => 'osx'} }
+      let(:config) { { os: 'osx' } }
       it { expect(queue).to eq 'builds.mac_osx' }
     end
 
@@ -115,12 +117,12 @@ describe Travis::Queue do
 
   describe 'by job config :services' do
     describe 'by service' do
-      let(:config) { { services: %w(redis docker postgresql) } }
+      let(:config) { { services: %w[redis docker postgresql] } }
       it { expect(queue).to eq 'builds.gce' }
     end
 
     describe 'by service (trumps language)' do
-      let(:config) { { language: 'clojure', services: %w(redis docker postgresql) } }
+      let(:config) { { language: 'clojure', services: %w[redis docker postgresql] } }
       it { expect(queue).to eq 'builds.gce' }
     end
   end
@@ -166,7 +168,7 @@ describe Travis::Queue do
     end
 
     describe 'no :virt config' do
-      let(:config) { { services: %w(redis docker postgresql) } }
+      let(:config) { { services: %w[redis docker postgresql] } }
       it { expect(queue).to eq 'builds.gce' }
     end
   end
@@ -183,7 +185,6 @@ describe Travis::Queue do
     end
   end
 
-
   describe 'by job config :arch' do
     describe 'arch: amd64' do
       let(:config) { { arch: 'amd64' } }
@@ -198,7 +199,7 @@ describe Travis::Queue do
       end
 
       context 'when repo is private' do
-        let(:job) { FactoryBot.build(:job, config: config, owner: owner, repository: repo, private: true) }
+        let(:job) { FactoryBot.build(:job, config:, owner:, repository: repo, private: true) }
         it { expect(queue).to eq 'builds.default' }
       end
     end
@@ -270,7 +271,7 @@ describe Travis::Queue do
       end
 
       context 'when repo is private' do
-        let(:job) { FactoryBot.build(:job, config: config, owner: owner, repository: repo, private: true) }
+        let(:job) { FactoryBot.build(:job, config:, owner:, repository: repo, private: true) }
         it { expect(queue).to eq 'builds.default' }
       end
     end
@@ -298,8 +299,8 @@ describe Travis::Queue do
 
   describe 'pooled' do
     before do
-      stub_request(:get, plan_url).
-        to_return(status: 200, body: "", headers: {})
+      stub_request(:get, plan_url)
+        .to_return(status: 200, body: '', headers: {})
     end
     env TRAVIS_SITE: 'com',
         POOL_QUEUES: 'gce',

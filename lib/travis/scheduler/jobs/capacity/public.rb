@@ -17,14 +17,14 @@ module Travis
           end
 
           def report(status, job)
-            super.merge(repo_slug: job.repository.slug, max: max)
+            super.merge(repo_slug: job.repository.slug, max:)
           end
 
           private
 
-            def max
-              config[:limit][:public]
-            end
+          def max
+            config[:limit][:public]
+          end
         end
       end
     end

@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
   DEFAULT_SPONSORED_TIMEOUT  = 50 * 60
 
   def subscription
-    subs = Subscription.where(owner_id: id, owner_type: "User")
+    subs = Subscription.where(owner_id: id, owner_type: 'User')
     @subscription ||= subs.where(status: 'subscribed').last || subs.last
   end
 
@@ -38,16 +38,16 @@ class User < ActiveRecord::Base
   end
 
   def paid_new_plan?
-    redis_key = "user:#{self.id}:plan"
+    redis_key = "user:#{id}:plan"
     plan = if redis.exists?(redis_key)
              JSON.parse(redis.get(redis_key))
            else
              p = billing_client.get_plan(self)
              p.length > 0 ? p.to_h : {}
            end
-    return false if plan[:error] || plan["plan_name"].nil?
+    return false if plan[:error] || plan['plan_name'].nil?
 
-    plan["hybrid"] || !plan["plan_name"].include?('free')
+    plan['hybrid'] || !plan['plan_name'].include?('free')
   end
 
   def default_worker_timeout

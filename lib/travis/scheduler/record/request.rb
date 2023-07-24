@@ -30,29 +30,30 @@ class Request < ActiveRecord::Base
     return false if head_ref.nil? or head_sha.nil?
     # It may not be same repo PR if ref is a commit
     return false if head_sha =~ /^#{Regexp.escape(head_ref)}/
+
     true
-  rescue => e
+  rescue StandardError => e
     Travis::Scheduler.logger.error "[request:#{id}] Couldn't determine whether pull request is from the same repository: #{e.message}"
     false
   end
 
   def payload
-    fail "[deprectated] Reading request.payload."
+    raise '[deprectated] Reading request.payload.'
   end
 
   private
 
-    def head_repo_vcs_id
-      return unless pull_request
+  def head_repo_vcs_id
+    return unless pull_request
 
-      repository.github? ? pull_request.head_repo_github_id.to_s : pull_request.head_repo_vcs_id
-    end
+    repository.github? ? pull_request.head_repo_github_id.to_s : pull_request.head_repo_vcs_id
+  end
 
-    def head_ref
-      pull_request&.head_ref
-    end
+  def head_ref
+    pull_request&.head_ref
+  end
 
-    def head_sha
-      head_commit
-    end
+  def head_sha
+    head_commit
+  end
 end

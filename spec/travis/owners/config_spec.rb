@@ -7,11 +7,11 @@ describe Travis::Owners::Config do
 
   describe 'given a delegator login' do
     let(:login) { 'sven' }
-    it { expect(subject).to eq ['carla', 'sven', 'travis'] }
+    it { expect(subject).to eq %w[carla sven travis] }
   end
 
   describe 'given a delegatee login' do
     let(:login) { 'travis' }
-    it { expect(subject).to eq ['carla', 'sven', 'travis'] }
+    it { expect(subject).to eq %w[carla sven travis] }
   end
 end

@@ -9,7 +9,7 @@ module Travis
         ActiveRecord::Base.logger = logger
       end
 
-      def table?(name)
+      def table?(_name)
         ActiveRecord::Base.connection.tables.include?('owner_groups')
       end
     end

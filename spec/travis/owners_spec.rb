@@ -6,7 +6,7 @@ describe Travis::Owners do
   let!(:joe)    { FactoryBot.create(:user, login: 'joe') }
 
   let(:plans)   { { five: 5, ten: 10 } }
-  let(:config)  { { limit: respond_to?(:limits) ? limits : {}, plans: plans } }
+  let(:config)  { { limit: respond_to?(:limits) ? limits : {}, plans: } }
   let(:owners)  { described_class.group(anja, config, logger) }
 
   shared_examples_for 'max_jobs' do
@@ -38,18 +38,18 @@ describe Travis::Owners do
 
     describe 'with a subscription on the delegatee' do
       before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
-      it { expect(owners.subscribed_owners).to eq %w(anja) }
+      it { expect(owners.subscribed_owners).to eq %w[anja] }
     end
 
     describe 'with a subscription on the delegate' do
       before { FactoryBot.create(:subscription, owner: travis, selected_plan: :ten) }
-      it { expect(owners.subscribed_owners).to eq %w(travis) }
+      it { expect(owners.subscribed_owners).to eq %w[travis] }
     end
 
     describe 'with a subscription on both the delegatee and delegate' do
       before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
       before { FactoryBot.create(:subscription, owner: travis, selected_plan: :five) }
-      it { expect(owners.subscribed_owners).to eq %w(anja travis) }
+      it { expect(owners.subscribed_owners).to eq %w[anja travis] }
     end
   end
 
@@ -57,18 +57,18 @@ describe Travis::Owners do
     env DB_OWNER_GROUPS: 'true'
 
     describe 'given no owner group' do
-      it { expect(owners.logins).to eq %w(anja) }
+      it { expect(owners.logins).to eq %w[anja] }
       it { expect(owners.key).to eq 'anja' }
     end
 
     describe 'given an owner group' do
       let(:uuid) { SecureRandom.uuid }
 
-      before { OwnerGroup.create(uuid: uuid, owner_type: 'Organization', owner_id: travis.id) }
-      before { OwnerGroup.create(uuid: uuid, owner_type: 'User', owner_id: carla.id) }
-      before { OwnerGroup.create(uuid: uuid, owner_type: 'User', owner_id: anja.id) }
+      before { OwnerGroup.create(uuid:, owner_type: 'Organization', owner_id: travis.id) }
+      before { OwnerGroup.create(uuid:, owner_type: 'User', owner_id: carla.id) }
+      before { OwnerGroup.create(uuid:, owner_type: 'User', owner_id: anja.id) }
 
-      it { expect(owners.logins).to eq %w(anja carla travis) }
+      it { expect(owners.logins).to eq %w[anja carla travis] }
       it { expect(owners.key).to eq 'anja:carla:travis' }
 
       include_examples 'max_jobs'
@@ -79,13 +79,13 @@ describe Travis::Owners do
   describe 'using config' do
     describe 'given no owner group' do
       let(:limits) { {} }
-      it { expect(owners.logins).to eq %w(anja) }
+      it { expect(owners.logins).to eq %w[anja] }
     end
 
     describe 'given an owner group' do
       let(:limits) { { delegate: { anja: 'travis', carla: 'travis' } } }
 
-      it { expect(owners.logins).to eq %w(anja carla travis) }
+      it { expect(owners.logins).to eq %w[anja carla travis] }
       it { expect(owners.key).to eq 'anja:carla:travis' }
 
       include_examples 'max_jobs'

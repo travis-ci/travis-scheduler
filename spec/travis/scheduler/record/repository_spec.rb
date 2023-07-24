@@ -13,7 +13,7 @@ describe Repository do
     describe 'share_ssh_keys_with_forks setting' do
       let(:created_at) { Date.parse('2021-09-01') }
 
-      before { repo.update(created_at: created_at) }
+      before { repo.update(created_at:) }
 
       subject { repo.settings.share_ssh_keys_with_forks? }
 
@@ -28,22 +28,22 @@ describe Repository do
       end
     end
 
-    it "allows to set nil for settings" do
+    it 'allows to set nil for settings' do
       repo.settings = nil
       settings = Repository::Settings.new
       settings.additional_attributes = { repository_id: repo.id }
       expect(repo.settings.to_hash).to eq(settings.to_hash)
     end
 
-    it "allows to set settings as JSON string" do
+    it 'allows to set settings as JSON string' do
       repo.settings = '{"maximum_number_of_builds": 44}'
       settings = Repository::Settings.new(maximum_number_of_builds: 44)
       settings.additional_attributes = { repository_id: repo.id }
       expect(repo.settings.to_hash).to eq(settings.to_hash)
     end
 
-    it "allows to set settings as a Hash" do
-      repo.settings = { maximum_number_of_builds: 44}
+    it 'allows to set settings as a Hash' do
+      repo.settings = { maximum_number_of_builds: 44 }
       settings = Repository::Settings.new(maximum_number_of_builds: 44)
       settings.additional_attributes = { repository_id: repo.id }
       expect(repo.settings.to_hash).to eq(settings.to_hash)

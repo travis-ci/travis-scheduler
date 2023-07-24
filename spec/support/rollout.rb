@@ -7,10 +7,10 @@ module Support
       ENV['ENV'] = 'production'
       ENV['ROLLOUT'] = name
       context.redis.set  "#{name}.rollout.enabled", 1
-      context.redis.sadd "#{name}.rollout.owners", owner.login
+      context.redis.sadd? "#{name}.rollout.owners", owner.login
     end
 
-    def disable_rollout(name, owner)
+    def disable_rollout(name, _owner)
       DatabaseCleaner.allow_production = false
       ENV['ENV'] = 'test'
       ENV['ROLLOUT'] = nil

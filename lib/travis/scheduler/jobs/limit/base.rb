@@ -13,27 +13,27 @@ module Travis
 
           private
 
-            def limit?(job)
-              accepted.size + running(job) >= max(job)
-            end
+          def limit?(job)
+            accepted.size + running(job) >= max(job)
+          end
 
-            def accept(job)
-              accepted << report(:accept, job)
-              true
-            end
+          def accept(job)
+            accepted << report(:accept, job)
+            true
+          end
 
-            def reject(job)
-              rejected << report(:reject, job)
-              false
-            end
+          def reject(job)
+            rejected << report(:reject, job)
+            false
+          end
 
-            def accepted
-              @accepted ||= []
-            end
+          def accepted
+            @accepted ||= []
+          end
 
-            def rejected
-              @rejected ||= []
-            end
+          def rejected
+            @rejected ||= []
+          end
         end
       end
     end

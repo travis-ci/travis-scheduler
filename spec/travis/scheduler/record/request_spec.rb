@@ -1,11 +1,15 @@
 describe Request do
   let(:repo)                   { FactoryBot.build(:repository, owner_name: 'travis-ci', name: 'travis-ci') }
   let(:commit)                 { FactoryBot.build(:commit, commit: '12345678') }
-  let(:pull_request)           { FactoryBot.build(:pull_request, head_ref: head_ref, head_repo_github_id: head_repo_github_id) }
-  let(:request)                { FactoryBot.build(:request, repository: repo, commit: commit, head_commit: head_commit, pull_request: pull_request) }
+  let(:pull_request)           do
+    FactoryBot.build(:pull_request, head_ref:, head_repo_github_id:)
+  end
+  let(:request) do
+    FactoryBot.build(:request, repository: repo, commit:, head_commit:, pull_request:)
+  end
   let(:head_repo_github_id)    { repo.github_id }
-  let(:head_ref)               { }
-  let(:head_commit)            { }
+  let(:head_ref)               {}
+  let(:head_commit)            {}
 
   describe 'same_repo_pull_request?' do
     describe 'returns true if base and head repos match and head ref equals head sha' do
@@ -47,8 +51,8 @@ describe Request do
         let(:head_repo_vcs_id) { 'bitbucket123' }
         let(:pull_request) do
           FactoryBot.build(
-            :pull_request, head_ref: head_ref, head_repo_github_id: head_repo_github_id,
-            head_repo_github_id: head_repo_github_id, head_repo_vcs_id: head_repo_vcs_id
+            :pull_request, head_ref:, head_repo_github_id:,
+                           head_repo_github_id:, head_repo_vcs_id:
           )
         end
 

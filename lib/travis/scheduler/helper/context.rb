@@ -9,7 +9,10 @@ module Travis
         def_delegators :context, :config, :amqp, :features, :logger, :metrics, :redis
 
         def initialize(context, *args)
-          fail("First argument to #{self.class}#initialize must be a Context. #{context} given.") unless context.is_a?(Scheduler::Context)
+          unless context.is_a?(Scheduler::Context)
+            raise("First argument to #{self.class}#initialize must be a Context. #{context} given.")
+          end
+
           super
         end
       end

@@ -2,7 +2,7 @@ describe Travis::Scheduler::Helper::Memoize do
   let :const do
     Class.new(Struct.new(:dep)) do
       include Travis::Scheduler::Helper::Memoize
-      memoize def foo; dep.call; end
+      memoize def foo = dep.call
     end
   end
 

@@ -12,10 +12,11 @@ describe Travis::Scheduler::Service::Notify do
   let(:body)    { 'Created' }
   let(:authorize_build_url) { "http://localhost:9292/users/#{job.owner.id}/plan" }
 
-  before { stub_request(:post, url).to_return(status: status, body: body)  }
+  before { stub_request(:post, url).to_return(status:, body:) }
   before do
     stub_request(:get, authorize_build_url).to_return(
-      body: MultiJson.dump(plan_name: 'two_concurrent_plan', hybrid: true, free: false, status: 'subscribed', metered: false)
+      body: MultiJson.dump(plan_name: 'two_concurrent_plan', hybrid: true, free: false, status: 'subscribed',
+                           metered: false)
     )
   end
 
@@ -51,14 +52,14 @@ describe Travis::Scheduler::Service::Notify do
 
     def rescueing
       yield
-    rescue => e
+    rescue StandardError => e
     end
 
     describe 'publishes to job_board' do
       describe 'with a valid request' do
-        it 'sends the expected request'  do
+        it 'sends the expected request' do
           service.run
-          expect(WebMock).to have_requested(:post, url).with { |request|
+          expect(WebMock).to(have_requested(:post, url).with do |request|
             body = JSON.parse(request.body)
             expect(body['@type']).to                    eq 'job'
             expect(body['id']).to                       eq job.id
@@ -66,7 +67,7 @@ describe Travis::Scheduler::Service::Notify do
             expect(request.headers['Authorization']).to eq "Basic #{auth}"
             expect(request.headers['Content-Type']).to  eq 'application/json'
             expect(request.headers['Travis-Site']).to   eq 'org'
-          }
+          end)
         end
 
         include_examples 'does not raise'
@@ -109,7 +110,7 @@ describe Travis::Scheduler::Service::Notify do
 
         it 'logs' do
           rescueing { service.run }
-          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 412 (site header missing)"
+          expect(log).to include 'E POST to https://job-board.travis-ci.org/jobs/add responded 412 (site header missing)'
         end
       end
 
@@ -121,7 +122,7 @@ describe Travis::Scheduler::Service::Notify do
 
         it 'logs' do
           rescueing { service.run }
-          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 401 (auth header missing)"
+          expect(log).to include 'E POST to https://job-board.travis-ci.org/jobs/add responded 401 (auth header missing)'
         end
       end
 
@@ -133,7 +134,7 @@ describe Travis::Scheduler::Service::Notify do
 
         it 'logs' do
           rescueing { service.run }
-          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 403 (auth header invalid)"
+          expect(log).to include 'E POST to https://job-board.travis-ci.org/jobs/add responded 403 (auth header invalid)'
         end
       end
 
@@ -145,20 +146,23 @@ describe Travis::Scheduler::Service::Notify do
 
         it 'logs' do
           rescueing { service.run }
-          expect(log).to include "E POST to https://job-board.travis-ci.org/jobs/add responded 500 (internal error)"
+          expect(log).to include 'E POST to https://job-board.travis-ci.org/jobs/add responded 500 (internal error)'
         end
       end
     end
   end
 
   it 'publishes to live' do
-    live.expects(:push).with(instance_of(Hash), event: 'job:queued', user_ids: job.repository.permissions.pluck(:user_id))
+    live.expects(:push).with(instance_of(Hash), event: 'job:queued',
+                                                user_ids: job.repository.permissions.pluck(:user_id))
     service.run
   end
 
   describe 'sets the queue' do
-    let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx'} }
-    let(:job)    { FactoryBot.create(:job, state: :queued, config: config, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z')) }
+    let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx' } }
+    let(:job)    do
+      FactoryBot.create(:job, state: :queued, config:, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z'))
+    end
 
     before { context.config.queues = [{ queue: 'builds.mac_osx', os: 'osx' }] }
     before { service.run }
@@ -167,7 +171,7 @@ describe Travis::Scheduler::Service::Notify do
     it { expect(log).to include "I Setting queue to builds.mac_osx for job=#{job.id}" }
   end
 
-  # TODO confirm we don't need queue redirection any more
+  # TODO: confirm we don't need queue redirection any more
   context do
     let(:queue) { 'builds.linux' }
 
@@ -180,8 +184,8 @@ describe Travis::Scheduler::Service::Notify do
   end
 
   describe 'does not raise on encoding issues ("\xC3" from ASCII-8BIT to UTF-8)' do
-    let(:config) { { global_env: ["SECURE GH_USER_NAME=Max Nöthe".force_encoding('ASCII-8BIT')] } }
-    before { job.update!(config: config) }
+    let(:config) { { global_env: ['SECURE GH_USER_NAME=Max Nöthe'.force_encoding('ASCII-8BIT')] } }
+    before { job.update!(config:) }
     it { expect { service.run }.to_not raise_error }
   end
 end

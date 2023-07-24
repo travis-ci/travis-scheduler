@@ -83,7 +83,7 @@ class Travis::EncryptedColumn
 
   def create_aes(mode = :encrypt, key, iv)
     key = key[0, 32]
-    aes = OpenSSL::Cipher::AES.new(256, :CBC)
+    aes = OpenSSL::Cipher.new('aes-256-cbc')
 
     aes.send(mode)
     aes.key = key

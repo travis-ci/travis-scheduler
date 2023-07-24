@@ -4,13 +4,13 @@ module Travis
       module With
         module ClassMethods
           def with(method, *aspects)
-            prepend Module.new {
+            prepend(Module.new do
               define_method(method) do |*args, &block|
                 with(*aspects) do
                   super(*args, &block)
                 end
               end
-            }
+            end)
           end
         end
 
@@ -20,11 +20,11 @@ module Travis
 
         private
 
-          def with(*aspects, &block)
-            aspects.reverse.inject(block) do |block, aspect|
-              -> { method(aspect).call(&block) }
-            end.call
-          end
+        def with(*aspects, &block)
+          aspects.reverse.inject(block) do |block, aspect|
+            -> { method(aspect).call(&block) }
+          end.call
+        end
       end
     end
   end

@@ -1,5 +1,5 @@
 describe Travis::Scheduler::Serialize::Worker::Build do
-  let(:build) { Build.new(event_type: event_type) }
+  let(:build) { Build.new(event_type:) }
   subject { described_class.new(build) }
 
   describe 'pull_request?' do

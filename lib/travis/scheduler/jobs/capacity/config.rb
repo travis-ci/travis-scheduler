@@ -10,18 +10,18 @@ module Travis
           end
 
           def report(status, job)
-            super.merge(max: max)
+            super.merge(max:)
           end
 
           private
 
-            def max
-              @max ||= owners.logins.map { |login| max_for(login).to_i }.inject(&:+)
-            end
+          def max
+            @max ||= owners.logins.map { |login| max_for(login).to_i }.inject(&:+)
+          end
 
-            def max_for(login)
-              config[:limit][:by_owner][login.to_sym]
-            end
+          def max_for(login)
+            config[:limit][:by_owner][login.to_sym]
+          end
         end
       end
     end

@@ -1,5 +1,5 @@
 describe Travis::Stages do
-  let(:jobs) { keys.map { |stage| { state: :created, stage: stage } } }
+  let(:jobs) { keys.map { |stage| { state: :created, stage: } } }
   let(:root) { described_class.build(jobs) }
 
   include Support::Stages
@@ -12,11 +12,11 @@ describe Travis::Stages do
     #                   /     \
     # 1.2.1.1 - 1.2.2.1         3.2
 
-    let(:keys)  { ['1.1.1.1', '1.1.1.2', '1.1.2.1', '1.2.1.1', '1.2.2.1', '2.1', '3.1', '3.2'] }
+    let(:keys) { ['1.1.1.1', '1.1.1.2', '1.1.2.1', '1.2.1.1', '1.2.2.1', '2.1', '3.1', '3.2'] }
 
     describe 'structure' do
       let :structure do
-        <<-str.gsub(/ {10}/, '').chomp
+        <<-STR.gsub(/ {10}/, '').chomp
           Root
             Stage key=1
               Stage key=1.1
@@ -35,7 +35,7 @@ describe Travis::Stages do
             Stage key=3
               Job key=3.1 state=created
               Job key=3.2 state=created
-        str
+        STR
       end
 
       it { expect(root.inspect).to eq structure }

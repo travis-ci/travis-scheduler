@@ -1,6 +1,6 @@
 describe Travis::Scheduler::Serialize::Worker::Commit do
   let(:request) { Request.new }
-  let(:commit)  { Commit.new(request: request) }
+  let(:commit)  { Commit.new(request:) }
   subject { described_class.new(commit) }
 
   describe 'pull_request?' do

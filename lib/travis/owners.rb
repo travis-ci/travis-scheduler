@@ -17,6 +17,7 @@ module Travis
 
       def find(owner)
         raise ArgumentError, 'Invalid owner data: %p' % owner unless owner[:owner_type]
+
         Kernel.const_get(owner[:owner_type]).find(owner[:owner_id])
       end
 

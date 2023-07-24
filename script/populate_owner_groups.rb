@@ -5,19 +5,18 @@ USAGE = 'ruby script/populate_owner_groups [org|com] [staging|production]'
 APPS = {
   staging: {
     org: 'travis-scheduler-staging',
-    com: 'travis-pro-scheduler-staging',
+    com: 'travis-pro-scheduler-staging'
   },
   production: {
     org: 'travis-scheduler-production',
-    com: 'travis-pro-scheduler-prod',
+    com: 'travis-pro-scheduler-prod'
   }
 }
 
 def group(hash)
-  hash = hash.inject({}) do |hash, (key, value)|
-    hash[value] ||=[value]
+  hash = hash.each_with_object({}) do |(key, value), hash|
+    hash[value] ||= [value]
     hash[value] << key
-    hash
   end
   hash.values
 end

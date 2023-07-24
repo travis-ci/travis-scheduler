@@ -8,7 +8,7 @@ module Travis
   # Travis::Features contains methods to handle feature flags.
   module Features
     class << self
-      methods = (Rollout.public_instance_methods(false) - [:active?, "active?", :redis])
+      methods = (Rollout.public_instance_methods(false) - [:active?, 'active?', :redis])
       delegate(*methods, to: :rollout)
 
       attr_reader :redis
@@ -73,7 +73,7 @@ module Travis
     #
     # By default this will return true (ie. disabled).
     def feature_inactive?(feature)
-      redis.get(disabled_key(feature)) != "1"
+      redis.get(disabled_key(feature)) != '1'
     end
 
     # Return whether a feature has been disabled.

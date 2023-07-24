@@ -5,7 +5,7 @@ describe Travis::Owners::Subscriptions do
   let(:plans)    { { five: 5, ten: 10 } }
   let(:limits)   { {} }
   let(:attrs)    { { owner_type: 'Organization', owner_id: travis.id } }
-  let(:config)   { { limit: limits, plans: plans } }
+  let(:config)   { { limit: limits, plans: } }
   let(:owners)   { Travis::Owners.group(attrs, config) }
 
   subject { described_class.new(owners, plans).max_jobs }

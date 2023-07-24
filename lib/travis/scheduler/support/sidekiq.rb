@@ -31,7 +31,7 @@ module Travis
               chain.add Sidekiq::Marginalia, app: 'scheduler'
             end
 
-            c.logger.level = ::Logger::const_get(config.sidekiq.log_level.upcase.to_s)
+            c.logger.level = ::Logger.const_get(config.sidekiq.log_level.upcase.to_s)
 
             if pro?
               c.super_fetch!
@@ -45,9 +45,9 @@ module Travis
             }
           end
 
-          if pro?
-            ::Sidekiq::Client.reliable_push!
-          end
+          return unless pro?
+
+          ::Sidekiq::Client.reliable_push!
         end
 
         def pro?

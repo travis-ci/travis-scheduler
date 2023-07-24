@@ -9,11 +9,11 @@ module Travis
 
       private
 
-        def queues
-          Array(config).compact.map do |attrs|
-            Queue.new(attrs[:queue], attrs.reject { |key, _| key == :queue })
-          end
+      def queues
+        Array(config).compact.map do |attrs|
+          Queue.new(attrs[:queue], attrs.reject { |key, _| key == :queue })
         end
+      end
     end
   end
 end

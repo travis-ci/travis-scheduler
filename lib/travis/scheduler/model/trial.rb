@@ -12,20 +12,20 @@ module Travis
 
         private
 
-          def count
-            counts.compact.map(&:to_i).max
-          end
-          memoize :count
+        def count
+          counts.compact.map(&:to_i).max
+        end
+        memoize :count
 
-          def counts
-            owners.logins.map do |login|
-              redis.get(key_for(login))
-            end
+        def counts
+          owners.logins.map do |login|
+            redis.get(key_for(login))
           end
+        end
 
-          def key_for(login)
-            "trial:#{login}"
-          end
+        def key_for(login)
+          "trial:#{login}"
+        end
       end
     end
   end

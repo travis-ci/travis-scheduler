@@ -10,11 +10,11 @@ FactoryBot.define do
   REPO_KEY = OpenSSL::PKey::RSA.generate(4096)
 
   factory :user do
-    login {'svenfuchs'}
-    github_oauth_token { 'token'}
+    login { 'svenfuchs' }
+    github_oauth_token { 'token' }
   end
 
-  factory :org, :class => 'Organization' do
+  factory :org, class: 'Organization' do
     login { 'travis-ci' }
   end
 
@@ -26,16 +26,16 @@ FactoryBot.define do
 
   factory :repository, aliases: [:repo] do
     name       { 'gem-release' }
-    github_id  { 549743 }
+    github_id  { 549_743 }
     vcs_id     { '549743' }
     vcs_type   { 'GithubRepository' }
     owner      { User.first || FactoryBot.create(:user) }
     owner_name { owner.login }
     key        { SslKey.create(public_key: REPO_KEY.public_key, private_key: REPO_KEY.to_pem) }
-    users      { [ owner ] }
+    users      { [owner] }
     settings   {}
 
-    # TODO why is the worker payload interested in these at all?
+    # TODO: why is the worker payload interested in these at all?
     last_build_id { nil }
     last_build_started_at { '2016-01-01T10:00:00Z' }
     last_build_finished_at { '2016-01-01T11:00:00Z' }
@@ -82,7 +82,7 @@ FactoryBot.define do
     message         { 'message' }
     compare_url     { 'https://github.com/svenfuchs/minimal/compare/0cd9ff...62aaef' }
     committed_at    { '2016-01-01T12:00:00Z' }
-    committer_email { 'me@svenfuchs.com' } 
+    committer_email { 'me@svenfuchs.com' }
     committer_name  { 'Sven Fuchs' }
     author_name     { 'Sven Fuchs' }
     author_email    { 'me@svenfuchs.com' }
@@ -93,8 +93,7 @@ FactoryBot.define do
     association :user
   end
 
-  factory :custom_key, :class => 'CustomKey' do
+  factory :custom_key, class: 'CustomKey' do
     name { 'key' }
   end
 end
-

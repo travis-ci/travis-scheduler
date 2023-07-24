@@ -14,11 +14,11 @@ module Travis
 
         MSGS = {
           default: '%s capacity for %s: total=%s running=%s accepted=%s',
-          queue:   'limited by queue %s for %s: max=%s rejected=%s accepted=%s',
-          repo:    'limited by repo settings on %s: max=%s rejected=%s accepted=%s',
-          stages:  'limited by stage repo=%s build_id=%s: rejected=%s accepted=%s',
+          queue: 'limited by queue %s for %s: max=%s rejected=%s accepted=%s',
+          repo: 'limited by repo settings on %s: max=%s rejected=%s accepted=%s',
+          stages: 'limited by stage repo=%s build_id=%s: rejected=%s accepted=%s',
           summary: '%s: queueable=%s running=%s accepted=%s waiting=%s',
-          excess:  '%s excessive queue size %s'
+          excess: '%s excessive queue size %s'
         }
 
         def msgs
@@ -36,37 +36,37 @@ module Travis
 
         private
 
-          def capacities
-            Reports::Capacities.new(owners, data_for(:capacity))
-          end
-          memoize :capacities
+        def capacities
+          Reports::Capacities.new(owners, data_for(:capacity))
+        end
+        memoize :capacities
 
-          def limits
-            Reports::Limits.new(owners, data_for(:limit))
-          end
+        def limits
+          Reports::Limits.new(owners, data_for(:limit))
+        end
 
-          def by_repo
-            Reports::ByRepo.new(owners, state, reports)
-          end
+        def by_repo
+          Reports::ByRepo.new(owners, state, reports)
+        end
 
-          def totals
-            Reports::Totals.new(owners, state, reports)
-          end
-          memoize :totals
+        def totals
+          Reports::Totals.new(owners, state, reports)
+        end
+        memoize :totals
 
-          def warnings
-            msgs = []
-            msgs << MSGS[:excess] % [owners.to_s, queue_size] if queue_size > WARN_QUEUE_SIZE
-            msgs
-          end
+        def warnings
+          msgs = []
+          msgs << format(MSGS[:excess], owners.to_s, queue_size) if queue_size > WARN_QUEUE_SIZE
+          msgs
+        end
 
-          def queue_size
-            state.count_queueable
-          end
+        def queue_size
+          state.count_queueable
+        end
 
-          def data_for(type)
-            reports.select { |report| report[:type] == type }
-          end
+        def data_for(type)
+          reports.select { |report| report[:type] == type }
+        end
       end
     end
   end

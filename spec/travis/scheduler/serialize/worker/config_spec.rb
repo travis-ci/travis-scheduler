@@ -9,14 +9,14 @@ describe Travis::Scheduler::Serialize::Worker::Config do
 
   shared_examples_for :common do
     describe 'the original config remains untouched' do
-      let(:config) { { env: env, global_env: env } }
+      let(:config) { { env:, global_env: env } }
       let(:env)    { [{ secure: 'invalid' }] }
 
       before { subject }
 
       it do
         expect(config).to eql(
-          env:        [{ secure: 'invalid' }],
+          env: [{ secure: 'invalid' }],
           global_env: [{ secure: 'invalid' }]
         )
       end
@@ -38,7 +38,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
     end
 
     describe 'with a [nil] env' do
-      let(:config) { { rvm: '1.8.7', env: [ nil ], global_env: [ nil ] } }
+      let(:config) { { rvm: '1.8.7', env: [nil], global_env: [nil] } }
       it { should eql({ rvm: '1.8.7', env: [], global_env: [] }) }
     end
   end
@@ -49,36 +49,38 @@ describe Travis::Scheduler::Serialize::Worker::Config do
     include_examples :common
 
     describe 'decrypts env string vars' do
-      let(:config) { { env: env, global_env: env } }
+      let(:config) { { env:, global_env: env } }
       let(:env)    { [encrypt('FOO=foo')] }
       it { should eql env: ['SECURE FOO=foo'], global_env: ['SECURE FOO=foo'] }
     end
 
     describe 'decrypts env hash vars' do
-      let(:config) { { env: env, global_env: env } }
+      let(:config) { { env:, global_env: env } }
       let(:env)    { [FOO: encrypt('foo')] }
       it { should eql env: ['SECURE FOO=foo'], global_env: ['SECURE FOO=foo'] }
     end
 
     describe 'can mix secure and normal env vars' do
-      let(:config) { { env: env, global_env: env } }
+      let(:config) { { env:, global_env: env } }
       let(:env)    { [encrypt('FOO=foo'), 'BAR=bar'] }
       it { should eql env: ['SECURE FOO=foo', 'BAR=bar'], global_env: ['SECURE FOO=foo', 'BAR=bar'] }
     end
 
     describe 'normalizes env vars which are hashes to strings' do
-      let(:config) { { env: env, global_env: env } }
+      let(:config) { { env:, global_env: env } }
       let(:env)    { [{ FOO: 'foo', BAR: 'bar' }, encrypt('BAZ=baz')] }
-      it { should eql env: ['FOO=foo', 'BAR=bar', 'SECURE BAZ=baz'], global_env: ['FOO=foo', 'BAR=bar', 'SECURE BAZ=baz'] }
+      it {
+        should eql env: ['FOO=foo', 'BAR=bar', 'SECURE BAZ=baz'], global_env: ['FOO=foo', 'BAR=bar', 'SECURE BAZ=baz']
+      }
     end
 
     describe 'decrypts vault secure token' do
       let(:config) { { vault: { token: { secure: encrypt('my_key') } } } }
-      it { should eql vault: {token: 'my_key'} }
+      it { should eql vault: { token: 'my_key' } }
     end
 
     describe 'clears vault unsecure token' do
-      let(:config) { { vault: { token:  'my_key' } }  }
+      let(:config) { { vault: { token: 'my_key' } } }
       it { should eql vault: {} }
     end
   end
@@ -89,9 +91,9 @@ describe Travis::Scheduler::Serialize::Worker::Config do
     include_examples :common
 
     describe 'removes secure env vars' do
-      let(:config) { { rvm: '1.8.7', env: env, global_env: env } }
+      let(:config) { { rvm: '1.8.7', env:, global_env: env } }
       let(:env)    { ['FOO=foo', 'BAR=bar', encrypt('BAZ=baz')] }
-      it { should eql rvm: '1.8.7', env: ["FOO=foo", 'BAR=bar'], global_env: ["FOO=foo", 'BAR=bar'] }
+      it { should eql rvm: '1.8.7', env: ['FOO=foo', 'BAR=bar'], global_env: ['FOO=foo', 'BAR=bar'] }
     end
   end
 
@@ -110,7 +112,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    described_class::Addons::SAFE.map(&:to_sym).delete_if {|name| name == :jwt}.each do |name|
+    described_class::Addons::SAFE.map(&:to_sym).delete_if { |name| name == :jwt }.each do |name|
       describe "keeps the #{name} addon" do
         let(:config) { { addons: { name => :config } } }
         it { should eql(config) }
@@ -154,7 +156,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    context "with long SAUCE_ACCESS_KEY" do
+    context 'with long SAUCE_ACCESS_KEY' do
       let(:sauce_access_key) { 'foo012345678901234565789' }
 
       describe 'on a push request' do
@@ -168,7 +170,7 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    context "with short SAUCE_ACCESS_KEY" do
+    context 'with short SAUCE_ACCESS_KEY' do
       let(:sauce_access_key) { 'foo' }
 
       describe 'on a push request' do
@@ -182,8 +184,8 @@ describe Travis::Scheduler::Serialize::Worker::Config do
       end
     end
 
-    context "with non-safelisted env var" do
-      let(:var) { "ARBITRARY_ACCESS_KEY=foo012345678901234565789" }
+    context 'with non-safelisted env var' do
+      let(:var) { 'ARBITRARY_ACCESS_KEY=foo012345678901234565789' }
 
       describe 'on a push request' do
         let(:options) { { full_addons: true } }

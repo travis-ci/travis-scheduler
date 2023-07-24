@@ -12,24 +12,24 @@ module Travis
 
         private
 
-          def enqueue(*args)
-            Scheduler.push(*args)
-          end
+        def enqueue(*args)
+          Scheduler.push(*args)
+        end
 
-          def testing?
-            ENV['ENV'] == 'test'
-          end
+        def testing?
+          ENV['ENV'] == 'test'
+        end
 
-          def symbolize_keys(obj)
-            case obj
-            when Array
-              obj.map { |obj| symbolize_keys(obj) }
-            when ::Hash
-              obj.map { |key, value| [key.to_sym, symbolize_keys(value)] }.to_h
-            else
-              obj
-            end
+        def symbolize_keys(obj)
+          case obj
+          when Array
+            obj.map { |obj| symbolize_keys(obj) }
+          when ::Hash
+            obj.map { |key, value| [key.to_sym, symbolize_keys(value)] }.to_h
+          else
+            obj
           end
+        end
       end
     end
   end

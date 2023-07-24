@@ -11,17 +11,17 @@ module Travis
 
       private
 
-        def active?
-          ENV['TRAVIS_SITE'] == 'com' && ENV['POOL_QUEUES'] && ENV['POOL_SUFFIX']
-        end
+      def active?
+        ENV['TRAVIS_SITE'] == 'com' && ENV['POOL_QUEUES'] && ENV['POOL_SUFFIX']
+      end
 
-        def suffix
-          ENV['POOL_SUFFIX']
-        end
+      def suffix
+        ENV['POOL_SUFFIX']
+      end
 
-        def sponsored?
-          !job.owner.paid? && queue =~ self.class.queues
-        end
+      def sponsored?
+        !job.owner.paid? && queue =~ self.class.queues
+      end
     end
   end
 end

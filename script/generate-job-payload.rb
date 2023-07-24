@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # This script takes a job id and spits out the job payload for that id
 # Usage:
-#`heroku run -a travis-scheduler-<stage> script/generate-job-payload <job ID>`
+# `heroku run -a travis-scheduler-<stage> script/generate-job-payload <job ID>`
 
 $: << 'lib'
 require 'bundler/setup'
@@ -13,8 +13,7 @@ Travis::Scheduler.logger = Logger.new(IO::NULL)
 require 'raven/logger'
 module Raven
   class Logger
-    def add(*)
-    end
+    def add(*); end
   end
 end
 

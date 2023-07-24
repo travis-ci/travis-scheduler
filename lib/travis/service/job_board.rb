@@ -7,7 +7,7 @@ module Travis
       PATH = '/jobs/add'
 
       MSGS = {
-        response: 'POST to %{url} responded %{status} %{info}'
+        response: 'POST to %<url>s responded %<status>s %<info>s'
       }
 
       LEVEL = {
@@ -16,9 +16,9 @@ module Travis
       }
 
       INFO = {
-        201 => 'job %{id} created',
-        204 => 'job %{id} already exists',
-        400 => 'bad request: %{msg}',
+        201 => 'job %<id>s created',
+        204 => 'job %<id>s already exists',
+        400 => 'bad request: %<msg>s',
         412 => 'site header missing',
         401 => 'auth header missing',
         403 => 'auth header invalid',
@@ -38,51 +38,45 @@ module Travis
 
       private
 
-        def payload
-          { "@type" => "job", "id" => job_id, "data" => data }
-        end
+      def payload
+        { '@type' => 'job', 'id' => job_id, 'data' => data }
+      end
 
-        def http
-          Faraday.new(url: host, headers: headers, ssl: ssl_options) do |c|
-            # c.response :logger
-            c.request  :authorization, :basic, *auth.split(':')
-            c.request  :retry
-            c.response :raise_error
-            c.adapter  :net_http
-          end
+      def http
+        Faraday.new(url: host, headers:, ssl: ssl_options) do |c|
+          # c.response :logger
+          c.request  :authorization, :basic, *auth.split(':')
+          c.request  :retry
+          c.response :raise_error
+          c.adapter  :net_http
         end
+      end
 
-        def host
-          config.job_board[:url]
-        end
+      def host
+        config.job_board[:url]
+      end
 
-        def auth
-          config.job_board[:auth]
-        end
+      def auth
+        config.job_board[:auth]
+      end
 
-        def headers
-          {
-            'Content-Type' => 'application/json',
-            'Travis-Site'  => Scheduler.config.site
-          }
-        end
+      def headers
+        {
+          'Content-Type' => 'application/json',
+          'Travis-Site' => Scheduler.config.site
+        }
+      end
 
-        def ssl_options
-          {}
-        end
+      def ssl_options
+        {}
+      end
 
-        def log(status, msg = nil)
-          level = LEVEL[status] || :error
-          info  = (INFO[status] || '') % {
-            id:  job_id,
-            msg: msg
-          }
-          logger.send level, MSGS[:response] % {
-            url:    [host, PATH].join,
-            status: status,
-            info:   info ? "(#{info})" : nil
-          }
-        end
+      def log(status, msg = nil)
+        level = LEVEL[status] || :error
+        info  = format((INFO[status] || ''), id: job_id, msg:)
+        logger.send level,
+                    format(MSGS[:response], url: [host, PATH].join, status:, info: info ? "(#{info})" : nil)
+      end
     end
   end
 end

@@ -12,7 +12,7 @@ module Travis
 
         # These are ordered by how specific the limit is, from most specific to least.
         # In other orders, we may apply a stricter limit than is intended.
-        NAMES = %w(stages repo queue)
+        NAMES = %w[stages repo queue]
 
         def accept(job)
           yield job if accept?(job)
@@ -25,17 +25,17 @@ module Travis
 
         private
 
-          def accept?(job)
-            all.all? { |limit| limit.accept?(job) }
-          end
+        def accept?(job)
+          all.all? { |limit| limit.accept?(job) }
+        end
 
-          def all
-            @all ||= NAMES.map { |name| limit(name) }
-          end
+        def all
+          @all ||= NAMES.map { |name| limit(name) }
+        end
 
-          def limit(name)
-            Limit.const_get(name.camelize).new(context, owners, state)
-          end
+        def limit(name)
+          Limit.const_get(name.camelize).new(context, owners, state)
+        end
       end
     end
   end

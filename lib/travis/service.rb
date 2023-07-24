@@ -8,8 +8,8 @@ module Travis
       ::Sidekiq::Client.push(
         'queue' => ENV['SIDEKIQ_QUEUE'] || 'scheduler',
         'class' => 'Travis::Scheduler::Worker',
-        'args'  => args,
-        'at'    => args.last.is_a?(Hash) ? args.last.delete(:at) : nil
+        'args' => args,
+        'at' => args.last.is_a?(Hash) ? args.last.delete(:at) : nil
       )
     end
   end
@@ -19,7 +19,7 @@ module Travis
       ::Sidekiq::Client.push(
         'queue' => 'hub',
         'class' => 'Travis::Hub::Sidekiq::Worker',
-        'args'  => args.map! { |arg| arg.to_json }
+        'args' => args.map! { |arg| arg.to_json }
       )
     end
   end
@@ -27,9 +27,9 @@ module Travis
   module Live
     def self.push(*args)
       ::Sidekiq::Client.push(
-        'queue'   => 'pusher-live',
-        'class'   => 'Travis::Async::Sidekiq::Worker',
-        'args'    => [nil, nil, nil, *args].map! { |arg| arg.to_json }
+        'queue' => 'pusher-live',
+        'class' => 'Travis::Async::Sidekiq::Worker',
+        'args' => [nil, nil, nil, *args].map! { |arg| arg.to_json }
       )
     end
   end

@@ -3,7 +3,7 @@ class Repository < ActiveRecord::Base
   has_one    :key, class_name: 'SslKey'
 
   has_many :permissions
-  has_many :users, :through => :permissions
+  has_many :users, through: :permissions
 
   def slug
     @slug ||= vcs_slug || [owner_name, name].join('/')
@@ -14,20 +14,20 @@ class Repository < ActiveRecord::Base
   end
 
   def installation
-    @installation ||= Installation.where(owner_id: owner_id, owner_type: owner_type, removed_by_id: nil).first
+    @installation ||= Installation.where(owner_id:, owner_type:, removed_by_id: nil).first
   end
 
   def settings
     @settings ||= Repository::Settings.load(super, repository_id: id).tap do |s|
       s.on_save do
         self.settings = s.to_json
-        self.save!
+        save!
       end
     end
   end
 
   def github?
-    self.vcs_type == 'GithubRepository'
+    vcs_type == 'GithubRepository'
   end
 end
 

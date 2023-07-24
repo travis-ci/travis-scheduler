@@ -4,7 +4,9 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
 
   let(:repo)   { Repository.new(owner_name: 'travis-ci', name: 'travis-ci') }
   let(:user_repo) { FactoryBot.create(:repository, owner: user) }
-  let(:org_repo)  { FactoryBot.create(:repository, owner_name: org.login, owner_id: org.id, owner_type: "Organization") }
+  let(:org_repo)  do
+    FactoryBot.create(:repository, owner_name: org.login, owner_id: org.id, owner_type: 'Organization')
+  end
 
   let(:config) { { github: {} } }
 
@@ -18,18 +20,19 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
     it { expect(subject.api_url).to eq 'https://api.github.com/repos/travis-ci/travis-ci' }
   end
 
-  describe "#timeouts" do
-    context "for a user-owned repo" do
+  describe '#timeouts' do
+    context 'for a user-owned repo' do
       let(:worker) { described_class.new(user_repo, config) }
 
-      context "unpaid account" do
+      context 'unpaid account' do
         let(:authorize_build_url) { "http://localhost:9292/users/#{user.id}/plan" }
         before do
           stub_request(:get, authorize_build_url).to_return(
-            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed', metered: true)
+            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed',
+                                 metered: true)
           )
         end
-        it "returns a hash of timeout values" do
+        it 'returns a hash of timeout values' do
           timeouts = worker.timeouts
 
           expect(timeouts).to be_a Hash
@@ -37,12 +40,12 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
         end
       end
 
-      context "paid account" do
+      context 'paid account' do
         before do
           User.any_instance.stubs(:subscribed?).returns(true)
         end
 
-        it "returns a hash of timeout values" do
+        it 'returns a hash of timeout values' do
           timeouts = worker.timeouts
 
           expect(timeouts).to be_a Hash
@@ -50,12 +53,12 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
         end
       end
 
-      context "active trial" do
+      context 'active trial' do
         before do
           User.any_instance.stubs(:active_trial?).returns(true)
         end
 
-        it "returns a hash of timeout values" do
+        it 'returns a hash of timeout values' do
           timeouts = worker.timeouts
 
           expect(timeouts).to be_a Hash
@@ -64,17 +67,18 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       end
     end
 
-    context "for an org-owned repo" do
+    context 'for an org-owned repo' do
       let(:worker) { described_class.new(org_repo, config) }
 
-      context "unpaid account" do
+      context 'unpaid account' do
         let(:authorize_build_url) { "http://localhost:9292/organizations/#{org.id}/plan" }
         before do
           stub_request(:get, authorize_build_url).to_return(
-            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed', metered: true)
+            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed',
+                                 metered: true)
           )
         end
-        it "returns a hash of timeout values" do
+        it 'returns a hash of timeout values' do
           timeouts = worker.timeouts
 
           expect(timeouts).to be_a Hash
@@ -82,12 +86,12 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
         end
       end
 
-      context "paid account" do
+      context 'paid account' do
         before do
           Organization.any_instance.stubs(:subscribed?).returns(true)
         end
 
-        it "returns a hash of timeout values" do
+        it 'returns a hash of timeout values' do
           timeouts = worker.timeouts
 
           expect(timeouts).to be_a Hash
@@ -95,12 +99,12 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
         end
       end
 
-      context "active trial" do
+      context 'active trial' do
         before do
           Organization.any_instance.stubs(:active_trial?).returns(true)
         end
 
-        it "returns a hash of timeout values" do
+        it 'returns a hash of timeout values' do
           timeouts = worker.timeouts
 
           expect(timeouts).to be_a Hash
@@ -133,7 +137,7 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       context 'when it is an Assembla p4 repo' do
         let(:clone_url) { 'ssl:perforce.assembla.com:1667' }
 
-        before { repo.update(vcs_type: 'AssemblaRepository', server_type: 'perforce', clone_url: clone_url) }
+        before { repo.update(vcs_type: 'AssemblaRepository', server_type: 'perforce', clone_url:) }
 
         it { expect(subject.source_url).to eq(clone_url) }
       end
@@ -153,7 +157,7 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       end
     end
 
-    context "when config prefers HTTPS source_url" do
+    context 'when config prefers HTTPS source_url' do
       before(:all)  { @before = Travis.config.prefer_https }
       before(:each) { Travis.config.prefer_https = true }
       after(:all)   { Travis.config.prefer_https = @before }

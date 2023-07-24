@@ -5,9 +5,8 @@ module Travis
         def deep_dup(obj)
           case obj
           when Hash
-            obj.inject({}) do |hash, (key, value)|
+            obj.each_with_object({}) do |(key, value), hash|
               hash[deep_dup(key)] = deep_dup(value)
-              hash
             end
           when Array
             obj.inject([]) do |array, value|

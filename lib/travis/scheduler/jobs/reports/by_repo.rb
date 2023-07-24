@@ -14,25 +14,25 @@ module Travis
 
             private
 
-              def queueable
-                state.queueable.select { |job| job.repository_id == repo.id }.size
-              end
+            def queueable
+              state.queueable.select { |job| job.repository_id == repo.id }.size
+            end
 
-              def running
-                state.running.select { |job| job.repository_id == repo.id }.size
-              end
+            def running
+              state.running.select { |job| job.repository_id == repo.id }.size
+            end
 
-              def selected
-                reports.select { |data| data[:status] == :accept }.size
-              end
+            def selected
+              reports.select { |data| data[:status] == :accept }.size
+            end
 
-              def waiting
-                queueable - selected
-              end
+            def waiting
+              queueable - selected
+            end
 
-              def msg(type, *args)
-                MSGS[type] % args
-              end
+            def msg(type, *args)
+              MSGS[type] % args
+            end
           end
 
           def msgs

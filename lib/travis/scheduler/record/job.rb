@@ -14,13 +14,13 @@ class Job < ActiveRecord::Base
 
     def queueable
       # sets jobs order based on priority first, ie: 5, nil, -5
-      jobs = where(state: :created).order(Arel.sql("COALESCE(priority, 0) desc")).order(:id)
+      jobs = where(state: :created).order(Arel.sql('COALESCE(priority, 0) desc')).order(:id)
       jobs = jobs.joins(Arel.sql(SQL[:queueable])).order(:id) if ENV['USE_QUEUEABLE_JOBS']
       jobs
     end
 
     def running
-      where(state: [:queued, :received, :started]).order('jobs.id')
+      where(state: %i[queued received started]).order('jobs.id')
     end
 
     def private
@@ -40,7 +40,7 @@ class Job < ActiveRecord::Base
     end
 
     def by_queue(queue)
-      where(queue: queue)
+      where(queue:)
     end
 
     def owned_by(owners)
@@ -56,7 +56,7 @@ class Job < ActiveRecord::Base
     end
   end
 
-  FINISHED_STATES = [:passed, :failed, :errored, :canceled]
+  FINISHED_STATES = %i[passed failed errored canceled]
 
   self.inheritance_column = :_disabled
 
@@ -99,7 +99,7 @@ class Job < ActiveRecord::Base
 
   def config
     record = super
-    config = record&.config_json if record.respond_to?(:config_json) # TODO remove once we've rolled over
+    config = record&.config_json if record.respond_to?(:config_json) # TODO: remove once we've rolled over
     config ||= record&.config
     config ||= read_attribute(:config) if has_attribute?(:config)
     config ||= {}

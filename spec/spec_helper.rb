@@ -34,18 +34,17 @@ RSpec.configure do |c|
   c.include FactoryBot::Syntax::Methods
   # c.backtrace_clean_patterns = []
 
-  # TODO for webmock request expectation
+  # TODO: for webmock request expectation
   c.raise_errors_for_deprecations!
-
 
   if ENV['SHOW_QUERIES']
     sql_count = {}
     sql_count.default = 0
     c.before(:suite) do
       ActiveSupport::Notifications.subscribe 'sql.active_record' do |*args|
-        event = ActiveSupport::Notifications::Event.new *args
-        sql_count[event.payload[:name]] +=1
-     end
+        event = ActiveSupport::Notifications::Event.new(*args)
+        sql_count[event.payload[:name]] += 1
+      end
     end
   end
 
@@ -53,7 +52,7 @@ RSpec.configure do |c|
     DatabaseCleaner.start
     Time.now.utc.tap { |now| Time.stubs(:now).returns(now) }
     Travis::Scheduler.instance_variable_set(:@context, nil)
-    Travis::Scheduler.instance_variable_set(:@config, nil) # TODO remove once everything uses context
+    Travis::Scheduler.instance_variable_set(:@config, nil) # TODO: remove once everything uses context
     Travis::Scheduler.redis.flushall
     Travis::Amqp::Publisher.any_instance.stubs(:publish)
     ENV['IBM_REPO_SWITCHES_DATE'] = '2021-10-01'

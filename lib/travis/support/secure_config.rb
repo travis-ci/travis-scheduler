@@ -8,11 +8,11 @@ module Travis
   # `.travis.yml` file.
   class SecureConfig < Struct.new(:key)
     def self.decrypt(config, key)
-      self.new(key).decrypt(config)
+      new(key).decrypt(config)
     end
 
     def self.encrypt(config, key)
-      self.new(key).encrypt(config)
+      new(key).encrypt(config)
     end
 
     def decrypt(config)
@@ -31,41 +31,41 @@ module Travis
 
     private
 
-      def decrypt_element(key, element)
-        if element.is_a?(Array) || element.is_a?(Hash)
-          decrypt(element)
-        elsif secure_key?(key) && element
-          decrypt_value(element)
-        else
-          element
-        end
+    def decrypt_element(key, element)
+      if element.is_a?(Array) || element.is_a?(Hash)
+        decrypt(element)
+      elsif secure_key?(key) && element
+        decrypt_value(element)
+      else
+        element
       end
+    end
 
-      def process(result, key, value)
-        if result.is_a?(Array)
-          result << value
-        elsif result.is_a?(Hash) && !secure_key?(key)
-          result[key] = value
-          result
-        else
-          value
-        end
+    def process(result, key, value)
+      if result.is_a?(Array)
+        result << value
+      elsif result.is_a?(Hash) && !secure_key?(key)
+        result[key] = value
+        result
+      else
+        value
       end
+    end
 
-      def decrypt_value(value)
-        decoded = Base64.decode64(value.to_s)
-        # TODO should probably be checked earlier
-        if key.respond_to?(:decrypt)
-          key.decrypt(decoded)
-        else
-          Travis.logger.error("Can not decrypt secure config value: #{value.inspect[0..10]} using key: #{key.inspect[0..10]}")
-        end
-      rescue OpenSSL::PKey::RSAError => e
-        '[unable to decrypt]'
+    def decrypt_value(value)
+      decoded = Base64.decode64(value.to_s)
+      # TODO: should probably be checked earlier
+      if key.respond_to?(:decrypt)
+        key.decrypt(decoded)
+      else
+        Travis.logger.error("Can not decrypt secure config value: #{value.inspect[0..10]} using key: #{key.inspect[0..10]}")
       end
+    rescue OpenSSL::PKey::RSAError => e
+      '[unable to decrypt]'
+    end
 
-      def secure_key?(key)
-        key && (key == :secure || key == 'secure')
-      end
+    def secure_key?(key)
+      key && [:secure, 'secure'].include?(key)
+    end
   end
 end

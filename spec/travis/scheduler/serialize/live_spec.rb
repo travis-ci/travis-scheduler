@@ -9,28 +9,28 @@ describe Travis::Scheduler::Serialize::Live do
 
   it 'data' do
     should eq(
-      id:                 job.id,
-      build_id:           build.id,
-      repository_id:      repo.id,
-      repository_slug:    'svenfuchs/gem-release',
+      id: job.id,
+      build_id: build.id,
+      repository_id: repo.id,
+      repository_slug: 'svenfuchs/gem-release',
       repository_private: false,
-      number:             '2.1',
-      state:              'queued',
-      queue:              'builds.gce',
-      commit_id:          commit.id,
-      allow_failure:      false,
-      updated_at:         job.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+      number: '2.1',
+      state: 'queued',
+      queue: 'builds.gce',
+      commit_id: commit.id,
+      allow_failure: false,
+      updated_at: job.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
       commit: {
-        id:               commit.id,
-        sha:              '62aaef',
-        branch:           'master',
-        message:          'message',
-        committed_at:     '2016-01-01T12:00:00Z',
-        committer_email:  'me@svenfuchs.com',
-        committer_name:   'Sven Fuchs',
-        author_name:      'Sven Fuchs',
-        author_email:     'me@svenfuchs.com',
-        compare_url:      'https://github.com/svenfuchs/minimal/compare/0cd9ff...62aaef'
+        id: commit.id,
+        sha: '62aaef',
+        branch: 'master',
+        message: 'message',
+        committed_at: '2016-01-01T12:00:00Z',
+        committer_email: 'me@svenfuchs.com',
+        committer_name: 'Sven Fuchs',
+        author_name: 'Sven Fuchs',
+        author_email: 'me@svenfuchs.com',
+        compare_url: 'https://github.com/svenfuchs/minimal/compare/0cd9ff...62aaef'
       }
     )
   end

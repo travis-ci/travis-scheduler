@@ -18,9 +18,9 @@ require 'travis/service'
 require 'travis/support/database'
 require 'marginalia'
 
-require 'pry' unless ['production', 'staging'].include? ENV['ENV']
+require 'pry' unless %w[production staging].include? ENV['ENV']
 
-Travis::Exceptions::Queue = ::Queue # TODO fix in travis-exceptions
+Travis::Exceptions::Queue = ::Queue # TODO: fix in travis-exceptions
 
 module Travis
   module Scheduler
@@ -37,9 +37,9 @@ module Travis
         Sidekiq.setup(config, logger)
         Features.setup(config)
 
-        if ENV['QUERY_COMMENTS_ENABLED'] == 'true'
-          ::Marginalia.install
-        end
+        return unless ENV['QUERY_COMMENTS_ENABLED'] == 'true'
+
+        ::Marginalia.install
       end
 
       def context
@@ -63,7 +63,7 @@ module Travis
       end
 
       def redis
-        @_redis ||= Redis.new(config[:redis].to_h) # TODO should be a pool, no?
+        @_redis ||= Redis.new(config[:redis].to_h) # TODO: should be a pool, no?
       end
 
       def ping
@@ -72,7 +72,7 @@ module Travis
     end
   end
 
-  # TODO used by travis-settings, apparently
+  # TODO: used by travis-settings, apparently
   class << self
     def env
       Scheduler.env
