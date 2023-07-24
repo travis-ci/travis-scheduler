@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Travis::Stages do
   let(:jobs) { keys.map { |stage| { state: :created, stage: } } }
   let(:root) { described_class.build(jobs) }
@@ -36,34 +38,46 @@ describe Travis::Stages do
 
       context do
         before { start '1.1', '1.2', '1.3' }
+
         it { expect(startable).to eq [] }
       end
 
       context do
-        before { finish '1.1' }
-        before { start '1.2', '1.3' }
+        before do
+          finish '1.1'
+          start '1.2', '1.3'
+        end
+
         it { expect(startable).to eq [] }
       end
 
       context do
-        before { finish '1.1', '1.3' }
-        before { start '1.2' }
+        before do
+          finish '1.1', '1.3'
+          start '1.2'
+        end
+
         it { expect(startable).to eq [] }
       end
 
       context do
         before { finish '1.1', '1.2', '1.3' }
+
         it { expect(startable).to eq ['2.1'] }
       end
 
       context do
-        before { finish '1.1', '1.2', '1.3' }
-        before { start '2.1' }
+        before do
+          finish '1.1', '1.2', '1.3'
+          start '2.1'
+        end
+
         it { expect(startable).to eq [] }
       end
 
       context do
         before { finish '1.1', '1.2', '1.3', '2.1' }
+
         it { expect(startable).to eq ['3.1'] }
       end
     end

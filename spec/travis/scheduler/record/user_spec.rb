@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe User do
   let(:user) { FactoryBot.create(:user) }
   let(:repo) { FactoryBot.create(:repository) }
@@ -94,7 +96,7 @@ describe User do
       end
     end
 
-    context '#subscribed?, #active_trial?, #educational? == false' do
+    describe '#subscribed?, #active_trial?, #educational? == false' do
       before do
         user.stubs(:subscribed?).returns(false)
         user.stubs(:active_trial?).returns(false)

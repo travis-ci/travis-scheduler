@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'redis'
 require 'travis/amqp'
 require 'travis/exceptions'

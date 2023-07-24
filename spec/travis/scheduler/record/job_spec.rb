@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Job do
   let(:config) { { rvm: '1.8.7' } }
   let(:job) { FactoryBot.create(:job, config:).reload }
@@ -12,11 +14,13 @@ describe Job do
   end
 
   describe 'jobs having all types of priorities' do
-    before { FactoryBot.create(:job, stage:, state: :created, source: build1) }
-    before { FactoryBot.create(:job, stage:, state: :created, priority: priority[:low], source: build2) }
-    before { FactoryBot.create(:job, stage:, state: :created, priority: priority[:low], source: build2) }
-    before { FactoryBot.create(:job, stage:, state: :created, priority: priority[:high], source: build3) }
-    before { FactoryBot.create(:job, stage:, state: :created, priority: priority[:high], source: build3) }
+    before do
+      FactoryBot.create(:job, stage:, state: :created, source: build1)
+      FactoryBot.create(:job, stage:, state: :created, priority: priority[:low], source: build2)
+      FactoryBot.create(:job, stage:, state: :created, priority: priority[:low], source: build2)
+      FactoryBot.create(:job, stage:, state: :created, priority: priority[:high], source: build3)
+      FactoryBot.create(:job, stage:, state: :created, priority: priority[:high], source: build3)
+    end
 
     describe 'ordering' do
       it {
@@ -27,10 +31,12 @@ describe Job do
   end
 
   describe 'jobs having high and low priorities' do
-    before { FactoryBot.create(:job, stage:, state: :created, priority: priority[:low], source: build1) }
-    before { FactoryBot.create(:job, stage:, state: :created, priority: priority[:low], source: build1) }
-    before { FactoryBot.create(:job, stage:, state: :created, priority: priority[:high], source: build2) }
-    before { FactoryBot.create(:job, stage:, state: :created, priority: priority[:high], source: build2) }
+    before do
+      FactoryBot.create(:job, stage:, state: :created, priority: priority[:low], source: build1)
+      FactoryBot.create(:job, stage:, state: :created, priority: priority[:high], source: build2)
+      FactoryBot.create(:job, stage:, state: :created, priority: priority[:high], source: build2)
+      FactoryBot.create(:job, stage:, state: :created, priority: priority[:low], source: build1)
+    end
 
     describe 'ordering' do
       it {
@@ -41,11 +47,13 @@ describe Job do
   end
 
   describe 'jobs not having any priorities' do
-    before { FactoryBot.create(:job, stage:, state: :created, source: build1) }
-    before { FactoryBot.create(:job, stage:, state: :created, source: build1) }
-    before { FactoryBot.create(:job, stage:, state: :created, source: build2) }
-    before { FactoryBot.create(:job, stage:, state: :created, source: build2) }
-    before { FactoryBot.create(:job, stage:, state: :created, source: build3) }
+    before do
+      FactoryBot.create(:job, stage:, state: :created, source: build1)
+      FactoryBot.create(:job, stage:, state: :created, source: build2)
+      FactoryBot.create(:job, stage:, state: :created, source: build2)
+      FactoryBot.create(:job, stage:, state: :created, source: build3)
+      FactoryBot.create(:job, stage:, state: :created, source: build1)
+    end
 
     describe 'ordering' do
       it {
@@ -56,7 +64,7 @@ describe Job do
   end
 
   describe 'multiple builds with same priority' do
-    before(:each) do
+    before do
       @stage = FactoryBot.create(:stage, number: 1)
       @build1 = FactoryBot.create(:build)
       @build2 =  FactoryBot.create(:build)

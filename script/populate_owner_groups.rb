@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'yaml'
 
 USAGE = 'ruby script/populate_owner_groups [org|com] [staging|production]'
@@ -11,7 +13,7 @@ APPS = {
     org: 'travis-scheduler-production',
     com: 'travis-pro-scheduler-prod'
   }
-}
+}.freeze
 
 def group(hash)
   hash = hash.each_with_object({}) do |(key, value), hash|

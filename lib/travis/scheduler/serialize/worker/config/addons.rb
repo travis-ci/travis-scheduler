@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Serialize
       class Worker
         module Config
           class Addons < Struct.new(:config)
-            SAFE = %i(
+            SAFE = %i[
               apt
               apt_packages
               apt_sources
@@ -21,11 +23,11 @@ module Travis
               snaps
               sonarcloud
               ssh_known_hosts
-            )
+            ].freeze
 
-            JWT_AWARE = %i(
+            JWT_AWARE = %i[
               sauce_connect
-            )
+            ].freeze
 
             JWT_ENV_CHECKS = {
               sauce_connect: {
@@ -33,7 +35,7 @@ module Travis
                   minimum_length: 20
                 }
               }
-            }
+            }.freeze
 
             def apply
               config = compact(filtered)
@@ -55,9 +57,10 @@ module Travis
 
               config[:jwt] = jwt_config.select do |decrypted_jwt_data|
                 return unless decrypted_jwt_data.respond_to?(:split)
+
                 env_var_name, env_var_value = decrypted_jwt_data.split('=', 2)
 
-                JWT_ENV_CHECKS.any? do |addon, criteria|
+                JWT_ENV_CHECKS.any? do |_addon, criteria|
                   criteria.key?(env_var_name) && criteria[env_var_name][:minimum_length] <= env_var_value.length
                 end
               end
@@ -66,6 +69,7 @@ module Travis
             end
 
             private
+
             def filtered
               config.map { |key, value| [key, filter(key, value)] }.to_h
             end
@@ -75,8 +79,6 @@ module Travis
                 config
               elsif jwt? && jwt_aware?(name)
                 strip_encrypted(config)
-              else
-                nil
               end
             end
 

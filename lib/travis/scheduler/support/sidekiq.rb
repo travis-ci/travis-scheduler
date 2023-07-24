@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq'
 require 'travis/exceptions/sidekiq'
 require 'travis/metrics/sidekiq'

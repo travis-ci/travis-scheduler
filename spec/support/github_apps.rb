@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ENV['GITHUB_PRIVATE_PEM'] = <<~PEM
   -----BEGIN RSA PRIVATE KEY-----
   MIICXAIBAAKBgQCDmxahOu0HsiWI57rXMGaR8Zaoq2YlyfXsDGZfgRzZn2EFxc4V

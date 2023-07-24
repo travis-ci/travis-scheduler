@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Travis::Scheduler::Service::Ping do
   let(:now)      { Time.now }
   let(:context)  { Travis::Scheduler.context }

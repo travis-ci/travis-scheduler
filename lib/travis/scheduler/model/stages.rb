@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # We have keys with this semantical meaning:
 #
 #   1.1.1.1 \

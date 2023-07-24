@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Owners
     module Cli
@@ -19,7 +21,7 @@ module Travis
           grouped: 'The following owners already are in an owner group: %s',
           confirm: 'This will add the following owners to the owner group that %s belongs to: %s. Confirm? [y/n]',
           done: 'Done. These owners have been added to the group.'
-        }
+        }.freeze
 
         def run
           validate

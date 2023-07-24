@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module Travis
   module Owners
     class Subscriptions < Struct.new(:owners, :config, :logger)
       MSGS = {
         missing_plan: '[missing_plan] Plan missing from application config: %s (%s)'
-      }
+      }.freeze
 
       def active?
         subscriptions.any?

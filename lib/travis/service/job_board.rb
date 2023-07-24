@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'faraday'
 require 'json'
 
@@ -8,12 +10,12 @@ module Travis
 
       MSGS = {
         response: 'POST to %<url>s responded %<status>s %<info>s'
-      }
+      }.freeze
 
       LEVEL = {
         201 => :info,
         204 => :warn
-      }
+      }.freeze
 
       INFO = {
         201 => 'job %<id>s created',
@@ -23,7 +25,7 @@ module Travis
         401 => 'auth header missing',
         403 => 'auth header invalid',
         500 => 'internal error'
-      }
+      }.freeze
 
       def post
         response = http.post(PATH, JSON.dump(payload))

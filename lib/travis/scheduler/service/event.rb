@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/rollout'
 
 module Travis
@@ -19,7 +21,7 @@ module Travis
           ignore: 'Ignoring owner based on rollout: %s (type=%s id=%s)',
           test: 'testing exception handling in Scheduler 2.0',
           drop: 'Owner group %s is locked and already being evaluated. Dropping event %s for %s=%s.'
-        }
+        }.freeze
 
         def run
           info format(MSGS[:receive], event, type, obj.id, repo.slug)

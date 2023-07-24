@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
       KEYS = %i[slug owner os language sudo dist group osx_image percentage
-                resources services arch virt paid vm_size repo_private]
+                resources services arch virt paid vm_size repo_private].freeze
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
-      }
+      }.freeze
 
-      OSS_ONLY_ARCH = %w[arm64 s390x]
+      OSS_ONLY_ARCH = %w[arm64 s390x].freeze
 
       def matches?(attrs)
         check_unknown_matchers(attrs.keys)

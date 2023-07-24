@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/locking'
 require 'travis/scheduler/helper/logging'

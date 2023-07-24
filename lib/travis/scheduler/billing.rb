@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/billing/client'
 
 module Travis

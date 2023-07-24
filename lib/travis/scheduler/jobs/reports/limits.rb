@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/jobs/reports/totals'
 
 module Travis
@@ -9,7 +11,7 @@ module Travis
             queue: '%s limited by queue %s: max=%s rejected=%s selected=%s',
             repo: 'repo %s limited by repo settings: max=%s rejected=%s selected=%s',
             stages: 'repo %s limited by stage on build_id=%s: rejected=%s selected=%s'
-          }
+          }.freeze
 
           def msgs
             by_name.map { |name, data| report(name, data) }.flatten

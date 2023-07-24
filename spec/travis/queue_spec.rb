@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Travis::Queue do
   let(:context)    { Travis::Scheduler.context }
   let(:recently)   { 7.days.ago }
@@ -47,17 +49,20 @@ describe Travis::Queue do
 
   describe 'by default' do
     let(:slug) { 'travis-ci/travis-ci' }
+
     it { expect(queue).to eq 'builds.default' }
   end
 
   describe 'by app config' do
     describe 'by repo slug' do
       let(:slug) { 'rails/rails' }
+
       it { expect(queue).to eq 'builds.rails' }
     end
 
     describe 'by owner name' do
       let(:slug) { 'cloudfoundry/bosh' }
+
       it { expect(queue).to eq 'builds.cloudfoundry' }
     end
   end
@@ -65,11 +70,13 @@ describe Travis::Queue do
   describe 'by job config' do
     describe 'by language' do
       let(:config) { { language: 'clojure' } }
+
       it { expect(queue).to eq 'builds.clojure' }
     end
 
     describe 'by language (passed as an array)' do
       let(:config) { { language: ['clojure'] } }
+
       it { expect(queue).to eq 'builds.clojure' }
     end
   end
@@ -84,6 +91,7 @@ describe Travis::Queue do
 
       describe 'returns the queue matching configuration for educational repository' do
         let(:config) { { os: 'osx' } }
+
         it { expect(queue).to eq 'builds.mac_osx' }
       end
     end
@@ -98,6 +106,7 @@ describe Travis::Queue do
 
       describe 'returns the queue matching configuration for educational repository' do
         let(:config) { { os: 'osx' } }
+
         it { expect(queue).to eq 'builds.mac_osx' }
       end
     end
@@ -106,11 +115,13 @@ describe Travis::Queue do
   describe 'by job config :os' do
     describe 'by os' do
       let(:config) { { os: 'osx' } }
+
       it { expect(queue).to eq 'builds.mac_osx' }
     end
 
     describe 'by os (trumps language)' do
       let(:config) { { language: 'clojure', os: 'osx' } }
+
       it { expect(queue).to eq 'builds.mac_osx' }
     end
   end
@@ -118,11 +129,13 @@ describe Travis::Queue do
   describe 'by job config :services' do
     describe 'by service' do
       let(:config) { { services: %w[redis docker postgresql] } }
+
       it { expect(queue).to eq 'builds.gce' }
     end
 
     describe 'by service (trumps language)' do
       let(:config) { { language: 'clojure', services: %w[redis docker postgresql] } }
+
       it { expect(queue).to eq 'builds.gce' }
     end
   end
@@ -130,11 +143,13 @@ describe Travis::Queue do
   describe 'by job config :dist' do
     describe 'dist: trusty' do
       let(:config) { { dist: 'trusty' } }
+
       it { expect(queue).to eq 'builds.gce' }
     end
 
     describe 'dist: unknown' do
       let(:config) { { dist: 'unknown' } }
+
       it { expect(queue).to eq 'builds.default' }
     end
   end
@@ -142,11 +157,13 @@ describe Travis::Queue do
   describe 'by job config osx_image' do
     describe 'osx_image: stable' do
       let(:config) { { osx_image: 'stable' } }
+
       it { expect(queue).to eq 'builds.mac_stable' }
     end
 
     describe 'osx_image: beta' do
       let(:config) { { osx_image: 'beta' } }
+
       it { expect(queue).to eq 'builds.mac_beta' }
     end
   end
@@ -154,21 +171,25 @@ describe Travis::Queue do
   describe 'by job config :virt' do
     describe 'virt: lxd' do
       let(:config) { { virt: 'lxd' } }
+
       it { expect(queue).to eq 'builds.amd64-lxd' }
     end
 
     describe 'virt: vm' do
       let(:config) { { virt: 'vm' } }
+
       it { expect(queue).to eq 'builds.default' }
     end
 
     describe 'virt: vm, dist: xenial' do
       let(:config) { { virt: 'lxd', dist: 'xenial' } }
+
       it { expect(queue).to eq 'builds.amd64-lxd' }
     end
 
     describe 'no :virt config' do
       let(:config) { { services: %w[redis docker postgresql] } }
+
       it { expect(queue).to eq 'builds.gce' }
     end
   end
@@ -176,11 +197,13 @@ describe Travis::Queue do
   describe 'by job config :vm_size' do
     describe 'vm_size: large' do
       let(:config) { { vm: { size: 'large' } } }
+
       it { expect(queue).to eq 'builds.gce_vm' }
     end
 
     describe 'vm_size: unknown' do
       let(:config) { { vm: { size: 'unknown' } } }
+
       it { expect(queue).to eq 'builds.default' }
     end
   end
@@ -188,6 +211,7 @@ describe Travis::Queue do
   describe 'by job config :arch' do
     describe 'arch: amd64' do
       let(:config) { { arch: 'amd64' } }
+
       it { expect(queue).to eq 'builds.default' }
     end
 
@@ -200,6 +224,7 @@ describe Travis::Queue do
 
       context 'when repo is private' do
         let(:job) { FactoryBot.build(:job, config:, owner:, repository: repo, private: true) }
+
         it { expect(queue).to eq 'builds.default' }
       end
     end
@@ -272,6 +297,7 @@ describe Travis::Queue do
 
       context 'when repo is private' do
         let(:job) { FactoryBot.build(:job, config:, owner:, repository: repo, private: true) }
+
         it { expect(queue).to eq 'builds.default' }
       end
     end
@@ -281,19 +307,23 @@ describe Travis::Queue do
     describe '0 percent' do
       let(:percent) { 0 }
       let(:config)  { { language: 'foo' } }
+
       it { expect(queue).to eq 'builds.old-foo' }
     end
 
     describe '100 percent' do
       let(:percent) { 100 }
       let(:config)  { { language: 'foo' } }
+
       it { expect(queue).to eq 'builds.new-foo' }
     end
   end
 
   describe 'resources.gpu: true routes to gce' do
     let(:config) { { resources: { gpu: true } } }
+
     before { Travis::Features.activate_repository(:vm_config, repo) }
+
     it { expect(queue).to eq 'builds.gce' }
   end
 
@@ -302,6 +332,7 @@ describe Travis::Queue do
       stub_request(:get, plan_url)
         .to_return(status: 200, body: '', headers: {})
     end
+
     env TRAVIS_SITE: 'com',
         POOL_QUEUES: 'gce',
         POOL_SUFFIX: 'foo'

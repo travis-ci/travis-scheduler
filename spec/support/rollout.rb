@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/concern'
 
 module Support
@@ -6,7 +8,7 @@ module Support
       DatabaseCleaner.allow_production = true
       ENV['ENV'] = 'production'
       ENV['ROLLOUT'] = name
-      context.redis.set  "#{name}.rollout.enabled", 1
+      context.redis.set "#{name}.rollout.enabled", 1
       context.redis.sadd? "#{name}.rollout.owners", owner.login
     end
 

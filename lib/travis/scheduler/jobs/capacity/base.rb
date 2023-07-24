@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Jobs
@@ -15,7 +17,7 @@ module Travis
           def reduce(jobs)
             @reduced = [max, jobs.size].min
             # p [self.class.name.split('::').last, max, jobs.size, reduced]
-            jobs[@reduced..-1]
+            jobs[@reduced..]
           end
 
           def accept?(job)

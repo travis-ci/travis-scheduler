@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/metrics'
 require 'travis/support/filter_migrated_jobs'
@@ -13,7 +15,7 @@ module Travis
         ATTRS = {
           running: %i[repository_id private queue org_id restarted_at],
           by_build: %i[id state stage_number]
-        }
+        }.freeze
 
         def running
           @running ||= read_running

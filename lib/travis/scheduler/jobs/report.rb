@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/memoize'
 require 'travis/scheduler/jobs/reports/by_repo'
 require 'travis/scheduler/jobs/reports/capacities'
@@ -19,7 +21,7 @@ module Travis
           stages: 'limited by stage repo=%s build_id=%s: rejected=%s accepted=%s',
           summary: '%s: queueable=%s running=%s accepted=%s waiting=%s',
           excess: '%s excessive queue size %s'
-        }
+        }.freeze
 
         def msgs
           capacities.msgs + limits.msgs + by_repo.msgs + [totals.msg] + warnings

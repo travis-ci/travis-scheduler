@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Organization do
   let(:org) { FactoryBot.create(:org) }
   let(:authorize_build_url) { "http://localhost:9292/organizations/#{org.id}/plan" }
@@ -93,7 +95,7 @@ describe Organization do
       end
     end
 
-    context '#subscribed?, #active_trial?, #educational? == false' do
+    describe '#subscribed?, #active_trial?, #educational? == false' do
       before do
         org.stubs(:subscribed?).returns(false)
         org.stubs(:active_trial?).returns(false)

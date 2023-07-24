@@ -1,16 +1,18 @@
-describe Travis::Scheduler::Config do
-  let(:config) { Travis::Scheduler::Config.load }
+# frozen_string_literal: true
 
+describe Travis::Scheduler::Config do
   subject { config.log_level }
 
+  let(:config) { Travis::Scheduler::Config.load }
+
   describe 'given no env var' do
-    it { should eq :info }
+    it { is_expected.to eq :info }
   end
 
   describe 'given TRAVIS_LOG_LEVEL=debug' do
     env TRAVIS_LOG_LEVEL: :debug
 
-    it { should eq :debug }
+    it { is_expected.to eq :debug }
   end
 
   describe 'queues' do

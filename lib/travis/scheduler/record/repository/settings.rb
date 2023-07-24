@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'coercible'
 require 'openssl'
 require 'travis/settings'

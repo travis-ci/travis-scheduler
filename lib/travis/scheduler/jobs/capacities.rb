@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/memoize'
 require 'travis/scheduler/jobs/capacity/base'
 require 'travis/scheduler/jobs/capacity/boost'
@@ -13,7 +15,7 @@ module Travis
       class Capacities < Struct.new(:context, :owners, :state)
         include Helper::Memoize
 
-        ALL = %i[public boost config plan education trial]
+        ALL = %i[public boost config plan education trial].freeze
 
         # TODO: warn if no applicable :any capacity can be found
         def initialize(*)

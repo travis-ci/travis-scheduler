@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/support/encrypted_column'
 require 'travis/support/secure_config'
 

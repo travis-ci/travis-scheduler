@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/jobs/reports/totals'
 
 module Travis
@@ -9,7 +11,7 @@ module Travis
 
           MSGS = {
             report: '%<owner>s %<name>s capacity: running=%<reduced>s max=%<max>s selected=%<selected>s'
-          }
+          }.freeze
 
           def msgs
             data.map { |data| msg :report, data }

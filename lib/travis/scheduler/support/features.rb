@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'redis'
 require 'rollout'
 require 'active_support/deprecation'

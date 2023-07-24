@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/memoize'
 
 module Travis

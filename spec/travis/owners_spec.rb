@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Travis::Owners do
   let!(:travis) { FactoryBot.create(:org, login: 'travis') }
   let!(:rails)  { FactoryBot.create(:org, login: 'rails') }
@@ -16,17 +18,22 @@ describe Travis::Owners do
 
     describe 'with a subscription on the delegatee' do
       before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
+
       it { expect(owners.max_jobs).to eq 10 }
     end
 
     describe 'with a subscription on the delegate' do
       before { FactoryBot.create(:subscription, owner: travis, selected_plan: :ten) }
+
       it { expect(owners.max_jobs).to eq 10 }
     end
 
     describe 'with a subscription on both the delegatee and delegate' do
-      before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
-      before { FactoryBot.create(:subscription, owner: travis, selected_plan: :five) }
+      before do
+        FactoryBot.create(:subscription, owner: anja, selected_plan: :ten)
+        FactoryBot.create(:subscription, owner: travis, selected_plan: :five)
+      end
+
       it { expect(owners.max_jobs).to eq 15 }
     end
   end
@@ -38,17 +45,22 @@ describe Travis::Owners do
 
     describe 'with a subscription on the delegatee' do
       before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
+
       it { expect(owners.subscribed_owners).to eq %w[anja] }
     end
 
     describe 'with a subscription on the delegate' do
       before { FactoryBot.create(:subscription, owner: travis, selected_plan: :ten) }
+
       it { expect(owners.subscribed_owners).to eq %w[travis] }
     end
 
     describe 'with a subscription on both the delegatee and delegate' do
-      before { FactoryBot.create(:subscription, owner: anja, selected_plan: :ten) }
-      before { FactoryBot.create(:subscription, owner: travis, selected_plan: :five) }
+      before do
+        FactoryBot.create(:subscription, owner: anja, selected_plan: :ten)
+        FactoryBot.create(:subscription, owner: travis, selected_plan: :five)
+      end
+
       it { expect(owners.subscribed_owners).to eq %w[anja travis] }
     end
   end
@@ -64,9 +76,11 @@ describe Travis::Owners do
     describe 'given an owner group' do
       let(:uuid) { SecureRandom.uuid }
 
-      before { OwnerGroup.create(uuid:, owner_type: 'Organization', owner_id: travis.id) }
-      before { OwnerGroup.create(uuid:, owner_type: 'User', owner_id: carla.id) }
-      before { OwnerGroup.create(uuid:, owner_type: 'User', owner_id: anja.id) }
+      before do
+        OwnerGroup.create(uuid:, owner_type: 'Organization', owner_id: travis.id)
+        OwnerGroup.create(uuid:, owner_type: 'User', owner_id: carla.id)
+        OwnerGroup.create(uuid:, owner_type: 'User', owner_id: anja.id)
+      end
 
       it { expect(owners.logins).to eq %w[anja carla travis] }
       it { expect(owners.key).to eq 'anja:carla:travis' }
@@ -79,6 +93,7 @@ describe Travis::Owners do
   describe 'using config' do
     describe 'given no owner group' do
       let(:limits) { {} }
+
       it { expect(owners.logins).to eq %w[anja] }
     end
 
@@ -96,18 +111,23 @@ describe Travis::Owners do
   describe '==' do
     describe 'for an owner in the same group' do
       let(:other) { described_class.group(anja, config) }
+
       it { expect(owners == other).to eq true }
     end
 
     describe 'for an owner in another group' do
       let(:other) { described_class.group(carla, config) }
+
       it { expect(owners == other).to eq false }
     end
   end
 
   describe 'with a missing/unknown plan' do
-    before { FactoryBot.create(:subscription, owner: anja, selected_plan: :unknown) }
-    before { owners.paid_capacity }
+    before do
+      FactoryBot.create(:subscription, owner: anja, selected_plan: :unknown)
+      owners.paid_capacity
+    end
+
     it { expect(log).to include 'W [missing_plan] Plan missing from application config: unknown (user anja)' }
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JobConfig < ActiveRecord::Base
   def config=(config)
     self.config_json = config if has_attribute?(:config_json)
@@ -10,7 +12,7 @@ class Job < ActiveRecord::Base
   class << self
     SQL = {
       queueable: 'RIGHT JOIN queueable_jobs on queueable_jobs.job_id = jobs.id'
-    }
+    }.freeze
 
     def queueable
       # sets jobs order based on priority first, ie: 5, nil, -5
@@ -56,7 +58,7 @@ class Job < ActiveRecord::Base
     end
   end
 
-  FINISHED_STATES = %i[passed failed errored canceled]
+  FINISHED_STATES = %i[passed failed errored canceled].freeze
 
   self.inheritance_column = :_disabled
 

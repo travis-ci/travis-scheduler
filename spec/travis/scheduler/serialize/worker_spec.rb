@@ -120,9 +120,12 @@ describe Travis::Scheduler::Serialize::Worker do
     end
 
     context 'when prefer_https is set and the repo is private' do
-      before { Travis.config.prefer_https = true }
-      after  { Travis.config.prefer_https = false }
-      before { repo.update!(private: true) }
+      before do
+        Travis.config.prefer_https = true
+        repo.update!(private: true)
+      end
+
+      after { Travis.config.prefer_https = false }
 
       it 'sets the repo source_url to an http url' do
         expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
@@ -135,8 +138,10 @@ describe Travis::Scheduler::Serialize::Worker do
       end
 
       describe 'on a private repo with a custom ssh key' do
-        before { repo.update!(private: true, managed_by_installation_at: Time.now) }
-        before { repo.settings.ssh_key = { value: 'settings key' } }
+        before do
+          repo.update!(private: true, managed_by_installation_at: Time.now)
+          repo.settings.ssh_key = { value: 'settings key' }
+        end
 
         it 'sets the repo source_url to an ssh git url' do
           expect(data[:repository][:source_url]).to eq 'git@github.com:svenfuchs/gem-release.git'
@@ -177,12 +182,14 @@ describe Travis::Scheduler::Serialize::Worker do
     describe 'with the feature flag active for the repo' do
       before { features.activate_repository(:premium_vms, repo) }
       after  { features.deactivate_repository(:premium_vms, repo) }
+
       it { expect(data[:vm_type]).to eq(:premium) }
     end
 
     xdescribe 'with the feature flag active for the owner' do # TODO: it won't work with current code
       before { features.activate_owner(:premium_vms, owner) }
       after  { features.deactivate_owner(:premium_vms, owner) }
+
       it { expect(data[:vm_type]).to eq(:premium) }
     end
   end
@@ -196,12 +203,16 @@ describe Travis::Scheduler::Serialize::Worker do
 
     describe 'with the feature flag enabled, but no resources config given' do
       before { Travis::Features.activate_repository(:resources_gpu, repo) }
+
       it { expect(data[:vm_config]).to eq({}) }
     end
 
     describe 'with the feature flag enabled, and resources config given' do
-      before { Travis::Features.activate_repository(:resources_gpu, repo) }
-      before { job.config[:resources] = { gpu: true } }
+      before do
+        Travis::Features.activate_repository(:resources_gpu, repo)
+        job.config[:resources] = { gpu: true }
+      end
+
       it { expect(data[:vm_config]).to eq gpu_count: 1 }
     end
   end
@@ -210,7 +221,9 @@ describe Travis::Scheduler::Serialize::Worker do
     let(:debug_options) do
       { 'stage' => 'before_install', 'previous_state' => 'failed', 'created_by' => 'svenfuchs', 'quiet' => 'false' }
     end
+
     before { job.stubs(:debug_options).returns(debug_options) }
+
     it { expect(data[:job][:debug_options]).to eq(debug_options) }
   end
 
@@ -417,11 +430,13 @@ describe Travis::Scheduler::Serialize::Worker do
     shared_examples_for 'includes an ssh key' do
       describe 'from the repo settings' do
         before { repo.settings.ssh_key = { value: 'settings key' } }
+
         it { expect(data[:ssh_key]).to eq(source: :repository_settings, value: 'settings key', encoded: false) }
       end
 
       describe 'from the job' do
         before { job.config[:source_key] = 'job config source key' }
+
         it { expect(data[:ssh_key]).to eq(source: :travis_yaml, value: 'job config source key', encoded: true) }
       end
 
@@ -436,11 +451,13 @@ describe Travis::Scheduler::Serialize::Worker do
     describe 'outside enterprise' do
       describe 'on a public repo' do
         before { repo.update!(private: false) }
+
         include_examples 'does not include an ssh key'
       end
 
       describe 'on a private repo' do
         before { repo.update!(private: true) }
+
         include_examples 'includes an ssh key'
       end
     end
@@ -450,11 +467,13 @@ describe Travis::Scheduler::Serialize::Worker do
 
       describe 'on a public repo' do
         before { repo.update!(private: false) }
+
         include_examples 'includes an ssh key'
       end
 
       describe 'on a private repo' do
         before { repo.update!(private: true) }
+
         include_examples 'includes an ssh key'
       end
     end
@@ -467,11 +486,13 @@ describe Travis::Scheduler::Serialize::Worker do
 
     describe 'preference set to true' do
       before { repo.owner.update(preferences: { keep_netrc: true }) }
+
       it { expect(data[:keep_netrc]).to be true }
     end
 
     describe 'preference set to false' do
       before { repo.owner.update(preferences: { keep_netrc: false }) }
+
       it { expect(data[:keep_netrc]).to be false }
     end
   end

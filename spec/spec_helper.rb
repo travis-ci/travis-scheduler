@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ENV['ENV'] = ENV['RAILS_ENV'] = 'test'
 ENV.delete('DATABASE_URL')
 

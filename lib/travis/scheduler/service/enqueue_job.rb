@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Service
@@ -16,7 +18,7 @@ module Travis
         MSGS = {
           queueing: 'enqueueing job %s (%s)',
           redirect: 'Found job.queue: %s. Redirecting to: %s'
-        }
+        }.freeze
 
         def run
           info format(MSGS[:queueing], job.id, repo.slug)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   class Queue
     class Queues < Struct.new(:config)

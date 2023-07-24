@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis::FilterMigratedJobs
   def filter_migrated_jobs(jobs)
     if Travis.config.com?

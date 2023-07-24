@@ -1,3 +1,5 @@
+# frozen_string_literal: false
+
 describe Travis::Scheduler::Service::Notify do
   let(:job)     { FactoryBot.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z'), config: {}) }
   let(:data)    { { job: { id: job.id } } }
@@ -12,8 +14,8 @@ describe Travis::Scheduler::Service::Notify do
   let(:body)    { 'Created' }
   let(:authorize_build_url) { "http://localhost:9292/users/#{job.owner.id}/plan" }
 
-  before { stub_request(:post, url).to_return(status:, body:) }
   before do
+    stub_request(:post, url).to_return(status:, body:)
     stub_request(:get, authorize_build_url).to_return(
       body: MultiJson.dump(plan_name: 'two_concurrent_plan', hybrid: true, free: false, status: 'subscribed',
                            metered: false)
@@ -46,7 +48,7 @@ describe Travis::Scheduler::Service::Notify do
 
     shared_examples_for 'does not raise' do
       it 'does not raise' do
-        expect { service.run }.to_not raise_error
+        expect { service.run }.not_to raise_error
       end
     end
 
@@ -164,8 +166,10 @@ describe Travis::Scheduler::Service::Notify do
       FactoryBot.create(:job, state: :queued, config:, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z'))
     end
 
-    before { context.config.queues = [{ queue: 'builds.mac_osx', os: 'osx' }] }
-    before { service.run }
+    before do
+      context.config.queues = [{ queue: 'builds.mac_osx', os: 'osx' }]
+      service.run
+    end
 
     it { expect(job.reload.queue).to eq 'builds.mac_osx' }
     it { expect(log).to include "I Setting queue to builds.mac_osx for job=#{job.id}" }
@@ -175,8 +179,10 @@ describe Travis::Scheduler::Service::Notify do
   context do
     let(:queue) { 'builds.linux' }
 
-    before { context.config[:queue_redirections] = { 'builds.linux' => 'builds.gce' } }
-    before { service.run }
+    before do
+      context.config[:queue_redirections] = { 'builds.linux' => 'builds.gce' }
+      service.run
+    end
 
     it 'redirects the queue' do
       expect(job.reload.queue).to eq 'builds.gce'
@@ -185,7 +191,9 @@ describe Travis::Scheduler::Service::Notify do
 
   describe 'does not raise on encoding issues ("\xC3" from ASCII-8BIT to UTF-8)' do
     let(:config) { { global_env: ['SECURE GH_USER_NAME=Max Nöthe'.force_encoding('ASCII-8BIT')] } }
+
     before { job.update!(config:) }
-    it { expect { service.run }.to_not raise_error }
+
+    it { expect { service.run }.not_to raise_error }
   end
 end

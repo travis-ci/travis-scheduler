@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Billing
@@ -15,7 +17,7 @@ module Travis
           'User-Agent' => 'Travis-CI-Scheduler/Faraday',
           'Accept' => 'application/json',
           'Content-Type' => 'application/json'
-        }
+        }.freeze
 
         RETRY = {
           max: 5,
@@ -31,7 +33,7 @@ module Travis
             Zlib::DataError,
             Zlib::BufError
           ]
-        }
+        }.freeze
 
         attr_reader :context
 
@@ -58,12 +60,12 @@ module Travis
 
         def get(path, params = {})
           body = request(:get, path, params).body
-          body&.length > 0 && body.is_a?(String) ? JSON.parse(body) : body
+          body&.length&.to_i > 0 && body.is_a?(String) ? JSON.parse(body) : body
         end
 
         def post(path, params = {})
           body = request(:post, path, params).body
-          body&.length > 0 && body.is_a?(String) ? JSON.parse(body) : body
+          body&.length&.to_i > 0 && body.is_a?(String) ? JSON.parse(body) : body
         end
 
         def client

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Owners
     module Cli
@@ -14,7 +16,7 @@ module Travis
           grouped: 'The given owner is not in an owner group: %s.',
           confirm: 'This will ungroup all of the following owners: %s. Confirm? [y/n]',
           done: 'Done. These owners are now ungrouped.'
-        }
+        }.freeze
 
         def run
           validate

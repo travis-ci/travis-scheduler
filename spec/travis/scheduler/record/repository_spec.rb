@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Repository do
   describe 'settings' do
     let(:repo) { FactoryBot.create(:repository) }
@@ -11,11 +13,11 @@ describe Repository do
     end
 
     describe 'share_ssh_keys_with_forks setting' do
+      subject { repo.settings.share_ssh_keys_with_forks? }
+
       let(:created_at) { Date.parse('2021-09-01') }
 
       before { repo.update(created_at:) }
-
-      subject { repo.settings.share_ssh_keys_with_forks? }
 
       context 'when repo is old' do
         it { is_expected.to be true }

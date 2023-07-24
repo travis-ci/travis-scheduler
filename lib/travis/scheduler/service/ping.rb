@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Service
@@ -13,7 +15,7 @@ module Travis
 
         MSGS = {
           start: 'Found %s owners to ping.'
-        }
+        }.freeze
 
         def run
           info MSGS[:start] % count

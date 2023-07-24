@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Owners
     class Group < Struct.new(:all, :config, :logger)

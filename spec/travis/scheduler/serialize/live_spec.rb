@@ -1,14 +1,17 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/serialize/live'
 
 describe Travis::Scheduler::Serialize::Live do
+  subject      { described_class.new(job).data }
+
   let(:job)    { FactoryBot.create(:job, state: :queued) }
   let(:commit) { job.commit }
   let(:build)  { job.source }
   let(:repo)   { job.repository }
-  subject      { described_class.new(job).data }
 
   it 'data' do
-    should eq(
+    expect(subject).to eq(
       id: job.id,
       build_id: build.id,
       repository_id: repo.id,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     class VcsProxy < Struct.new(:config, :oauth_token)
@@ -14,7 +16,7 @@ module Travis
         'User-Agent' => 'Travis-CI-Scheduler/Faraday',
         'Accept' => 'application/json',
         'Content-Type' => 'application/json'
-      }
+      }.freeze
 
       RETRY = {
         max: 5,
@@ -30,7 +32,7 @@ module Travis
           Zlib::DataError,
           Zlib::BufError
         ]
-      }
+      }.freeze
 
       def initialize(config, oauth_token)
         @oauth_token = oauth_token

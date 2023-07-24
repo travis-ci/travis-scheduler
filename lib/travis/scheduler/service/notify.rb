@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/coder'
 require 'travis/scheduler/serialize/live'
 require 'travis/scheduler/serialize/worker'
@@ -18,7 +20,7 @@ module Travis
         MSGS = {
           publish: 'Publishing worker payload for job id=%s queue=%s to %s.',
           redirect: 'Found job.queue: %s. Redirecting to: %s.'
-        }
+        }.freeze
 
         def run
           # fail('kaputt. testing exception tracking.') if job.repository.owner_name == 'svenfuchs'

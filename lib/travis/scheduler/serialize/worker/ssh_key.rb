@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Serialize
@@ -21,30 +23,29 @@ module Travis
 
           private
 
-            def public?
-              !repo.private?
-            end
+          def public?
+            !repo.private?
+          end
 
-            def github?
-              repo.github?
-            end
+          def github?
+            repo.github?
+          end
 
-            def enterprise?
-              config[:enterprise]
-            end
+          def enterprise?
+            config[:enterprise]
+          end
 
-            def settings_key
-              repo.settings.ssh_key && repo.settings.ssh_key.value
-            end
+          def settings_key
+            repo.settings.ssh_key && repo.settings.ssh_key.value
+          end
 
-            def job_key
-              job.ssh_key
-            end
+          def job_key
+            job.ssh_key
+          end
 
-            def repo_key
-              repo.key.private_key
-            end
-
+          def repo_key
+            repo.key.private_key
+          end
         end
       end
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Jobs
@@ -6,7 +8,7 @@ module Travis
           class Repo < Struct.new(:repo, :state, :reports)
             MSGS = {
               by_repo: 'repo %s: queueable=%s running=%s selected=%s waiting=%s'
-            }
+            }.freeze
 
             def to_s
               msg(:by_repo, repo.slug, queueable, running, selected, waiting)

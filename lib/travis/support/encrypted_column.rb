@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'securerandom'
 require 'base64'
 
@@ -52,11 +54,11 @@ class Travis::EncryptedColumn
   end
 
   def decrypt(data)
-    data = data[8..-1] if prefix_used?(data)
+    data = data[8..] if prefix_used?(data)
 
     data = decode data
 
-    iv   = data[-16..-1]
+    iv   = data[-16..]
     data = data[0..-17]
 
     aes = create_aes :decrypt, key.to_s, iv

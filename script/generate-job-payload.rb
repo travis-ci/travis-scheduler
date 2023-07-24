@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # This script takes a job id and spits out the job payload for that id
 # Usage:
 # `heroku run -a travis-scheduler-<stage> script/generate-job-payload <job ID>`

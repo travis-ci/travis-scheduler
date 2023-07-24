@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Travis::Scheduler::Helper::Memoize do
   let :const do
     Class.new(Struct.new(:dep)) do

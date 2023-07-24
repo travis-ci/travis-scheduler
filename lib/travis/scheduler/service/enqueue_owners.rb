@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/owners'
 
 module Travis
@@ -18,7 +20,7 @@ module Travis
 
         MSGS = {
           schedule: 'Evaluating jobs for owner group: %s'
-        }
+        }.freeze
 
         def run
           info format(MSGS[:schedule], owners.to_s)

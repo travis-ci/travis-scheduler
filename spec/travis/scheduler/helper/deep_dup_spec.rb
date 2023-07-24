@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/deep_dup'
 
 describe Travis::Scheduler::Helper::DeepDup do
@@ -7,24 +9,24 @@ describe Travis::Scheduler::Helper::DeepDup do
     let(:obj) { [{ bar: 'baz', nil: nil, one: 1, true: true }] }
 
     it { expect(dup).to eq obj }
-    it { expect(dup.object_id).to_not eq obj.object_id }
+    it { expect(dup.object_id).not_to eq obj.object_id }
   end
 
   describe 'a hash' do
     let(:obj) { { foo: [{ bar: 'baz', nil: nil, one: 1, true: true }] } }
 
     it { expect(dup).to eq obj }
-    it { expect(dup.object_id).to_not eq obj.object_id }
+    it { expect(dup.object_id).not_to eq obj.object_id }
 
     it { expect(dup[:foo].first).to eq obj[:foo].first }
-    it { expect(dup[:foo].first.object_id).to_not eq obj[:foo].first.object_id }
+    it { expect(dup[:foo].first.object_id).not_to eq obj[:foo].first.object_id }
   end
 
   describe 'a string' do
     let(:obj) { 'string' }
 
     it { expect(dup).to eq obj }
-    it { expect(dup.object_id).to_not eq obj.object_id }
+    it { expect(dup.object_id).not_to eq obj.object_id }
   end
 
   describe 'nil (cannot be duped)' do

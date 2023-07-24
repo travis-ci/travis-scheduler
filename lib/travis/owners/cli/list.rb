@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Owners
     module Cli
@@ -9,7 +11,7 @@ module Travis
         MSGS = {
           list: 'Known owner groups:',
           none: 'None'
-        }
+        }.freeze
 
         def run
           puts MSGS[:list]

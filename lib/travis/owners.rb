@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/owners/config'
 require 'travis/owners/db'
 require 'travis/owners/group'

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 
 module Travis
@@ -8,7 +10,7 @@ module Travis
           extend Forwardable
 
           def_delegators :build, :id, :request, :number, :event_type,
-            :pull_request_number, :sender_id
+                         :pull_request_number, :sender_id
 
           def pull_request?
             event_type == 'pull_request'

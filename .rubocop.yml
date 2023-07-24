@@ -75,3 +75,7 @@ RSpec/NestedGroups:
   Enabled: false
 RSpec/LetSetup:
   Enabled: false
+RSpec/InstanceVariable:
+  Enabled: false
+RSpec/MissingExampleGroupArgument:
+  Enabled: false

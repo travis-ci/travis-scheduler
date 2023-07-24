@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/memoize'
 
 module Travis
@@ -9,7 +11,7 @@ module Travis
 
           MSGS = {
             totals: '%s: queueable=%s running=%s selected=%s total_waiting=%s waiting_for_concurrency=%s'
-          }
+          }.freeze
 
           def msg
             format(MSGS[:totals], owners.to_s, queueable, running, selected, total_waiting, waiting_for_concurrency)

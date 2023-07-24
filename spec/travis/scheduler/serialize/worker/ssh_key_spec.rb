@@ -17,8 +17,8 @@ describe Travis::Scheduler::Serialize::Worker::SshKey do
     context 'when private' do
       context 'and non-Github' do
         it {
-          is_expected.to eq(source: :default_repository_key, value: repo.key.private_key, public_key: repo.key.public_key,
-                            encoded: false)
+          expect(subject).to eq(source: :default_repository_key, value: repo.key.private_key, public_key: repo.key.public_key,
+                                encoded: false)
         }
       end
     end
