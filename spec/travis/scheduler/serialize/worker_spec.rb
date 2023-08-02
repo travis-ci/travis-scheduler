@@ -1,4 +1,4 @@
-
+# frozen_string_literal: true
 require 'travis/scheduler/serialize/worker'
 
 describe Travis::Scheduler::Serialize::Worker do
@@ -385,7 +385,13 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   describe 'ssh_key' do
-    before { repo.key.stubs(:private_key).returns('repo key') }
+    let(:private_key) { 'private_key' }
+    let(:public_key) { 'public_key' }
+
+    before do
+      repo.key.stubs(:private_key).returns(private_key)
+      repo.key.stubs(:public_key).returns(public_key)
+    end
 
     shared_examples_for 'does not include an ssh key' do
       it { expect(data[:ssh_key]).to eq nil }
@@ -403,7 +409,7 @@ describe Travis::Scheduler::Serialize::Worker do
       end
 
       describe 'from the repo' do
-        it { expect(data[:ssh_key]).to eq(source: :default_repository_key, value: 'repo key', encoded: false) }
+        it { expect(data[:ssh_key]).to eq(source: :default_repository_key, value: private_key, public_key: public_key, encoded: false) }
       end
     end
 
