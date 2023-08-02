@@ -30,7 +30,7 @@ gem 'rack', '>= 3.0'
 gem 'redis-namespace'
 gem 'redlock'
 gem 'rollout'
-gem 'sentry-raven'
+gem 'sentry-ruby'
 gem 'sidekiq-pro', require: 'sidekiq-pro', source: 'https://gems.contribsys.com'
 
 gem 'faraday', '~> 2'

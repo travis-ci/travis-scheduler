@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/gh
-  revision: 7e06c717617b29131090acd23869e43b947cc9dc
+  revision: f2fbfbca425f4dea7f80ddb412c30e3367135558
   branch: prd-ruby-upgrade-dev
   specs:
     gh (0.20.0)
@@ -55,7 +55,7 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/travis-exceptions
-  revision: f763c128f6fe33f208c32ac68935c73c9a578a38
+  revision: 1fe4d9b9c4e917108eb60e7169a2a889e9500346
   branch: prd-ruby-upgrade-dev
   specs:
     travis-exceptions (0.0.2)
@@ -77,7 +77,7 @@ GIT
 
 GIT
   remote: https://github.com/travis-ci/travis-metrics
-  revision: 45579421778d855a6c0cfe926d2f724f48cf6bc8
+  revision: c776366d7182829da5abf9e48b42c416249a0043
   branch: prd-ruby-upgrade-dev
   specs:
     travis-metrics (2.0.0)
@@ -196,8 +196,8 @@ GEM
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
     method_source (1.0.0)
-    minitest (5.18.1)
-    mocha (2.0.4)
+    minitest (5.19.0)
+    mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
     multi_json (1.15.0)
     net-http-persistent (4.0.2)
@@ -226,7 +226,7 @@ GEM
       redis-client (~> 0.14.1)
     regexp_parser (2.8.1)
     regstry (1.0.15)
-    rexml (3.2.5)
+    rexml (3.2.6)
     rollout (2.5.0)
       redis (~> 4.0)
     rspec (3.12.0)
@@ -242,7 +242,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
     rspec-support (3.12.1)
-    rubocop (1.54.2)
+    rubocop (1.55.1)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -250,7 +250,7 @@ GEM
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml (>= 3.2.5, < 4.0)
-      rubocop-ast (>= 1.28.0, < 2.0)
+      rubocop-ast (>= 1.28.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.29.0)
@@ -262,14 +262,12 @@ GEM
     rubocop-performance (1.18.0)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
-    rubocop-rspec (2.22.0)
+    rubocop-rspec (2.23.0)
       rubocop (~> 1.33)
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
-    sentry-raven (3.1.2)
-      faraday (>= 1.0)
     sentry-ruby (5.10.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
     set (1.0.3)
@@ -341,7 +339,7 @@ DEPENDENCIES
   rubocop
   rubocop-performance
   rubocop-rspec
-  sentry-raven
+  sentry-ruby
   sidekiq-pro!
   simplecov
   simplecov-console
@@ -358,4 +356,4 @@ RUBY VERSION
    ruby 3.2.2p53
 
 BUNDLED WITH
-   2.4.14
+   2.4.17
