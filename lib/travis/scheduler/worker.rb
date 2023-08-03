@@ -8,6 +8,7 @@ module Travis
       include ::Sidekiq::Worker, Helper::Runner
 
       def perform(service, *args)
+        puts "the name of service is #{service}"
         ::Marginalia.set('service', service)
         inline(service, *normalize(args))
       end
