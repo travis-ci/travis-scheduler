@@ -22,9 +22,10 @@ module Travis
         private
 
           def set_queued
+            binding.pry
             puts "EnqueueJob: About to put the job in a queue #{job.inspect}"
-            puts "EnqueueJob: About to put the job in a queue #{job.stage}"
-            puts "EnqueueJob: About to put the job in a queue #{job.stage.try(:build)}"
+            puts "EnqueueJob: About to put the job in a queue #{job.stage.try(:inspect)}"
+            puts "EnqueueJob: About to put the job in a queue #{job.stage.try(:build).try(:inspect)}"
             job.update!(state: :queued, queued_at: Time.now.utc)
             job.queueable = false
           end
