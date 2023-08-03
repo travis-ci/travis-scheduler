@@ -20,8 +20,8 @@ module Travis
 
           def queue
             puts "SetQueue: About to put the job in a queue #{job.inspect}"
-            puts "SetQueue: About to put the job in a queue #{job.stage}"
-            puts "SetQueue: About to put the job in a queue #{job.stage.try(:build)}"
+            puts "SetQueue: About to put the job in a queue #{job.stage.try(:inspect)}"
+            puts "SetQueue: About to put the job in a queue #{job.stage.try(:build).try(:inspect)}"
             @queue ||= redirect(Queue.new(job, config, logger).select)
           end
 
