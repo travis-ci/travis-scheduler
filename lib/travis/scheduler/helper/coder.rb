@@ -11,7 +11,7 @@ module Travis
           when Array
             obj.map { |obj| deep_clean(obj) }
           when String
-            obj.force_encoding(Encoding::UTF_8)
+            obj.dup.force_encoding(Encoding::UTF_8)
           else
             obj
           end
