@@ -20,12 +20,6 @@ module Travis
         private
 
           def queue
-            # binding.pry
-            puts "SetQueue: About to put the job in a queue #{job.inspect}"
-            puts "SetQueue: About to put the job in a queue #{job.stage.try(:inspect)}"
-            puts "SetQueue: About to put the job in a queue #{job.stage.try(:build).try(:inspect)}"
-            # binding.pry
-
             if job.stage.state == "canceled"
               info MSGS[:canceled] % [job.source.id, job.id]
               payload = { id: job.id, source: 'scheduler' }
