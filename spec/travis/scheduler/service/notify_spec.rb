@@ -1,5 +1,7 @@
 describe Travis::Scheduler::Service::Notify do
-  let(:job)     { FactoryGirl.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z'), config: {}) }
+  let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
+  let(:job_stage)   { FactoryGirl.create(:stage) }
+  let(:job)     { FactoryGirl.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z'), config: {}, stage_id: job_stage.id) }
   let(:data)    { { job: { id: job.id } } }
   let(:context) { Travis::Scheduler.context }
   let(:service) { described_class.new(context, data) }
@@ -154,7 +156,7 @@ describe Travis::Scheduler::Service::Notify do
 
   describe 'sets the queue' do
     let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx'} }
-    let(:job)    { FactoryGirl.create(:job, state: :queued, config: config, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z')) }
+    let(:job)    { FactoryGirl.create(:job, state: :queued, config: config, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z'), stage_id: job_stage.id) }
 
     before { context.config.queues = [{ queue: 'builds.mac_osx', os: 'osx' }] }
     before { service.run }
