@@ -8,7 +8,8 @@ module Travis
 
         MSGS = {
           redirect: 'Found job.queue: %s. Redirecting to: %s',
-          queue:    'Setting queue to %s for job=%s'
+          queue:    'Setting queue to %s for job=%s',
+          canceled: 'Build %s has been canceled, job %s being canceled'
         }
 
         def run
@@ -19,7 +20,13 @@ module Travis
         private
 
           def queue
-            @queue ||= redirect(Queue.new(job, config, logger).select)
+            if job.stage.state == "canceled"
+              info MSGS[:canceled] % [job.source.id, job.id]
+              payload = { id: job.id, source: 'scheduler' }
+              Hub.push('job:cancel', payload)
+            else
+              @queue ||= redirect(Queue.new(job, config, logger).select)
+            end
           end
 
           # TODO confirm we don't need queue redirection any more

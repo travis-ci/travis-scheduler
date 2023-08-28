@@ -3,6 +3,8 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:repo)    { FactoryGirl.create(:repo, owner: owner) }
   let(:owner)   { FactoryGirl.create(:user) }
   let(:commit)  { FactoryGirl.create(:commit) }
+  let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
+  let(:job_stage)   { FactoryGirl.create(:stage) }
   let(:job)     { Job.first }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { owner_type: 'User', owner_id: owner.id, jid: '1234' } }
@@ -11,7 +13,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
 
   before { Travis::JobBoard.stubs(:post) }
 
-  before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, private: true, state: :created, queue: 'builds.gce', config: {}) } }
+  before { 1.upto(2) { FactoryGirl.create(:job, commit: commit, repository: repo, owner: owner, private: true, state: :created, queue: 'builds.gce', config: {}, stage_id: job_stage.id) } }
   before { config.limit.delegate = { owner.login => org.login } }
   before { config.limit.by_owner = { org.login => 1 } }
   before do

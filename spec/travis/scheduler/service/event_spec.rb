@@ -3,7 +3,8 @@ describe Travis::Scheduler::Service::Event do
   let(:repo)    { FactoryGirl.create(:repo) }
   let(:owner)   { FactoryGirl.create(:user) }
   let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
-  let(:job)     { FactoryGirl.create(:job, private: true, state: :created, config: config.to_h) }
+  let(:job_stage)   { FactoryGirl.create(:stage) }
+  let(:job)     { FactoryGirl.create(:job, private: true, state: :created, config: config.to_h, stage_id: job_stage.id) }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { id: build.id, jid: '1234' } }
   let(:event)   { 'build:created' }
@@ -33,5 +34,17 @@ describe Travis::Scheduler::Service::Event do
     before { Travis::Lock.stubs(:exclusive).raises(Travis::Lock::Redis::LockError.new('scheduler.owners-svenfuchs')) }
     before { service.run }
     it { expect(log).to include "I 1234 Owner group scheduler.owners-svenfuchs is locked and already being evaluated. Dropping event build:created for build=#{build.id}" }
+  end
+
+  context do
+    before { Travis::JobBoard.stubs(:post) }
+    before { config.limit.delegate = { owner.login => org.login } }
+    before { config.limit.by_owner = { org.login => 1 } }
+    describe 'build cancelled while job is not queued yet' do
+      let(:job_stage)   { FactoryGirl.create(:stage, state: 'canceled') }
+      before { service.run }
+      it { expect(Job.first.stage.state).to eq 'canceled' }
+      it { expect(log).to include "Build #{build.id} has been canceled, job #{job.id} being canceled" }
+    end
   end
 end
