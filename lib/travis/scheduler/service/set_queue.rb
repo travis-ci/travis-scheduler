@@ -28,15 +28,13 @@ module Travis
 
             if  job.stage.state == "canceled"
               info MSGS[:canceled] % [job.source.id, job.id]
-              payload = { id: job.id, source: 'scheduler' }
-              Hub.push('job:cancel', payload)
-              # binding.pry
-              # stop other jobs from being queued
-              job_ids = Job.where(source_id: job.source_id).ids
-              Queueable.where(job_id: job_ids).delete_all
+              # payload = { id: job.id, source: 'scheduler' }
+              # Hub.push('job:cancel', payload)
 
-              # payload = { id: job.source.id, source: 'scheduler' }
-              # Hub.push('build:cancel', payload)
+              payload = { id: job.source.id, source: 'scheduler' }
+              Hub.push('build:cancel', payload)
+              build = job.source
+              build.update(state: :canceled) if build.state != "canceled"
             else
               @queue ||= redirect(Queue.new(job, config, logger).select)
             end
