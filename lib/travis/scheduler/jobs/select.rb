@@ -28,10 +28,15 @@ module Travis
 
           def select
             state.queueable.each do |job|
-              selected << job if accept(job)
+              selected << job if accept(job) && build_not_canceled(job)
               break if capacities.exhausted?
             end
           end
+
+        def build_not_canceled(job)
+          puts "Inside build_not_canceled build status is #{job.source.reload.state}"
+          true
+        end
 
           def accept(job)
             limits.accept(job) { capacities.accept(job) }
