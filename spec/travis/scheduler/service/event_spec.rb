@@ -46,5 +46,13 @@ describe Travis::Scheduler::Service::Event do
       it { expect(Job.first.stage.state).to eq 'canceled' }
       it { expect(log).to include "Build #{build.id} has been canceled, job #{job.id} being canceled" }
     end
+
+    describe 'jobs are queued if there are no stages' do
+      let(:job) { FactoryGirl.create(:job, private: true, state: :created, config: config.to_h, stage_id: nil) }
+      before { service.run }
+      it { expect(Job.first.state).to eq 'queued' }
+      it { expect(log).to include 'Evaluating jobs for owner group: user svenfuchs, org travis-ci' }
+      it { expect(log).to include "enqueueing job #{Job.first.id} (svenfuchs/gem-release)" }
+    end
   end
 end
