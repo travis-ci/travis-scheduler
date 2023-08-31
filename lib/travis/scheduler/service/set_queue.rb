@@ -20,9 +20,10 @@ module Travis
         private
 
           def queue
-            "Puts the state of stage is #{job.stage.inspect}"
-            "reloading the job #{job.reload}"
-            "Puts the state of stage is #{job.stage.inspect}"
+            puts "the state of stage is #{job.stage.inspect}"
+            puts "reloading the job"
+            job.reload
+            puts "the state of stage is #{job.stage.inspect}"
 
 
             if  job.stage.state == "canceled"
