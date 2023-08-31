@@ -21,8 +21,8 @@ module Travis
 
           def queue
             puts "the state of stage is #{job.stage.inspect}"
-            puts "reloading the job"
-            job.reload
+            puts "the state of stage is being reloaded"
+            job.stage.reload
             puts "the state of stage is #{job.stage.inspect}"
 
 
