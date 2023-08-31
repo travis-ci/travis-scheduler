@@ -20,12 +20,17 @@ module Travis
         private
 
           def queue
+            "Puts the state of stage is #{job.stage.inspect}"
+            "reloading the job #{job.reload}"
+            "Puts the state of stage is #{job.stage.inspect}"
+
+
             if  job.stage.state == "canceled"
               info MSGS[:canceled] % [job.source.id, job.id]
-              # payload = { id: job.id, source: 'scheduler' }
-              # Hub.push('job:cancel', payload)
-              payload = { id: job.source.id, source: 'scheduler' }
-              Hub.push('build:cancel', payload)
+              payload = { id: job.id, source: 'scheduler' }
+              Hub.push('job:cancel', payload)
+              # payload = { id: job.source.id, source: 'scheduler' }
+              # Hub.push('build:cancel', payload)
             else
               @queue ||= redirect(Queue.new(job, config, logger).select)
             end
