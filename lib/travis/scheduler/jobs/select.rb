@@ -34,7 +34,7 @@ module Travis
           end
 
         def build_not_canceled(job)
-          puts "Inside build_not_canceled build status is #{job.source.reload.state}"
+          puts "Inside build_not_canceled job #{job.id} build status is #{job.source.reload.state}, stage is #{job.stage.inspect}"
           true
         end
 
