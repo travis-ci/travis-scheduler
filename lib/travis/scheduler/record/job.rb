@@ -84,9 +84,6 @@ class Job < ActiveRecord::Base
   end
 
   def queueable=(value)
-
-    puts "Inside Record::Job build state is #{self.source.state}, stage is #{self.stage.state}" if self.stage.present?
-
     if value
        queueable || new_queueable
     else
