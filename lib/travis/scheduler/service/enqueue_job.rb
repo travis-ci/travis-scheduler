@@ -23,7 +23,8 @@ module Travis
 
           def set_queued
             puts "BEFORE RELOADING Inside set_queued job #{job.id} status is #{job.state}, queueable is #{job.queueable.inspect}, job stage is #{job.stage.inspect}, build is #{job.source.inspect}"
-            job.reload
+            job.stage.reload
+            job.source.reload
             puts "AFTER RELOADING Inside set_queued job #{job.id} status is #{job.state}, queueable is #{job.queueable.inspect}, job stage is #{job.stage.inspect}, build is #{job.source.inspect}"
             job.update!(state: :queued, queued_at: Time.now.utc)
             job.queueable = false
