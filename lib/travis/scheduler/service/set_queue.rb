@@ -20,7 +20,7 @@ module Travis
         private
 
           def queue
-            if job.stage.present? && job.stage.state == "canceled"
+            if  job.stage.state == "canceled"
               info MSGS[:canceled] % [job.source.id, job.id]
               payload = { id: job.id, source: 'scheduler' }
               Hub.push('job:cancel', payload)
