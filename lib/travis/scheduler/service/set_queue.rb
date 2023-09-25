@@ -34,7 +34,6 @@ module Travis
             @queue ||= redirect(Queue.new(job, config, logger).select)
           end
 
-
           # TODO confirm we don't need queue redirection any more
           def redirect(queue)
             redirect = redirections[queue]
