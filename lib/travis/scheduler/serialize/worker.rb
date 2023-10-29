@@ -95,7 +95,7 @@ module Travis
           def repository_data
             compact(
               id: repo.id,
-              github_id: repo.github_id,
+              github_id: repo.vcs_id.to_i,
               vcs_id: repo.vcs_id,
               vcs_type: repo.vcs_type,
               url: repo.url,
