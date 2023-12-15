@@ -203,7 +203,7 @@ module Travis
 
 
 
-            puts "config is #{ config}"
+            puts "config is #{config.inspect}"
             puts "job.queue = #{job.queue}"
 
             if (ws_config = config[:workspace] || {}) && ws_config[job.queue]
