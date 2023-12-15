@@ -34,6 +34,12 @@ module Travis
             secrets: job.secrets,
             allowed_repositories: allowed_repositories
           }
+          puts "****************************************"
+          puts "****************************************"
+          puts "DEBUGGING WORKSPACE"
+          puts data
+          puts "****************************************"
+          puts "****************************************"
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
