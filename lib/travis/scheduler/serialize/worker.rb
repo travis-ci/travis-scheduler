@@ -200,16 +200,25 @@ module Travis
 
           def workspace
             puts "inside def.workspace"
-            puts "config[:workspace] is #{ config[:workspace]}"
-            puts "ws_config[job.queue] = #{ws_config[job.queue]}"
-            puts "job.queue = #{job.queue}"
-            puts "ws_config['default'] = #{ws_config['default']}"
-            puts "config[:workspace] = #{config[:workspace]}"
+
 
 
             if (ws_config = config[:workspace] || {}) && ws_config[job.queue]
+
+              puts "config[:workspace] is #{ config[:workspace]}"
+              puts "ws_config[job.queue] = #{ws_config[job.queue]}"
+              puts "job.queue = #{job.queue}"
+
+
+
+
               config[:workspace][job.queue].to_h
             elsif (ws_config = config[:workspace] || {}) && ws_config['default']
+
+              puts "ws_config['default'] = #{ws_config['default']}"
+              puts "config[:workspace] = #{config[:workspace]}"
+
+
               config[:workspace]['default'].to_h
             end
           end
