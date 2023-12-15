@@ -203,24 +203,15 @@ module Travis
 
 
 
+            puts "config is #{ config}"
+            puts "job.queue = #{job.queue}"
+
             if (ws_config = config[:workspace] || {}) && ws_config[job.queue]
-
-              puts "config[:workspace] is #{ config[:workspace]}"
-              puts "ws_config[job.queue] = #{ws_config[job.queue]}"
-              puts "job.queue = #{job.queue}"
-
-
-
-
+              puts "inside Iffffffff"
               config[:workspace][job.queue].to_h
             elsif (ws_config = config[:workspace] || {}) && ws_config['default']
-
-              puts "ws_config['default'] = #{ws_config['default']}"
-              puts "config[:workspace] = #{config[:workspace]}"
-
-
+              puts "inside elseifffffff"
               config[:workspace]['default'].to_h
-            end
           end
 
           def format_date(date)
