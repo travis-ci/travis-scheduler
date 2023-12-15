@@ -212,6 +212,7 @@ module Travis
             elsif (ws_config = config[:workspace] || {}) && ws_config['default']
               puts "inside elseifffffff"
               config[:workspace]['default'].to_h
+            end
           end
 
           def format_date(date)
