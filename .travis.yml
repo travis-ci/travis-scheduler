@@ -36,3 +36,5 @@ jobs:
      install: skip
      script: make ship
      if: commit_message =~ /ship:docker/ OR env(SHIP_DOCKER) = true
+before_install:
+  - gem install rubygems-update -v 3.4.22
