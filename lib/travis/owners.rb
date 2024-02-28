@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/owners/config'
 require 'travis/owners/db'
 require 'travis/owners/group'
@@ -17,6 +19,7 @@ module Travis
 
       def find(owner)
         raise ArgumentError, 'Invalid owner data: %p' % owner unless owner[:owner_type]
+
         Kernel.const_get(owner[:owner_type]).find(owner[:owner_id])
       end
 

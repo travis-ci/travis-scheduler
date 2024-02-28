@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bunny'
 require 'travis/amqp/publisher'
 
@@ -31,18 +33,18 @@ module Travis
 
       def connection
         @connection ||= Bunny.new(config, options).tap do |c|
-          logger.debug "Starting connection to RabbitMQ."
+          logger.debug 'Starting connection to RabbitMQ.'
           c.start
         end
       end
-      alias :connect :connection
+      alias connect connection
 
       def disconnect
-        if connection
-          logger.debug "Closing connection to RabbitMQ."
-          connection.close if connection.open?
-          @connection = nil
-        end
+        return unless connection
+
+        logger.debug 'Closing connection to RabbitMQ.'
+        connection.close if connection.open?
+        @connection = nil
       end
     end
   end

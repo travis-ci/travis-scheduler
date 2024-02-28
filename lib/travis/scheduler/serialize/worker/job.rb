@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 require 'travis/scheduler/serialize/worker/config'
 
@@ -9,7 +11,7 @@ module Travis
           extend Forwardable
 
           def_delegators :job, :id, :repository, :source, :commit, :number,
-            :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name
+                         :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name
           def_delegators :source, :request
 
           def env_vars
@@ -74,36 +76,36 @@ module Travis
 
           private
 
-            def env_var(var)
-              { name: var.name, value: var.value.decrypt, public: var.public, branch: var.branch }
-            end
+          def env_var(var)
+            { name: var.name, value: var.value.decrypt, public: var.public, branch: var.branch }
+          end
 
-            def has_secure_vars?(key)
-              job.config.key?(key) &&
-                job.config[key].respond_to?(:key?) &&
-                job.config[key].key?(:secure)
-            end
+          def has_secure_vars?(key)
+            job.config.key?(key) &&
+              job.config[key].respond_to?(:key?) &&
+              job.config[key].key?(:secure)
+          end
 
-            def vm_config?
-              Features.active?(:resources_gpu, repository) && job.config.dig(:resources, :gpu)
-            end
+          def vm_config?
+            Features.active?(:resources_gpu, repository) && job.config.dig(:resources, :gpu)
+          end
 
-            def vm_configs
-              config[:vm_configs] || {}
-            end
+          def vm_configs
+            config[:vm_configs] || {}
+          end
 
-            def job_repository
-              return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
+          def job_repository
+            return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
 
-              owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
-              return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
+            owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
+            return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
 
-              ::Repository.find_by(owner_name: owner_name, name: repo_name)
-            end
+            ::Repository.find_by(owner_name:, name: repo_name)
+          end
 
-            def repository_key
-              job_repository&.key || ::SslKey.new(private_key: 'test')
-            end
+          def repository_key
+            job_repository&.key || ::SslKey.new(private_key: 'test')
+          end
         end
       end
     end

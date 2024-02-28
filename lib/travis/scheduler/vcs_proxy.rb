@@ -1,4 +1,4 @@
-require 'faraday_middleware'
+# frozen_string_literal: true
 
 module Travis
   module Scheduler
@@ -12,11 +12,11 @@ module Travis
         end
       end
 
-      DEFAULT_HEADERS  = {
-        'User-Agent'     => 'Travis-CI-Scheduler/Faraday',
-        'Accept'         => 'application/json',
-        'Content-Type'   => 'application/json'
-      }
+      DEFAULT_HEADERS = {
+        'User-Agent' => 'Travis-CI-Scheduler/Faraday',
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/json'
+      }.freeze
 
       RETRY = {
         max: 5,
@@ -30,9 +30,9 @@ module Travis
           Faraday::RetriableResponse,
           Faraday::TimeoutError,
           Zlib::DataError,
-          Zlib::BufError,
+          Zlib::BufError
         ]
-      }
+      }.freeze
 
       def initialize(config, oauth_token)
         @oauth_token = oauth_token
@@ -68,7 +68,7 @@ module Travis
       def client
         Faraday.new(url: @config.vcs_proxy_api.url, headers: DEFAULT_HEADERS) do |c|
           c.request :oauth2, @oauth_token, token_type: :bearer
-          c.request  :retry, RETRY
+          c.request :retry, RETRY
           c.request :json
           c.response :json
           c.response :raise_error

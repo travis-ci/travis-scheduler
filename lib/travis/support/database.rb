@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_record'
 
 module Travis
@@ -5,11 +7,11 @@ module Travis
     class << self
       def connect(config, logger = nil)
         ActiveRecord::Base.establish_connection(config.to_h)
-        ActiveRecord::Base.default_timezone = :utc
+        ActiveRecord.default_timezone = :utc
         ActiveRecord::Base.logger = logger
       end
 
-      def table?(name)
+      def table?(_name)
         ActiveRecord::Base.connection.tables.include?('owner_groups')
       end
     end

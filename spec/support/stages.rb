@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Support
   module Stages
     def startable
@@ -5,11 +7,11 @@ module Support
     end
 
     def start(*stages)
-      stages.each { |stage|jobs[index(stage)][:state] = :started }
+      stages.each { |stage| jobs[index(stage)][:state] = :started }
     end
 
     def finish(*stages)
-      stages.each { |stage|jobs[index(stage)][:state] = :finished }
+      stages.each { |stage| jobs[index(stage)][:state] = :finished }
     end
 
     def index(stage)

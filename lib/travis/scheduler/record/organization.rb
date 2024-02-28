@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Organization < ActiveRecord::Base
   has_one :trial, as: :owner
 
@@ -12,7 +14,7 @@ class Organization < ActiveRecord::Base
   DEFAULT_SPONSORED_TIMEOUT  = 50 * 60
 
   def subscription
-    subs = Subscription.where(owner_id: id, owner_type: "Organization")
+    subs = Subscription.where(owner_id: id, owner_type: 'Organization')
     @subscription ||= subs.where(status: 'subscribed').last || subs.last
   end
 
@@ -33,15 +35,15 @@ class Organization < ActiveRecord::Base
   end
 
   def paid_new_plan?
-    redis_key = "organization:#{self.id}:plan"
-    plan = if redis.exists(redis_key)
+    redis_key = "organization:#{id}:plan"
+    plan = if redis.exists?(redis_key)
              JSON.parse(redis.get(redis_key))
            else
              billing_client.get_plan(self).to_h
            end
-    return false if plan[:error] || plan["plan_name"].nil?
+    return false if plan[:error] || plan['plan_name'].nil?
 
-    plan["hybrid"] || !plan["plan_name"].include?('free')
+    plan['hybrid'] || !plan['plan_name'].include?('free')
   end
 
   def default_worker_timeout

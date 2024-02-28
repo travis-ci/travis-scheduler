@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 module Travis
   module Owners
     module Cli
       class List < Cl::Cmd
-
         register 'owners:list'
 
         purpose 'List all existing owner groups'
@@ -10,7 +11,7 @@ module Travis
         MSGS = {
           list: 'Known owner groups:',
           none: 'None'
-        }
+        }.freeze
 
         def run
           puts MSGS[:list]
@@ -19,23 +20,23 @@ module Travis
 
         private
 
-          def format_group(group)
-            group.map { |owner| format_owner(owner) }.join(', ')
-          end
+        def format_group(group)
+          group.map { |owner| format_owner(owner) }.join(', ')
+        end
 
-          def format_owner(owner)
-            "#{owner.login} (#{owner.is_a?(User) ? 'user' : 'org'})"
-          end
+        def format_owner(owner)
+          "#{owner.login} (#{owner.is_a?(User) ? 'user' : 'org'})"
+        end
 
-          def groups
-            @groups ||= uuids.map do |uuid|
-              OwnerGroup.where(uuid: uuid).map(&:owner)
-            end
+        def groups
+          @groups ||= uuids.map do |uuid|
+            OwnerGroup.where(uuid:).map(&:owner)
           end
+        end
 
-          def uuids
-            OwnerGroup.pluck(:uuid).uniq
-          end
+        def uuids
+          OwnerGroup.pluck(:uuid).uniq
+        end
       end
     end
   end

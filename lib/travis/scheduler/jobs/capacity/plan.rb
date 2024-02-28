@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Jobs
@@ -8,7 +10,7 @@ module Travis
           end
 
           def report(status, job)
-            super.merge(max: max)
+            super.merge(max:)
           end
 
           def accept?(job)
@@ -17,27 +19,27 @@ module Travis
 
           private
 
-            def max
-              @max ||= on_metered_plan? ? billing_allowance['concurrency_limit'] : owners.paid_capacity
+          def max
+            @max ||= on_metered_plan? ? billing_allowance['concurrency_limit'] : owners.paid_capacity
+          end
+
+          def billing_allowed?(job)
+            puts billing_allowance[allowance_key(job)]
+            return true if billing_allowance[allowance_key(job)]
+
+            # Cancel job if it has not been queued for more than a day due to
+            # billing allowance
+            if job.created_at < (Time.now - 1.day)
+              payload = { id: job.id, source: 'scheduler' }
+              Hub.push('job:cancel', payload)
             end
 
-            def billing_allowed?(job)
-              puts billing_allowance[allowance_key(job)]
-              return true if billing_allowance[allowance_key(job)]
+            false
+          end
 
-              # Cancel job if it has not been queued for more than a day due to
-              # billing allowance
-              if job.created_at < (Time.now - 1.day)
-                payload = { id: job.id, source: 'scheduler' }
-                Hub.push('job:cancel', payload)
-              end
-
-              false
-            end
-
-            def allowance_key(job)
-              job.public? ? 'public_repos' : 'private_repos'
-            end
+          def allowance_key(job)
+            job.public? ? 'public_repos' : 'private_repos'
+          end
         end
       end
     end

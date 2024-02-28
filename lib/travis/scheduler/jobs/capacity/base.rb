@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Jobs
@@ -15,7 +17,7 @@ module Travis
           def reduce(jobs)
             @reduced = [max, jobs.size].min
             # p [self.class.name.split('::').last, max, jobs.size, reduced]
-            jobs[@reduced..-1]
+            jobs[@reduced..]
           end
 
           def accept?(job)
@@ -45,67 +47,65 @@ module Travis
 
           private
 
-            def reduced
-              @reduced.to_i
-            end
+          def reduced
+            @reduced.to_i
+          end
 
-            def running
-              capacities.jobs.running
-            end
+          def running
+            capacities.jobs.running
+          end
 
-            def selected
-              capacities.accepted.size
-            end
+          def selected
+            capacities.accepted.size
+          end
 
-            def accept(job)
-              accepted << report(:accept, job) if max > 0
-              true
-            end
+          def accept(job)
+            accepted << report(:accept, job) if max > 0
+            true
+          end
 
-            def reject(job)
-              rejected << report(:reject, job) if max > 0
-              false
-            end
+          def reject(job)
+            rejected << report(:reject, job) if max > 0
+            false
+          end
 
-            def report(status, job)
-              {
-                type: :capacity,
-                name: self.class.name.split('::').last.underscore.to_sym,
-                status: status,
-                owner: owners.to_s,
-                id: job.id,
-                repo_id: job.repository_id,
-                reduced: reduced.to_i
-              }
-            end
+          def report(status, job)
+            {
+              type: :capacity,
+              name: self.class.name.split('::').last.underscore.to_sym,
+              status:,
+              owner: owners.to_s,
+              id: job.id,
+              repo_id: job.repository_id,
+              reduced: reduced.to_i
+            }
+          end
 
-            def config
-              context.config
-            end
+          def config
+            context.config
+          end
 
-            def billing_client
-              @billing_client ||= Billing::Client.new(context)
-            end
+          def billing_client
+            @billing_client ||= Billing::Client.new(context)
+          end
 
-            def billing_allowance
-              owner = owners.first
-              owner_class = owner.is_a?(User) ? 'users' : 'organizations'
+          def billing_allowance
+            owner = owners.first
+            owner_class = owner.is_a?(User) ? 'users' : 'organizations'
 
-              billing_client.allowance(owner_class, owner.id)
-            rescue Billing::Client::Error => e
-              if e.response[:status] == 404 # Owner is not on a metered plan
-                return {}
-              end
+            billing_client.allowance(owner_class, owner.id)
+          rescue Billing::Client::Error => e
+            return {} if e.response[:status] == 404 # Owner is not on a metered plan
 
-              raise e
-            end
-            memoize :billing_allowance
+            raise e
+          end
+          memoize :billing_allowance
 
-            def on_metered_plan?
-              return false unless config.com?
+          def on_metered_plan?
+            return false unless config.com?
 
-              billing_allowance.present?
-            end
+            billing_allowance.present?
+          end
         end
       end
     end

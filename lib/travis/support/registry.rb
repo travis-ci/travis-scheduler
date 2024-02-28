@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Registry
     class Registry
@@ -6,13 +8,12 @@ module Travis
       end
 
       def [](key)
-        key && objects[key.to_sym] || fail("can not use unregistered object #{key.inspect}. known objects are: #{objects.keys.inspect}")
+        key && objects[key.to_sym] || raise("can not use unregistered object #{key.inspect}. known objects are: #{objects.keys.inspect}")
       end
 
       def objects
         @objects ||= {}
       end
-
     end
 
     class << self
@@ -34,7 +35,7 @@ module Travis
       attr_reader :registry_key
 
       def [](key)
-        key && registry[key.to_sym] || fail("can not use unregistered object #{key.inspect}. known objects are: #{registry.keys.inspect}")
+        key && registry[key.to_sym] || raise("can not use unregistered object #{key.inspect}. known objects are: #{registry.keys.inspect}")
       end
 
       def register(*args)
@@ -58,9 +59,9 @@ module Travis
       end
 
       def underscore(string)
-        string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-        gsub(/([a-z\d])([A-Z])/,'\1_\2').
-        downcase
+        string.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+              .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+              .downcase
       end
     end
 

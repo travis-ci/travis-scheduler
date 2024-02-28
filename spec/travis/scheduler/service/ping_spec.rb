@@ -1,14 +1,24 @@
+# frozen_string_literal: true
+
 describe Travis::Scheduler::Service::Ping do
   let(:now)      { Time.now }
   let(:context)  { Travis::Scheduler.context }
   let(:interval) { context.config[:ping][:interval] }
   let(:service)  { described_class.new(context) }
 
-  let!(:one)     { FactoryGirl.create(:job, state: :created, owner_id: 1, owner_type: 'User', created_at: now - interval) }
-  let!(:two)     { FactoryGirl.create(:job, state: :created, owner_id: 1, owner_type: 'User', created_at: now - interval) }
-  let!(:three)   { FactoryGirl.create(:job, state: :created, owner_id: 2, owner_type: 'User', created_at: now - interval) }
-  let!(:four)    { FactoryGirl.create(:job, state: :created, owner_id: 3, owner_type: 'user', created_at: now) }
-  let!(:five)    { FactoryGirl.create(:job, state: :created, owner_id: 3, owner_type: 'Organization', created_at: now - interval) }
+  let!(:one)     do
+    FactoryBot.create(:job, state: :created, owner_id: 1, owner_type: 'User', created_at: now - interval)
+  end
+  let!(:two) do
+    FactoryBot.create(:job, state: :created, owner_id: 1, owner_type: 'User', created_at: now - interval)
+  end
+  let!(:three) do
+    FactoryBot.create(:job, state: :created, owner_id: 2, owner_type: 'User', created_at: now - interval)
+  end
+  let!(:four)    { FactoryBot.create(:job, state: :created, owner_id: 3, owner_type: 'user', created_at: now) }
+  let!(:five)    do
+    FactoryBot.create(:job, state: :created, owner_id: 3, owner_type: 'Organization', created_at: now - interval)
+  end
 
   def pings(key, data)
     data = data.merge(src: :ping, at: instance_of(Float))

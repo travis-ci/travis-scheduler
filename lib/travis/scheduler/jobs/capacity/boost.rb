@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/model/boost'
 
 module Travis
@@ -10,18 +12,18 @@ module Travis
           end
 
           def report(status, job)
-            super.merge(max: max)
+            super.merge(max:)
           end
 
           private
 
-            def max
-              @max ||= boost.max
-            end
+          def max
+            @max ||= boost.max
+          end
 
-            def boost
-              @boost ||= Model::Boost.new(owners, context.redis)
-            end
+          def boost
+            @boost ||= Model::Boost.new(owners, context.redis)
+          end
         end
       end
     end

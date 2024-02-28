@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq'
 require 'travis/exceptions/sidekiq'
 require 'travis/metrics/sidekiq'
@@ -17,8 +19,7 @@ module Travis
 
           ::Sidekiq.configure_server do |c|
             c.redis = {
-              url: config.redis.url,
-              namespace: config.sidekiq.namespace
+              url: config.redis.url
             }
 
             # Raven sets up a middleware unsolicitedly:
@@ -32,7 +33,7 @@ module Travis
               chain.add Sidekiq::Marginalia, app: 'scheduler'
             end
 
-            c.logger.level = ::Logger::const_get(config.sidekiq.log_level.upcase.to_s)
+            c.logger.level = ::Logger.const_get(config.sidekiq.log_level.upcase.to_s)
 
             if pro?
               c.super_fetch!
@@ -42,14 +43,13 @@ module Travis
 
           ::Sidekiq.configure_client do |c|
             c.redis = {
-              url: config.redis.url,
-              namespace: config.sidekiq.namespace
+              url: config.redis.url
             }
           end
 
-          if pro?
-            ::Sidekiq::Client.reliable_push!
-          end
+          return unless pro?
+
+          ::Sidekiq::Client.reliable_push!
         end
 
         def pro?

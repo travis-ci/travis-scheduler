@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Build < ActiveRecord::Base
   belongs_to :repository
   belongs_to :request

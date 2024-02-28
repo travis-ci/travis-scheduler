@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OwnerGroup < ActiveRecord::Base
   belongs_to :owner, polymorphic: true
 end

@@ -1,4 +1,4 @@
-require 'coder'
+# frozen_string_literal: true
 
 module Travis
   module Scheduler
@@ -11,7 +11,7 @@ module Travis
           when Array
             obj.map { |obj| deep_clean(obj) }
           when String
-            ::Coder.clean(obj)
+            obj.dup.force_encoding(Encoding::UTF_8)
           else
             obj
           end

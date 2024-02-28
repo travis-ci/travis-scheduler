@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Support
   module Features
     def self.included(base)
@@ -17,6 +19,7 @@ module Support
         when :owner
           owner = User.find_by_login(value) || Organization.find_by_login(value)
           raise "Could not find owner for feature flag #{name}: #{value}" unless owner
+
           Travis::Features.activate_owner(name, owner)
         else
           raise "Unknown feature #{name} subject: #{key}, #{value}"
@@ -30,6 +33,7 @@ module Support
         when :owner
           owner = User.find_by_login(value) || Organization.find_by_login(value)
           raise "Could not find owner for feature flag #{name}: #{value}" unless owner
+
           Travis::Features.deactivate_owner(name, owner)
         else
           raise "Unknown feature #{name} subject: #{key}, #{value}"
@@ -38,4 +42,3 @@ module Support
     end
   end
 end
-

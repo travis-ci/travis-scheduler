@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 
 module Travis
@@ -35,25 +37,24 @@ module Travis
 
           private
 
-            # TODO remove once we've backfilled the pull_requests table
-            def pull_request_head_repo
-              pull_request_head['repo'] || {}
-            end
+          # TODO: remove once we've backfilled the pull_requests table
+          def pull_request_head_repo
+            pull_request_head['repo'] || {}
+          end
 
-            def pull_request_base_repo
-              pull_request_head['base'] || {}
-            end
+          def pull_request_base_repo
+            pull_request_head['base'] || {}
+          end
 
-            def pull_request_head
-              payload && payload['pull_request'] && payload['pull_request']['head'] || {}
-            end
+          def pull_request_head
+            payload && payload['pull_request'] && payload['pull_request']['head'] || {}
+          end
 
-            def pull_request_base
-              payload && payload['pull_request'] && payload['pull_request']['base'] || {}
-            end
+          def pull_request_base
+            payload && payload['pull_request'] && payload['pull_request']['base'] || {}
+          end
         end
       end
     end
   end
 end
-
