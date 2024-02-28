@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/memoize'
 
 module Travis
@@ -9,10 +11,10 @@ module Travis
 
           MSGS = {
             totals: '%s: queueable=%s running=%s selected=%s total_waiting=%s waiting_for_concurrency=%s'
-          }
+          }.freeze
 
           def msg
-            MSGS[:totals] % [owners.to_s, queueable, running, selected, total_waiting, waiting_for_concurrency]
+            format(MSGS[:totals], owners.to_s, queueable, running, selected, total_waiting, waiting_for_concurrency)
           end
 
           def waiting_for_concurrency
@@ -21,34 +23,34 @@ module Travis
 
           private
 
-            def queueable
-              state.count_queueable
-            end
+          def queueable
+            state.count_queueable
+          end
 
-            def running
-              state.count_running
-            end
+          def running
+            state.count_running
+          end
 
-            def total_waiting
-              queueable - selected
-            end
+          def total_waiting
+            queueable - selected
+          end
 
-            def selected
-              capacities.select { |data| data[:status] == :accept }.size
-            end
-            memoize :selected
+          def selected
+            capacities.select { |data| data[:status] == :accept }.size
+          end
+          memoize :selected
 
-            def limited
-              limits.select { |data| data[:status] == :reject }.size
-            end
+          def limited
+            limits.select { |data| data[:status] == :reject }.size
+          end
 
-            def capacities
-              reports.select { |data| data[:type] == :capacity }
-            end
+          def capacities
+            reports.select { |data| data[:type] == :capacity }
+          end
 
-            def limits
-              reports.select { |data| data[:type] == :limit }
-            end
+          def limits
+            reports.select { |data| data[:type] == :limit }
+          end
         end
       end
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/context'
 require 'travis/scheduler/helper/honeycomb'
 require 'travis/scheduler/helper/locking'
@@ -14,8 +16,12 @@ module Travis
         Travis::Registry[:service][key]
       end
 
-      include Helper::Context, Helper::Locking, Helper::Logging,
-        Helper::Metrics, Helper::Runner, Helper::With
+      include Helper::With
+      include Helper::Runner
+      include Helper::Metrics
+      include Helper::Logging
+      include Helper::Locking
+      include Helper::Context
     end
   end
 end

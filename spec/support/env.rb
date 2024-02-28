@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Support
   module Env
     def self.included(base)
@@ -20,4 +22,3 @@ module Support
     end
   end
 end
-

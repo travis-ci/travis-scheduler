@@ -6,7 +6,7 @@ queues=$@
 
 export RUBYOPT="-Ilib $RUBYOPT"
 
-cmd="sidekiq -r ./lib/travis/scheduler/sidekiq.rb -c $threads -i $index"
+cmd="sidekiq -r ./lib/travis/scheduler/sidekiq.rb -c $threads"
 for queue in $queues; do
   cmd="$cmd -q $queue"
 done

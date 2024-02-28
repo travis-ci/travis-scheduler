@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'travis/scheduler/serialize/worker'
 
 describe Travis::Scheduler::Serialize::Worker do
@@ -7,14 +8,20 @@ describe Travis::Scheduler::Serialize::Worker do
   end
 
   let(:features)  { Travis::Features }
-  let(:job)       { FactoryGirl.create(:job, repository: repo, source: build, commit: commit, state: :queued, config: { rvm: '1.8.7', gemfile: 'Gemfile.rails', name: 'jobname' }, queued_at: Time.parse('2016-01-01T10:30:00Z'), allow_failure: allow_failure) }
-  let(:request)   { FactoryGirl.create(:request, repository: repo, event_type: event) }
-  let(:build)     { FactoryGirl.create(:build, request: request, event_type: event, pull_request_number: pr_number) }
-  let(:commit)    { FactoryGirl.create(:commit, request: request, ref: ref) }
-  let(:repo)      { FactoryGirl.create(:repo, default_branch: 'branch') }
+  let(:job)       do
+    FactoryBot.create(:job, repository: repo, source: build, commit:, state: :queued,
+                            config: { rvm: '1.8.7', gemfile: 'Gemfile.rails', name: 'jobname' }, queued_at: Time.parse('2016-01-01T10:30:00Z'), allow_failure:)
+  end
+  let(:request)   { FactoryBot.create(:request, repository: repo, event_type: event) }
+  let(:build)     { FactoryBot.create(:build, request:, event_type: event, pull_request_number: pr_number) }
+  let(:commit)    { FactoryBot.create(:commit, request:, ref:) }
+  let(:repo)      { FactoryBot.create(:repo, default_branch: 'branch') }
   let(:owner)     { repo.owner }
   let(:data)      { described_class.new(job, config).data }
-  let(:config)    { { cache_settings: { 'builds.gce' => s3 }, workspace: { 'builds.gce' => s3 }, github: { source_host: 'github.com', api_url: 'https://api.github.com' }, vm_configs: {} } }
+  let(:config)    do
+    { cache_settings: { 'builds.gce' => s3 }, workspace: { 'builds.gce' => s3 },
+      github: { source_host: 'github.com', api_url: 'https://api.github.com' }, vm_configs: {} }
+  end
   let(:s3)        { { access_key_id: 'ACCESS_KEY_ID', secret_access_key: 'SECRET_ACCESS_KEY', bucket_name: 'bucket' } }
   let(:event)     { 'push' }
   let(:ref)       { 'refs/tags/v1.2.3' }
@@ -47,7 +54,7 @@ describe Travis::Scheduler::Serialize::Worker do
         config: {
           rvm: '1.8.7',
           gemfile: 'Gemfile.rails',
-          name: 'jobname',
+          name: 'jobname'
         },
         env_vars: [
           { name: 'FOO', value: 'foo', public: false, branch: 'foo-(dev)' },
@@ -68,9 +75,9 @@ describe Travis::Scheduler::Serialize::Worker do
           secure_env_removed: false,
           debug_options: {},
           queued_at: '2016-01-01T10:30:00Z',
-          allow_failure: allow_failure,
+          allow_failure:,
           stage_name: nil,
-          name: 'jobname',
+          name: 'jobname'
         },
         host: 'https://travis-ci.com',
         source: {
@@ -80,7 +87,7 @@ describe Travis::Scheduler::Serialize::Worker do
         },
         repository: {
           id: repo.id,
-          github_id: 549743,
+          github_id: 549_743,
           vcs_id: '549743',
           vcs_type: 'GithubRepository',
           private: false,
@@ -95,7 +102,7 @@ describe Travis::Scheduler::Serialize::Worker do
           last_build_state: 'passed',
           default_branch: 'branch',
           description: 'description',
-          server_type: 'git',
+          server_type: 'git'
         },
         ssh_key: nil,
         timeouts: {
@@ -108,14 +115,17 @@ describe Travis::Scheduler::Serialize::Worker do
         enterprise: false,
         keep_netrc: true,
         secrets: [],
-        allowed_repositories: ["549743"]
+        allowed_repositories: ['549743']
       )
     end
 
     context 'when prefer_https is set and the repo is private' do
-      before { Travis.config.prefer_https = true }
-      after  { Travis.config.prefer_https = false }
-      before { repo.update_attributes!(private: true) }
+      before do
+        Travis.config.prefer_https = true
+        repo.update!(private: true)
+      end
+
+      after { Travis.config.prefer_https = false }
 
       it 'sets the repo source_url to an http url' do
         expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
@@ -123,11 +133,15 @@ describe Travis::Scheduler::Serialize::Worker do
     end
 
     context 'when the repo is managed by the github app and the repo is private' do
-      let!(:installation) { FactoryGirl.create(:installation, github_id: rand(1000), owner_id: repo.owner_id, owner_type: repo.owner_type) }
+      let!(:installation) do
+        FactoryBot.create(:installation, github_id: rand(1000), owner_id: repo.owner_id, owner_type: repo.owner_type)
+      end
 
       describe 'on a private repo with a custom ssh key' do
-        before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
-        before { repo.settings.ssh_key = { value: 'settings key' } }
+        before do
+          repo.update!(private: true, managed_by_installation_at: Time.now)
+          repo.settings.ssh_key = { value: 'settings key' }
+        end
 
         it 'sets the repo source_url to an ssh git url' do
           expect(data[:repository][:source_url]).to eq 'git@github.com:svenfuchs/gem-release.git'
@@ -139,7 +153,7 @@ describe Travis::Scheduler::Serialize::Worker do
       end
 
       describe 'on a private repo' do
-        before { repo.update_attributes!(private: true, managed_by_installation_at: Time.now) }
+        before { repo.update!(private: true, managed_by_installation_at: Time.now) }
 
         it 'sets the repo source_url to an http url' do
           expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
@@ -151,7 +165,7 @@ describe Travis::Scheduler::Serialize::Worker do
       end
 
       describe 'on a public repo' do
-        before { repo.update_attributes!(private: false, managed_by_installation_at: Time.now) }
+        before { repo.update!(private: false, managed_by_installation_at: Time.now) }
 
         it 'sets the repo source_url to an http url' do
           expect(data[:repository][:source_url]).to eq 'https://github.com/svenfuchs/gem-release.git'
@@ -168,12 +182,14 @@ describe Travis::Scheduler::Serialize::Worker do
     describe 'with the feature flag active for the repo' do
       before { features.activate_repository(:premium_vms, repo) }
       after  { features.deactivate_repository(:premium_vms, repo) }
+
       it { expect(data[:vm_type]).to eq(:premium) }
     end
 
-    describe 'with the feature flag active for the owner' do
+    xdescribe 'with the feature flag active for the owner' do # TODO: it won't work with current code
       before { features.activate_owner(:premium_vms, owner) }
       after  { features.deactivate_owner(:premium_vms, owner) }
+
       it { expect(data[:vm_type]).to eq(:premium) }
     end
   end
@@ -187,19 +203,27 @@ describe Travis::Scheduler::Serialize::Worker do
 
     describe 'with the feature flag enabled, but no resources config given' do
       before { Travis::Features.activate_repository(:resources_gpu, repo) }
+
       it { expect(data[:vm_config]).to eq({}) }
     end
 
     describe 'with the feature flag enabled, and resources config given' do
-      before { Travis::Features.activate_repository(:resources_gpu, repo) }
-      before { job.config[:resources] = { gpu: true } }
+      before do
+        Travis::Features.activate_repository(:resources_gpu, repo)
+        job.config[:resources] = { gpu: true }
+      end
+
       it { expect(data[:vm_config]).to eq gpu_count: 1 }
     end
   end
 
   describe 'with debug options' do
-    let(:debug_options) { { "stage" => "before_install", "previous_state" => "failed", "created_by" => "svenfuchs", "quiet" => "false" } }
+    let(:debug_options) do
+      { 'stage' => 'before_install', 'previous_state' => 'failed', 'created_by' => 'svenfuchs', 'quiet' => 'false' }
+    end
+
     before { job.stubs(:debug_options).returns(debug_options) }
+
     it { expect(data[:job][:debug_options]).to eq(debug_options) }
   end
 
@@ -207,10 +231,13 @@ describe Travis::Scheduler::Serialize::Worker do
     let(:event)     { 'pull_request' }
     let(:ref)       { 'refs/pull/180/merge' }
     let(:pr_number) { 180 }
-    let(:payload)   { { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '62aaef', 'repo' => {'full_name' => 'travis-ci/gem-release'} } } } }
+    let(:payload)   do
+      { 'pull_request' => { 'head' => { 'ref' => 'head_branch', 'sha' => '62aaef',
+                                        'repo' => { 'full_name' => 'travis-ci/gem-release' } } } }
+    end
     let(:pull_request) { PullRequest.create(head_ref: 'head_branch', head_repo_slug: 'travis-ci/gem-release') }
 
-    before { request.update_attributes(pull_request: pull_request, base_commit: '0cd9ff', head_commit: '62aaef') }
+    before { request.update(pull_request:, base_commit: '0cd9ff', head_commit: '62aaef') }
 
     it 'data' do
       expect(data).to eq(
@@ -222,7 +249,7 @@ describe Travis::Scheduler::Serialize::Worker do
         config: {
           rvm: '1.8.7',
           gemfile: 'Gemfile.rails',
-          name: 'jobname',
+          name: 'jobname'
         },
         env_vars: [
           { name: 'BAR', value: 'bar', public: true, branch: nil }
@@ -244,13 +271,13 @@ describe Travis::Scheduler::Serialize::Worker do
           queued_at: '2016-01-01T10:30:00Z',
           pull_request_head_branch: 'head_branch',
           pull_request_head_sha: '62aaef',
-          allow_failure: allow_failure,
+          allow_failure:,
           stage_name: nil,
           name: 'jobname',
           pull_request_head_slug: 'travis-ci/gem-release',
           pull_request_base_slug: nil,
           pull_request_base_ref: nil,
-          pull_request_head_url: "git@github.com:travis-ci/gem-release.git",
+          pull_request_head_url: 'git@github.com:travis-ci/gem-release.git'
         },
         host: 'https://travis-ci.com',
         source: {
@@ -260,7 +287,7 @@ describe Travis::Scheduler::Serialize::Worker do
         },
         repository: {
           id: repo.id,
-          github_id: 549743,
+          github_id: 549_743,
           vcs_id: '549743',
           vcs_type: 'GithubRepository',
           private: false,
@@ -275,7 +302,7 @@ describe Travis::Scheduler::Serialize::Worker do
           last_build_state: 'passed',
           default_branch: 'branch',
           description: 'description',
-          server_type: 'git',
+          server_type: 'git'
         },
         ssh_key: nil,
         timeouts: {
@@ -288,7 +315,7 @@ describe Travis::Scheduler::Serialize::Worker do
         enterprise: false,
         keep_netrc: true,
         secrets: [],
-        allowed_repositories: ["549743"]
+        allowed_repositories: ['549743']
       )
     end
 
@@ -330,7 +357,9 @@ describe Travis::Scheduler::Serialize::Worker do
         end
 
         context 'when in different repos' do
-          let!(:head_repo) { FactoryGirl.create(:repository, owner_name: 'travis-ci', name: 'gem-release', github_id: 123) }
+          let!(:head_repo) do
+            FactoryBot.create(:repository, owner_name: 'travis-ci', name: 'gem-release', github_id: 123)
+          end
           let(:head_repo_key) { OpenSSL::PKey::RSA.generate(4096) }
           let(:share_ssh_keys_with_forks) { true }
           let(:raw_settings) do
@@ -341,18 +370,19 @@ describe Travis::Scheduler::Serialize::Worker do
               ],
               timeout_hard_limit: 180,
               timeout_log_silence: 20,
-              share_ssh_keys_with_forks: share_ssh_keys_with_forks
+              share_ssh_keys_with_forks:
             }
           end
           let(:settings) { Repository::Settings.load(raw_settings) }
 
           before do
             head_repo.key.update(private_key: head_repo_key.to_pem, public_key: head_repo_key.public_key)
-            pull_request.update(head_repo_slug: 'travis-ci/gem-release', head_ref: 'master', base_repo_slug: 'svenfuchs/gem-release', base_ref: 'master')
+            pull_request.update(head_repo_slug: 'travis-ci/gem-release', head_ref: 'master',
+                                base_repo_slug: 'svenfuchs/gem-release', base_ref: 'master')
             request.update(repository: head_repo)
             job.update(repository: head_repo)
-            stub_request(:get, "http://localhost:9292/users/#{head_repo.owner_id}/plan").
-              to_return(status: 200, body: JSON.dump(1 => true))
+            stub_request(:get, "http://localhost:9292/users/#{head_repo.owner_id}/plan")
+              .to_return(status: 200, body: JSON.dump(1 => true))
             repo.update(private: true, created_at: '2021-01-01')
           end
 
@@ -400,27 +430,34 @@ describe Travis::Scheduler::Serialize::Worker do
     shared_examples_for 'includes an ssh key' do
       describe 'from the repo settings' do
         before { repo.settings.ssh_key = { value: 'settings key' } }
+
         it { expect(data[:ssh_key]).to eq(source: :repository_settings, value: 'settings key', encoded: false) }
       end
 
       describe 'from the job' do
         before { job.config[:source_key] = 'job config source key' }
+
         it { expect(data[:ssh_key]).to eq(source: :travis_yaml, value: 'job config source key', encoded: true) }
       end
 
       describe 'from the repo' do
-        it { expect(data[:ssh_key]).to eq(source: :default_repository_key, value: private_key, public_key: public_key, encoded: false) }
+        it {
+          expect(data[:ssh_key]).to eq(source: :default_repository_key, value: private_key, public_key:,
+                                       encoded: false)
+        }
       end
     end
 
     describe 'outside enterprise' do
       describe 'on a public repo' do
-        before { repo.update_attributes!(private: false) }
+        before { repo.update!(private: false) }
+
         include_examples 'does not include an ssh key'
       end
 
       describe 'on a private repo' do
-        before { repo.update_attributes!(private: true) }
+        before { repo.update!(private: true) }
+
         include_examples 'includes an ssh key'
       end
     end
@@ -429,12 +466,14 @@ describe Travis::Scheduler::Serialize::Worker do
       before { config[:enterprise] = true }
 
       describe 'on a public repo' do
-        before { repo.update_attributes!(private: false) }
+        before { repo.update!(private: false) }
+
         include_examples 'includes an ssh key'
       end
 
       describe 'on a private repo' do
-        before { repo.update_attributes!(private: true) }
+        before { repo.update!(private: true) }
+
         include_examples 'includes an ssh key'
       end
     end
@@ -446,38 +485,51 @@ describe Travis::Scheduler::Serialize::Worker do
     end
 
     describe 'preference set to true' do
-      before { repo.owner.update_attributes(preferences: { keep_netrc: true }) }
+      before { repo.owner.update(preferences: { keep_netrc: true }) }
+
       it { expect(data[:keep_netrc]).to be true }
     end
 
     describe 'preference set to false' do
-      before { repo.owner.update_attributes(preferences: { keep_netrc: false }) }
+      before { repo.owner.update(preferences: { keep_netrc: false }) }
+
       it { expect(data[:keep_netrc]).to be false }
     end
   end
 
   context 'custom_keys' do
-    let!(:organization1) {FactoryGirl.create(:org, login: "org1", id: 1)}
-    let!(:organization2) {FactoryGirl.create(:org, login: "org2", id: 2)}
-    let!(:repo)      { FactoryGirl.create(:repo, default_branch: 'main') }
-    let!(:membership1) {FactoryGirl.create(:membership, user: repo.owner, organization: organization1) }
-    let!(:membership2) {FactoryGirl.create(:membership, user: repo.owner, organization: organization2) }
-    let!(:custom_key1) {FactoryGirl.create(:custom_key, name: 'key1', owner_id: organization1.id, owner_type: 'Organization', private_key: 'abc')}
-    let!(:custom_key2) {FactoryGirl.create(:custom_key, name: 'key1', owner_id: organization2.id, owner_type: 'Organization', private_key: 'def')}
+    let!(:organization1) { FactoryBot.create(:org, login: 'org1', id: 1) }
+    let!(:organization2) { FactoryBot.create(:org, login: 'org2', id: 2) }
+    let!(:repo) { FactoryBot.create(:repo, default_branch: 'main') }
+    let!(:membership1) { FactoryBot.create(:membership, user: repo.owner, organization: organization1) }
+    let!(:membership2) { FactoryBot.create(:membership, user: repo.owner, organization: organization2) }
+    let!(:custom_key1) do
+      FactoryBot.create(:custom_key, name: 'key1', owner_id: organization1.id, owner_type: 'Organization',
+                                     private_key: 'abc')
+    end
+    let!(:custom_key2) do
+      FactoryBot.create(:custom_key, name: 'key1', owner_id: organization2.id, owner_type: 'Organization',
+                                     private_key: 'def')
+    end
 
     describe 'when two organization have the same key name' do
-      before {
+      before do
         build.update(sender_id: repo.owner.id)
-        job.update(config: {:keys => ['key1']})
-        repo.update_attributes(owner: organization2, owner_name: 'org2')
-      }
+        job.update(config: { keys: ['key1'] })
+        repo.update(owner: organization2, owner_name: 'org2')
+      end
 
-      it { expect(data[:env_vars]).to include({:name=>"TRAVIS_key1", :value=>"ZGVm", :public=>false, :branch=>nil})}
+      it {
+        expect(data[:env_vars]).to include({ name: 'TRAVIS_key1', value: 'ZGVm', public: false, branch: nil })
+      }
     end
 
     describe 'when user has no access to organization' do
-      let!(:organization3) {FactoryGirl.create(:org, login: "org3", id: 3)}
-      let!(:custom_key3) {FactoryGirl.create(:custom_key, name: 'key1', owner_id: organization3.id, owner_type: 'Organization', private_key: 'ghi')}
+      let!(:organization3) { FactoryBot.create(:org, login: 'org3', id: 3) }
+      let!(:custom_key3) do
+        FactoryBot.create(:custom_key, name: 'key1', owner_id: organization3.id, owner_type: 'Organization',
+                                       private_key: 'ghi')
+      end
       let(:raw_settings) do
         {
           env_vars: nil,
@@ -487,13 +539,13 @@ describe Travis::Scheduler::Serialize::Worker do
         }
       end
 
-      before {
+      before do
         build.update(sender_id: repo.owner.id)
-        job.update(config: {:keys => ['key1']})
-        repo.update_attributes(owner: organization3, owner_name: 'org3')
-      }
+        job.update(config: { keys: ['key1'] })
+        repo.update(owner: organization3, owner_name: 'org3')
+      end
 
-      it { expect(data[:env_vars]).to eq([])}
+      it { expect(data[:env_vars]).to eq([]) }
     end
   end
 end

@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 module Travis
   module Owners
     module Cli
       class Group < Cl::Cmd
-
         register 'owners:group'
 
         purpose 'Group owners into a new owner group'
@@ -10,12 +11,12 @@ module Travis
         arg :owners, type: :array
 
         MSGS = {
-          count:   'You need to pass at least 2 owner logins.',
+          count: 'You need to pass at least 2 owner logins.',
           unknown: 'Unknown owners: %s.',
           grouped: 'The following owners already are in an owner group: %s. Please use the `owners add` command.',
           confirm: 'This will group the following owners: %s. Confirm? [y/n]',
-          done:    'Done. These owners are now grouped.'
-        }
+          done: 'Done. These owners are now grouped.'
+        }.freeze
 
         def run
           validate
@@ -25,38 +26,38 @@ module Travis
 
         private
 
-          def validate
-            abort MSGS[:count] if args.size < 2
+        def validate
+          abort MSGS[:count] if args.size < 2
 
-            unknown = args - owners.map(&:login)
-            abort MSGS[:unknown] % unknown.join(', ') if unknown.any?
+          unknown = args - owners.map(&:login)
+          abort MSGS[:unknown] % unknown.join(', ') if unknown.any?
 
-            logins = owners.select(&:owner_group).map(&:login)
-            abort MSGS[:grouped] % logins.join(', ') if logins.any?
-          end
+          logins = owners.select(&:owner_group).map(&:login)
+          abort MSGS[:grouped] % logins.join(', ') if logins.any?
+        end
 
-          def confirm
-            puts MSGS[:confirm] % owners.map(&:login).join(', ')
-            input = STDIN.gets.chomp.downcase
-            abort 'Aborting.' unless input == 'y'
-          end
+        def confirm
+          puts MSGS[:confirm] % owners.map(&:login).join(', ')
+          input = STDIN.gets.chomp.downcase
+          abort 'Aborting.' unless input == 'y'
+        end
 
-          def create
-            owners.each { |owner| OwnerGroup.create!(uuid: uuid, owner: owner) }
-            puts MSGS[:done]
-          end
+        def create
+          owners.each { |owner| OwnerGroup.create!(uuid:, owner:) }
+          puts MSGS[:done]
+        end
 
-          def uuid
-            @uuid ||= SecureRandom.uuid
-          end
+        def uuid
+          @uuid ||= SecureRandom.uuid
+        end
 
-          def owners
-            @owners_ ||= User.where(login: logins) + Organization.where(login: logins)
-          end
+        def owners
+          @owners_ ||= User.where(login: logins) + Organization.where(login: logins)
+        end
 
-          def logins
-            args
-          end
+        def logins
+          args
+        end
       end
     end
   end

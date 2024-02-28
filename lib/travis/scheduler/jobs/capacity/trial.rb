@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Travis
   module Scheduler
     module Jobs
@@ -14,23 +16,23 @@ module Travis
           end
 
           def report(status, job)
-            super.merge(max: max)
+            super.merge(max:)
           end
 
           private
 
-            def max
-              config[:limit][:trial].to_i
-            end
+          def max
+            config[:limit][:trial].to_i
+          end
 
-            def active?
-              owners.any? { |owner| owner.trial.try(:active?) }
-            end
-            memoize :active?
+          def active?
+            owners.any? { |owner| owner.trial.try(:active?) }
+          end
+          memoize :active?
 
-            def com?
-              config.com?
-            end
+          def com?
+            config.com?
+          end
         end
       end
     end

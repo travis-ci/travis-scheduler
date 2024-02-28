@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/support/encrypted_column'
 require 'travis/support/secure_config'
 
@@ -18,7 +20,7 @@ class SslKey < ActiveRecord::Base
 
   private
 
-    def key
-      @key ||= OpenSSL::PKey::RSA.new(private_key)
-    end
+  def key
+    @key ||= OpenSSL::PKey::RSA.new(private_key)
+  end
 end

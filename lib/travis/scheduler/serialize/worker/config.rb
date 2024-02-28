@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/deep_dup'
 require 'travis/scheduler/serialize/worker/config/addons'
 require 'travis/scheduler/serialize/worker/config/decrypt'
@@ -15,8 +17,7 @@ module Travis
               config = deep_dup(config)
               config = Normalize.new(config, options).apply
               config = Decrypt.new(config, decryptor, options).apply
-              config = Normalize.new(config, options).jwt_sanitize
-              config
+              Normalize.new(config, options).jwt_sanitize
             end
 
             def secrets(config)

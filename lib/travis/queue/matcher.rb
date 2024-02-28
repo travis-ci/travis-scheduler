@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 module Travis
   class Queue
     class Matcher < Struct.new(:job, :config, :logger)
-      KEYS = %i(slug owner os language sudo dist group osx_image percentage
-        resources services arch virt paid vm_size repo_private gpu)
+      KEYS = %i[slug owner os language sudo dist group osx_image percentage
+                resources services arch virt paid vm_size repo_private gpu].freeze
 
       MSGS = {
         unknown_matchers: 'unknown matchers used for queue %s: %s (repo=%s)"'
-      }
+      }.freeze
 
-      OSS_ONLY_ARCH = %w(arm64 s390x)
+      OSS_ONLY_ARCH = %w[arm64 s390x].freeze
 
       def matches?(attrs)
         check_unknown_matchers(attrs.keys)
@@ -27,92 +29,92 @@ module Travis
 
       private
 
-        def matches_for(attrs)
-          (KEYS & attrs.keys).map { |key| [key, send(key)] }.to_h
-        end
+      def matches_for(attrs)
+        (KEYS & attrs.keys).map { |key| [key, send(key)] }.to_h
+      end
 
-        def paid
-          job.paid?
-        end
+      def paid
+        job.paid?
+      end
 
-        def repo_private
-          job.private?
-        end
+      def repo_private
+        job.private?
+      end
 
-        def slug
-          repo.slug
-        end
+      def slug
+        repo.slug
+      end
 
-        def owner
-          repo.owner_name
-        end
+      def owner
+        repo.owner_name
+      end
 
-        def os
-          job.config[:os]
-        end
+      def os
+        job.config[:os]
+      end
 
-        def language
-          Array(job.config[:language]).flatten.compact.first
-        end
+      def language
+        Array(job.config[:language]).flatten.compact.first
+      end
 
-        def sudo
-          job.config[:sudo]
-        end
+      def sudo
+        job.config[:sudo]
+      end
 
-        def dist
-          job.config[:dist]
-        end
+      def dist
+        job.config[:dist]
+      end
 
-        def group
-          job.config[:group]
-        end
+      def group
+        job.config[:group]
+      end
 
-        def osx_image
-          job.config[:osx_image]
-        end
+      def osx_image
+        job.config[:osx_image]
+      end
 
-        def percentage
-          ->(percent) { rand(100) < percent }
-        end
+      def percentage
+        ->(percent) { rand(100) < percent }
+      end
 
-        def services
-          job.config[:services]
-        end
+      def services
+        job.config[:services]
+      end
 
-        def repo
-          job.repository
-        end
+      def repo
+        job.repository
+      end
 
-        def resources
-          resources_enabled? && job.config[:resources] || {}
-        end
+      def resources
+        resources_enabled? && job.config[:resources] || {}
+      end
 
-        def arch
-          return nil if job.private? && OSS_ONLY_ARCH.include?(job.config[:arch])
+      def arch
+        return nil if job.private? && OSS_ONLY_ARCH.include?(job.config[:arch])
 
-          job.config[:arch]
-        end
+        job.config[:arch]
+      end
 
-        def virt
-          job.config[:virt]
-        end
+      def virt
+        job.config[:virt]
+      end
 
-        def vm_size
-          job.config[:vm][:size] if job.config[:vm]
-        end
+      def vm_size
+        job.config[:vm][:size] if job.config[:vm]
+      end
 
-        def gpu
-          %w(gpu-medium gpu-xlarge).include?(vm_size)
-        end
+      def resources_enabled?
+        Travis::Features.active?(:vm_config, repo)
+      end
 
-        def resources_enabled?
-          Travis::Features.active?(:vm_config, repo)
-        end
+      def gpu
+        %w(gpu-medium gpu-xlarge).include?(vm_size)
+      end
 
-        def check_unknown_matchers(used)
-          unknown = used - KEYS
-          logger.warn MSGS[:unknown_matchers] % [used, unknown, repo.slug] if logger && unknown.any?
-        end
+      def check_unknown_matchers(used)
+        unknown = used - KEYS
+        logger.warn format(MSGS[:unknown_matchers], used, unknown, repo.slug) if logger && unknown.any?
+      end
     end
   end
 end

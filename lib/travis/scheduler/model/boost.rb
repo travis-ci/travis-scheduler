@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/memoize'
 
 module Travis
@@ -20,18 +22,18 @@ module Travis
 
         private
 
-          def boosts
-            owners.logins.map { |login| boost_for(login) }.compact
-          end
-          memoize :boosts
+        def boosts
+          owners.logins.map { |login| boost_for(login) }.compact
+        end
+        memoize :boosts
 
-          def boost_for(login)
-            redis.get(key_for(login))
-          end
+        def boost_for(login)
+          redis.get(key_for(login))
+        end
 
-          def key_for(login)
-            BOOST % login
-          end
+        def key_for(login)
+          BOOST % login
+        end
       end
     end
   end

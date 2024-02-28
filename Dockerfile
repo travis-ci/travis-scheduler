@@ -1,11 +1,11 @@
-FROM ruby:2.6.5-slim
+FROM ruby:3.2.2-slim
 
 LABEL maintainer Travis CI GmbH <support+travis-scheduler-docker-images@travis-ci.com>
 
 # packages required for bundle install
 RUN ( \
    apt-get update ; \
-   apt-get install -y --no-install-recommends git make gcc g++ libpq-dev libjemalloc-dev \
+   apt-get install -y --no-install-recommends git make gcc g++ libpq-dev libjemalloc-dev libcurl4 \
    && rm -rf /var/lib/apt/lists/* \
 )
 
@@ -21,7 +21,7 @@ WORKDIR /app
 COPY Gemfile      /app
 COPY Gemfile.lock /app
 
-RUN gem install bundler -v '2.1.4'
+RUN gem install bundler -v '2.4.14'
 
 ARG bundle_gems__contribsys__com
 RUN bundle config https://gems.contribsys.com/ $bundle_gems__contribsys__com \

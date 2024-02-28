@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 
 module Travis
@@ -10,7 +12,7 @@ module Travis
           def_delegators :record, :id, :commit, :message, :branch, :ref, :compare_url
 
           def tag
-            ref.to_s =~ %r(refs/tags/(.*?)$) && $1
+            ref.to_s =~ %r{refs/tags/(.*?)$} && ::Regexp.last_match(1)
           end
 
           def pull_request?
@@ -24,21 +26,20 @@ module Travis
 
           private
 
-            def request
-              @request ||= Request.new(record.request)
-            end
+          def request
+            @request ||= Request.new(record.request)
+          end
 
-            def pull_request_range
-              [request.base_commit, request.head_commit]
-            end
+          def pull_request_range
+            [request.base_commit, request.head_commit]
+          end
 
-            def compare_url_range
-              compare_url.to_s =~ %r(/([0-9a-f]+\^*)\.\.\.([0-9a-f]+\^*)$)
-              [$1, $2].compact
-            end
+          def compare_url_range
+            compare_url.to_s =~ %r{/([0-9a-f]+\^*)\.\.\.([0-9a-f]+\^*)$}
+            [::Regexp.last_match(1), ::Regexp.last_match(2)].compact
+          end
         end
       end
     end
   end
 end
-

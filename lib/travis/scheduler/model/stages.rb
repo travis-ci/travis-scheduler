@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # We have keys with this semantical meaning:
 #
 #   1.1.1.1 \
@@ -55,10 +57,9 @@
 module Travis
   module Stages
     def self.build(jobs)
-      jobs.inject(Stage.new(nil, 0)) do |stage, job|
+      jobs.each_with_object(Stage.new(nil, 0)) do |job, stage|
         job = Job.new(*job.values_at(:id, :state, :stage))
         stage << job unless job.finished?
-        stage
       end
     end
 
@@ -100,17 +101,17 @@ module Travis
 
       private
 
-        def stage(num)
-          stages.detect { |stage| stage.num == num } || Stage.new(self, num.to_i)
-        end
+      def stage(num)
+        stages.detect { |stage| stage.num == num } || Stage.new(self, num.to_i)
+      end
 
-        def stages
-          children.select { |child| child.is_a?(Stage) }
-        end
+      def stages
+        children.select { |child| child.is_a?(Stage) }
+      end
 
-        def first
-          children.first
-        end
+      def first
+        children.first
+      end
     end
 
     class Job < Struct.new(:id, :state, :key)

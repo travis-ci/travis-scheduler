@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'travis/scheduler/helper/memoize'
 
 module Travis
@@ -16,23 +18,23 @@ module Travis
           end
 
           def report(status, job)
-            super.merge(max: max)
+            super.merge(max:)
           end
 
           private
 
-            def max
-              @max ||= config[:limit][:education] || 0
-            end
+          def max
+            @max ||= config[:limit][:education] || 0
+          end
 
-            def educational?
-              owners.educational?
-            end
-            memoize :educational?
+          def educational?
+            owners.educational?
+          end
+          memoize :educational?
 
-            def com?
-              config.com?
-            end
+          def com?
+            config.com?
+          end
         end
       end
     end

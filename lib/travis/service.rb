@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'faraday'
 require 'json'
 require 'travis/service/job_board'
@@ -8,8 +10,8 @@ module Travis
       ::Sidekiq::Client.push(
         'queue' => ENV['SIDEKIQ_QUEUE'] || 'scheduler',
         'class' => 'Travis::Scheduler::Worker',
-        'args'  => args,
-        'at'    => args.last.is_a?(Hash) ? args.last.delete(:at) : nil
+        'args' => args.map! { |arg| arg.to_json },
+        'at' => args.last.is_a?(Hash) ? args.last.delete(:at) : Time.now.to_f
       )
     end
   end
@@ -19,7 +21,7 @@ module Travis
       ::Sidekiq::Client.push(
         'queue' => 'hub',
         'class' => 'Travis::Hub::Sidekiq::Worker',
-        'args'  => args
+        'args' => args.map! { |arg| arg.to_json }
       )
     end
   end
@@ -27,9 +29,9 @@ module Travis
   module Live
     def self.push(*args)
       ::Sidekiq::Client.push(
-        'queue'   => 'pusher-live',
-        'class'   => 'Travis::Async::Sidekiq::Worker',
-        'args'    => [nil, nil, nil, *args]
+        'queue' => 'pusher-live',
+        'class' => 'Travis::Async::Sidekiq::Worker',
+        'args' => [nil, nil, nil, *args].map! { |arg| arg.to_json }
       )
     end
   end

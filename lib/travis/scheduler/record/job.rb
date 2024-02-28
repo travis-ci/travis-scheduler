@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JobConfig < ActiveRecord::Base
   def config=(config)
     self.config_json = config if has_attribute?(:config_json)
@@ -10,17 +12,17 @@ class Job < ActiveRecord::Base
   class << self
     SQL = {
       queueable: 'RIGHT JOIN queueable_jobs on queueable_jobs.job_id = jobs.id'
-    }
+    }.freeze
 
     def queueable
       # sets jobs order based on priority first, ie: 5, nil, -5
-      jobs = where(state: :created).order("COALESCE(priority, 0) desc").order(:id)
-      jobs = jobs.joins(SQL[:queueable]).order(:id) if ENV['USE_QUEUEABLE_JOBS']
+      jobs = where(state: :created).order(Arel.sql('COALESCE(priority, 0) desc')).order(:id)
+      jobs = jobs.joins(Arel.sql(SQL[:queueable])).order(:id) if ENV['USE_QUEUEABLE_JOBS']
       jobs
     end
 
     def running
-      where(state: [:queued, :received, :started]).order('jobs.id')
+      where(state: %i[queued received started]).order('jobs.id')
     end
 
     def private
@@ -40,7 +42,7 @@ class Job < ActiveRecord::Base
     end
 
     def by_queue(queue)
-      where(queue: queue)
+      where(queue:)
     end
 
     def owned_by(owners)
@@ -56,7 +58,7 @@ class Job < ActiveRecord::Base
     end
   end
 
-  FINISHED_STATES = [:passed, :failed, :errored, :canceled]
+  FINISHED_STATES = %i[passed failed errored canceled].freeze
 
   self.inheritance_column = :_disabled
 
@@ -65,7 +67,7 @@ class Job < ActiveRecord::Base
   belongs_to :source, polymorphic: true, autosave: true
   belongs_to :owner, polymorphic: true
   belongs_to :stage
-  belongs_to :config, foreign_key: :config_id, class_name: JobConfig
+  belongs_to :config, foreign_key: :config_id, class_name: 'JobConfig'
   has_one :queueable
 
   serialize :config
@@ -81,10 +83,16 @@ class Job < ActiveRecord::Base
 
   def queueable=(value)
     if value
-      queueable || create_queueable
+      unless queueable
+        save!
+        create_queueable
+      end
+      queueable
     else
       Queueable.where(job_id: id).delete_all
     end
+  rescue ActiveRecord::NotNullViolation
+    nil
   end
 
   def public?
@@ -93,10 +101,11 @@ class Job < ActiveRecord::Base
 
   def config
     record = super
-    config = record&.config_json if record.respond_to?(:config_json) # TODO remove once we've rolled over
+    config = record&.config_json if record.respond_to?(:config_json) # TODO: remove once we've rolled over
     config ||= record&.config
     config ||= read_attribute(:config) if has_attribute?(:config)
     config ||= {}
+    config = JSON.parse(config) if config.is_a?(String)
     config.deep_symbolize_keys!
   end
 
