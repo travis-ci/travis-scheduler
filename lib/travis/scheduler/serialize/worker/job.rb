@@ -90,22 +90,24 @@ module Travis
             Features.active?(:resources_gpu, repository) && job.config.dig(:resources, :gpu)
           end
 
-          def vm_configs
-            config[:vm_configs] || {}
-          end
+            def vm_configs
+              config[:vm_configs] || {}
+            end
 
-          def job_repository
-            return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
+            def job_repository
+              return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
 
-            owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
-            return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
+              return repository if repository.settings.share_encrypted_env_with_forks
 
-            ::Repository.find_by(owner_name:, name: repo_name)
-          end
+              owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
+              return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
 
-          def repository_key
-            job_repository&.key || ::SslKey.new(private_key: 'test')
-          end
+              ::Repository.find_by(owner_name: owner_name, name: repo_name)
+            end
+
+            def repository_key
+              job_repository&.key || ::SslKey.new(private_key: 'test')
+            end
         end
       end
     end

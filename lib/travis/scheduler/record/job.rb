@@ -4,6 +4,10 @@ class JobConfig < ActiveRecord::Base
   def config=(config)
     self.config_json = config if has_attribute?(:config_json)
     super
+  end
+
+  def save(arg)
+    super(arg)
   rescue Encoding::UndefinedConversionError
   end
 end
@@ -101,9 +105,11 @@ class Job < ActiveRecord::Base
 
   def config
     record = super
+    record = JSON.parse(record) if record.is_a?(String)
     config = record&.config_json if record.respond_to?(:config_json) # TODO: remove once we've rolled over
     config ||= record&.config
     config ||= read_attribute(:config) if has_attribute?(:config)
+    config = JSON.parse(config) if config.is_a?(String)
     config ||= {}
     config = JSON.parse(config) if config.is_a?(String)
     config.deep_symbolize_keys!
@@ -111,5 +117,11 @@ class Job < ActiveRecord::Base
 
   def name
     config[:name]
+  end
+
+  def new_queueable
+    return if repository_id.blank? # to avoid trying save objects without repository_id
+    saved = new_record? ? save : true # saves if it is a new record
+    create_queueable if saved # it is allowed to create queueable records only for jobs which are persisting in the database
   end
 end

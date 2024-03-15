@@ -40,16 +40,19 @@ class User < ActiveRecord::Base
   end
 
   def paid_new_plan?
-    redis_key = "user:#{id}:plan"
+    redis_key = "user:#{self.id}:plan"
     plan = if redis.exists?(redis_key)
              JSON.parse(redis.get(redis_key))
            else
-             p = billing_client.get_plan(self)
-             p.length > 0 ? p.to_h : {}
+             billing_client.get_plan(self).to_h
            end
-    return false if plan[:error] || plan['plan_name'].nil?
+    return false if plan[:error] || plan["plan_name"].nil?
 
-    plan['hybrid'] || !plan['plan_name'].include?('free')
+    plan["hybrid"] || !plan["plan_name"].include?('free')
+  end
+
+  def enterprise?
+    !!context.config[:enterprise]
   end
 
   def default_worker_timeout
@@ -60,7 +63,7 @@ class User < ActiveRecord::Base
     #   those enforced by workers themselves, but we plan to sometime in the
     #   following weeks/months.
     #
-    if paid? || educational?
+    if enterprise? || paid? || educational?
       Travis.logger.info "Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT for owner=#{id}"
       DEFAULT_SUBSCRIBED_TIMEOUT
     else

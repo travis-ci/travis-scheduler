@@ -117,7 +117,7 @@ module Travis
             default_branch: repo.default_branch,
             description: repo.description,
             server_type: repo.server_type || 'git'
-          )
+          server_type: repo.server_type || 'git',)
         end
 
         def source_url

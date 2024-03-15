@@ -17,6 +17,10 @@ module Travis
             super if !on_metered_plan? || billing_allowed?(job)
           end
 
+          def accept?(job)
+            super if !on_metered_plan? || billing_allowed?(job)
+          end
+
           private
 
           def max
