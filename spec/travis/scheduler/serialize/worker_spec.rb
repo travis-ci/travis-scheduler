@@ -245,7 +245,6 @@ describe Travis::Scheduler::Serialize::Worker do
         vm_config: {},
         vm_type: :default,
         vm_size: nil,
-        vm_size: nil,
         queue: 'builds.gce',
         config: {
           rvm: '1.8.7',

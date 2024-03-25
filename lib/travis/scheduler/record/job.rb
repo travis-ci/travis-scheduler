@@ -109,7 +109,6 @@ class Job < ActiveRecord::Base
     config = record&.config_json if record.respond_to?(:config_json) # TODO: remove once we've rolled over
     config ||= record&.config
     config ||= read_attribute(:config) if has_attribute?(:config)
-    config = JSON.parse(config) if config.is_a?(String)
     config ||= {}
     config = JSON.parse(config) if config.is_a?(String)
     config.deep_symbolize_keys!

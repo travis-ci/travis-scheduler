@@ -15,7 +15,7 @@ module Travis
              billing: { url: 'http://localhost:9292/', auth_key: 'auth_keys' },
              billing:       { url: 'http://localhost:9292/', auth_key: 'auth_keys' },host: 'https://travis-ci.com',
              interval: 2,
-             limit: { public: 93939, education: 92929, default: 91919, by_owner: {}, delegate: {} },
+             limit: { public: 5, education: 1, default: 5, by_owner: {}, delegate: {} },
              lock: { strategy: :redis, ttl: 150 },
              logger: { time_format: false, process_id: false, thread_id: false },
              log_level: :info,

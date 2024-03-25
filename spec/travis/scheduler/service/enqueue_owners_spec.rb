@@ -5,7 +5,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:repo)    { FactoryBot.create(:repo, owner:) }
   let(:owner)   { FactoryBot.create(:user) }
   let(:commit)  { FactoryBot.create(:commit) }
-  let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
+  let(:build)   { FactoryBot.create(:build, repository: repo, owner: owner, jobs: [job]) }
   let(:job_stage)   { FactoryGirl.create(:stage) }
   let(:job)     { Job.first }
   let(:config)  { Travis::Scheduler.context.config }

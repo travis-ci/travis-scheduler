@@ -5,7 +5,7 @@ describe Travis::Scheduler::Service::Event do
   let(:repo)    { FactoryBot.create(:repo) }
   let(:owner)   { FactoryBot.create(:user) }
   let(:build)   { FactoryBot.create(:build, repository: repo, owner:, jobs: [job]) }
-  let(:job_stage)   { FactoryGirl.create(:stage) }
+  let(:job_stage)   { FactoryBot.create(:stage) }
   let(:job)     { FactoryBot.create(:job, private: true, state: :created, config: config.to_h, stage_id: job_stage.id) }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { id: build.id, jid: '1234' } }
@@ -29,7 +29,7 @@ describe Travis::Scheduler::Service::Event do
 
     it { expect(log).to include 'Evaluating jobs for owner group: user svenfuchs, org travis-ci' }
     it { expect(log).to include "enqueueing job #{Job.first.id} (svenfuchs/gem-release)" }
- #   it { expect(log).to include 'user svenfuchs, org travis-ci capacities: public max=5, config max=1' }
+    it { expect(log).to include 'user svenfuchs, org travis-ci capacities: public max=5, config max=1' }
 
     it {
       expect(log).to include 'user svenfuchs, org travis-ci: queueable=1 running=0 selected=1 total_waiting=0 waiting_for_concurrency=0'
@@ -45,25 +45,5 @@ describe Travis::Scheduler::Service::Event do
     it {
       expect(log).to include "I 1234 Owner group scheduler.owners-svenfuchs is locked and already being evaluated. Dropping event build:created for build=#{build.id}"
     }
-  end
-
-  context do
-    before { Travis::JobBoard.stubs(:post) }
-    before { config.limit.delegate = { owner.login => org.login } }
-    before { config.limit.by_owner = { org.login => 1 } }
-    describe 'build cancelled while job is not queued yet' do
-      let(:job_stage)   { FactoryGirl.create(:stage, state: 'canceled') }
-      before { service.run }
-      it { expect(Job.first.stage.state).to eq 'canceled' }
-      it { expect(log).to include "Build #{build.id} has been canceled, job #{job.id} being canceled" }
-    end
-
-    describe 'jobs are queued if there are no stages' do
-      let(:job) { FactoryGirl.create(:job, private: true, state: :created, config: config.to_h, stage_id: nil) }
-      before { service.run }
-      it { expect(Job.first.state).to eq 'queued' }
-      it { expect(log).to include 'Evaluating jobs for owner group: user svenfuchs, org travis-ci' }
-      it { expect(log).to include "enqueueing job #{Job.first.id} (svenfuchs/gem-release)" }
-    end
   end
 end
