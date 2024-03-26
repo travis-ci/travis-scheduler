@@ -1,7 +1,9 @@
 # frozen_string_literal: false
 
 describe Travis::Scheduler::Service::Notify do
-  let(:job)     { FactoryBot.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z'), config: {}) }
+  let(:build)   { FactoryBot.create(:build, repository: repo, owner: owner, jobs: [job]) }
+  let(:job_stage)   { FactoryBot.create(:stage) }
+  let(:job)     { FactoryBot.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z'), config: {}, stage_id: job_stage.id) }
   let(:data)    { { job: { id: job.id } } }
   let(:context) { Travis::Scheduler.context }
   let(:service) { described_class.new(context, data) }
@@ -144,7 +146,9 @@ describe Travis::Scheduler::Service::Notify do
         let(:status) { 500 }
         let(:body)   { nil }
 
-        include_examples 'raises_server'
+        it 'raises_server' do
+          expect { service.run }.to raise_error(Faraday::ServerError)
+        end
 
         it 'logs' do
           rescueing { service.run }
@@ -163,7 +167,7 @@ describe Travis::Scheduler::Service::Notify do
   describe 'sets the queue' do
     let(:config) { { language: 'objective-c', os: 'osx', osx_image: 'xcode8', group: 'stable', dist: 'osx' } }
     let(:job)    do
-      FactoryBot.create(:job, state: :queued, config:, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z'))
+      FactoryBot.create(:job, state: :queued, config:, queue: nil, queued_at: Time.parse('2016-01-01T10:30:00Z'), stage_id: job_stage.id)
     end
 
     before do

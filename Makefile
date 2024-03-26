@@ -31,7 +31,7 @@ DOCKER ?= docker
 
 .PHONY: docker-build
 docker-build:
-	$(DOCKER) build --build-arg bundle_gems__contribsys__com=$(BUNDLE_GEMS__CONTRIBSYS__COM) -t $(DOCKER_DEST) .
+	$(DOCKER) build --no-cache --pull --build-arg bundle_gems__contribsys__com=$(BUNDLE_GEMS__CONTRIBSYS__COM) -t $(DOCKER_DEST) .
 
 .PHONY: docker-login
 docker-login:
@@ -52,7 +52,7 @@ docker-push-branch:
 .PHONY: ship
 ship: docker-build docker-login
 
-ifeq ($(BRANCH),master)
+ifeq ($(TRAVIS_BRANCH),master)
 ifeq ($(TRAVIS_PULL_REQUEST),false)
 ship: docker-push-latest-master
 endif

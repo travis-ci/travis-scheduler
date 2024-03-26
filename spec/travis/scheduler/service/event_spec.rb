@@ -5,7 +5,8 @@ describe Travis::Scheduler::Service::Event do
   let(:repo)    { FactoryBot.create(:repo) }
   let(:owner)   { FactoryBot.create(:user) }
   let(:build)   { FactoryBot.create(:build, repository: repo, owner:, jobs: [job]) }
-  let(:job)     { FactoryBot.create(:job, private: true, state: :created, config: config.to_h) }
+  let(:job_stage)   { FactoryBot.create(:stage) }
+  let(:job)     { FactoryBot.create(:job, private: true, state: :created, config: config.to_h, stage_id: job_stage.id) }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { id: build.id, jid: '1234' } }
   let(:event)   { 'build:created' }

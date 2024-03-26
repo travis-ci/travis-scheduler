@@ -49,7 +49,8 @@ module Travis
 
         def notify_rabbitmq
           info :publish, job.id, job.queue, 'rabbitmq'
-          amqp.publish(worker_payload, properties: { type: 'test', persistent: true })
+          w = worker_payload
+            amqp.publish(w, properties: { type: 'test', persistent: true })
         end
 
         def notify_live
@@ -101,7 +102,7 @@ module Travis
         def redirect_queue
           queue = redirections[job.queue] or return
           info format(MSGS[:redirect], job.queue, queue)
-          job.update_attributes!(queue:)
+          job.update!(queue:)
         end
 
         def redirections

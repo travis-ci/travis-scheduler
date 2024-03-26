@@ -11,7 +11,7 @@ module Travis
         'queue' => ENV['SIDEKIQ_QUEUE'] || 'scheduler',
         'class' => 'Travis::Scheduler::Worker',
         'args' => args.map! { |arg| arg.to_json },
-        'at' => args.last.is_a?(Hash) ? args.last.delete(:at) : Time.now.to_f
+        'at'    => args.last.is_a?(Hash) ? (args.last.delete(:at) || Time.now.to_i) : Time.now.to_i
       )
     end
   end
