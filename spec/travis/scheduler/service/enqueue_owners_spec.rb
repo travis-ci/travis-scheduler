@@ -6,7 +6,7 @@ describe Travis::Scheduler::Service::EnqueueOwners do
   let(:owner)   { FactoryBot.create(:user) }
   let(:commit)  { FactoryBot.create(:commit) }
   let(:build)   { FactoryBot.create(:build, repository: repo, owner: owner, jobs: [job]) }
-  let(:job_stage)   { FactoryGirl.create(:stage) }
+  let(:job_stage)   { FactoryBot.create(:stage) }
   let(:job)     { Job.first }
   let(:config)  { Travis::Scheduler.context.config }
   let(:data)    { { owner_type: 'User', owner_id: owner.id, jid: '1234' } }

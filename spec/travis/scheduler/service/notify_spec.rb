@@ -1,7 +1,7 @@
 # frozen_string_literal: false
 
 describe Travis::Scheduler::Service::Notify do
-  let(:build)   { FactoryGirl.create(:build, repository: repo, owner: owner, jobs: [job]) }
+  let(:build)   { FactoryBot.create(:build, repository: repo, owner: owner, jobs: [job]) }
   let(:job_stage)   { FactoryBot.create(:stage) }
   let(:job)     { FactoryBot.create(:job, state: :queued, queued_at: Time.parse('2016-01-01T10:30:00Z'), config: {}, stage_id: job_stage.id) }
   let(:data)    { { job: { id: job.id } } }
