@@ -34,7 +34,8 @@ module Travis
           rescue => e
             puts "ERROR while trying to queue: #{e.message}"
             puts "Backtrace:"
-            puts e.backtrace.join("\n")@queue ||= redirect(Queue.new(job, config, logger).select)
+            puts e.backtrace.join("\n")
+            @queue ||= redirect(Queue.new(job, config, logger).select)
         end
 
         # TODO: confirm we don't need queue redirection any more
