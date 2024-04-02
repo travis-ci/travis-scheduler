@@ -4,10 +4,6 @@ class JobConfig < ActiveRecord::Base
   def config=(config)
     self.config_json = config if has_attribute?(:config_json)
     super
-  end
-
-  def save(arg)
-    super(arg)
   rescue Encoding::UndefinedConversionError
   end
 end

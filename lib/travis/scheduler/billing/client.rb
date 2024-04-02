@@ -60,11 +60,14 @@ module Travis
 
         def get(path, params = {})
           body = request(:get, path, params).body
-          body&.length&.to_i > 0 && body.is_a?(String) ? JSON.parse(body) : body
+          return {} unless body&.length&.to_i > 0
+
+          body.is_a?(String) ? JSON.parse(body) : body
         end
 
         def post(path, params = {})
           body = request(:post, path, params).body
+
           body&.length&.to_i > 0 && body.is_a?(String) ? JSON.parse(body) : body
         end
 
