@@ -277,7 +277,8 @@ describe Travis::Scheduler::Serialize::Worker do
           pull_request_head_slug: 'travis-ci/gem-release',
           pull_request_base_slug: nil,
           pull_request_base_ref: nil,
-          pull_request_head_url: 'git@github.com:travis-ci/gem-release.git'
+          pull_request_head_url: 'git@github.com:travis-ci/gem-release.git',
+          pull_request_is_draft: false
         },
         host: 'https://travis-ci.com',
         source: {
@@ -317,6 +318,14 @@ describe Travis::Scheduler::Serialize::Worker do
         secrets: [],
         allowed_repositories: ['549743']
       )
+    end
+
+    context 'when the pull request is a draft' do
+      let(:pull_request) { PullRequest.create(head_ref: 'head_branch', head_repo_slug: 'travis-ci/gem-release', mergeable_state: 'draft') }
+
+      it 'data' do
+        expect(data).to include(job: { pull_request_is_draft: true })
+      end
     end
 
     describe 'with env sharing enabled in the repo' do
