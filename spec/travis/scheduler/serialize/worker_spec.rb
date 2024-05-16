@@ -321,7 +321,7 @@ describe Travis::Scheduler::Serialize::Worker do
     end
 
     context 'when the pull request is a draft' do
-      let(:pull_request) { PullRequest.create(head_ref: 'head_branch', head_repo_slug: 'travis-ci/gem-release', mergeable_state: 'draft') }
+      before { request.update(pull_request_mergeable: 'draft') }
 
       it 'data' do
         expect(data[:job][:pull_request_is_draft]).to eq(true)
