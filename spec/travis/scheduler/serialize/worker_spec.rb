@@ -324,7 +324,7 @@ describe Travis::Scheduler::Serialize::Worker do
       let(:pull_request) { PullRequest.create(head_ref: 'head_branch', head_repo_slug: 'travis-ci/gem-release', mergeable_state: 'draft') }
 
       it 'data' do
-        expect(data).to include(job: { pull_request_is_draft: true })
+        expect(data[:job][:pull_request_is_draft]).to eq(true)
       end
     end
 
