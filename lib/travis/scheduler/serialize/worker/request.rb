@@ -35,6 +35,10 @@ module Travis
             pull_request.head_url(repo) if pull_request
           end
 
+          def pull_request_is_draft?
+            pull_request.mergeable_state == 'draft' if pull_request
+          end
+
           private
 
           # TODO: remove once we've backfilled the pull_requests table

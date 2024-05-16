@@ -88,7 +88,8 @@ module Travis
               pull_request_head_slug: request.pull_request_head_slug,
               pull_request_base_slug: request.pull_request_base_slug,
               pull_request_base_ref: request.pull_request_base_ref,
-              pull_request_head_url: request.pull_request_head_url(repo)
+              pull_request_head_url: request.pull_request_head_url(repo),
+              pull_request_is_draft: request.pull_request_is_draft?
             )
           end
           data
