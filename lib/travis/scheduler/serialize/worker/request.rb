@@ -34,7 +34,7 @@ module Travis
           end
 
           def pull_request_is_draft?
-            pull_request.mergeable_state == 'draft' if pull_request
+            request.pull_request_mergeable == 'draft'
           end
 
           private
