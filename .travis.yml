@@ -5,13 +5,16 @@ import:
 
 rvm: 3.2.2
 
-cache: bundler
-
 env:
   matrix:
   - RAKE_TASK=spec
   global:
     secure: BdVC3OHqYcgePLrkKIk28Ewn/dxCYFf3Cx+Q8P+BCDj6UPJyRSbKmILBzuX96H5xhKmUFo0A/upUhJI9UUP9aXHO7MzRe04/c88QdO4wGacVUaIyB20S0pr262zbc/nA50K9cVgpmWc64n6uQR1tgM6ZyyBnBeXkLzCAOHPq99I=
+
+before_install:
+  - gem uninstall -v '>=2' -i $(rvm gemdir)@global -ax bundler || true
+  - gem install bundler -v '2.3.7'
+  - gem install rubygems-update -v 3.4.22
 
 addons:
   apt:
