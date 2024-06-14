@@ -503,7 +503,7 @@ describe Travis::Scheduler::Jobs::Select do
   describe 'with a boost of 5 and a repo settings limit 3' do
     before do
       redis.set("scheduler.owner.limit.#{user.login}", 5)
-      repo.settings.update_attributes!(maximum_number_of_builds: 3)
+      repo.settings.update!(maximum_number_of_builds: 3)
     end
 
     describe 'with private jobs only' do
@@ -569,7 +569,7 @@ describe Travis::Scheduler::Jobs::Select do
     before do
       subscribe(:two)
       redis.set("scheduler.owner.limit.#{user.login}", 4)
-      repo.settings.update_attributes!(maximum_number_of_builds: 3)
+      repo.settings.update!(maximum_number_of_builds: 3)
     end
 
     describe 'with private jobs only' do

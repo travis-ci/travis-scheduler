@@ -11,10 +11,16 @@ env:
   matrix:
   - RAKE_TASK=spec
   global:
-    secure: BdVC3OHqYcgePLrkKIk28Ewn/dxCYFf3Cx+Q8P+BCDj6UPJyRSbKmILBzuX96H5xhKmUFo0A/upUhJI9UUP9aXHO7MzRe04/c88QdO4wGacVUaIyB20S0pr262zbc/nA50K9cVgpmWc64n6uQR1tgM6ZyyBnBeXkLzCAOHPq99I=
+    - secure: BdVC3OHqYcgePLrkKIk28Ewn/dxCYFf3Cx+Q8P+BCDj6UPJyRSbKmILBzuX96H5xhKmUFo0A/upUhJI9UUP9aXHO7MzRe04/c88QdO4wGacVUaIyB20S0pr262zbc/nA50K9cVgpmWc64n6uQR1tgM6ZyyBnBeXkLzCAOHPq99I=
+    - PATH=/snap/bin:$PATH
+
+before_install:
+  - gem uninstall -v '>=2' -i $(rvm gemdir)@global -ax bundler || true
+  - gem install bundler -v '2.3.7'
+  - gem install rubygems-update -v 3.4.22
 
 addons:
-  apt:
+  - apt:
     packages:
       - rabbitmq-server
 
@@ -27,7 +33,8 @@ jobs:
    - stage: "testing time"
      script: bundle exec rspec spec
    - stage: ":ship: it to quay.io"
-     dist: bionic
+     dist: focal
+     group: edge
      ruby:
      services:
      addons:
@@ -35,4 +42,4 @@ jobs:
      before_script: skip
      install: skip
      script: make ship
-     if: commit_message =~ /ship:docker/ OR env(SHIP_DOCKER) = true
+     if: (branch = master and type = push ) OR commit_message =~ /ship:docker/ OR env(SHIP_DOCKER) = true

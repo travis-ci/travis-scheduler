@@ -37,7 +37,7 @@ module Travis
         job.paid?
       end
 
-      def repo_private
+        def repo_private
         job.private?
       end
 
@@ -90,7 +90,7 @@ module Travis
       end
 
       def arch
-        return nil if job.private? && OSS_ONLY_ARCH.include?(job.config[:arch])
+        return nil if job.private? && OSS_ONLY_ARCH.include?(job.config[:arch]) && !enterprise?
 
         job.config[:arch]
       end
@@ -99,7 +99,7 @@ module Travis
         job.config[:virt]
       end
 
-      def vm_size
+        def vm_size
         job.config[:vm][:size] if job.config[:vm]
       end
 
@@ -115,6 +115,10 @@ module Travis
         unknown = used - KEYS
         logger.warn format(MSGS[:unknown_matchers], used, unknown, repo.slug) if logger && unknown.any?
       end
+
+        def enterprise?
+          !!Travis::Scheduler.context.config[:enterprise]
+        end
     end
   end
 end
