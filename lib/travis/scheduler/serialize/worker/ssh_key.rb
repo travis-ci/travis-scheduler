@@ -44,7 +44,8 @@ module Travis
           end
 
           def repo_key
-            repo.key.private_key
+            puts "ssh_key repo_key: #{repo.key.private_key}"
+            repo&.key&.private_key
           end
         end
       end

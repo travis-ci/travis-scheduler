@@ -261,6 +261,7 @@ module Travis
 
           job.decrypted_config[:keys].map do |key|
             custom_key = CustomKey.where(name: key, owner_id: build.sender_id, owner_type: 'User').first
+            puts "custom_key in worker: #{custom_key}"
             if custom_key.nil?
               org_ids = Membership.where(user_id: build.sender_id).map(&:organization_id)
               if !base_repo.nil? && base_repo.owner_type == 'Organization'
