@@ -48,7 +48,9 @@ module Travis
 
           data
         rescue Exception => e
-          puts "ex: #{e.message}"
+          payload = { id: job.id, source: 'scheduler' }
+          Hub.push('job:cancel', payload)
+          raise
         end
 
         private
