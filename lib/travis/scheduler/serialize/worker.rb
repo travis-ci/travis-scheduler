@@ -79,7 +79,12 @@ module Travis
             queued_at: format_date(job.queued_at),
             allow_failure: job.allow_failure,
             stage_name: job.stage&.name,
-            name: job.name
+            name: job.name,
+            restarted: job.restarted_at.present?,
+            restarted_by: job.restarted_by
+            #default value is null,
+            #if job restarted it must contain the login of the user triggering the restart
+            #(either via UI or based on authentication token if restarted directly via API / travis-cli)
           }
           if build.pull_request?
             data = data.merge(
