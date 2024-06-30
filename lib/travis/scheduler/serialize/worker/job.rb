@@ -74,6 +74,10 @@ module Travis
             Rollout.matches?(:warmer, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
 
+          def restarted_by_login
+            User.find(restarted_by).login if restarted_by
+          end
+
           private
 
           def env_var(var)

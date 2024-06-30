@@ -81,10 +81,7 @@ module Travis
             stage_name: job.stage&.name,
             name: job.name,
             restarted_at: !!job.restarted_at,
-            restarted_by: job.restarted_by
-            #default value is null,
-            #if job restarted it must contain the login of the user triggering the restart
-            #(either via UI or based on authentication token if restarted directly via API / travis-cli)
+            restarted_by: job.restarted_by_login
           }
           if build.pull_request?
             data = data.merge(
