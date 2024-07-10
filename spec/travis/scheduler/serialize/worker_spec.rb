@@ -77,7 +77,9 @@ describe Travis::Scheduler::Serialize::Worker do
           queued_at: '2016-01-01T10:30:00Z',
           allow_failure:,
           stage_name: nil,
-          name: 'jobname'
+          name: 'jobname',
+          restarted_at: false,
+          restarted_by: nil,
         },
         host: 'https://travis-ci.com',
         source: {
@@ -274,6 +276,8 @@ describe Travis::Scheduler::Serialize::Worker do
           allow_failure:,
           stage_name: nil,
           name: 'jobname',
+          restarted_at: false,
+          restarted_by: nil,
           pull_request_head_slug: 'travis-ci/gem-release',
           pull_request_base_slug: nil,
           pull_request_base_ref: nil,
