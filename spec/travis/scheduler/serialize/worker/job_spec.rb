@@ -163,4 +163,13 @@ describe Travis::Scheduler::Serialize::Worker::Job do
       end
     end
   end
+
+  describe '#restarted_by_login' do
+    let(:user) { User.create(login: 'test_user') }
+    let(:job) { Job.new(restarted_by: user.id) }
+
+    it 'returns the login of the user who restarted the job' do
+      expect(subject.restarted_by_login).to eq('test_user')
+    end
+  end
 end
