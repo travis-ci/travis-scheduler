@@ -46,9 +46,9 @@ module Travis
           end
 
           def repo_key
-            repo.key&.private_key
             puts "repo_private_key: #{repo.key.private_key}"
             puts "repo_key: #{repo.key.inspect}"
+            repo.key&.private_key
           end
         end
       end
