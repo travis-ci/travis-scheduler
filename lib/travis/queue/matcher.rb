@@ -37,7 +37,7 @@ module Travis
         job.paid?
       end
 
-        def repo_private
+      def repo_private
         job.private?
       end
 
@@ -99,7 +99,7 @@ module Travis
         job.config[:virt]
       end
 
-        def vm_size
+      def vm_size
         job.config[:vm][:size] if job.config[:vm]
       end
 
