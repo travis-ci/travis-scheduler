@@ -1,7 +1,6 @@
 #!/bin/bash
 
 threads=${SIDEKIQ_THREADS:-8}
-index=$(echo ${DYNO:-1} | sed 's/.*\.//')
 queues=$@
 
 export RUBYOPT="-Ilib $RUBYOPT"

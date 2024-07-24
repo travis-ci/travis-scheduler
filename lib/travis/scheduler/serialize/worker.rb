@@ -48,7 +48,9 @@ module Travis
 
           data
         rescue Exception => e
-          puts "ex: #{e.message}"
+          payload = { id: job.id, source: 'scheduler' }
+          Hub.push('job:cancel', payload)
+          raise
         end
 
         private
@@ -79,7 +81,9 @@ module Travis
             queued_at: format_date(job.queued_at),
             allow_failure: job.allow_failure,
             stage_name: job.stage&.name,
-            name: job.name
+            name: job.name,
+            restarted_at: !!job.restarted_at,
+            restarted_by: job.restarted_by_login
           }
           if build.pull_request?
             data = data.merge(

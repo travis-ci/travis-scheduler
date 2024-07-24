@@ -12,7 +12,6 @@ module Travis
           def report(status, job)
             super.merge(max:)
           end
-
           def accept?(job)
             super if !on_metered_plan? || billing_allowed?(job)
           end

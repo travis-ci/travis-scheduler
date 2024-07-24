@@ -11,7 +11,7 @@ module Travis
           extend Forwardable
 
           def_delegators :job, :id, :repository, :source, :commit, :number,
-                         :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name
+                         :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
           def_delegators :source, :request
 
           def env_vars
@@ -74,6 +74,10 @@ module Travis
             Rollout.matches?(:warmer, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
 
+          def restarted_by_login
+            User.find(restarted_by).login if restarted_by
+          end
+
           private
 
           def env_var(var)
@@ -97,10 +101,12 @@ module Travis
           def job_repository
             return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
 
+            return repository if repository.settings.share_encrypted_env_with_forks
+
             owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
             return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
 
-            ::Repository.find_by(owner_name:, name: repo_name)
+            ::Repository.find_by(owner_name: owner_name, name: repo_name)
           end
 
           def repository_key
