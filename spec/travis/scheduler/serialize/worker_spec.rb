@@ -47,8 +47,8 @@ describe Travis::Scheduler::Serialize::Worker do
     it 'data' do
       expect(data).to eq(
         type: :test,
-        vm_type: :default,
         vm_config: {},
+        vm_type: :default,
         vm_size: nil,
         queue: 'builds.gce',
         config: {
@@ -97,9 +97,9 @@ describe Travis::Scheduler::Serialize::Worker do
           source_url: 'https://github.com/svenfuchs/gem-release.git',
           source_host: 'github.com',
           api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
+          last_build_number: '2',
           last_build_started_at: '2016-01-01T10:00:00Z',
           last_build_finished_at: '2016-01-01T11:00:00Z',
-          last_build_number: '2',
           last_build_duration: 60,
           last_build_state: 'passed',
           default_branch: 'branch',
@@ -244,8 +244,8 @@ describe Travis::Scheduler::Serialize::Worker do
     it 'data' do
       expect(data).to eq(
         type: :test,
-        vm_type: :default,
         vm_config: {},
+        vm_type: :default,
         vm_size: nil,
         queue: 'builds.gce',
         config: {
@@ -276,6 +276,8 @@ describe Travis::Scheduler::Serialize::Worker do
           allow_failure:,
           stage_name: nil,
           name: 'jobname',
+          pull_request_head_branch: 'head_branch',
+          pull_request_head_sha: '62aaef',
           restarted_at: false,
           restarted_by: nil,
           pull_request_head_slug: 'travis-ci/gem-release',
@@ -300,9 +302,9 @@ describe Travis::Scheduler::Serialize::Worker do
           source_url: 'https://github.com/svenfuchs/gem-release.git',
           source_host: 'github.com',
           api_url: 'https://api.github.com/repos/svenfuchs/gem-release',
+          last_build_number: '2',
           last_build_started_at: '2016-01-01T10:00:00Z',
           last_build_finished_at: '2016-01-01T11:00:00Z',
-          last_build_number: '2',
           last_build_duration: 60,
           last_build_state: 'passed',
           default_branch: 'branch',
@@ -464,13 +466,11 @@ describe Travis::Scheduler::Serialize::Worker do
     describe 'outside enterprise' do
       describe 'on a public repo' do
         before { repo.update!(private: false) }
-
         include_examples 'does not include an ssh key'
       end
 
       describe 'on a private repo' do
         before { repo.update!(private: true) }
-
         include_examples 'includes an ssh key'
       end
     end
@@ -480,13 +480,11 @@ describe Travis::Scheduler::Serialize::Worker do
 
       describe 'on a public repo' do
         before { repo.update!(private: false) }
-
         include_examples 'includes an ssh key'
       end
 
       describe 'on a private repo' do
         before { repo.update!(private: true) }
-
         include_examples 'includes an ssh key'
       end
     end
@@ -499,13 +497,11 @@ describe Travis::Scheduler::Serialize::Worker do
 
     describe 'preference set to true' do
       before { repo.owner.update(preferences: { keep_netrc: true }) }
-
       it { expect(data[:keep_netrc]).to be true }
     end
 
     describe 'preference set to false' do
       before { repo.owner.update(preferences: { keep_netrc: false }) }
-
       it { expect(data[:keep_netrc]).to be false }
     end
   end

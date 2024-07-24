@@ -101,10 +101,12 @@ module Travis
           def job_repository
             return job.repository if job.source.event_type != 'pull_request' || job.source.request.pull_request.head_repo_slug == job.source.request.pull_request.base_repo_slug
 
+            return repository if repository.settings.share_encrypted_env_with_forks
+
             owner_name, repo_name = job.source.request.pull_request.head_repo_slug.split('/')
             return if owner_name.nil? || owner_name.empty? || repo_name.nil? || repo_name.empty?
 
-            ::Repository.find_by(owner_name:, name: repo_name)
+            ::Repository.find_by(owner_name: owner_name, name: repo_name)
           end
 
           def repository_key
