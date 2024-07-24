@@ -12,10 +12,10 @@ module Travis
               { source: :repository_settings, value: settings_key.decrypt, encoded: false }
             elsif job_key
               { source: :travis_yaml, value: job_key, encoded: true }
-            elsif repo_key
-              { source: :default_repository_key, value: repo_key, public_key: repo.key.public_key, encoded: false }
             else
-              nil
+              puts "private_key: #{repo.key.private_key}"
+              puts "public_key: #{repo.key.public_key}"
+              { source: :default_repository_key, value: repo_key, public_key: repo.key.public_key, encoded: false }
             end
           end
 
@@ -46,9 +46,7 @@ module Travis
           end
 
           def repo_key
-            puts "repo_private_key: #{repo.key.private_key}"
-            puts "repo_key: #{repo.key.inspect}"
-            repo.key&.private_key
+            repo.key.private_key
           end
         end
       end
