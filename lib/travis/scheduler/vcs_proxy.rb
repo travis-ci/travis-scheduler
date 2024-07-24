@@ -67,7 +67,7 @@ module Travis
 
       def client
         Faraday.new(url: @config.vcs_proxy_api.url, headers: DEFAULT_HEADERS) do |c|
-          c.request :oauth2, @oauth_token, token_type: :bearer
+          c.request :authorization, :Bearer, @oauth_token
           c.request :retry, RETRY
           c.request :json
           c.response :json
