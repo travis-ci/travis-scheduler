@@ -58,9 +58,20 @@ module Travis
   module Stages
     def self.build(jobs)
       jobs.each_with_object(Stage.new(nil, 0)) do |job, stage|
-        job = Job.new(*job.values_at(:id, :state, :stage))
-        stage << job unless job.finished? or job.build.canceled?
+        j = Job.new(*job.values_at(:id, :state, :stage))
+        stage << j unless j.finished? or build_canceled?(job)
       end
+    end
+
+    def self.build_canceled?(job)
+      puts "BC for #{job.inspect}"
+      return false unless job.respond_to?(:source_id)
+
+      b = Build.find(job.source_id)
+      puts "BUILD: #{b.inspect}"
+
+
+      b&.canceled? || false
     end
 
     class Stage
@@ -112,6 +123,7 @@ module Travis
       def first
         children.first
       end
+
     end
 
     class Job < Struct.new(:id, :state, :key)
