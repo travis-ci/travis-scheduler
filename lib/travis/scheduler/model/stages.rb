@@ -56,18 +56,18 @@
 
 module Travis
   module Stages
-    def self.build(jobs)
+    def self.build(jobs, build_id = nil)
       jobs.each_with_object(Stage.new(nil, 0)) do |job, stage|
-        j = Job.new(*job.values_at(:id, :state, :stage))
-        stage << j unless j.finished? or build_canceled?(job)
+        job = Job.new(*job.values_at(:id, :state, :stage))
+        stage << job unless job.finished? or build_canceled?(build_id)
       end
     end
 
-    def self.build_canceled?(job)
-      puts "BC for #{job.inspect}"
-      return false unless job.respond_to?(:source_id)
+    def self.build_canceled?(id)
+      return false unless id
 
-      b = Build.find(job.source_id)
+      puts "BC for #{id.inspect}"
+      b = Build.find(id)
       puts "BUILD: #{b.inspect}"
 
 
