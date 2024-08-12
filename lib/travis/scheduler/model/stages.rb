@@ -59,7 +59,7 @@ module Travis
     def self.build(jobs)
       jobs.each_with_object(Stage.new(nil, 0)) do |job, stage|
         job = Job.new(*job.values_at(:id, :state, :stage))
-        stage << job unless job.finished?
+        stage << job unless job.finished? or job.build.canceled?
       end
     end
 
