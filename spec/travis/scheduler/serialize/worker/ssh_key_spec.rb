@@ -22,5 +22,11 @@ describe Travis::Scheduler::Serialize::Worker::SshKey do
         }
       end
     end
+
+    context 'when repo key is nil' do
+      before { repo.update_attribute(:key, nil) }
+
+      it { expect(subject).to be_nil }
+    end
   end
 end
