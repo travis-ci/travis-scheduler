@@ -6,7 +6,7 @@ module Travis
       class Worker
         class SshKey < Struct.new(:repo, :job, :config)
           def data
-            if public? && !enterprise? && github?
+            if (public? && !enterprise? && github?) || repo.key.nil?
               nil
             elsif settings_key
               { source: :repository_settings, value: settings_key.decrypt, encoded: false }
