@@ -81,6 +81,10 @@ class Job < ActiveRecord::Base
     FINISHED_STATES.include?(state.try(:to_sym))
   end
 
+  def canceled?
+    state&.to_sym == :canceled
+  end
+
   def queueable=(value)
     if value
       unless queueable

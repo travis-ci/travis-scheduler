@@ -8,4 +8,8 @@ class Build < ActiveRecord::Base
   has_many :jobs, as: :source
 
   serialize :config
+
+  def canceled?
+    state&.to_sym == :canceled
+  end
 end
