@@ -28,10 +28,18 @@ module Travis
 
   module Live
     def self.push(*args)
+      debug_args = args
+      if debug_args[-1].is_a?(Hash)
+        debug_args[-1][:debug] = {
+          'file' => __FILE__,
+          'line' => __LINE__,
+          'timestamp' => Time.now.to_s
+        }
+      end
       ::Sidekiq::Client.push(
         'queue' => 'pusher-live',
         'class' => 'Travis::Async::Sidekiq::Worker',
-        'args' => [nil, nil, nil, *args].map! { |arg| arg.to_json }
+        'args' => [nil, nil, nil, debug_args].map! { |arg| arg.to_json }
       )
     end
   end
