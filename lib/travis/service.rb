@@ -31,7 +31,7 @@ module Travis
       ::Sidekiq::Client.push(
         'queue' => 'pusher-live',
         'class' => 'Travis::Async::Sidekiq::Worker',
-        'args' => [nil, nil, nil, *args].map! { |arg| arg.to_json }
+        'args' => [nil, nil, nil, *args.map! { |arg| arg.to_json }]
       )
     end
   end
