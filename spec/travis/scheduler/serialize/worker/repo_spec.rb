@@ -12,6 +12,7 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
     FactoryBot.create(:repository, owner_name: org.login, owner_id: org.id, owner_type: 'Organization')
   end
 
+  let(:authorize_build_url) { "http://localhost:9292/organizations/#{org.id}/plan" }
   let(:config) { { github: {} } }
 
   let(:unpaid_timeout) { User::DEFAULT_SPONSORED_TIMEOUT }
@@ -28,8 +29,6 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       let(:worker) { described_class.new(user_repo, config) }
 
       context 'unpaid account' do
-        let(:authorize_build_url) { "http://localhost:9292/users/#{user.id}/plan" }
-
         before do
           stub_request(:get, authorize_build_url).to_return(
             body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed',
@@ -48,6 +47,10 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       context 'paid account' do
         before do
           User.any_instance.stubs(:subscribed?).returns(true)
+          stub_request(:get, authorize_build_url).to_return(
+            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed',
+                                 metered: true)
+          )
         end
 
         it 'returns a hash of timeout values' do
@@ -61,6 +64,10 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       context 'active trial' do
         before do
           User.any_instance.stubs(:active_trial?).returns(true)
+          stub_request(:get, authorize_build_url).to_return(
+            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed',
+                                 metered: true)
+          )
         end
 
         it 'returns a hash of timeout values' do
@@ -76,7 +83,6 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       let(:worker) { described_class.new(org_repo, config) }
 
       context 'unpaid account' do
-        let(:authorize_build_url) { "http://localhost:9292/organizations/#{org.id}/plan" }
 
         before do
           stub_request(:get, authorize_build_url).to_return(
@@ -96,6 +102,11 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       context 'paid account' do
         before do
           Organization.any_instance.stubs(:subscribed?).returns(true)
+          stub_request(:get, authorize_build_url).to_return(
+            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed',
+                                 metered: true)
+          )
+
         end
 
         it 'returns a hash of timeout values' do
@@ -109,6 +120,10 @@ describe Travis::Scheduler::Serialize::Worker::Repo do
       context 'active trial' do
         before do
           Organization.any_instance.stubs(:active_trial?).returns(true)
+          stub_request(:get, authorize_build_url).to_return(
+            body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: 'subscribed',
+                                 metered: true)
+          )
         end
 
         it 'returns a hash of timeout values' do

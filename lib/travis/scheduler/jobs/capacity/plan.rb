@@ -23,7 +23,6 @@ module Travis
           end
 
           def billing_allowed?(job)
-            puts billing_allowance[allowance_key(job)]
             return true if billing_allowance[allowance_key(job)]
 
             # Cancel job if it has not been queued for more than a day due to

@@ -17,6 +17,7 @@ class User < ActiveRecord::Base
   #
   DEFAULT_SUBSCRIBED_TIMEOUT = 120 * 60
   DEFAULT_SPONSORED_TIMEOUT  = 50 * 60
+  DEFAULT_TRIAL_TIMEOUT = 30 * 60
 
   def subscription
     subs = Subscription.where(owner_id: id, owner_type: 'User')
@@ -56,7 +57,7 @@ class User < ActiveRecord::Base
   end
 
   def trial_timeout
-    @trial_timeout ||= (billing_plan['current_trial'].nil? || !billing_plan['current_trial'].include?('build_timeout')) ? DEFAULT_SPONSORED_TIMEOUT : billing_plan['current_trial']['build_timeout']
+    @trial_timeout ||= (billing_plan['current_trial'].nil? || !billing_plan['current_trial'].include?('build_timeout')) ? DEFAULT_TRIAL_TIMEOUT : billing_plan['current_trial']['build_timeout']
   end
 
   def enterprise?
