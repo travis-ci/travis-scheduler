@@ -54,6 +54,9 @@ describe User do
     context 'subscribed? == true' do
       before do
         user.stubs(:subscribed?).returns(true)
+        stub_request(:get, authorize_build_url).to_return(
+          body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: nil, metered: true)
+        )
       end
 
       it 'returns the DEFAULT_SUBSCRIBED_TIMEOUT' do
@@ -77,10 +80,39 @@ describe User do
     context 'active_trial? == true' do
       before do
         user.stubs(:active_trial?).returns(true)
+        stub_request(:get, authorize_build_url).to_return(
+          body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: nil, metered: true)
+        )
       end
 
       it 'returns the DEFAULT_SUBSCRIBED_TIMEOUT' do
         expect(user.default_worker_timeout).to eq User::DEFAULT_SUBSCRIBED_TIMEOUT
+      end
+    end
+
+    context 'active_v2_trial? == true' do
+      before do
+        user.stubs(:paid?).returns(true)
+        stub_request(:get, authorize_build_url).to_return(
+          body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: nil, metered: true, current_trial: { build_timeout: 10})
+        )
+      end
+
+      it 'returns the TRIAL_TIMEOUT' do
+        expect(user.default_worker_timeout).to eq 10
+      end
+    end
+
+    context 'active_v2_trial? == true' do
+      before do
+        user.stubs(:paid?).returns(true)
+        stub_request(:get, authorize_build_url).to_return(
+          body: MultiJson.dump(plan_name: 'free_tier_plan', hybrid: false, free: true, status: nil, metered: true, current_trial: { })
+        )
+      end
+
+      it 'returns the DEFAULT_TRIAL_TIMEOUT' do
+        expect(user.default_worker_timeout).to eq User::DEFAULT_TRIAL_TIMEOUT
       end
     end
 
