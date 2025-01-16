@@ -25,7 +25,7 @@ module Travis
           end
 
           def account_env_vars
-            Travis.logger.info "Fetching account env vars for owner: #{job.sender_id} with owner type: #{job.owner_type}"
+            Travis.logger.info "Fetching account env vars for owner: #{job.owner_id} with owner type: #{job.owner_type}"
             vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
             Travis.logger.info "Results for owner: #{job.owner_id}, variables: #{vars}"
             vars.map { |var| env_var(var) }
