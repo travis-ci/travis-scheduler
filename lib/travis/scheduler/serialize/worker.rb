@@ -252,16 +252,16 @@ module Travis
         end
 
         def env_vars_with_account_vars
-          info "Mapped account env vars: #{account_env_vars}"
+          Travis.logger.info "Mapped account env vars: #{account_env_vars}"
           final_vars = env_vars_with_custom_keys + account_env_vars
-          info "Merged env vars: #{final_vars}"
+          Travis.logger.info "Merged env vars: #{final_vars}"
           final_vars
         end
 
         def account_env_vars
-          info "Fetching account env vars for owner: #{build.sender_id} with owner type: #{build.owner_type}"
+          Travis.logger.info "Fetching account env vars for owner: #{build.sender_id} with owner type: #{build.owner_type}"
           vars = AccountEnvVars.where(owner_id: build.owner_id, owner_type: build.owner_type)
-          info "Results for owner: #{build.owner_id}, variables: #{vars}"
+          Travis.logger.info "Results for owner: #{build.owner_id}, variables: #{vars}"
           vars.map { |var| env_var(var) }
         end
 
