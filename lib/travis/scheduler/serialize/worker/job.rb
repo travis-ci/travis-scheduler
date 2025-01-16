@@ -18,6 +18,17 @@ module Travis
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
             vars.map { |var| env_var(var) }
+            Travis.logger.info "Mapped account env vars: #{account_env_vars}"
+            final_vars = vars + account_env_vars
+            Travis.logger.info "Merged env vars: #{final_vars}"
+            final_vars
+          end
+
+          def account_env_vars
+            Travis.logger.info "Fetching account env vars for owner: #{job.sender_id} with owner type: #{job.owner_type}"
+            vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
+            Travis.logger.info "Results for owner: #{job.owner_id}, variables: #{vars}"
+            vars.map { |var| env_var(var) }
           end
 
           def secure_env?

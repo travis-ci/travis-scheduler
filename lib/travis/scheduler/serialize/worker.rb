@@ -21,7 +21,7 @@ module Travis
             vm_size: job.vm_size,
             queue: job.queue,
             config: job.decrypted_config,
-            env_vars: env_vars_with_account_vars,
+            env_vars: env_vars_with_custom_keys,
             job: job_data,
             host: Travis::Scheduler.config.host,
             source: build_data,
@@ -249,24 +249,6 @@ module Travis
 
         def env_vars_with_custom_keys
           job.env_vars + custom_keys
-        end
-
-        def env_vars_with_account_vars
-          Travis.logger.info "Mapped account env vars: #{account_env_vars}"
-          final_vars = env_vars_with_custom_keys + account_env_vars
-          Travis.logger.info "Merged env vars: #{final_vars}"
-          final_vars
-        end
-
-        def account_env_vars
-          Travis.logger.info "Fetching account env vars for owner: #{build.sender_id} with owner type: #{build.owner_type}"
-          vars = AccountEnvVars.where(owner_id: build.owner_id, owner_type: build.owner_type)
-          Travis.logger.info "Results for owner: #{build.owner_id}, variables: #{vars}"
-          vars.map { |var| env_var(var) }
-        end
-
-        def env_var(var)
-          { name: var.name, value: var.value.decrypt, public: var.public, branch: nil }
         end
 
         def custom_keys
