@@ -21,7 +21,7 @@ module Travis
             vm_size: job.vm_size,
             queue: job.queue,
             config: job.decrypted_config,
-            env_vars: env_vars_with_custom_keys,
+            env_vars: env_vars_with_account_vars,
             job: job_data,
             host: Travis::Scheduler.config.host,
             source: build_data,
