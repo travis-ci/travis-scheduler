@@ -17,9 +17,9 @@ module Travis
           def env_vars
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
-            vars.map { |var| env_var(var) }
+            mapped_vars = vars.map { |var| env_var(var) }
             Travis.logger.info "Mapped account env vars: #{account_env_vars}"
-            final_vars = vars + account_env_vars
+            final_vars = mapped_vars + account_env_vars
             Travis.logger.info "Merged env vars: #{final_vars}"
             final_vars
           end
