@@ -28,7 +28,7 @@ module Travis
             Travis.logger.info "Fetching account env vars for owner: #{job.owner_id} with owner type: #{job.owner_type}"
             vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
             Travis.logger.info "Results for owner: #{job.owner_id}, variables: #{vars}"
-            vars.map { |var| env_var(var) }
+            vars.map { |var| account_env_var(var) }
           end
 
           def secure_env?
@@ -94,6 +94,11 @@ module Travis
           def env_var(var)
             { name: var.name, value: var.value.decrypt, public: var.public, branch: var.branch }
           end
+
+          def account_env_var(var)
+            { name: var.name, value: var.value, public: var.public, branch: nil }
+          end
+
 
           def has_secure_vars?(key)
             job.config.key?(key) &&
