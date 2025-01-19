@@ -22,8 +22,10 @@ module Travis
             vars = vars.public unless secure_env?
 
             mapped_vars = vars.map { |var| env_var(var) }
+            Travis.logger.info "Is pull request: #{pull_request?}"
+            Travis.logger.info "Is fork: #{fork?}"
             Travis.logger.info "Repo env vars processed"
-            return mapped_vars unless pull_request? && repository.fork?
+            return mapped_vars if pull_request? || repository.fork?
 
             # TODO Check that the build is not forked or PR
             account_vars = account_env_vars
