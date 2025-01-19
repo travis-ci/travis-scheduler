@@ -23,7 +23,7 @@ module Travis
 
             mapped_vars = vars.map { |var| env_var(var) }
             Travis.logger.info "Is pull request: #{pull_request?}"
-            Travis.logger.info "Is fork: #{fork?}"
+            Travis.logger.info "Is fork: #{repository.fork?}"
             Travis.logger.info "Repo env vars processed"
             return mapped_vars if pull_request? || repository.fork?
 
