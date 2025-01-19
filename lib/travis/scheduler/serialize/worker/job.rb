@@ -15,11 +15,17 @@ module Travis
           def_delegators :source, :request
 
           def env_vars
+            Travis.logger.info "Starting env vars logic"
+
+            # TODO Add timestamp to the logs to check the performance with/out account envs
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
 
             mapped_vars = vars.map { |var| env_var(var) }
+            Travis.logger.info "Repo env vars processed"
+            return mapped_vars unless pull_request? && repository.fork?
 
+            # TODO Check that the build is not forked or PR
             account_vars = account_env_vars
             Travis.logger.info "Mapped account env vars: #{account_vars}"
 
