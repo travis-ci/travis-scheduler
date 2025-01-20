@@ -8,6 +8,8 @@ module Travis
   module Scheduler
     module Serialize
       class Worker
+        include Helper::Logging
+
         class Job < Struct.new(:job, :config)
           extend Forwardable
 
@@ -15,7 +17,6 @@ module Travis
                          :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
           def_delegators :source, :request
 
-          include Helper::Logging
 
           def env_vars
             info "Starting env vars logic"
