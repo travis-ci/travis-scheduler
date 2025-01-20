@@ -12,6 +12,7 @@ class Organization < ActiveRecord::Base
   #
   DEFAULT_SUBSCRIBED_TIMEOUT = 120 * 60
   DEFAULT_SPONSORED_TIMEOUT  = 50 * 60
+  DEFAULT_TRIAL_TIMEOUT = 30 * 60
 
   def subscription
     subs = Subscription.where(owner_id: id, owner_type: 'Organization')
@@ -39,11 +40,23 @@ class Organization < ActiveRecord::Base
     plan = if redis.exists?(redis_key)
              JSON.parse(redis.get(redis_key))
            else
-             billing_client.get_plan(self).to_h
+             billing_plan
            end
     return false if plan[:error] || plan['plan_name'].nil?
 
     plan['hybrid'] || !plan['plan_name'].include?('free')
+  end
+
+  def billing_plan
+    @billing_plan ||= billing_client.get_plan(self)&.to_h
+  end
+
+  def v2trial?
+    !billing_plan['current_trial'].nil?
+  end
+
+  def trial_timeout
+    @trial_timeout ||= (billing_plan['current_trial'].nil? || !billing_plan['current_trial'].include?('build_timeout')) ? DEFAULT_TRIAL_TIMEOUT : billing_plan['current_trial']['build_timeout']
   end
 
   def default_worker_timeout
@@ -54,9 +67,17 @@ class Organization < ActiveRecord::Base
     #   those enforced by workers themselves, but we plan to sometime in the
     #   following weeks/months.
     #
-    if paid? || educational?
+    if educational?
       Travis.logger.info "Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT for owner=#{id}"
       DEFAULT_SUBSCRIBED_TIMEOUT
+    elsif paid?
+      if v2trial?
+        Travis.logger.info "Default Timeout: TRIAL_TIMEOUT #{trial_timeout} for owner=#{id}"
+        trial_timeout
+      else
+        Travis.logger.info "Default Timeout: DEFAULT_SUBSCRIBED_TIMEOUT for owner=#{id}"
+        DEFAULT_SUBSCRIBED_TIMEOUT
+      end
     else
       Travis.logger.info "Default Timeout: DEFAULT_SPONSORED_TIMEOUT for owner=#{id}"
       DEFAULT_SPONSORED_TIMEOUT
