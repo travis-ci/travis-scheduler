@@ -2,6 +2,7 @@
 
 require 'forwardable'
 require 'travis/scheduler/serialize/worker/config'
+require 'travis/scheduler/helper/logging'
 
 module Travis
   module Scheduler
