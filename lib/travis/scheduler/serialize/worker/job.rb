@@ -2,40 +2,37 @@
 
 require 'forwardable'
 require 'travis/scheduler/serialize/worker/config'
-require 'travis/scheduler/helper/logging'
 
 module Travis
   module Scheduler
     module Serialize
       class Worker
-        include Helper::Logging
-
         class Job < Struct.new(:job, :config)
           extend Forwardable
-
-          include Helper::Logging
 
           def_delegators :job, :id, :repository, :source, :commit, :number,
                          :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
           def_delegators :source, :request
 
-
           def env_vars
-            info "Starting env vars logic"
+            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
+            Travis.logger.info "[#{time_str}] Starting env vars logic"
 
             # TODO Add timestamp to the logs to check the performance with/out account envs
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
 
             mapped_vars = vars.map { |var| env_var(var) }
-            info "Is pull request: #{pull_request?}"
-            info "Is fork: #{repository.fork?}"
-            info "Repo env vars processed"
+            Travis.logger.info "Is pull request: #{pull_request?}"
+            Travis.logger.info "Is fork: #{repository.fork?}"
+            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
+            Travis.logger.info "[#{time_str}] Repo env vars processed"
             return mapped_vars if pull_request? || repository.fork?
 
             # TODO Check that the build is not forked or PR
             account_vars = account_env_vars
-            info "Mapped account env vars: #{account_vars}"
+            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
+            Travis.logger.info "[#{time_str}] Mapped account env vars: #{account_vars}"
 
             repo_var_hash     = mapped_vars.map { |v| [v[:name], v] }.to_h
             account_var_hash  = account_vars.map { |v| [v[:name], v] }.to_h
@@ -43,15 +40,18 @@ module Travis
             final_vars_hash = repo_var_hash.merge(account_var_hash)
 
             final_vars = final_vars_hash.values
-            info "Merged env vars: #{final_vars}"
+            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
+            Travis.logger.info "[#{time_str}] Merged env vars: #{final_vars}"
 
             final_vars
           end
 
           def account_env_vars
-            info "Fetching account env vars for owner: #{job.owner_id} with owner type: #{job.owner_type}"
+            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
+            Travis.logger.info "[#{time_str}] Fetching account env vars for owner: #{job.owner_id} with owner type: #{job.owner_type}"
             vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
-            info "Results for owner: #{job.owner_id}, variables: #{vars}"
+            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
+            Travis.logger.info "[#{time_str}] Results for owner: #{job.owner_id}, variables: #{vars}"
             vars.map { |var| account_env_var(var) }
           end
 
