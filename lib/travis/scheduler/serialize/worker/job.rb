@@ -8,11 +8,11 @@ module Travis
   module Scheduler
     module Serialize
       class Worker
-        include Helper::Logging
 
         class Job < Struct.new(:job, :config)
           extend Forwardable
 
+          include Helper::Logging
           def_delegators :job, :id, :repository, :source, :commit, :number,
                          :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
           def_delegators :source, :request
