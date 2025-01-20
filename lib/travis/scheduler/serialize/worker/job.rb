@@ -14,22 +14,24 @@ module Travis
                          :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
           def_delegators :source, :request
 
+          include Helper::Logging
+
           def env_vars
-            Travis.logger.info "Starting env vars logic"
+            info "Starting env vars logic"
 
             # TODO Add timestamp to the logs to check the performance with/out account envs
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
 
             mapped_vars = vars.map { |var| env_var(var) }
-            Travis.logger.info "Is pull request: #{pull_request?}"
-            Travis.logger.info "Is fork: #{repository.fork?}"
-            Travis.logger.info "Repo env vars processed"
+            info "Is pull request: #{pull_request?}"
+            info "Is fork: #{repository.fork?}"
+            info "Repo env vars processed"
             return mapped_vars if pull_request? || repository.fork?
 
             # TODO Check that the build is not forked or PR
             account_vars = account_env_vars
-            Travis.logger.info "Mapped account env vars: #{account_vars}"
+            info "Mapped account env vars: #{account_vars}"
 
             repo_var_hash     = mapped_vars.map { |v| [v[:name], v] }.to_h
             account_var_hash  = account_vars.map { |v| [v[:name], v] }.to_h
@@ -37,15 +39,15 @@ module Travis
             final_vars_hash = repo_var_hash.merge(account_var_hash)
 
             final_vars = final_vars_hash.values
-            Travis.logger.info "Merged env vars: #{final_vars}"
+            info "Merged env vars: #{final_vars}"
 
             final_vars
           end
 
           def account_env_vars
-            Travis.logger.info "Fetching account env vars for owner: #{job.owner_id} with owner type: #{job.owner_type}"
+            info "Fetching account env vars for owner: #{job.owner_id} with owner type: #{job.owner_type}"
             vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
-            Travis.logger.info "Results for owner: #{job.owner_id}, variables: #{vars}"
+            info "Results for owner: #{job.owner_id}, variables: #{vars}"
             vars.map { |var| account_env_var(var) }
           end
 
