@@ -30,7 +30,7 @@ module Travis
 
             # account_vars = account_env_vars
 
-            account_vars = vars.map { |var| account_env_var(var) }
+            account_vars = account_env_vars
             time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
             Travis.logger.info "[#{time_str}] Mapped account env vars: #{account_vars}"
 
