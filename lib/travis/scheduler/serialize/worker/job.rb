@@ -29,10 +29,10 @@ module Travis
             return mapped_vars if pull_request? || repository.fork?
 
             # account_vars = account_env_vars
-            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
-            Travis.logger.info "[#{time_str}] Mapped account env vars: #{account_vars}"
 
             account_vars = vars.map { |var| account_env_var(var) }
+            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
+            Travis.logger.info "[#{time_str}] Mapped account env vars: #{account_vars}"
 
             final_vars = mapped_vars + account_vars
 
