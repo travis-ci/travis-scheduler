@@ -18,7 +18,6 @@ module Travis
             time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
             Travis.logger.info "[#{time_str}] Starting env vars logic"
 
-            # TODO Add timestamp to the logs to check the performance with/out account envs
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
 
@@ -29,17 +28,20 @@ module Travis
             Travis.logger.info "[#{time_str}] Repo env vars processed"
             return mapped_vars if pull_request? || repository.fork?
 
-            # TODO Check that the build is not forked or PR
-            account_vars = account_env_vars
+            # account_vars = account_env_vars
             time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
             Travis.logger.info "[#{time_str}] Mapped account env vars: #{account_vars}"
 
-            repo_var_hash     = mapped_vars.map { |v| [v[:name], v] }.to_h
-            account_var_hash  = account_vars.map { |v| [v[:name], v] }.to_h
+            account_vars = vars.map { |var| account_env_var(var) }
 
-            final_vars_hash = repo_var_hash.merge(account_var_hash)
+            final_vars = mapped_vars + account_vars
 
-            final_vars = final_vars_hash.values
+            # repo_var_hash     = mapped_vars.map { |v| [v[:name], v] }.to_h
+            # account_var_hash  = account_vars.map { |v| [v[:name], v] }.to_h
+
+            # final_vars_hash = repo_var_hash.merge(account_var_hash)
+
+            # final_vars = final_vars_hash.values
             time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
             Travis.logger.info "[#{time_str}] Merged env vars: #{final_vars}"
 
