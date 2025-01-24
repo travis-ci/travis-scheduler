@@ -15,45 +15,21 @@ module Travis
           def_delegators :source, :request
 
           def env_vars
-            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
-            Travis.logger.info "[#{time_str}] Starting env vars logic"
-
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
 
             mapped_vars = vars.map { |var| env_var(var) }
-            Travis.logger.info "Is pull request: #{pull_request?}"
-            Travis.logger.info "Is fork: #{repository.fork?}"
-            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
-            Travis.logger.info "[#{time_str}] Repo env vars processed"
             return mapped_vars if pull_request? || repository.fork?
 
-            # account_vars = account_env_vars
+            repo_var_hash     = mapped_vars.map { |v| [v[:name], v] }.to_h
+            account_var_hash  = account_env_vars.map { |v| [v[:name], v] }.to_h
 
-            account_vars = account_env_vars
-            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
-            Travis.logger.info "[#{time_str}] Mapped account env vars: #{account_vars}"
-
-            final_vars = mapped_vars + account_vars
-
-            # repo_var_hash     = mapped_vars.map { |v| [v[:name], v] }.to_h
-            # account_var_hash  = account_vars.map { |v| [v[:name], v] }.to_h
-
-            # final_vars_hash = repo_var_hash.merge(account_var_hash)
-
-            # final_vars = final_vars_hash.values
-            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
-            Travis.logger.info "[#{time_str}] Merged env vars: #{final_vars}"
-
-            final_vars
+            final_vars_hash = repo_var_hash.merge(account_var_hash)
+            final_vars_hash.values
           end
 
           def account_env_vars
-            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
-            Travis.logger.info "[#{time_str}] Fetching account env vars for owner: #{job.owner_id} with owner type: #{job.owner_type}"
             vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
-            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
-            Travis.logger.info "[#{time_str}] Results for owner: #{job.owner_id}, variables: #{vars}"
             vars.map { |var| account_env_var(var) }
           end
 
@@ -124,7 +100,6 @@ module Travis
           def account_env_var(var)
             { name: var.name, value: var.value, public: var.public, branch: nil }
           end
-
 
           def has_secure_vars?(key)
             job.config.key?(key) &&
