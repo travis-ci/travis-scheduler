@@ -6,9 +6,7 @@ module Travis
       module Logging
         class Format < Struct.new(:msg, :context)
           def apply
-            time_str = Time.now.strftime('%Y-%m-%d %H:%M:%S.%L')
             msg = []
-            msg << "[#{time_str}]"
             msg << jid[0..5]  if jid
             msg << "[#{src}]" if src
             msg << self.msg

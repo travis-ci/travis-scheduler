@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
-describe Travis::Scheduler::Serialize::Worker::Job do
-  subject       { described_class.new(job) }
+describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
+  subject(:job_instance)       { described_class.new(job) }
+  def encrypted(value)
+    Travis::Settings::EncryptedColumn.new(use_prefix: false).dump(value)
+  end
 
   let(:request) { Request.new }
   let(:build)   { Build.new(request:) }
@@ -9,8 +12,66 @@ describe Travis::Scheduler::Serialize::Worker::Job do
   let(:job)     { Job.new(source: build, config:, repository: repo) }
   let(:config)  { {} }
 
+  let(:env_vars) do
+    Repository::Settings::EnvVars.new(
+      [
+        Repository::Settings::EnvVar.new(name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil),
+        Repository::Settings::EnvVar.new(name: 'PUBLIC_VAR', value: 'public_value', public: true, branch: 'main')
+      ]
+    )
+  end
+
+  # Stubs for account-level environment variables
+  let(:account_var_1) do
+    stub(
+      'account_var_1',
+      name: 'ACCOUNT_VAR',
+      value: 'account_value',
+      public: true
+    )
+  end
+  let(:account_var_2) do
+    # same name as repo_public_var to test overwriting
+    stub(
+      'account_var_2',
+      name: 'PUBLIC_VAR',
+      value: 'overwritten_public',
+      public: true
+    )
+  end
+
   describe 'env_vars' do
-    xit
+
+    before do
+      repo.stubs(:secure_env?).returns(true)
+
+      repo.settings.stubs(:env_vars).returns(env_vars)
+
+      # Stub repository settings to return chosen env vars
+      # By default, let's say repo is not a fork
+      repo.stubs(:fork?).returns(false)
+      # By default, let the build event be :push
+      build.event_type = 'push'
+
+      # Mock account_env_vars to include two distinct (or colliding) vars
+      job_instance.stubs(:account_env_vars).returns([account_var_1, account_var_2])
+    end
+
+    context 'when pull_request? is true' do
+      before do
+        build.event_type = 'pull_request'
+      end
+
+      it 'returns only mapped repo vars, ignoring account vars' do
+        # Because it returns early in the method if pull_request? is true
+        expect(job_instance.env_vars).to match_array(
+                                           [
+                                             { name: 'SECURE_VAR', value: 'decrypted_secure', public: false, branch: nil },
+                                             { name: 'PUBLIC_VAR', value: 'decrypted_public', public: true, branch: 'main' }
+                                           ]
+                                         )
+      end
+    end
   end
 
   describe 'pull_request?' do
