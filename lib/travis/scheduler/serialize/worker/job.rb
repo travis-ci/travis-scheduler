@@ -17,8 +17,8 @@ module Travis
           def env_vars
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
-
             mapped_vars = vars.map { |var| env_var(var) }
+            Travis.logger.info "Mapped repo env vars: #{mapped_vars}"
             return mapped_vars if pull_request? || repository.fork?
 
             repo_var_hash     = mapped_vars.map { |v| [v[:name], v] }.to_h
@@ -29,8 +29,12 @@ module Travis
           end
 
           def account_env_vars
-            vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
+            vars = AccountEnvVarsCollection.new(AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type))
+            Travis.logger.info "Account env vars from db: #{vars}"
+            vars = vars.public unless secure_env?
             vars.map { |var| account_env_var(var) }
+            Travis.logger.info "Mapped account env vars: #{vars}"
+            vars
           end
 
           def secure_env?
