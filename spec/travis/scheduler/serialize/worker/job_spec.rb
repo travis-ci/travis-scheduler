@@ -2,9 +2,6 @@
 
 describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
   subject(:job_instance)       { described_class.new(job) }
-  def encrypted(value)
-    Travis::Settings::EncryptedColumn.new(use_prefix: false).dump(value)
-  end
 
   let(:request) { Request.new }
   let(:build)   { Build.new(request:) }
