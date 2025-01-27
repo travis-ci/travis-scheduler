@@ -14,47 +14,26 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
 
   let(:env_vars) do
     Repository::Settings::EnvVars.new(
-      [
-        Repository::Settings::EnvVar.new(name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil),
-        Repository::Settings::EnvVar.new(name: 'PUBLIC_VAR', value: 'public_value', public: true, branch: 'main')
-      ]
+      Repository::Settings::EnvVar.new(name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil),
+      Repository::Settings::EnvVar.new(name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main')
     )
   end
 
-  # Stubs for account-level environment variables
-  let(:account_var_1) do
-    stub(
-      'account_var_1',
-      name: 'ACCOUNT_VAR',
-      value: 'account_value',
-      public: true
-    )
-  end
-  let(:account_var_2) do
-    # same name as repo_public_var to test overwriting
-    stub(
-      'account_var_2',
-      name: 'PUBLIC_VAR',
-      value: 'overwritten_public',
-      public: true
-    )
+  let(:account_env_vars) do
+    [
+      {name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil},
+      {name: 'PUBLIC_VAR', value: 'account_public_value', public: true, branch: nil}
+    ]
   end
 
   describe 'env_vars' do
-
     before do
-      repo.stubs(:secure_env?).returns(true)
-
       repo.settings.stubs(:env_vars).returns(env_vars)
-
-      # Stub repository settings to return chosen env vars
-      # By default, let's say repo is not a fork
+      request.stubs(:same_repo_pull_request?).returns(true)
+      repo.settings.stubs(:share_encrypted_env_with_forks).returns(true)
       repo.stubs(:fork?).returns(false)
-      # By default, let the build event be :push
       build.event_type = 'push'
-
-      # Mock account_env_vars to include two distinct (or colliding) vars
-      job_instance.stubs(:account_env_vars).returns([account_var_1, account_var_2])
+      job_instance.stubs(:account_env_vars).returns(account_env_vars)
     end
 
     context 'when pull_request? is true' do
@@ -62,12 +41,58 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
         build.event_type = 'pull_request'
       end
 
-      it 'returns only mapped repo vars, ignoring account vars' do
-        # Because it returns early in the method if pull_request? is true
-        expect(job_instance.env_vars).to match_array(
+      it 'should return only mapped repo vars for pull requests, ignoring account vars' do
+        expect(job_instance.env_vars).to eq(
                                            [
-                                             { name: 'SECURE_VAR', value: 'decrypted_secure', public: false, branch: nil },
-                                             { name: 'PUBLIC_VAR', value: 'decrypted_public', public: true, branch: 'main' }
+                                             { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
+                                             { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
+                                           ]
+                                         )
+      end
+    end
+
+    context 'when pull_request? is false but its forked repo' do
+      before do
+        repo.stubs(:fork?).returns(true)
+      end
+
+      it 'should return only mapped repo vars for forked repos, ignoring account vars' do
+        expect(job_instance.env_vars).to eq(
+                                           [
+                                             { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
+                                             { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
+                                           ]
+                                         )
+      end
+    end
+
+    context 'when env is not secure then non-public env vars should not apply' do
+      before do
+        build.event_type = 'pull_request'
+        request.stubs(:same_repo_pull_request?).returns(false)
+        repo.settings.stubs(:share_encrypted_env_with_forks).returns(false)
+      end
+
+      it 'should return only public repo vars' do
+        expect(job_instance.env_vars).to eq(
+                                           [
+                                             { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
+                                           ]
+                                         )
+      end
+    end
+
+    context 'when it is not pull_request, and is not forked repo then account env variables should apply' do
+      before do
+        build.event_type = 'push'
+      end
+
+      it 'should return all vars including account env variables' do
+        expect(job_instance.env_vars).to eq(
+                                           [
+                                             { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
+                                             { name: 'PUBLIC_VAR', value: 'account_public_value', public: true, branch: nil },
+                                             { name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil }
                                            ]
                                          )
       end
