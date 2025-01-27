@@ -33,12 +33,12 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       job_instance.stubs(:account_env_vars).returns(account_env_vars)
     end
 
-    context 'when pull_request? is true' do
+    context 'when is pull request' do
       before do
         build.event_type = 'pull_request'
       end
 
-      it 'should return only mapped repo vars for pull requests, ignoring account vars' do
+      it 'should return only repo env vars' do
         expect(job_instance.env_vars).to eq(
                                            [
                                              { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
@@ -48,12 +48,12 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       end
     end
 
-    context 'when pull_request? is false but its forked repo' do
+    context 'when it is not pull_request but its forked repository' do
       before do
         repo.stubs(:fork?).returns(true)
       end
 
-      it 'should return only mapped repo vars for forked repos, ignoring account vars' do
+      it 'should return only repo env vars' do
         expect(job_instance.env_vars).to eq(
                                            [
                                              { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
@@ -63,14 +63,14 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       end
     end
 
-    context 'when env is not secure then non-public env vars should not apply' do
+    context 'when environment is not secure then non-public env vars should not apply' do
       before do
         build.event_type = 'pull_request'
         request.stubs(:same_repo_pull_request?).returns(false)
         repo.settings.stubs(:share_encrypted_env_with_forks).returns(false)
       end
 
-      it 'should return only public repo vars' do
+      it 'should return only public repo env vars' do
         expect(job_instance.env_vars).to eq(
                                            [
                                              { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
@@ -79,12 +79,12 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       end
     end
 
-    context 'when it is not pull_request, and is not forked repo then account env variables should apply' do
+    context 'when it is not pull request, and is not forked repository then account env vars should apply as well' do
       before do
         build.event_type = 'push'
       end
 
-      it 'should return all vars including account env variables' do
+      it 'should return all env vars, overriding repo env vars if the name is the same' do
         expect(job_instance.env_vars).to eq(
                                            [
                                              { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
