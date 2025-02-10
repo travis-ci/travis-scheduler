@@ -85,10 +85,20 @@ module Travis
       end
 
       def startable
-        if first.is_a?(Stage)
-          first.children.map(&:startable).flatten
-        else
-          children.select(&:startable?).map(&:to_h)
+        begin
+          puts "Model::Stages::Stage#startable"
+          puts "first is #{first.inspect}"
+          if first.is_a?(Stage)
+            puts "first is a stage"
+            first.children.map(&:startable).flatten
+          else
+            puts "first is not a stage"
+            puts "children is #{children.inspect}"
+            children.select(&:startable?).map(&:to_h)
+          end
+        rescue => e
+          puts "An error occurred inside startable: #{e.message}"
+          puts e.backtrace.join("\n")
         end
       end
 
@@ -116,6 +126,9 @@ module Travis
       end
 
       def first
+        puts "Model::Stages::Stage#first"
+        puts "children is #{children.inspect}"
+        puts "children.first is #{children.first.inspect}"
         children.first
       end
     end
