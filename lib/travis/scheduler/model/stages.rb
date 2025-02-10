@@ -92,7 +92,7 @@ module Travis
             puts "first is a stage"
             first.children.map(&:startable).flatten
           else
-            puts "first is not a stage"
+            puts "first is not a stage."
             puts "children is #{children.inspect}"
             children.select(&:startable?).map(&:to_h)
           end
