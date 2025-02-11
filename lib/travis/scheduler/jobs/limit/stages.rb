@@ -20,6 +20,9 @@ module Travis
           end
 
           def queueable(job)
+            puts "Travis::Stages.build(#{job.inspect})"
+            puts "Jobs for build: #{jobs(job.source_id).inspect}"
+            puts "Stages: #{Travis::Stages.build(jobs(job.source_id), job.source_id)}"
             Travis::Stages.build(jobs(job.source_id), job.source_id).startable
           end
 
