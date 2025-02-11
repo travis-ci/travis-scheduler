@@ -23,11 +23,23 @@ module Travis
         }.freeze
 
         def run
-          info format(MSGS[:schedule], owners.to_s)
-          Travis::Honeycomb.context.add('owner_group', owners.key)
-          collect
-          report
-          enqueue
+          begin
+            info format(MSGS[:schedule], owners.to_s)
+            Travis::Honeycomb.context.add('owner_group', owners.key)
+            puts "Travis::Scheduler::Service::EnqueueOwners#run"
+            puts "Owners: #{owners.inspect}"
+            puts "collect: #{collect.inspect}"
+            collect
+
+            puts "report: #{report.inspect}"
+            report
+
+            puts "enqueue: #{enqueue.inspect}"
+            enqueue
+          rescue => e
+            puts "An error occurred inside Travis::Scheduler::Service::EnqueueOwners#run: #{e.message}"
+            puts e.backtrace.join("\n")
+          end
         end
         with :run, :exclusive
 
