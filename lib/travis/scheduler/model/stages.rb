@@ -86,14 +86,14 @@ module Travis
 
       def startable
         begin
-          puts "Model::Stages::Stage#startable"
-          puts "first is #{first.inspect}"
+          # puts "Model::Stages::Stage#startable"
+          # puts "first is #{first.inspect}"
           if first.is_a?(Stage)
-            puts "first is a stage"
+            # puts "first is a stage"
             first.children.map(&:startable).flatten
           else
-            puts "first is not a stage."
-            puts "children is #{children.inspect}"
+            # puts "first is not a stage."
+            # puts "children is #{children.inspect}"
             children.select(&:startable?).map(&:to_h)
           end
         rescue => e
