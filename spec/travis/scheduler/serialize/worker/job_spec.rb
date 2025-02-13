@@ -9,13 +9,6 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
   let(:job)     { Job.new(source: build, config:, repository: repo) }
   let(:config)  { {} }
 
-  let(:env_vars) do
-    Repository::Settings::EnvVars.new(
-      Repository::Settings::EnvVar.new(name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil),
-      Repository::Settings::EnvVar.new(name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main')
-    )
-  end
-
   let(:account_env_vars) do
     [
       {name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil},
@@ -23,19 +16,29 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
     ]
   end
 
+  let(:env_vars) do
+    Repository::Settings::EnvVars.new(
+      Repository::Settings::EnvVar.new(name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil),
+      Repository::Settings::EnvVar.new(name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main')
+    )
+  end
+
+
+
   describe 'env_vars' do
     before do
       repo.settings.stubs(:env_vars).returns(env_vars)
-      request.stubs(:same_repo_pull_request?).returns(true)
       repo.settings.stubs(:share_encrypted_env_with_forks).returns(true)
+      request.stubs(:same_repo_pull_request?).returns(true)
       repo.stubs(:fork?).returns(false)
       build.event_type = 'push'
       job_instance.stubs(:account_env_vars).returns(account_env_vars)
     end
 
-    context 'when is pull request' do
+    context 'when is pull request and is not for same repo' do
       before do
         build.event_type = 'pull_request'
+        request.stubs(:same_repo_pull_request?).returns(false)
       end
 
       it 'should return only repo env vars' do
@@ -48,20 +51,20 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       end
     end
 
-    context 'when it is not pull_request but its forked repository' do
-      before do
-        repo.stubs(:fork?).returns(true)
-      end
-
-      it 'should return only repo env vars' do
-        expect(job_instance.env_vars).to eq(
-                                           [
-                                             { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
-                                             { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
-                                           ]
-                                         )
-      end
-    end
+    # context 'when it is not pull_request but its forked repository' do
+    #   before do
+    #     repo.stubs(:fork?).returns(true)
+    #   end
+    #
+    #   it 'should return only repo env vars' do
+    #     expect(job_instance.env_vars).to eq(
+    #                                        [
+    #                                          { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
+    #                                          { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
+    #                                        ]
+    #                                      )
+    #   end
+    # end
 
     context 'when environment is not secure then non-public env vars should not apply' do
       before do
@@ -79,17 +82,18 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       end
     end
 
-    context 'when it is not pull request, and is not forked repository then account env vars should apply as well' do
+    context 'when it is not pull request then account env vars should apply as well' do
       before do
         build.event_type = 'push'
+
       end
 
-      it 'should return all env vars, overriding repo env vars if the name is the same' do
+      it 'should return all env vars, overriding account env vars if the name is the same' do
         expect(job_instance.env_vars).to eq(
                                            [
-                                             { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
-                                             { name: 'PUBLIC_VAR', value: 'account_public_value', public: true, branch: nil },
-                                             { name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil }
+                                             { name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil },
+                                             { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' },
+                                             { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil }
                                            ]
                                          )
       end

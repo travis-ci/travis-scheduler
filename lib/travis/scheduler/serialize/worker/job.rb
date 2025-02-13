@@ -17,11 +17,11 @@ module Travis
           def env_vars
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
-            repo_env_vars = vars.map { |var| [var[:name], env_var(var)] }
-            return repo_env_vars if pull_request? && !request.same_repo_pull_request?
+            repo_env_vars = vars.map { |var| [var[:name], env_var(var)] }.to_h
+            return repo_env_vars.values if pull_request? && !request.same_repo_pull_request?
 
             account_vars = account_env_vars.map { |v| [v[:name], v] }.to_h
-            account_vars.merge(repo_env_vars.to_h).values
+            account_vars.merge(repo_env_vars).values
           end
 
           def account_env_vars
