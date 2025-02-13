@@ -20,7 +20,7 @@ module Travis
           end
 
           def queueable(job)
-            Travis::Stages.build(jobs(job.source_id), job.source_id).startable
+            Travis::Stages.build(jobs(job.source_id), job.source_id)&.startable || []
           end
 
           def jobs(build_id)

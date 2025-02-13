@@ -57,7 +57,7 @@
 module Travis
   module Stages
     def self.build(jobs, build_id = nil)
-      return [] if build_id && build_canceled?(build_id)
+      return nil if build_id && build_canceled?(build_id)
 
       jobs.each_with_object(Stage.new(nil, 0)) do |job, stage|
         job = Job.new(*job.values_at(:id, :state, :stage))
