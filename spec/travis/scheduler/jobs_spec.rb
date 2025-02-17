@@ -746,6 +746,13 @@ describe Travis::Scheduler::Jobs::Select do
 
         it { expect(selected[0].id).to eq Job.where(stage_number: '2.1').first.id }
       end
+
+      describe 'build canceled' do
+        before do
+          build.update!(state: :canceled)
+        end
+        it { expect(selected.size).to eq 0 }
+      end
     end
 
     describe 'with public jobs only' do
