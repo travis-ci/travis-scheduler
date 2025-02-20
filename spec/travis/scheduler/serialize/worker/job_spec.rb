@@ -24,7 +24,6 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
   end
 
 
-
   describe 'env_vars' do
     before do
       repo.settings.stubs(:env_vars).returns(env_vars)
@@ -36,22 +35,30 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
     end
 
     context 'when is pull request and is not for same repo' do
+      let(:expected_vars) do
+        [
+          { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
+          { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
+        ]
+      end
+
       before do
         build.event_type = 'pull_request'
         request.stubs(:same_repo_pull_request?).returns(false)
       end
 
-      it 'should return only repo env vars' do
-        expect(job_instance.env_vars).to eq(
-                                           [
-                                             { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil },
-                                             { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
-                                           ]
-                                         )
+      it 'returns only repo environment variables' do
+        expect(job_instance.env_vars).to match_array(expected_vars)
       end
     end
 
     context 'when environment is not secure then non-public env vars should not apply' do
+      let(:expected_vars) do
+        [
+          { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
+        ]
+      end
+
       before do
         build.event_type = 'pull_request'
         request.stubs(:same_repo_pull_request?).returns(false)
@@ -59,28 +66,25 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       end
 
       it 'should return only public repo env vars' do
-        expect(job_instance.env_vars).to eq(
-                                           [
-                                             { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' }
-                                           ]
-                                         )
+        expect(job_instance.env_vars).to match_array(expected_vars)
       end
     end
 
     context 'when it is not pull request then account env vars should apply as well' do
+      let(:expected_vars) do
+        [
+          { name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil },
+          { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' },
+          { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil }
+        ]
+      end
+
       before do
         build.event_type = 'push'
-
       end
 
       it 'should return all env vars, overriding account env vars if the name is the same' do
-        expect(job_instance.env_vars).to eq(
-                                           [
-                                             { name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil },
-                                             { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' },
-                                             { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil }
-                                           ]
-                                         )
+        expect(job_instance.env_vars).to match_array(expected_vars)
       end
     end
   end
