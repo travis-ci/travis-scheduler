@@ -17,7 +17,16 @@ module Travis
           def env_vars
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
-            vars.map { |var| env_var(var) }
+            repo_env_vars = vars.map { |var| [var[:name], env_var(var)] }.to_h
+            return repo_env_vars.values if pull_request? && !request.same_repo_pull_request?
+
+            account_vars = account_env_vars.map { |v| [v[:name], v] }.to_h
+            account_vars.merge(repo_env_vars).values
+          end
+
+          def account_env_vars
+            vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
+            vars.map { |var| account_env_var(var) }
           end
 
           def secure_env?
@@ -82,6 +91,10 @@ module Travis
 
           def env_var(var)
             { name: var.name, value: var.value.decrypt, public: var.public, branch: var.branch }
+          end
+
+          def account_env_var(var)
+            { name: var.name, value: var.value, public: var.public, branch: nil }
           end
 
           def has_secure_vars?(key)
