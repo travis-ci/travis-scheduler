@@ -1,7 +1,7 @@
 language: ruby
 
 import:
-  - travis-ci/build-configs:db-setup.yml@TBT-137-account-env-vars
+  - travis-ci/build-configs:db-setup.yml
 
 rvm: 3.2.2
 
