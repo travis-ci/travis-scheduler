@@ -15,22 +15,15 @@ module Travis
           def_delegators :source, :request
 
           def env_vars
-              vars = repository.settings.env_vars
-              vars = vars.public unless secure_env?
-              repo_env_vars = vars.map { |var| env_var(var) }
-              return repo_env_vars if pull_request? && !request.same_repo_pull_request?
+            vars = repository.settings.env_vars
+            vars = vars.public unless secure_env?
+            repo_env_vars = vars.map { |var| env_var(var) }
+            return repo_env_vars if pull_request? && !request.same_repo_pull_request?
 
-
-              # repo_env_vars = vars.map { |var| [var[:name], env_var(var)] }.to_h
             account_vars = account_env_vars.map { |v| [v[:name], v] }.to_h
-
-            # Group repo env vars by name
             repo_vars_by_name = repo_env_vars.group_by { |var| var[:name] }
 
-            # Merge account and repo env vars
             merged_vars = account_vars.merge(repo_vars_by_name) do |key, account_var, repo_vars|
-              # If repo env vars exist for the given name, use them
-              # Otherwise, use the account env var
               if repo_vars.empty?
                 [account_var]
               else
@@ -38,20 +31,8 @@ module Travis
                 has_nil_branch ? repo_vars : repo_vars + [account_var]
               end
             end
-
-            # Flatten the merged vars and return the values
             merged_vars.values.flatten
           end
-
-          # def env_vars
-          #   vars = repository.settings.env_vars
-          #   vars = vars.public unless secure_env?
-          #   repo_env_vars = vars.map { |var| [var[:name], env_var(var)] }.to_h
-          #   return repo_env_vars.values if pull_request? && !request.same_repo_pull_request?
-          #
-          #   account_vars = account_env_vars.map { |v| [v[:name], v] }.to_h
-          #   account_vars.merge(repo_env_vars).values
-          # end
 
           def account_env_vars
             vars = AccountEnvVars.where(owner_id: job.owner_id, owner_type: job.owner_type)
