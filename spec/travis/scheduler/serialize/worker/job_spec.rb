@@ -23,7 +23,6 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
     )
   end
 
-
   describe 'env_vars' do
     before do
       repo.settings.stubs(:env_vars).returns(env_vars)
@@ -75,7 +74,8 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
         [
           { name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil },
           { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' },
-          { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil }
+          {name: 'PUBLIC_VAR', value: 'account_public_value', public: true, branch: nil},
+        { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil }
         ]
       end
 
@@ -84,6 +84,73 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       end
 
       it 'should return all env vars, overriding account env vars if the name is the same' do
+        expect(job_instance.env_vars).to match_array(expected_vars)
+      end
+    end
+
+    context 'when the repo env var is defined for multiple branches' do
+      let(:account_env_vars) do
+        [
+          {name: 'VAR', value: 'account_public_value', public: true, branch: nil}
+        ]
+      end
+
+      let(:env_vars) do
+        Repository::Settings::EnvVars.new(
+          Repository::Settings::EnvVar.new(name: 'VAR', value: 'main_value', public: true, branch: 'main'),
+          Repository::Settings::EnvVar.new(name: 'VAR', value: 'feature_value', public: true, branch: 'feature')
+        )
+      end
+
+      let(:expected_vars) do
+        [
+          { name: 'VAR', value: 'main_value', public: true, branch: 'main' },
+          { name: 'VAR', value: 'feature_value', public: true, branch: 'feature' },
+          { name: 'VAR', value: 'account_public_value', public: true, branch: nil }
+        ]
+      end
+
+      before do
+        build.event_type = 'push'
+        job_instance.stubs(:account_env_vars).returns(account_env_vars)
+        repo.settings.stubs(:env_vars).returns(env_vars)
+      end
+
+      it 'should return all branch env vars, plus the account env var' do
+        expect(job_instance.env_vars).to match_array(expected_vars)
+      end
+    end
+
+    context 'when the repo env var is defined for multiple branches and for repository' do
+      let(:account_env_vars) do
+        [
+          {name: 'VAR', value: 'account_public_value', public: true, branch: nil}
+        ]
+      end
+
+      let(:env_vars) do
+        Repository::Settings::EnvVars.new(
+          Repository::Settings::EnvVar.new(name: 'VAR', value: 'main_value', public: true, branch: 'main'),
+          Repository::Settings::EnvVar.new(name: 'VAR', value: 'feature_value', public: true, branch: 'feature'),
+          Repository::Settings::EnvVar.new(name: 'VAR', value: 'repo_value', public: true, branch: nil)
+        )
+      end
+
+      let(:expected_vars) do
+        [
+          { name: 'VAR', value: 'main_value', public: true, branch: 'main' },
+          { name: 'VAR', value: 'feature_value', public: true, branch: 'feature' },
+          { name: 'VAR', value: 'repo_value', public: true, branch: nil }
+        ]
+      end
+
+      before do
+        build.event_type = 'push'
+        job_instance.stubs(:account_env_vars).returns(account_env_vars)
+        repo.settings.stubs(:env_vars).returns(env_vars)
+      end
+
+      it 'should return all repo env vars, account env var should not be returned' do
         expect(job_instance.env_vars).to match_array(expected_vars)
       end
     end
