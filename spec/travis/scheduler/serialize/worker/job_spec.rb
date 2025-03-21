@@ -23,9 +23,6 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
     )
   end
 
-
-
-
   describe 'env_vars' do
     before do
       repo.settings.stubs(:env_vars).returns(env_vars)
