@@ -32,7 +32,14 @@ module Travis
             workspace:,
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
-            keep_netrc: job.decrypted_config.key?(:keep_netrc) ? job.decrypted_config[:keep_netrc] : repo.keep_netrc?,
+            keep_netrc: begin
+              if job.decrypted_config.key?(:keep_netrc)
+                ENV['DELETE_NETRC'] = 'false' if job.decrypted_config[:keep_netrc]
+                job.decrypted_config[:keep_netrc]
+              else
+                repo.keep_netrc?
+              end
+            end,
             secrets: job.secrets,
             allowed_repositories:
           }
