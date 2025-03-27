@@ -99,7 +99,7 @@ class User < ActiveRecord::Base
   end
 
   def keep_netrc?
-    preferences.key?('keep_netrc') ? preferences['keep_netrc'] : true
+    preferences.key?('keep_netrc') ? preferences['keep_netrc'] : !(ENV['DELETE_NETRC'] == "true") 
   end
 
   def uid
