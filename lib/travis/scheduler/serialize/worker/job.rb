@@ -139,6 +139,10 @@ module Travis
           def repository_key
             job_repository&.key || ::SslKey.new(private_key: 'test')
           end
+
+          def repo
+            @repo ||= Repo.new(repository, config)
+          end
         end
       end
     end
