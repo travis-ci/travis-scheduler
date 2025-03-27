@@ -86,7 +86,7 @@ module Travis
           end
 
           def keep_netrc?
-            job.config.include?[:keep_netrc] ? !!job.config[:keep_netrc] : repository.keep_netrc?
+            job.config.include?(:keep_netrc) ? !!job.config[:keep_netrc] : repository.keep_netrc?
           end
 
           def trace?
