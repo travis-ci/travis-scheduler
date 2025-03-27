@@ -32,7 +32,7 @@ module Travis
             workspace:,
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
-            keep_netrc: repo.keep_netrc?,
+            keep_netrc: job.keep_netrc?,
             secrets: job.secrets,
             allowed_repositories:
           }
