@@ -32,7 +32,12 @@ module Travis
             workspace:,
             enterprise: !!config[:enterprise],
             prefer_https: !!config[:prefer_https],
-            keep_netrc: config.key?(:keep_netrc) ? config[:keep_netrc] : repo.keep_netrc?,
+            keep_netrc: begin
+              puts "DEBUG keep_netrc - config.key?(:keep_netrc): #{config.key?(:keep_netrc)}"
+              puts "DEBUG keep_netrc - config[:keep_netrc]: #{config[:keep_netrc] if config.key?(:keep_netrc)}"
+              puts "DEBUG keep_netrc - repo.keep_netrc?: #{repo.keep_netrc?}"
+              config.key?(:keep_netrc) ? config[:keep_netrc] : repo.keep_netrc?
+            end,
             secrets: job.secrets,
             allowed_repositories:
           }
