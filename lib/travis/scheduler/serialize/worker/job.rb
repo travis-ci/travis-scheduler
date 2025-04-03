@@ -43,6 +43,7 @@ module Travis
                 has_nil_branch ? repo_vars : repo_vars + [account_var]
               end
             end
+            puts "merged_vars: #{merged_vars.values.flatten.inspect}"
 
             merged_vars.values.flatten
           end
