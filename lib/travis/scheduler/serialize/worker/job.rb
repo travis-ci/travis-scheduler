@@ -18,12 +18,24 @@ module Travis
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
             repo_env_vars = vars.map { |var| env_var(var) }
-            return repo_env_vars if pull_request? && !request.same_repo_pull_request?
+
+            repo_vars_by_name = repo_env_vars.group_by { |var| var[:name] }
+            puts "repo_vars_by_name: #{repo_vars_by_name.inspect}"
+
+            filtered_repo_vars = repo_vars_by_name.transform_values do |vars|
+              if vars.any? { |var| !var[:branch].nil? }
+                vars.reject { |var| var[:branch].nil? }
+              else
+                vars
+              end
+            end.values.flatten
+            puts "filtered_repo_vars: #{filtered_repo_vars.inspect}"
+
+            return filtered_repo_vars if pull_request? && !request.same_repo_pull_request?
 
             account_vars = account_env_vars.map { |v| [v[:name], v] }.to_h
-            repo_vars_by_name = repo_env_vars.group_by { |var| var[:name] }
 
-            merged_vars = account_vars.merge(repo_vars_by_name) do |key, account_var, repo_vars|
+            merged_vars = account_vars.merge(filtered_repo_vars.group_by { |var| var[:name] }) do |key, account_var, repo_vars|
               if repo_vars.empty?
                 [account_var]
               else
@@ -31,6 +43,7 @@ module Travis
                 has_nil_branch ? repo_vars : repo_vars + [account_var]
               end
             end
+
             merged_vars.values.flatten
           end
 
