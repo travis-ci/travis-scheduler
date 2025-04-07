@@ -11,41 +11,33 @@ module Travis
           extend Forwardable
 
           def_delegators :job, :id, :repository, :source, :commit, :number,
-                         :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
+                          :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
           def_delegators :source, :request
 
           def env_vars
             vars = repository.settings.env_vars
             vars = vars.public unless secure_env?
             repo_env_vars = vars.map { |var| env_var(var) }
+            return repo_env_vars if pull_request? && !request.same_repo_pull_request?
 
-            repo_vars_by_name = repo_env_vars.group_by { |var| var[:name] }
-            puts "repo_vars_by_name: #{repo_vars_by_name.inspect}"
+            account_env_vars_hash = account_env_vars.map { |v| [v[:name], v] }.to_h
 
-            filtered_repo_vars = repo_vars_by_name.transform_values do |vars|
-              if vars.any? { |var| !var[:branch].nil? }
-                vars.reject { |var| var[:branch].nil? }
-              else
-                vars
-              end
-            end.values.flatten
-            puts "filtered_repo_vars: #{filtered_repo_vars.inspect}"
+            all_vars = (repo_env_vars + account_env_vars).group_by { |var| var[:name] }
 
-            return filtered_repo_vars if pull_request? && !request.same_repo_pull_request?
+            selected_vars = all_vars.map do |name, vars|
+              # 1. Look for a branch-specific repo var
+              branch_var = vars.find { |v| v[:branch] == commit.branch }
+              next branch_var if branch_var
 
-            account_vars = account_env_vars.map { |v| [v[:name], v] }.to_h
+              # 2. Fallback to a repo var without a branch
+              default_repo_var = vars.find { |v| v[:branch].nil? && !account_env_vars_hash.key?(name) }
+              next default_repo_var if default_repo_var
 
-            merged_vars = account_vars.merge(filtered_repo_vars.group_by { |var| var[:name] }) do |key, account_var, repo_vars|
-              if repo_vars.empty?
-                [account_var]
-              else
-                has_nil_branch = repo_vars.any? { |var| var[:branch].nil? }
-                has_nil_branch ? repo_vars : repo_vars + [account_var]
-              end
+              # 3. Finally, use the account var
+              account_env_vars_hash[name]
             end
-            puts "merged_vars: #{merged_vars.values.flatten.inspect}"
 
-            merged_vars.values.flatten
+            selected_vars.compact
           end
 
           def account_env_vars
