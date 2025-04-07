@@ -20,21 +20,18 @@ module Travis
             repo_env_vars = vars.map { |var| env_var(var) }
             return repo_env_vars if pull_request? && !request.same_repo_pull_request?
 
-            account_env_vars_hash = account_env_vars.map { |v| [v[:name], v] }.to_h
+            repo_vars_by_name = repo_env_vars.group_by { |var| var[:name] }
+            account_vars_by_name = account_env_vars.index_by { |v| v[:name] }
 
-            all_vars = (repo_env_vars + account_env_vars).group_by { |var| var[:name] }
+            all_var_names = (repo_vars_by_name.keys + account_vars_by_name.keys).uniq
 
-            selected_vars = all_vars.map do |name, vars|
-              # 1. Look for a branch-specific repo var
-              branch_var = vars.find { |v| v[:branch] == commit.branch }
-              next branch_var if branch_var
+            selected_vars = all_var_names.map do |name|
+              repo_vars_for_name = repo_vars_by_name[name] || []
+              account_var = account_vars_by_name[name]
+              branch_var = repo_vars_for_name.find { |v| v[:branch] == commit.branch }
+              global_repo_var = repo_vars_for_name.find { |v| v[:branch].nil? }
 
-              # 2. Fallback to a repo var without a branch
-              default_repo_var = vars.find { |v| v[:branch].nil? && !account_env_vars_hash.key?(name) }
-              next default_repo_var if default_repo_var
-
-              # 3. Finally, use the account var
-              account_env_vars_hash[name]
+              branch_var || global_repo_var || account_var
             end
 
             selected_vars.compact
