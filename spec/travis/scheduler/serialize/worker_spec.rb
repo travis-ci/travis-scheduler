@@ -57,7 +57,6 @@ describe Travis::Scheduler::Serialize::Worker do
           name: 'jobname'
         },
         env_vars: [
-          { name: 'FOO', value: 'foo', public: false, branch: 'foo-(dev)' },
           { name: 'BAR', value: 'bar', public: true, branch: nil }
         ],
         job: {
