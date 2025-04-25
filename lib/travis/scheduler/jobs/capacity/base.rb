@@ -93,7 +93,11 @@ module Travis
             owner = owners.first
             owner_class = owner.is_a?(User) ? 'users' : 'organizations'
 
-            billing_client.allowance(owner_class, owner.id)
+            res = billing_client.allowance(owner_class, owner.id)
+            puts "BILLING ALLOWANCE: #{res.inspect}"
+            plan = billing_client.get_plan(owner)
+            puts "PLAN: #{plan.inspect}"
+            res
           rescue Billing::Client::Error => e
             return {} if e.response[:status] == 404 # Owner is not on a metered plan
 
