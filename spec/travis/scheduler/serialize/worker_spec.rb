@@ -556,4 +556,33 @@ describe Travis::Scheduler::Serialize::Worker do
       it { expect(data[:env_vars]).to eq([]) }
     end
   end
+
+  describe 'custom_images' do
+    let(:created_image) { FactoryBot.create(:custom_image, name: 'testimage2', architecture: 'x86')}
+    let(:used_image) { FactoryBot.create(:custom_image, name: 'testimage1')}
+    let(:config) do
+      {
+
+        cache_settings: { 'builds.gce' => s3 }, workspace: { 'builds.gce' => s3 },
+        github: { source_host: 'github.com', api_url: 'https://api.github.com' },
+        vm: {
+          create: {
+            name: created_image.name
+          },
+          use: {
+            name: used_image.name
+          }
+        },
+        created_custom_image_id: created_image.id,
+        used_custom_image_id: used_image.id
+      }
+    end
+    before do
+      job.update(config:, created_custom_image_id: created_image.id)
+      job.update(config:, used_custom_image_id: used_image.id)
+    end
+    it { expect(data[:job][:created_custom_image]).to match({ id: created_image.id, name: created_image.name, owner: }) }
+    it { expect(data[:job][:used_custom_image]).to match({ id: used_image.id, name: used_image.name, owner: }) }
+  end
+
 end

@@ -96,6 +96,8 @@ module Travis
               pull_request_is_draft: request.pull_request_is_draft?
             )
           end
+          data[:created_custom_image] = job.created_custom_image if job.creates_custom_image?
+          data[:used_custom_image] = job.used_custom_image if job.uses_custom_image?
           data
         end
 

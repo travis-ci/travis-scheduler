@@ -100,6 +100,30 @@ module Travis
             User.find(restarted_by).login if restarted_by
           end
 
+          def creates_custom_image?
+            !!job.config.dig(:vm, :create, :name)
+          end
+
+          def uses_custom_image?
+            !!job.config.dig(:vm, :use, :name)
+          end
+
+          def created_custom_image
+            {
+              owner: job.repository.owner,
+              id: job.created_custom_image_id,
+              name: job.config.dig(:vm, :create, :name)
+            }
+          end
+
+          def used_custom_image
+            {
+              owner: job.repository.owner,
+              id: job.used_custom_image_id,
+              name: job.config.dig(:vm, :use, :name)
+            }
+          end
+
           private
 
           def env_var(var)
@@ -137,6 +161,10 @@ module Travis
 
           def repository_key
             job_repository&.key || ::SslKey.new(private_key: 'test')
+          end
+
+          def artifact_manager
+            @_artifact_manager ||= ::ArtifactManager.new(job.repository.owner)
           end
         end
       end
