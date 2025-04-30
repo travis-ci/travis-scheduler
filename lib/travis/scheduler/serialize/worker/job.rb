@@ -162,10 +162,6 @@ module Travis
           def repository_key
             job_repository&.key || ::SslKey.new(private_key: 'test')
           end
-
-          def artifact_manager
-            @_artifact_manager ||= ::ArtifactManager.new(job.repository.owner)
-          end
         end
       end
     end
