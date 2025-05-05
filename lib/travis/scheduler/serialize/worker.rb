@@ -40,7 +40,7 @@ module Travis
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
 
-          if travis_vcs_proxy?
+          if travis_vcs_proxy? || travis_assemble_repository?
             creds = build_credentials
             data[:build_token] = (creds['token'] if creds) || ''
             data[:sender_login] = (creds['username'] if creds) || ''
@@ -245,6 +245,10 @@ module Travis
 
         def travis_vcs_proxy?
           repo.vcs_type == 'TravisproxyRepository'
+        end
+
+        def travis_assemble_repository?
+          repo.vcs_type == 'AssemblaRepository'
         end
 
         def env_vars_with_custom_keys
