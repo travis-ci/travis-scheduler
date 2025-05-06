@@ -40,7 +40,7 @@ module Travis
           data[:warmer] = true if job.warmer?
           data[:oauth_token] = github_oauth_token if config[:prefer_https]
 
-          if travis_vcs_proxy? || travis_assemble_repository?
+          if travis_vcs_proxy?
             creds = build_credentials
             data[:build_token] = (creds['token'] if creds) || ''
             data[:sender_login] = (creds['username'] if creds) || ''
