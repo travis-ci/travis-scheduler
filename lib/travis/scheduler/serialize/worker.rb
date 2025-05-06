@@ -44,6 +44,9 @@ module Travis
             creds = build_credentials
             data[:build_token] = (creds['token'] if creds) || ''
             data[:sender_login] = (creds['username'] if creds) || ''
+          elsif travis_assembla_repository?
+            data[:build_token] = sender_token || ''
+            data[:sender_login] = sender_login || ''
           end
 
           data
@@ -247,7 +250,7 @@ module Travis
           repo.vcs_type == 'TravisproxyRepository'
         end
 
-        def travis_assemble_repository?
+        def travis_assembla_repository?
           repo.vcs_type == 'AssemblaRepository'
         end
 
