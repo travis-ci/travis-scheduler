@@ -6,8 +6,10 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
   let(:request) { Request.new }
   let(:build)   { Build.new(request:) }
   let(:repo)    { FactoryBot.create(:repository) }
-  let(:job)     { Job.new(source: build, config:, repository: repo) }
+  let(:job)     { Job.new(source: build, config:, repository: repo, commit: commit) }
   let(:config)  { {} }
+  let(:commit)  { Commit.new(branch: 'main') }
+
 
   let(:account_env_vars) do
     [
@@ -74,8 +76,7 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
         [
           { name: 'ACCOUNT_SECURE_VAR', value: 'secure_value', public: false, branch: nil },
           { name: 'PUBLIC_VAR', value: 'repo_public_value', public: true, branch: 'main' },
-          {name: 'PUBLIC_VAR', value: 'account_public_value', public: true, branch: nil},
-        { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil }
+          { name: 'SECURE_VAR', value: 'secure_value', public: false, branch: nil }
         ]
       end
 
@@ -91,7 +92,7 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
     context 'when the repo env var is defined for multiple branches' do
       let(:account_env_vars) do
         [
-          {name: 'VAR', value: 'account_public_value', public: true, branch: nil}
+          { name: 'VAR', value: 'account_public_value', public: true, branch: nil }
         ]
       end
 
@@ -105,8 +106,6 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       let(:expected_vars) do
         [
           { name: 'VAR', value: 'main_value', public: true, branch: 'main' },
-          { name: 'VAR', value: 'feature_value', public: true, branch: 'feature' },
-          { name: 'VAR', value: 'account_public_value', public: true, branch: nil }
         ]
       end
 
@@ -124,7 +123,7 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
     context 'when the repo env var is defined for multiple branches and for repository' do
       let(:account_env_vars) do
         [
-          {name: 'VAR', value: 'account_public_value', public: true, branch: nil}
+          { name: 'VAR', value: 'account_public_value', public: true, branch: nil }
         ]
       end
 
@@ -139,8 +138,6 @@ describe Travis::Scheduler::Serialize::Worker::Job, 'env_vars' do
       let(:expected_vars) do
         [
           { name: 'VAR', value: 'main_value', public: true, branch: 'main' },
-          { name: 'VAR', value: 'feature_value', public: true, branch: 'feature' },
-          { name: 'VAR', value: 'repo_value', public: true, branch: nil }
         ]
       end
 

@@ -11,7 +11,7 @@ module Travis
           extend Forwardable
 
           def_delegators :job, :id, :repository, :source, :commit, :number,
-                         :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
+                          :queue, :state, :debug_options, :queued_at, :allow_failure, :stage, :name, :restarted_at, :restarted_by
           def_delegators :source, :request
 
           def env_vars
@@ -20,18 +20,21 @@ module Travis
             repo_env_vars = vars.map { |var| env_var(var) }
             return repo_env_vars if pull_request? && !request.same_repo_pull_request?
 
-            account_vars = account_env_vars.map { |v| [v[:name], v] }.to_h
             repo_vars_by_name = repo_env_vars.group_by { |var| var[:name] }
+            account_vars_by_name = account_env_vars.index_by { |v| v[:name] }
 
-            merged_vars = account_vars.merge(repo_vars_by_name) do |key, account_var, repo_vars|
-              if repo_vars.empty?
-                [account_var]
-              else
-                has_nil_branch = repo_vars.any? { |var| var[:branch].nil? }
-                has_nil_branch ? repo_vars : repo_vars + [account_var]
-              end
+            all_var_names = (repo_vars_by_name.keys + account_vars_by_name.keys).uniq
+
+            selected_vars = all_var_names.map do |name|
+              repo_vars_for_name = repo_vars_by_name[name] || []
+              account_var = account_vars_by_name[name]
+              branch_var = repo_vars_for_name.find { |v| v[:branch] == commit.branch }
+              global_repo_var = repo_vars_for_name.find { |v| v[:branch].nil? }
+
+              branch_var || global_repo_var || account_var
             end
-            merged_vars.values.flatten
+
+            selected_vars.compact
           end
 
           def account_env_vars
