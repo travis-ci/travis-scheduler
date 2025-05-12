@@ -88,6 +88,10 @@ module Travis
             job.config.dig(:vm, :size)
           end
 
+          def keep_netrc?
+            job.config.include?(:keep_netrc) ? !!job.config[:keep_netrc] : repo.keep_netrc?
+          end
+
           def trace?
             Rollout.matches?(:trace, uid: SecureRandom.hex, owner: repository.owner.login, repo: repository.slug, redis: Scheduler.redis)
           end
@@ -137,6 +141,10 @@ module Travis
 
           def repository_key
             job_repository&.key || ::SslKey.new(private_key: 'test')
+          end
+
+          def repo
+            @repo ||= Repo.new(repository, config)
           end
         end
       end
