@@ -110,7 +110,11 @@ module Travis
 
           def created_custom_image
             {
-              owner: job.repository.owner,
+              owner: {
+                id: owner.id,
+                type: owner.class.name.downcase,
+                login: owner.login,
+              },
               id: job.created_custom_image_id,
               name: job.config.dig(:vm, :create, :name)
             }
@@ -118,10 +122,18 @@ module Travis
 
           def used_custom_image
             {
-              owner: job.repository.owner,
+              owner: {
+                id: owner.id,
+                type: owner.class.name.downcase,
+                login: owner.login,
+              },
               id: job.used_custom_image_id,
               name: used_custom_image_name
             }
+          end
+
+          def owner
+            job.repository.owner
           end
 
           def used_custom_image_name

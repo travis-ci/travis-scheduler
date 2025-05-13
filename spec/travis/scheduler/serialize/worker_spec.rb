@@ -583,8 +583,8 @@ describe Travis::Scheduler::Serialize::Worker do
       job.update(config:, created_custom_image_id: created_image.id)
       job.update(config:, used_custom_image_id: used_image.id)
     end
-    it { expect(data[:job][:created_custom_image]).to match({ id: created_image.id, name: created_image.name, owner: }) }
-    it { expect(data[:job][:used_custom_image]).to match({ id: used_image.id, name: used_image.name, owner: }) }
+    it { expect(data[:job][:created_custom_image]).to match({ id: created_image.id, name: created_image.name, owner: {id: owner.id, type: owner.class.name.downcase, login: owner.login} }) }
+    it { expect(data[:job][:used_custom_image]).to match({ id: used_image.id, name: used_image.name, owner: {id: owner.id, type: owner.class.name.downcase, login: owner.login} }) }
   end
 
 end
