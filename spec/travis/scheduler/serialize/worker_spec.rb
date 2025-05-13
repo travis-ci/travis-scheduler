@@ -110,6 +110,7 @@ describe Travis::Scheduler::Serialize::Worker do
           hard_limit: 180 * 60, # worker handles timeouts in seconds
           log_silence: 20 * 60
         },
+        triggerer_id: build.sender_id,
         cache_settings: s3,
         workspace: s3,
         prefer_https: false,
@@ -315,6 +316,7 @@ describe Travis::Scheduler::Serialize::Worker do
           hard_limit: 180 * 60, # worker handles timeouts in seconds
           log_silence: 20 * 60
         },
+        triggerer_id: build.sender_id,
         cache_settings: s3,
         workspace: s3,
         prefer_https: false,
