@@ -105,7 +105,7 @@ module Travis
           end
 
           def uses_custom_image?
-            !!job.config.dig(:vm, :use, :name)
+            !!job.config.dig(:vm, :use)
           end
 
           def created_custom_image
@@ -120,8 +120,13 @@ module Travis
             {
               owner: job.repository.owner,
               id: job.used_custom_image_id,
-              name: job.config.dig(:vm, :use, :name)
+              name: used_custom_image_name
             }
+          end
+
+          def used_custom_image_name
+            name = job.config.dig(:vm, :use)
+            name.dig(:name) if name.is_a?(Hash)
           end
 
           private
