@@ -34,7 +34,8 @@ module Travis
             prefer_https: !!config[:prefer_https],
             keep_netrc: repo.keep_netrc?,
             secrets: job.secrets,
-            allowed_repositories:
+            allowed_repositories:,
+            triggerer_id: build.sender_id
           }
           data[:trace]  = true if job.trace?
           data[:warmer] = true if job.warmer?
