@@ -138,7 +138,7 @@ module Travis
 
           def used_custom_image_name
             name = job.config.dig(:vm, :use)
-            name.dig(:name) if name.is_a?(Hash)
+            name = name.dig(:name) if name.is_a?(Hash)
             name
           end
 
