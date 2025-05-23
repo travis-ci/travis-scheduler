@@ -50,6 +50,7 @@ module Travis
         def notify_rabbitmq
           info :publish, job.id, job.queue, 'rabbitmq'
           w = worker_payload
+          puts "PLY:  #{w.inspect}"
             amqp.publish(w, properties: { type: 'test', persistent: true })
         end
 
