@@ -95,6 +95,11 @@ FactoryBot.define do
     association :user
   end
 
+  factory :custom_image do
+    architecture { 'x86' }
+    size_bytes { 0 }
+  end
+
   factory :custom_key, class: 'CustomKey' do
     name { 'key' }
   end
