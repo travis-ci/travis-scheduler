@@ -100,6 +100,48 @@ module Travis
             User.find(restarted_by).login if restarted_by
           end
 
+          def creates_custom_image?
+            !!job.config.dig(:vm, :create, :name)
+          end
+
+          def uses_custom_image?
+            !!job.config.dig(:vm, :use)
+          end
+
+          def created_custom_image
+            {
+              owner: {
+                id: owner.id,
+                type: owner.class.name.downcase,
+                login: owner.login,
+              },
+              id: job.created_custom_image_id,
+              name: job.config.dig(:vm, :create, :name)
+            }
+          end
+
+          def used_custom_image
+            {
+              owner: {
+                id: owner.id,
+                type: owner.class.name.downcase,
+                login: owner.login,
+              },
+              id: job.used_custom_image_id,
+              name: used_custom_image_name
+            }
+          end
+
+          def owner
+            job.repository.owner
+          end
+
+          def used_custom_image_name
+            name = job.config.dig(:vm, :use)
+            name = name[:name] if name.is_a?(Hash)
+            name
+          end
+
           private
 
           def env_var(var)
