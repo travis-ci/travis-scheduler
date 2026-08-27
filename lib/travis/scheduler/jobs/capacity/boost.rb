@@ -8,7 +8,7 @@ module Travis
       module Capacity
         class Boost < Base
           def applicable?
-            !on_metered_plan? && boost.exists?
+            boost.exists?
           end
 
           def report(status, job)
